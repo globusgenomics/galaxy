@@ -1119,6 +1119,12 @@ def wrap_in_middleware(app, global_conf, application_stack, **local_conf):
                                   remote_user_header=conf.get('remote_user_header', 'HTTP_REMOTE_USER'),
                                   remote_user_secret_header=conf.get('remote_user_secret', None),
                                   normalize_remote_user_email=conf.get('normalize_remote_user_email', False)))
+        # Added by Globus Genomics, Globus Auth
+        if asbool(conf.get('globus_use_oauth', False)):
+            from  galaxy_ext import globus
+            app = globus.UserAuthentication(app)
+            from paste import session
+            app = session.make_session_middleware(app, conf)
     # The recursive middleware allows for including requests in other
     # requests or forwarding of requests, all on the server side.
     if asbool(conf.get('use_recursive', True)):
