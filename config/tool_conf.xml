@@ -1,0 +1,2194 @@
+<?xml version="1.0" encoding='utf-8'?>
+<toolbox monitor="true">
+  <!-- keep our tools at the top for now? -->
+  <!--<label text="Material Science" id="material_science" />
+  <section name="MOOSE Tools" id="moose_tools">
+    <tool file="moose/upload_input.xml"/>
+    <tool file="moose/upload_mesh.xml"/>
+    <tool file="moose/select_input.xml"/>
+    <tool file="moose/select_mesh.xml"/>
+    <tool file="moose/moose_test.xml"/>
+    <tool file="moose/ferret.xml"/>
+    <tool file="misc_tools/galaxy_tools/test_dmitry.xml"/>
+  </section>-->
+  <label text="Admin Tools" id="admin_tools" organization_include="dev"/>
+  <section name="Reference indexing tools" id="ref_index_tools" organization_include="dev">
+    <tool file="admin_make_references/bowtie_create_index.xml" />
+    <tool file="admin_make_references/bowtie2_create_index.xml" />
+    <tool file="admin_make_references/star_create_index.xml" />
+    <tool file="admin_make_references/gmap_create_index.xml" />
+    <tool file="admin_make_references/bwa_create_index.xml" />
+    <tool file="admin_make_references/snpeff_create_index.xml" />
+    <tool file="admin_make_references/hisat2_create_index.xml" />
+    <tool file="cwltools/helloworld_cwl.xml" />
+  </section>
+  <label text="EuPathDB Applications" id="eupathdb_apps" organization_include="eupathdb,eupathdbdev,eupathdbstaging,eupathdbworkshop"/>
+  <section name="EuPathDB Export Tools" id="eupath_export" organization_include="eupathdb,eupathdbdev,eupathdbstaging,eupathdbworkshop">
+    <!--<tool file="eupath/Tools/lib/xml/exportGeneListToEuPathDB.xml" />-->
+    <tool file="eupath/Tools/lib/xml/exportBigwigFilesToEuPathDB.xml" />
+    <tool file="eupath/Tools/lib/xml/exportRnaSeqToEuPathDB.xml" />
+  </section>
+  <section name="EuPathDB OrthoMCL Tools" id="eupath_orthomcl" organization_include="eupathdb,eupathdbdev,eupathdbstaging,eupathdbworkshop">
+    <tool file="eupath/Tools/lib/xml/orthomclPreprocessFastaFile.xml" />
+    <tool file="eupath/Tools/lib/xml/orthomclBlastParser.xml" />
+    <tool file="eupath/Tools/lib/xml/orthomclMapProteomeToGroups.xml" />
+  </section>
+
+  <label text="Data Transfer" id="data_transfer"/>
+  <section name="Globus Data Transfer" id="globus" organization_exclude="haky,cvrg">
+    <tool file="globus/mark_test.xml" organization_include="dev"/>
+    <tool file="globus/from_go.xml" organization_include="dev"/>
+    <tool file="globus/globus_get_data.xml" />
+    <tool file="globus/globus_get_data_flowcell.xml" />
+    <tool file="globus/globus_get_data_from_ebi.xml" />
+    <tool file="globus/globus_get_bioproject_data_from_ebi.xml" />
+    <tool file="globus/globus_get_data_from_ebi_to_collections.xml" />
+    <tool file="globus/get_databag_from_minid_to_collection.xml" />
+    <tool file="globus/globus_send_data.xml" />
+    <!--<tool file="globus/to_go_collection.xml" /> -->
+    <tool file="globus/globus_send_data_multiple.xml" />
+    <tool file="globus/s3_get_data.xml" />
+    <tool file="globus/s3_send_data.xml" />
+    <tool file="globus/s3_send_data_multiple.xml" />
+    <tool file="globus/transfer.xml" organization_include="bdds,nihcommons"/>
+    <tool file="globus/catalog.xml" organization_include="bdds,nihcommons"/>
+    <tool file="globus/publish.xml" organization_include="bdds,nihcommons"/>
+    <tool file="globus/upload_publish.xml" organization_include="bdds,nihcommons"/>
+    <tool file="globus/ermrest.xml" organization_include="bdds,nihcommons"/>
+    <tool file="globus/bdds_download.xml" organization_include="bdds,nihcommons"/>
+    <tool file="globus/bdds_upload.xml" organization_include="bdds,nihcommons"/>
+    <tool file="globus/directory_dataset_hack.xml" />
+    <tool file="s3tools/s3tools.xml" organization_include="emory"/>
+    <tool file="globus/reduce_directory_object.xml" />
+    <tool file="globus/get_from_encode_url_to_bag.xml" organization_include="bdds" />
+    <tool file="globus/get_databag_from_minid.xml" organization_include="bdds"/>
+    <tool file="globus/get_bdbag_from_minid.xml" organization_include="bdds,nihcommons"/>
+    <tool file="globus/get_databag_from_minid_to_collection.xml" organization_include="bdds,nihcommons"/>
+    <tool file="globus/globus_fetch_data_from_minid_object.xml" organization_include="bdds,nihcommons"/>
+    <tool file="globus/create_databag_and_minid.xml" organization_include="bdds,nihcommons"/>
+    <tool file="globus/create_output_bdbag_and_minid.xml" organization_include="bdds,nihcommons"/>
+    <tool file="globus/create_output_bdbag_and_minid2.xml" organization_include="bdds,nihcommons"/>
+    <tool file="globus/create_output_bdbag_and_minid_from_collections.xml" organization_include="bdds,nihcommons"/>
+    <tool file="cwltools/helloworld_cwl.xml" organization_include="bdds,nihcommons" />
+
+ </section>
+  <tool file="data_source/upload.xml" organization_include="haky"/>
+  <section name="Get Data" id="getext" organization_exclude="haky">
+    <tool file="data_source/upload.xml"/>
+    <tool file="basespace/download_dataset.xml"/>
+    <tool file="basespace/download_sampleset.xml"/>
+    <!--<tool file="data_source/ucsc_tablebrowser.xml" />
+    <tool file="data_source/ucsc_tablebrowser_test.xml" />
+    <tool file="data_source/ucsc_tablebrowser_archaea.xml" />
+    <tool file="data_source/bx_browser.xml" />
+    <tool file="data_source/ebi_sra.xml"/>
+    <tool file="data_source/microbial_import.xml" />
+    <tool file="data_source/biomart.xml" />
+    <tool file="data_source/biomart_test.xml" />
+    <tool file="data_source/cbi_rice_mart.xml" />
+    <tool file="data_source/gramene_mart.xml" />
+    <tool file="data_source/fly_modencode.xml" />
+    <tool file="data_source/flymine.xml" />
+    <tool file="data_source/flymine_test.xml" />
+    <tool file="data_source/modmine.xml" />
+    <tool file="data_source/ratmine.xml" />
+    <tool file="data_source/yeastmine.xml" />
+    <tool file="data_source/metabolicmine.xml" />
+    <tool file="data_source/worm_modencode.xml" />
+    <tool file="data_source/wormbase.xml" />
+    <tool file="data_source/wormbase_test.xml" />
+    <tool file="data_source/eupathdb.xml" />
+    <tool file="data_source/encode_db.xml" />
+    <tool file="data_source/epigraph_import.xml" />
+    <tool file="data_source/epigraph_import_test.xml" />
+    <tool file="data_source/hbvar.xml" />
+    <tool file="data_source/genomespace_file_browser_prod.xml" />
+    <!-\- <tool file="data_source/genomespace_file_browser_test.xml" />
+    <tool file="data_source/genomespace_file_browser_dev.xml" /> -\->
+    <tool file="validation/fix_errors.xml" />-->
+  </section>
+  <section name="Collection Tools" id="collection_tools">
+    <tool file="collection_tools/merge.xml"/>
+  </section>
+  <!--<section name="Send Data" id="send">
+    <tool file="data_destination/epigraph.xml" />
+    <tool file="data_destination/epigraph_test.xml" />
+  </section>-->
+  <label text="CVRG Tools" id="cvrg" organization_include="cvrg"/>
+  <section name="Cardiovascular tools" id="cvrg_section" organization_include="cvrg">
+    <tool file="wfdb/ann2rr.xml"/>
+    <tool file="wfdb/nguess.xml"/>
+    <tool file="wfdb/rdsamp.xml"/>
+    <tool file="wfdb/sqrs.xml"/>
+    <tool file="wfdb/wqrs.xml"/>
+  </section>
+  <section name="Calcium Spark" id="cru3d_section" organization_include="cvrg">
+    <tool file="CRU3D/CRU3D_convert_globals.xml"/>
+    <tool file="CRU3D/CRU3D_fidelity.xml"/>
+    <tool file="CRU3D/CRU3D_mesh.xml"/>
+    <tool file="CRU3D/CRU3D_gain.xml"/>
+    <tool file="CRU3D/CRU3D_simulation.xml"/>
+  </section>
+  <section name="Cardiac Myocyte" id="cardiac_myocyte_section" organization_include="cvrg">
+    <tool file="greenstein2006/Run_gs2006.xml" />
+  </section>
+  <section name="Model Simulation" id="model_sim_section" organization_include="cvrg">
+    <tool file="cellml/CellML_Edit.xml" />
+    <tool file="cellml/CellML_Sim.xml" />
+  </section>
+  <section name="SBML" id="sbml_section" organization_include="cvrg">
+    <tool file="copasi/copasi.xml" />
+  </section>
+  <section name="Hodgkin-Huxley Tools" id="hh_section" organization_include="cvrg">
+    <tool file="hodgkin_huxley/hh_channel.xml" />
+    <tool file="hodgkin_huxley/hh.xml" />
+  </section>
+  <section name="File Transfer Checksum" id="md5checksum" organization_exclude="haky,cvrg">
+    <tool file="md5checksum/md5checksum.xml" />
+  </section>
+
+  <label text="NGS Applications" id="ngs_apps" organization_exclude="haky,cvrg"/>
+  <section name="NGS: QC and manipulation" id="NGS_QC" organization_exclude="haky,cvrg">    
+    <label text="FastQC: fastq/sam/bam" id="fastqcsambam" />
+    <tool file="rgenetics/rgFastQC.xml" />
+    <tool file="fastq_screen/fastq_screen.xml" />
+
+    <label text="QualiMap: bam" id="qualimap" />
+    <tool file="qualimap/bamqc.xml" />
+
+    <label text="MultiQC" id="multiqc" />
+    <tool file="multiqc/multiqc.xml" />
+    
+    <label text="Illumina fastq" id="illumina" />
+    <tool file="fastq/fastq_groomer.xml" />
+    <tool file="fastq/fastq_groomer_parallel.xml" />
+    <tool file="fastq/fastq_paired_end_splitter.xml" />
+    <tool file="fastq/fastq_paired_end_joiner.xml" />
+    <tool file="fastq/fastq_stats.xml" />
+    <tool file="isaac/bcl2fastq.xml" />
+    
+    <label text="Roche-454 data" id="454" />
+    <tool file="metag_tools/short_reads_figure_score.xml" />
+    <tool file="metag_tools/short_reads_trim_seq.xml" />
+    <tool file="fastq/fastq_combiner.xml" />
+    
+    <label text="AB-SOLiD data" id="solid" />
+    <tool file="next_gen_conversion/solid2fastq.xml" />
+    <tool file="solid_tools/solid_qual_stats.xml" />
+    <tool file="solid_tools/solid_qual_boxplot.xml" />
+    
+    <label text="Generic FASTQ manipulation" id="generic_fastq" />
+    <tool file="fastq/fastq_filter.xml" />
+    <tool file="fastq/fastq_trimmer.xml" />
+    <tool file="fastq/fastq_trimmer_by_quality.xml" />
+    <tool file="fastq/fastq_masker_by_quality.xml" />
+    <tool file="fastq/fastq_paired_end_interlacer.xml" />
+    <tool file="fastq/fastq_paired_end_deinterlacer.xml" />
+    <tool file="fastq/fastq_manipulation.xml" />
+    <tool file="fastq/fastq_to_fasta.xml" />
+    <tool file="fastq/fastq_to_tabular.xml" />
+    <tool file="fastq/tabular_to_fastq.xml" />
+    <tool file="fastq_validator/fastqvalidator.xml" />
+    <tool file="ea_utils/fastq-join.xml" />
+    <tool file="ea_utils/fastq-multx.xml" />
+    <tool file="fastq_mcf/fastq-mcf.xml" />
+    <tool file="scythe/scythe.xml" />
+    <tool file="sickle/sickle.xml" />
+    <tool file="sickle/sickle_bags.xml" organization_include="bdds,nihcommons"/>
+    <tool file="cutadapt/cutadapt.xml" />
+    <tool file="trimgalore/trim_galore_wrapper.xml" />
+    <tool file="trimmomatic/trimmomatic.xml" />
+    <tool file="trimmomatic/trimmomatic_bags.xml" />
+    <tool file="flexbar/flexbarWrapper.xml" />
+    <tool file="bbmap/bbduk.xml" />
+    <tool file="bbmap/bbmerge.xml" />
+    <tool file="bbmap/bbmerge_adapter.xml" />
+    <tool file="bbmap/reformat.xml" />
+    <tool file="filters/fastqCat.xml" />
+    <tool file="connor/connor.xml" />
+
+    <label text="FASTX-Toolkit for FASTQ data" id="fastx_toolkit" />
+    <tool file="fastx_toolkit/fastq_quality_converter.xml" />
+    <tool file="fastx_toolkit/fastx_quality_statistics.xml" />
+    <tool file="fastx_toolkit/fastq_quality_boxplot.xml" />
+    <tool file="fastx_toolkit/fastx_nucleotides_distribution.xml" />
+    <tool file="fastx_toolkit/fastq_to_fasta.xml" />
+    <tool file="fastx_toolkit/fastq_quality_filter.xml" />
+    <tool file="fastx_toolkit/fastq_to_fasta.xml" />
+    <tool file="fastx_toolkit/fastx_artifacts_filter.xml" />
+    <tool file="fastx_toolkit/fastx_barcode_splitter.xml" />
+    <tool file="fastx_toolkit/fastx_clipper.xml" />
+    <tool file="fastx_toolkit/fastx_collapser.xml" />
+    <tool file="fastx_toolkit/fastx_renamer.xml" />
+    <tool file="fastx_toolkit/fastx_reverse_complement.xml" />
+    <tool file="fastx_toolkit/fastx_trimmer.xml" />
+
+    <label text="fastq Demultiplexer" id="demultiplexer"/>
+    <tool file="demultiplexer/demultiplexer.xml"/>
+    <tool file="demultiplexer/demultiplexOneSample.xml"/>
+
+    <label text="Suite Je" id="suite_je"/>
+    <tool file="suite_je/je-demultiplex.xml"/>
+    <tool file="suite_je/je-demultiplex-illu.xml"/>
+    <tool file="suite_je/je-clip.xml"/>
+    <tool file="suite_je/je-markdupes.xml"/>
+
+  </section>
+
+  <section name="NGS: Assembly" id="ngs_assembly" organization_exclude="haky,cvrg">
+  <label text="Velvet" id="velvet"/>
+  <tool file="sr_assembly/velvetg.xml" />
+  <tool file="sr_assembly/velveth.xml" />
+  <label text="Abyss" id="abyss" />
+  <tool file="abyss/abyss-pe.xml" />
+  </section>
+  <section name="NGS: Mapping" id="solexa_tools" organization_exclude="haky,cvrg">
+    <label text="Illumina" id="mapping_illumina" />
+    <tool file="sr_mapping/bowtie_wrapper.xml" />
+    <tool file="sr_mapping/bowtie2_wrapper.xml" />
+    <tool file="sr_mapping/bowtie2_wrapper_bags.xml" />
+    <tool file="sr_mapping/bwa_wrapper.xml" />
+    <tool file="sr_mapping/bwa_mem.xml" />
+    <tool file="sr_mapping/bwa_mem_0.7.10.xml" />
+    <tool file="sr_mapping/bwa_mem_bag.xml" />
+    <tool file="bbmap/bbmap.xml" />
+    <!-- <tool file="snap/snap-index.xml"/>  -->
+    <tool file="snap/snap-alignment.xml"/>
+    <tool file="snap/snap_bag.xml"/>
+    <tool file="novoalign/novoalign.xml"/>
+    <label text="SOLiD" id="mapping_solid" />
+    <tool file="sr_mapping/bowtie_color_wrapper.xml" />
+    <tool file="sr_mapping/bwa_color_wrapper.xml" />    
+    <label text="ROCHE-454" id="mapping_454" />
+    <tool file="metag_tools/megablast_wrapper.xml" />
+    <tool file="metag_tools/megablast_xml_parser.xml" />
+    <label text="Ion-Torrent" id="ion_torrent" />
+    <tool file="tmap/tmap_wrapper.xml" />
+    <tool file="isaac/isaac_align.xml" />
+    <label text="Bisulfite Mapping" id="bisulfite_mapping" />
+    <tool file="bismark/bismark_bowtie_wrapper.xml" />
+    <tool file="bismark/bismark_bowtie2_wrapper.xml" />
+    <tool file="bismark/bismark_methylation_extractor.xml" />
+<!--    <tool file="sr_mapping/lastz_wrapper.xml" />
+    <tool file="sr_mapping/lastz_paired_reads_wrapper.xml" />
+    <tool file="sr_mapping/bfast_wrapper.xml" />
+    <tool file="sr_mapping/PerM.xml" />
+    <tool file="sr_mapping/srma_wrapper.xml" />
+    <tool file="sr_mapping/mosaik.xml"/> -->
+  </section>
+
+  <section name="NGS: Mapping QC" id="cov_qc" organization_exclude="haky,cvrg">
+    <tool file="coverage/findLowCovPositions.xml" />
+    <tool file="coverage/summarizeLowCovAreas.xml" />
+    <tool file="coverage/coverageStats.xml" />
+    <tool file="ea_utils/sam-stats.xml" />
+  </section>
+
+  <section name="NGS: HLA Typing" id="ngs-hla-typing">
+    <tool file="seq2hla/seq2hla.xml" />
+    <tool file="netmhc/netmhc.xml" />
+  </section>
+
+  <section name="NGS: RNA Analysis" id="ngs-rna-tools" organization_exclude="haky,cvrg">
+    <label text="Transcriptome Alignment" id="rna_seq_alignment" />
+    <tool file="ngs_rna/tophat_wrapper.xml" />
+    <tool file="ngs_rna/tophat2_wrapper.xml" />
+    <tool file="ngs_rna/tophat_color_wrapper.xml" />
+    <tool file="ngs_rna/mapsplice.xml" />
+    <tool file="rsem/rsem-1.1.17.xml" />
+    <tool file="rsem/rsem_calculate_expression.xml" />
+    <tool file="stringtie/stringtie.xml" />
+    <tool file="stringtie/stringtie_merge.xml" />
+    <tool file="hisat2/hisat2.xml" />
+    <tool file="hisat2/hisat2_bags.xml" />
+    <tool file="mixcr/mixcr.xml" />
+    <tool file="star/star.xml" />
+    <tool file="star/star_bags.xml" />
+    <tool file="star/star_gdc.xml" />
+    <tool file="gsnap/gsnap.xml" />
+    <tool file="sailfish/sailfish.xml" />
+    <tool file="salmon/salmon.xml" />
+    <label text="Cufflinks Package " id="rna_seq_tools" />
+    <tool file="ngs_rna/cufflinks_wrapper.xml" />
+    <tool file="ngs_rna/cuffcompare_wrapper.xml" />
+    <tool file="ngs_rna/cuffmerge_wrapper.xml" />
+    <tool file="ngs_rna/cuffmerge_wrapper_bags.xml" organization_include="bdds,nihcommons"/>
+    <tool file="ngs_rna/cuffdiff_wrapper.xml" />
+    <tool file="ngs_rna/cuffdiff_wrapper_bags.xml" organization_include="bdds,nihcommons"/>
+    <tool file="ngs_rna/gffread.xml"/>
+    <label text="Cufflinks2 Package " id="rna_seq_tools2" />
+    <tool file="ngs_rna/cuffsuite2/cufflinks_wrapper.xml" />
+    <tool file="ngs_rna/cuffsuite2/cuffcompare_wrapper.xml" />
+    <tool file="ngs_rna/cuffsuite2/cuffmerge_wrapper.xml" />
+    <tool file="ngs_rna/cuffsuite2/cuffdiff_wrapper.xml" />
+    <tool file="ngs_rna/cuffsuite2/cuffquant_wrapper.xml" />
+    <tool file="ngs_rna/cuffsuite2/cuffnorm_wrapper.xml" />
+    <tool file="tuxedo/stringtie.xml" />
+    <tool file="tuxedo/stringtie_merge.xml" />
+    <label text="MISO" id="miso"/>
+    <tool file="miso/miso_index_GFF.xml"/>
+    <tool file="miso/miso_compute_genes_psi.xml"/>
+    <tool file="miso/miso_compute_events_psi.xml"/>
+    <tool file="miso/miso_summarize_samples.xml"/>
+    <tool file="miso/miso_compare_samples.xml"/>
+    <label text="RNA-SeQC" id="rnaseqc"/>
+    <tool file="rna_seqc/RNASeQC.xml"/>
+    <label text="RSeqC" id="rseqc"/>
+    <tool file="rseqc/bam2wig.xml"/>
+    <tool file="rseqc/bam_stat.xml"/>
+    <tool file="rseqc/clipping_profile.xml"/>
+    <tool file="rseqc/geneBody_coverage2.xml"/>
+    <tool file="rseqc/geneBody_coverage.xml"/>
+    <tool file="rseqc/infer_experiment.xml"/>
+    <tool file="rseqc/inner_distance.xml"/>
+    <tool file="rseqc/junction_annotation.xml"/>
+    <tool file="rseqc/junction_saturation.xml"/>
+    <tool file="rseqc/read_distribution.xml"/>
+    <tool file="rseqc/read_duplication.xml"/>
+    <tool file="rseqc/read_GC.xml"/>
+    <tool file="rseqc/read_NVC.xml"/>
+    <tool file="rseqc/read_quality.xml"/>
+    <tool file="rseqc/RPKM_count.xml"/>
+    <tool file="rseqc/RPKM_saturation.xml"/>
+    <label text="Single Cell Gene Expression" id="cellranger"/>
+    <tool file="cellranger/mkfastq.xml" />
+    <tool file="cellranger/count.xml" />
+    <tool file="cellranger/aggr.xml" />
+    <tool file="cellranger/reanalyze.xml" />
+    <label text="Additional Alignment Statistics" id="rnastats"/>
+    <tool file="ngs_rna/tophat_stats_pe.xml" />
+    <tool file="ngs_rna/tophat_stats_pe_bri.xml" organization_include="benaroyaresearch,bri"/>
+    <label text="Quantification" id="quantification"/>
+    <tool file="htseq/htseq-count.xml"/>
+    <tool file="express/express_wrapper.xml" />
+    <tool file="featurecounts/featurecounts.xml"/>
+    <label text="Search Fusion Genes" id="fusion_search"/>
+    <tool file="ngs_rna/tophat_fusion_post.xml"/>
+    <tool file="fusioncatcher/fusioncatcher.xml"/>
+    <tool file="mojo/mojo.xml"/>
+
+    <!-- Trinity is very memory-intensive and should only be enabled/run
+    on instances with sufficient resources. -->
+    <label text="De novo Assembly" id="de_novo_assembly "/>
+    <tool file="trinity/trinityrnaseq_norm.xml" />
+    <tool file="trinity/trinityrnaseq.xml" />
+
+    <label text="Filtering" id="filtering" />
+    <tool file="ngs_rna/filter_transcripts_via_tracking.xml" />
+    <tool file="deseq/sam2counts.xml" />
+    <tool file="deseq/deseq.xml" />
+    <tool file="deseq/deseq2.xml" organization_exclude="eupathdb,eupathdbdev,eupathdbstaging,eupathdbworkshop"/>
+    <tool file="deseq/deseq2_eupathdb.xml" organization_include="eupathdb,eupathdbdev,eupathdbstaging,eupathdbworkshop" />
+    <tool file="deseq/deseq2_bags.xml" />
+    <tool file="dexseq/dexseq_prepare_annotation.xml" />
+    <tool file="dexseq/dexseq_counts.xml" />
+    <tool file="dexseq/dexseq.xml" />
+    <tool file="shrnaseq/hairpinTool.xml" />
+    <tool file="sleuth/sleuth.xml" />
+    <tool file="ngs_rna/edger_wrapper.xml" />
+    <tool file="tuxedo/ballgown.xml" />
+    <label text="Visualization" id="visualization" />
+    <tool file="ngs_rna/cummerbund_wrapper.xml" />
+     
+    <label text="RNA-skim tools" id="rnaskim" />
+    <tool file="rna-skim/rs_count.xml" />
+    <tool file="rna-skim/rs_estimate.xml" />
+  </section>
+
+  <section name="NGS: miRNA" id="mirna">
+    <label text="mirDEEP2 tools" id="mirdeep2" />
+    <tool file='mirdeep2/mapper.xml'/>
+    <tool file='mirdeep2/mirdeep2.xml'/>
+    <tool file='mirdeep2/quantifier.xml'/>
+  </section>
+
+  <section name="NGS: DNAse" id="dnase" organization_exclude="haky,cvrg">
+    <tool file="fseq/fseq_wrapper.xml"/>
+    <tool file="hint/hint.xml"/>
+    <tool file="piq/piq.xml"/>
+    <tool file="piq/piq_pwmmatch.xml"/>
+    <tool file="piq/piq_bam.xml"/>
+    <tool file="piq/piq_bam_pwm.xml"/>
+    <tool file="dnase/wellington_footprints.xml"/>
+    <tool file="dnase/wellingtonAnalysis.xml"/>
+    <label text="Beta" id="beta" />
+    <tool file="beta/beta_basic.xml" />
+    <tool file="beta/beta_plus.xml" />
+    <tool file="beta/beta_minus.xml" />
+  </section>
+
+  <section name="NYS: MTB" id="mtb">
+    <tool file="mtb/mtb.xml"/>
+    <tool file="mtb/mtb_summary.xml" />
+  </section>
+
+<section name="NGS: Mothur" id="mothur">
+    <tool file="mothur/align.check.xml"/>
+    <tool file="mothur/align.seqs.xml"/>
+    <tool file="mothur/amova.xml"/>
+    <tool file="mothur/anosim.xml"/>
+    <tool file="mothur/bin.seqs.xml"/>
+    <tool file="mothur/chimera.bellerophon.xml"/>
+    <tool file="mothur/chimera.ccode.xml"/>
+    <tool file="mothur/chimera.check.xml"/>
+    <tool file="mothur/chimera.perseus.xml"/>
+    <tool file="mothur/chimera.pintail.xml"/>
+    <tool file="mothur/chimera.slayer.xml"/>
+    <tool file="mothur/chimera.uchime.xml"/>
+    <tool file="mothur/chimera.vsearch.xml"/>
+    <tool file="mothur/chop.seqs.xml"/>
+    <tool file="mothur/classify.otu.xml"/>
+    <tool file="mothur/classify.rf.xml"/>
+    <tool file="mothur/classify.seqs.xml"/>
+    <tool file="mothur/classify.tree.xml"/>
+    <tool file="mothur/clearcut.xml"/>
+    <tool file="mothur/cluster.xml"/>
+    <tool file="mothur/cluster.classic.xml"/>
+    <tool file="mothur/cluster.fragments.xml"/>
+    <tool file="mothur/cluster.split.xml"/>
+    <tool file="mothur/collect.shared.xml"/>
+    <tool file="mothur/collect.single.xml"/>
+    <tool file="mothur/consensus.seqs.xml"/>
+    <tool file="mothur/cooccurrence.xml"/>
+    <tool file="mothur/corr.axes.xml"/>
+    <tool file="mothur/count.groups.xml"/>
+    <tool file="mothur/count.seqs.xml"/>
+    <tool file="mothur/create.database.xml"/>
+    <tool file="mothur/degap.seqs.xml"/>
+    <tool file="mothur/deunique.seqs.xml"/>
+    <tool file="mothur/deunique.tree.xml"/>
+    <tool file="mothur/dist.seqs.xml"/>
+    <tool file="mothur/dist.shared.xml"/>
+    <tool file="mothur/fastq.info.xml"/>
+    <tool file="mothur/filter.seqs.xml"/>
+    <tool file="mothur/filter.shared.xml"/>
+    <tool file="mothur/get.communitytype.xml"/>
+    <tool file="mothur/get.coremicrobiome.xml"/>
+    <tool file="mothur/get.dists.xml"/>
+    <tool file="mothur/get.groups.xml"/>
+    <tool file="mothur/get.group.xml"/>
+    <tool file="mothur/get.label.xml"/>
+    <tool file="mothur/get.lineage.xml"/>
+    <tool file="mothur/get.mimarkspackage.xml"/>
+    <tool file="mothur/get.otulabels.xml"/>
+    <tool file="mothur/get.otulist.xml"/>
+    <tool file="mothur/get.oturep.xml"/>
+    <tool file="mothur/get.otus.xml"/>
+    <tool file="mothur/get.rabund.xml"/>
+    <tool file="mothur/get.relabund.xml"/>
+    <tool file="mothur/get.sabund.xml"/>
+    <tool file="mothur/get.seqs.xml"/>
+    <tool file="mothur/get.sharedseqs.xml"/>
+    <tool file="mothur/hcluster.xml"/>
+    <tool file="mothur/heatmap.bin.xml"/>
+    <tool file="mothur/heatmap.sim.xml"/>
+    <tool file="mothur/homova.xml"/>
+    <tool file="mothur/indicator.xml"/>
+    <tool file="mothur/lefse.xml"/>
+    <tool file="mothur/libshuff.xml"/>
+    <tool file="mothur/list.otulabels.xml"/>
+    <tool file="mothur/list.seqs.xml"/>
+    <tool file="mothur/make.biom.xml"/>
+    <tool file="mothur/make.contigs.xml"/>
+    <tool file="mothur/make.design.xml"/>
+    <tool file="mothur/make.fastq.xml"/>
+    <tool file="mothur/make.group.xml"/>
+    <tool file="mothur/make.lefse.xml"/>
+    <tool file="mothur/make.lookup.xml"/>
+    <tool file="mothur/make.shared.xml"/>
+    <tool file="mothur/make.sra.xml"/>
+    <tool file="mothur/mantel.xml"/>
+    <tool file="mothur/merge.files.xml"/>
+    <tool file="mothur/merge.groups.xml"/>
+    <tool file="mothur/merge.sfffiles.xml"/>
+    <tool file="mothur/merge.taxsummary.xml"/>
+    <tool file="mothur/metastats.xml"/>
+    <tool file="mothur/mimarks.attributes.xml"/>
+    <tool file="mothur/nmds.xml"/>
+    <tool file="mothur/normalize.shared.xml"/>
+    <tool file="mothur/otu.association.xml"/>
+    <tool file="mothur/otu.hierarchy.xml"/>
+    <tool file="mothur/pairwise.seqs.xml"/>
+    <tool file="mothur/parse.list.xml"/>
+    <tool file="mothur/parsimony.xml"/>
+    <tool file="mothur/pca.xml"/>
+    <tool file="mothur/pcoa.xml"/>
+    <tool file="mothur/pcr.seqs.xml"/>
+    <tool file="mothur/phylo.diversity.xml"/>
+    <tool file="mothur/phylotype.xml"/>
+    <tool file="mothur/pre.cluster.xml"/>
+    <tool file="mothur/primer.design.xml"/>
+    <tool file="mothur/rarefaction.shared.xml"/>
+    <tool file="mothur/rarefaction.single.xml"/>
+    <tool file="mothur/remove.dists.xml"/>
+    <tool file="mothur/remove.groups.xml"/>
+    <tool file="mothur/remove.lineage.xml"/>
+    <tool file="mothur/remove.otulabels.xml"/>
+    <tool file="mothur/remove.otus.xml"/>
+    <tool file="mothur/remove.rare.xml"/>
+    <tool file="mothur/remove.seqs.xml"/>
+    <tool file="mothur/reverse.seqs.xml"/>
+    <tool file="mothur/screen.seqs.xml"/>
+    <tool file="mothur/sens.spec.xml"/>
+    <tool file="mothur/seq.error.xml"/>
+    <tool file="mothur/sffinfo.xml"/>
+    <tool file="mothur/shhh.flows.xml"/>
+    <tool file="mothur/shhh.seqs.xml"/>
+    <tool file="mothur/sort.seqs.xml"/>
+    <tool file="mothur/split.abund.xml"/>
+    <tool file="mothur/split.groups.xml"/>
+    <tool file="mothur/sub.sample.xml"/>
+    <tool file="mothur/sub.summary.xml"/>
+    <tool file="mothur/summary.qual.xml"/>
+    <tool file="mothur/summary.seqs.xml"/>
+    <tool file="mothur/summary.shared.xml"/>
+    <tool file="mothur/summary.single.xml"/>
+    <tool file="mothur/summary.tax.xml"/>
+    <tool file="mothur/tree.shared.xml"/>
+    <tool file="mothur/trim.flows.xml"/>
+    <tool file="mothur/trim.seqs.xml"/>
+    <tool file="mothur/unifrac.unweighted.xml"/>
+    <tool file="mothur/unifrac.weighted.xml"/>
+    <tool file="mothur/unique.seqs.xml"/>
+    <tool file="mothur/venn.xml"/>
+    <tool file="krona/krona_text.xml"/>
+    <tool file="krona/krona_mothur.xml"/>
+    <tool file="colgate/R_code_PI.xml"/>
+    <tool file="colgate/R_code_otu_table.xml"/>
+</section>
+
+<section name="NGS: Mothur 1.42" id="mothur142">
+    <tool file="mothur1.42/align.check.xml"/>
+    <tool file="mothur1.42/align.seqs.xml"/>
+    <tool file="mothur1.42/amova.xml"/>
+    <tool file="mothur1.42/anosim.xml"/>
+    <tool file="mothur1.42/bin.seqs.xml"/>
+    <tool file="mothur1.42/chimera.bellerophon.xml"/>
+    <tool file="mothur1.42/chimera.ccode.xml"/>
+    <tool file="mothur1.42/chimera.check.xml"/>
+    <tool file="mothur1.42/chimera.perseus.xml"/>
+    <tool file="mothur1.42/chimera.pintail.xml"/>
+    <tool file="mothur1.42/chimera.slayer.xml"/>
+    <tool file="mothur1.42/chimera.uchime.xml"/>
+    <tool file="mothur1.42/chimera.vsearch.xml"/>
+    <tool file="mothur1.42/chop.seqs.xml"/>
+    <tool file="mothur1.42/classify.otu.xml"/>
+    <tool file="mothur1.42/classify.rf.xml"/>
+    <tool file="mothur1.42/classify.seqs.xml"/>
+    <tool file="mothur1.42/classify.tree.xml"/>
+    <tool file="mothur1.42/clearcut.xml"/>
+    <tool file="mothur1.42/cluster.xml"/>
+    <tool file="mothur1.42/cluster.classic.xml"/>
+    <tool file="mothur1.42/cluster.fragments.xml"/>
+    <tool file="mothur1.42/cluster.split.xml"/>
+    <tool file="mothur1.42/collect.shared.xml"/>
+    <tool file="mothur1.42/collect.single.xml"/>
+    <tool file="mothur1.42/consensus.seqs.xml"/>
+    <tool file="mothur1.42/cooccurrence.xml"/>
+    <tool file="mothur1.42/corr.axes.xml"/>
+    <tool file="mothur1.42/count.groups.xml"/>
+    <tool file="mothur1.42/count.seqs.xml"/>
+    <tool file="mothur1.42/create.database.xml"/>
+    <tool file="mothur1.42/degap.seqs.xml"/>
+    <tool file="mothur1.42/deunique.seqs.xml"/>
+    <tool file="mothur1.42/deunique.tree.xml"/>
+    <tool file="mothur1.42/dist.seqs.xml"/>
+    <tool file="mothur1.42/dist.shared.xml"/>
+    <tool file="mothur1.42/fastq.info.xml"/>
+    <tool file="mothur1.42/filter.seqs.xml"/>
+    <tool file="mothur1.42/filter.shared.xml"/>
+    <tool file="mothur1.42/get.communitytype.xml"/>
+    <tool file="mothur1.42/get.coremicrobiome.xml"/>
+    <tool file="mothur1.42/get.dists.xml"/>
+    <tool file="mothur1.42/get.groups.xml"/>
+    <tool file="mothur1.42/get.group.xml"/>
+    <tool file="mothur1.42/get.label.xml"/>
+    <tool file="mothur1.42/get.lineage.xml"/>
+    <tool file="mothur1.42/get.mimarkspackage.xml"/>
+    <tool file="mothur1.42/get.otulabels.xml"/>
+    <tool file="mothur1.42/get.otulist.xml"/>
+    <tool file="mothur1.42/get.oturep.xml"/>
+    <tool file="mothur1.42/get.otus.xml"/>
+    <tool file="mothur1.42/get.rabund.xml"/>
+    <tool file="mothur1.42/get.relabund.xml"/>
+    <tool file="mothur1.42/get.sabund.xml"/>
+    <tool file="mothur1.42/get.seqs.xml"/>
+    <tool file="mothur1.42/get.sharedseqs.xml"/>
+    <tool file="mothur1.42/hcluster.xml"/>
+    <tool file="mothur1.42/heatmap.bin.xml"/>
+    <tool file="mothur1.42/heatmap.sim.xml"/>
+    <tool file="mothur1.42/homova.xml"/>
+    <tool file="mothur1.42/indicator.xml"/>
+    <tool file="mothur1.42/lefse.xml"/>
+    <tool file="mothur1.42/libshuff.xml"/>
+    <tool file="mothur1.42/list.otulabels.xml"/>
+    <tool file="mothur1.42/list.seqs.xml"/>
+    <tool file="mothur1.42/make.biom.xml"/>
+    <tool file="mothur1.42/make.contigs.xml"/>
+    <tool file="mothur1.42/make.design.xml"/>
+    <tool file="mothur1.42/make.fastq.xml"/>
+    <tool file="mothur1.42/make.group.xml"/>
+    <tool file="mothur1.42/make.lefse.xml"/>
+    <tool file="mothur1.42/make.lookup.xml"/>
+    <tool file="mothur1.42/make.shared.xml"/>
+    <tool file="mothur1.42/make.sra.xml"/>
+    <tool file="mothur1.42/mantel.xml"/>
+    <tool file="mothur1.42/merge.files.xml"/>
+    <tool file="mothur1.42/merge.groups.xml"/>
+    <tool file="mothur1.42/merge.sfffiles.xml"/>
+    <tool file="mothur1.42/merge.taxsummary.xml"/>
+    <tool file="mothur1.42/metastats.xml"/>
+    <tool file="mothur1.42/mimarks.attributes.xml"/>
+    <tool file="mothur1.42/nmds.xml"/>
+    <tool file="mothur1.42/normalize.shared.xml"/>
+    <tool file="mothur1.42/otu.association.xml"/>
+    <tool file="mothur1.42/otu.hierarchy.xml"/>
+    <tool file="mothur1.42/pairwise.seqs.xml"/>
+    <tool file="mothur1.42/parse.list.xml"/>
+    <tool file="mothur1.42/parsimony.xml"/>
+    <tool file="mothur1.42/pca.xml"/>
+    <tool file="mothur1.42/pcoa.xml"/>
+    <tool file="mothur1.42/pcr.seqs.xml"/>
+    <tool file="mothur1.42/phylo.diversity.xml"/>
+    <tool file="mothur1.42/phylotype.xml"/>
+    <tool file="mothur1.42/pre.cluster.xml"/>
+    <tool file="mothur1.42/primer.design.xml"/>
+    <tool file="mothur1.42/rarefaction.shared.xml"/>
+    <tool file="mothur1.42/rarefaction.single.xml"/>
+    <tool file="mothur1.42/remove.dists.xml"/>
+    <tool file="mothur1.42/remove.groups.xml"/>
+    <tool file="mothur1.42/remove.lineage.xml"/>
+    <tool file="mothur1.42/remove.otulabels.xml"/>
+    <tool file="mothur1.42/remove.otus.xml"/>
+    <tool file="mothur1.42/remove.rare.xml"/>
+    <tool file="mothur1.42/remove.seqs.xml"/>
+    <tool file="mothur1.42/reverse.seqs.xml"/>
+    <tool file="mothur1.42/screen.seqs.xml"/>
+    <tool file="mothur1.42/sens.spec.xml"/>
+    <tool file="mothur1.42/seq.error.xml"/>
+    <tool file="mothur1.42/sffinfo.xml"/>
+    <tool file="mothur1.42/shhh.flows.xml"/>
+    <tool file="mothur1.42/shhh.seqs.xml"/>
+    <tool file="mothur1.42/sort.seqs.xml"/>
+    <tool file="mothur1.42/split.abund.xml"/>
+    <tool file="mothur1.42/split.groups.xml"/>
+    <tool file="mothur1.42/sub.sample.xml"/>
+    <tool file="mothur1.42/sub.summary.xml"/>
+    <tool file="mothur1.42/summary.qual.xml"/>
+    <tool file="mothur1.42/summary.seqs.xml"/>
+    <tool file="mothur1.42/summary.shared.xml"/>
+    <tool file="mothur1.42/summary.single.xml"/>
+    <tool file="mothur1.42/summary.tax.xml"/>
+    <tool file="mothur1.42/tree.shared.xml"/>
+    <tool file="mothur1.42/trim.flows.xml"/>
+    <tool file="mothur1.42/trim.seqs.xml"/>
+    <tool file="mothur1.42/unifrac.unweighted.xml"/>
+    <tool file="mothur1.42/unifrac.weighted.xml"/>
+    <tool file="mothur1.42/unique.seqs.xml"/>
+    <tool file="mothur1.42/venn.xml"/>
+</section>
+  
+  <section name="NGS: QIIME" id="qiime">
+    <tool file="qiime/align_seqs.xml"/>
+    <tool file="qiime/alpha_diversity.xml"/>
+    <tool file="qiime/alpha_rarefaction.xml"/>
+    <tool file="qiime/assign_taxonomy.xml"/>
+    <tool file="qiime/beta_diversity_through_plots.xml"/>
+    <tool file="qiime/beta_diversity.xml"/>
+    <tool file="qiime/compare_categories.xml"/>
+    <tool file="qiime/core_diversity_analyses.xml"/>
+    <tool file="qiime/count_seqs.xml"/>
+    <tool file="qiime/extract_barcodes.xml"/>
+    <tool file="qiime/filter_alignment.xml"/>
+    <tool file="qiime/filter_fasta.xml"/>
+    <tool file="qiime/filter_otus_from_otu_table.xml"/>
+    <tool file="qiime/filter_samples_from_otu_table.xml"/>
+    <tool file="qiime/filter_taxa_from_otu_table.xml"/>
+    <tool file="qiime/identify_chimeric_seqs.xml"/>
+    <tool file="qiime/jackknifed_beta_diversity.xml"/>
+    <tool file="qiime/make_emperor.xml"/>
+    <tool file="qiime/make_otu_heatmap.xml"/>
+    <tool file="qiime/make_otu_network.xml"/>
+    <tool file="qiime/make_otu_table.xml"/>
+    <tool file="qiime/make_phylogeny.xml"/>
+    <tool file="qiime/multiple_join_paired_ends.xml"/>
+    <tool file="qiime/multiple_split_libraries_fastq.xml"/>
+    <tool file="qiime/pick_closed_reference_otus.xml"/>
+    <tool file="qiime/pick_open_reference_otus.xml"/>
+    <tool file="qiime/pick_otus.xml"/>
+    <tool file="qiime/pick_rep_set.xml"/>
+    <tool file="qiime/plot_taxa_summary.xml"/>
+    <tool file="qiime/split_libraries_fastq.xml"/>
+    <tool file="qiime/split_libraries.xml"/>
+    <tool file="qiime/summarize_taxa_through_plots.xml"/>
+    <tool file="qiime/summarize_taxa.xml"/>
+    <tool file="qiime/upgma_cluster.xml"/>
+    <tool file="qiime/validate_mapping_file.xml"/>
+  </section>
+  <section name="NGS: QIIME2" id="qiime2">
+    <tool file="qiime2/merge_feature_table_and_taxonomy.xml"/>
+    <tool file="qiime2/qiime_alignment_mafft.xml"/>
+    <tool file="qiime2/qiime_alignment_mask.xml"/>
+    <tool file="qiime2/qiime_citation.xml"/>
+    <tool file="qiime2/qiime_composition_add-pseudocount.xml"/>
+    <tool file="qiime2/qiime_composition_ancom.xml"/>
+    <tool file="qiime2/qiime_cutadapt_demux-paired.xml"/>
+    <tool file="qiime2/qiime_cutadapt_demux-single.xml"/>
+    <tool file="qiime2/qiime_cutadapt_trim-paired.xml"/>
+    <tool file="qiime2/qiime_cutadapt_trim-single.xml"/>
+    <tool file="qiime2/qiime_dada2_denoise-paired.xml"/>
+    <tool file="qiime2/qiime_dada2_denoise-pyro.xml"/>
+    <tool file="qiime2/qiime_dada2_denoise-single.xml"/>
+    <tool file="qiime2/qiime_deblur_denoise-16S.xml"/>
+    <tool file="qiime2/qiime_deblur_denoise-other.xml"/>
+    <tool file="qiime2/qiime_deblur_visualize-stats.xml"/>
+    <tool file="qiime2/qiime_demux_emp-paired.xml"/>
+    <tool file="qiime2/qiime_demux_emp-single.xml"/>
+    <tool file="qiime2/qiime_demux_summarize.xml"/>
+    <tool file="qiime2/qiime_diversity_alpha-correlation.xml"/>
+    <tool file="qiime2/qiime_diversity_alpha-group-significance.xml"/>
+    <tool file="qiime2/qiime_diversity_alpha-phylogenetic.xml"/>
+    <tool file="qiime2/qiime_diversity_alpha-rarefaction.xml"/>
+    <tool file="qiime2/qiime_diversity_alpha.xml"/>
+    <tool file="qiime2/qiime_diversity_beta-group-significance.xml"/>
+    <tool file="qiime2/qiime_diversity_beta-phylogenetic-alt.xml"/>
+    <tool file="qiime2/qiime_diversity_beta-phylogenetic.xml"/>
+    <tool file="qiime2/qiime_diversity_beta-rarefaction.xml"/>
+    <tool file="qiime2/qiime_diversity_beta.xml"/>
+    <tool file="qiime2/qiime_diversity_bioenv.xml"/>
+    <tool file="qiime2/qiime_diversity_core-metrics-phylogenetic.xml"/>
+    <tool file="qiime2/qiime_diversity_core-metrics.xml"/>
+    <tool file="qiime2/qiime_diversity_filter-distance-matrix.xml"/>
+    <tool file="qiime2/qiime_diversity_mantel.xml"/>
+    <tool file="qiime2/qiime_diversity_pcoa.xml"/>
+    <tool file="qiime2/qiime_diversity_procrustes-analysis.xml"/>
+    <tool file="qiime2/qiime_emperor_plot.xml"/>
+    <tool file="qiime2/qiime_emperor_procrustes-plot.xml"/>
+    <tool file="qiime2/qiime_feature-classifier_classify-consensus-blast.xml"/>
+    <tool file="qiime2/qiime_feature-classifier_classify-consensus-vsearch.xml"/>
+    <tool file="qiime2/qiime_feature-classifier_classify-sklearn.xml"/>
+    <tool file="qiime2/qiime_feature-classifier_extract-reads.xml"/>
+    <tool file="qiime2/qiime_feature-classifier_fit-classifier-naive-bayes.xml"/>
+    <tool file="qiime2/qiime_feature-classifier_fit-classifier-sklearn.xml"/>
+    <tool file="qiime2/qiime_feature-table_core-features.xml"/>
+    <tool file="qiime2/qiime_feature-table_filter-features.xml"/>
+    <tool file="qiime2/qiime_feature-table_filter-samples.xml"/>
+    <tool file="qiime2/qiime_feature-table_filter-seqs.xml"/>
+    <tool file="qiime2/qiime_feature-table_group.xml"/>
+    <tool file="qiime2/qiime_feature-table_heatmap.xml"/>
+    <tool file="qiime2/qiime_feature-table_merge-seqs.xml"/>
+    <tool file="qiime2/qiime_feature-table_merge-taxa.xml"/>
+    <tool file="qiime2/qiime_feature-table_merge.xml"/>
+    <tool file="qiime2/qiime_feature-table_presence-absence.xml"/>
+    <tool file="qiime2/qiime_feature-table_rarefy.xml"/>
+    <tool file="qiime2/qiime_feature-table_relative-frequency.xml"/>
+    <tool file="qiime2/qiime_feature-table_subsample.xml"/>
+    <tool file="qiime2/qiime_feature-table_summarize.xml"/>
+    <tool file="qiime2/qiime_feature-table_tabulate-seqs.xml"/>
+    <tool file="qiime2/qiime_gneiss_add-pseudocount.xml"/>
+    <tool file="qiime2/qiime_gneiss_assign-ids.xml"/>
+    <tool file="qiime2/qiime_gneiss_balance-taxonomy.xml"/>
+    <tool file="qiime2/qiime_gneiss_correlation-clustering.xml"/>
+    <tool file="qiime2/qiime_gneiss_dendrogram-heatmap.xml"/>
+    <tool file="qiime2/qiime_gneiss_gradient-clustering.xml"/>
+    <tool file="qiime2/qiime_gneiss_ilr-transform.xml"/>
+    <tool file="qiime2/qiime_gneiss_lme-regression.xml"/>
+    <tool file="qiime2/qiime_gneiss_ols-regression.xml"/>
+    <tool file="qiime2/qiime_longitudinal_first-differences.xml"/>
+    <tool file="qiime2/qiime_longitudinal_first-distances.xml"/>
+    <tool file="qiime2/qiime_longitudinal_linear-mixed-effects.xml"/>
+    <tool file="qiime2/qiime_longitudinal_nmit.xml"/>
+    <tool file="qiime2/qiime_longitudinal_pairwise-differences.xml"/>
+    <tool file="qiime2/qiime_longitudinal_pairwise-distances.xml"/>
+    <tool file="qiime2/qiime_longitudinal_volatility.xml"/>
+    <tool file="qiime2/qiime_metadata_distance-matrix.xml"/>
+    <tool file="qiime2/qiime_metadata_tabulate.xml"/>
+    <tool file="qiime2/qiime_phylogeny_align_to_tree_mafft_fasttree.xml"/>
+    <tool file="qiime2/qiime_phylogeny_fasttree.xml"/>
+    <tool file="qiime2/qiime_phylogeny_filter-table.xml"/>
+    <tool file="qiime2/qiime_phylogeny_midpoint-root.xml"/>
+    <tool file="qiime2/qiime_quality-control_evaluate-composition.xml"/>
+    <tool file="qiime2/qiime_quality-control_evaluate-seqs.xml"/>
+    <tool file="qiime2/qiime_quality-control_exclude-seqs.xml"/>
+    <tool file="qiime2/qiime_quality-filter_q-score-joined.xml"/>
+    <tool file="qiime2/qiime_quality-filter_q-score.xml"/>
+    <tool file="qiime2/qiime_sample-classifier_classify-samples.xml"/>
+    <tool file="qiime2/qiime_sample-classifier_maturity-index.xml"/>
+    <tool file="qiime2/qiime_sample-classifier_regress-samples.xml"/>
+    <tool file="qiime2/qiime_taxa_barplot.xml"/>
+    <tool file="qiime2/qiime_taxa_collapse.xml"/>
+    <tool file="qiime2/qiime_taxa_filter-seqs.xml"/>
+    <tool file="qiime2/qiime_taxa_filter-table.xml"/>
+    <tool file="qiime2/qiime_tools_export_collection.xml"/>
+    <tool file="qiime2/qiime_tools_export_paired_collection.xml"/>
+    <tool file="qiime2/qiime_tools_export.xml"/>
+    <tool file="qiime2/qiime_tools_import.xml"/>
+    <tool file="qiime2/qiime_vsearch_cluster-features-closed-reference.xml"/>
+    <tool file="qiime2/qiime_vsearch_cluster-features-de-novo.xml"/>
+    <tool file="qiime2/qiime_vsearch_cluster-features-open-reference.xml"/>
+    <tool file="qiime2/qiime_vsearch_dereplicate-sequences.xml"/>
+    <tool file="qiime2/qiime_vsearch_join-pairs.xml"/>
+    <tool file="qiime2/qiime_vsearch_uchime-denovo.xml"/>
+    <tool file="qiime2/qiime_vsearch_uchime-ref.xml"/>
+  </section>
+  <section name="NGS: PICRUST" id="picrust">
+    <tool file="picrust/categorize_by_function.xml"/>
+    <tool file="picrust/metagenome_contributions.xml"/>
+    <tool file="picrust/normalize_by_copy_number.xml"/>
+    <tool file="picrust/predict_metagenomes.xml"/>
+  </section>
+  <section name="NGS: Parallel-Meta" id="parallel_meta">
+    <tool file="parallel_meta/parallel_meta_pipeline.xml"/>
+  </section>
+  <section name="NGS: BIOM" id="biom">
+    <tool file="biom/biom_add_metadata.xml"/>
+    <tool file="biom/biom_summarize_table.xml"/>
+    <tool file="biom/biom_convert.xml"/>
+  </section>
+  <section name="NGS: DADA2" id="dada2">
+    <tool file='dada2/dada2-dada.xml'/>
+    <tool file='dada2/dada2-dereplicate-fastq.xml'/>
+    <tool file='dada2/dada2-filter-and-trim.xml'/>
+    <tool file='dada2/dada2-learn-errors.xml'/>
+    <tool file='dada2/dada2-merge-pairs.xml'/>
+  </section>
+  <section name="NGS: HOMER" id="homer">
+    <tool file="homer/makeTagDirectory.xml"/>
+    <tool file="homer/makeUCSCfile.xml"/>
+    <tool file="homer/findPeaks.xml"/>
+    <tool file="homer/findMotifsGenome.xml"/>
+    <tool file="homer/annotatePeaks.xml"/>
+    <tool file="homer/getDifferentialPeaksReplicates.xml"/>
+  </section>
+  <section name="NGS: TReNA" id="trena" organization_include="bdds,nihcommons">
+    <tool file="trena/getTFBSCountsInPromoters.xml"/>
+    <tool file="trena/makeTrnFromPromoterCountsAndExpression.xml"/>
+  </section>
+
+  <section name="NGS: Peak Calling" id="peak_calling" organization_exclude="haky,cvrg">
+    <tool file="peak_calling/macs_wrapper.xml" />
+    <tool file="peak_calling/macs2/macs2_callpeak.xml" />
+    <tool file="peak_calling/sicer_wrapper.xml" />
+    <tool file="peak_calling/ccat_wrapper.xml" />
+    <tool file="genetrack/genetrack_indexer.xml" />
+    <tool file="genetrack/genetrack_peak_prediction.xml" />
+  </section>
+
+  <section name="NGS: SAM Tools" id="samtools" organization_exclude="haky,cvrg">
+    <tool file="samtools/sam_bitwise_flag_filter.xml" />
+    <tool file="samtools/sam2interval.xml" />
+    <tool file="samtools/sam_to_bam.xml" />
+    <tool file="samtools/bam_to_sam.xml" />
+    <tool file="samtools/samtools_filter_bam.xml" />
+    <tool file="samtools/samtools_merge.xml" />
+    <tool file="samtools/samtools_mpileup.xml" />
+    <tool file="samtools/samtools_merge_bags.xml" organization_include="bdds,nihcommons"/>
+    <tool file="samtools/samtools_mpileup_swift.xml" />
+    <tool file="samtools/sam_pileup.xml" />
+    <tool file="samtools/pileup_parser.xml" />
+    <tool file="samtools/pileup_interval.xml" />
+    <tool file="samtools/samtools_flagstat.xml" />
+    <tool file="samtools/samtools_rmdup.xml" />
+    <tool file="samtools/samtools_fixmate.xml" />
+    <tool file="samtools/samtools_slice_bam.xml" />
+    <tool file="samtools/samtools_sort.xml" />
+    <tool file="samtools/samtools_rocksort.xml" />
+    <tool file="samtools/samtools_varfilter.xml" />
+    <tool file="samtools/samtools_index.xml" />
+    <tool file="samtools/samtools_bam_header.xml" />
+    <tool file="bcftools/bcftools_view.xml"/>
+    <tool file="bcftools/bcftools_call.xml"/>
+    <tool file="bcftools/bcftools_index.xml"/>
+    <tool file="bcftools/bcftools_concat.xml"/>
+    <tool file="bcftools/bcftools_norm.xml"/>
+    <tool file="bcftools/bcftools_filter.xml"/>
+    <tool file="bcftools/bcftools_isec.xml"/>
+    <tool file="bcftools/bcftools_annotate.xml" />
+  </section>
+
+  <section name="NGS: SAM Tools (1.8)" id="samtools1.8" organization_exclude="haky,cvrg">
+    <tool file="samtools-1.8/sam_bitwise_flag_filter.xml" />
+    <tool file="samtools-1.8/sam2interval.xml" />
+    <tool file="samtools-1.8/sam_to_bam.xml" />
+    <tool file="samtools-1.8/bam_to_sam.xml" />
+    <tool file="samtools-1.8/samtools_filter_bam.xml" />
+    <tool file="samtools-1.8/samtools_merge.xml" />
+    <tool file="samtools-1.8/samtools_mpileup.xml" />
+    <tool file="samtools-1.8/samtools_mpileup_swift.xml" />
+    <tool file="samtools-1.8/sam_pileup.xml" />
+    <tool file="samtools-1.8/pileup_parser.xml" />
+    <tool file="samtools-1.8/pileup_interval.xml" />
+    <tool file="samtools-1.8/samtools_flagstat.xml" />
+    <tool file="samtools-1.8/samtools_rmdup.xml" />
+    <tool file="samtools-1.8/samtools_fixmate.xml" />
+    <tool file="samtools-1.8/samtools_slice_bam.xml" />
+    <tool file="samtools-1.8/samtools_sort.xml" />
+    <tool file="samtools-1.8/samtools_rocksort.xml" />
+    <tool file="samtools-1.8/samtools_varfilter.xml" />
+    <tool file="samtools-1.8/samtools_index.xml" />
+    <tool file="samtools-1.8/samtools_bam_header.xml" />
+    <tool file="bcftools-1.8/bcftools_view.xml"/>
+    <tool file="bcftools-1.8/bcftools_call.xml"/>
+    <tool file="bcftools-1.8/bcftools_index.xml"/>
+    <tool file="bcftools-1.8/bcftools_concat.xml"/>
+    <tool file="bcftools-1.8/bcftools_norm.xml"/>
+    <tool file="bcftools-1.8/bcftools_filter.xml"/>
+    <tool file="bcftools-1.8/bcftools_isec.xml"/>
+    <tool file="bcftools-1.1/bcftools_cat.xml"/>
+    <tool file="bcftools-1.1/bcftools_merge.xml"/>
+    <tool file="bcftools-1.1/bcftools_stats.xml"/>
+
+  </section>
+
+  <section name="NGS: BAM Tools" id="bamtools" organization_exclude="haky,cvrg">
+    <tool file="bamtools/splitChromosome.xml" />
+    <tool file="sambamba/sambamba_sort.xml" />
+  </section>
+
+  <section name="NGS: SNPiR Tools" id="snpirtools" organization_exclude="haky,cvrg">
+    <tool file="snpir/snpir_convertCoordinates.xml" />
+    <tool file="snpir/snpir_convertVCF.xml" />
+    <tool file="snpir/snpir_filter_mismatch_first6bp.xml" />
+    <tool file="snpir/snpir_filter_intron_near_splicejuncts.xml" />
+    <tool file="snpir/snpir_filter_homopolymer_nucleotides.xml" />
+    <tool file="snpir/snpir_blat_candidates.xml" />
+    <tool file="snpir/extractvcf.xml" />
+  </section>
+
+  <section name="NGS: DeepTools" id="deeptools">
+    <tool file='deeptools/alignmentSieve.xml'/>
+    <tool file='deeptools/bamCompare.xml'/>
+    <tool file='deeptools/bamCoverage.xml'/>
+    <tool file='deeptools/bamPEFragmentSize.xml'/>
+    <tool file='deeptools/bigwigCompare.xml'/>
+    <tool file='deeptools/computeGCBias.xml'/>
+    <tool file='deeptools/computeMatrixOperations.xml'/>
+    <tool file='deeptools/computeMatrix.xml'/>
+    <tool file='deeptools/correctGCBias.xml'/>
+    <tool file='deeptools/estimateReadFiltering.xml'/>
+    <tool file='deeptools/multiBamSummary.xml'/>
+    <tool file='deeptools/multiBigwigSummary.xml'/>
+    <tool file='deeptools/plotCorrelation.xml'/>
+    <tool file='deeptools/plotCoverage.xml'/>
+    <tool file='deeptools/plotEnrichment.xml'/>
+    <tool file='deeptools/plotFingerprint.xml'/>
+    <tool file='deeptools/plotHeatmap.xml'/>
+    <tool file='deeptools/plotPCA.xml'/>
+    <tool file='deeptools/plotProfiler.xml'/>
+  </section>
+
+  <section name="NGS: Picard" id="picard" organization_exclude="haky,cvrg">
+    <label text="Conversion" id="picard_conversion"/>
+    <tool file="picard/picard_FastqToSam.xml" />
+    <tool file="picard/picard_SamToFastq.xml" />
+    
+    <label text="QC/Metrics for sam/bam" id="qcsambam"/>
+    <tool file="picard/picard_BamIndexStats.xml" />
+    <tool file="picard/rgPicardASMetrics.xml" />
+    <tool file="picard/rgPicardGCBiasMetrics.xml" />
+    <tool file="picard/rgPicardLibComplexity.xml" />
+    <tool file="picard/rgPicardInsertSize.xml" />
+    <tool file="picard/rgPicardHsMetrics.xml" />
+    <tool file="picard/picard_CollectQualityYieldMetrics.xml" />
+    <tool file="picard/rgPicardCollectWgsMetrics.xml" />
+    <tool file="picard/picard_CollectRnaSeqMetrics.xml" />
+
+    <label text="bam/sam Cleaning" id="picard-clean" />
+    <tool file="picard/picard_AddOrReplaceReadGroups.xml" />
+    <tool file="picard/picard_ReorderSam.xml" />
+    <tool file="picard/picard_ReplaceSamHeader.xml" />
+    <tool file="picard/rgPicardFixMate.xml" />
+    <tool file="picard/rgPicardMarkDups.xml" />
+    <tool file="picard/picard_SamFormatConverter.xml" />
+    <tool file="picard/picard_merge.xml" />
+    <tool file="picard/picard_DownsampleSam.xml" />
+
+    <tool file="picard/picard_BuildBamIndex.xml" />
+    <tool file="picard/picard_SortSam.xml" />
+    <tool file="picard/picard_CleanSam.xml" />
+  </section>
+
+  <section name="NGS: Picard (1.128)" id="picard1.128" organization_exclude="haky,cvrg">
+    <label text="Conversion" id="picard_conversion1.128"/>
+    <tool file="picard-1.128/picard_FastqToSam.xml" />
+    <tool file="picard-1.128/picard_SamToFastq.xml" />
+
+    <label text="QC/Metrics for sam/bam" id="qcsambam1.128"/>
+    <tool file="picard-1.128/picard_BamIndexStats.xml" />
+    <tool file="picard-1.128/rgPicardASMetrics.xml" />
+    <tool file="picard-1.128/rgPicardGCBiasMetrics.xml" />
+    <tool file="picard-1.128/rgPicardLibComplexity.xml" />
+    <tool file="picard-1.128/rgPicardInsertSize.xml" />
+    <tool file="picard-1.128/rgPicardHsMetrics.xml" />
+    <tool file="picard-1.128/picard_CollectQualityYieldMetrics.xml" />
+    <tool file="picard-1.128/rgPicardCollectWgsMetrics.xml" />
+    <tool file="picard-1.128/picard_CollectRnaSeqMetrics.xml" />
+
+    <label text="bam/sam Cleaning" id="picard-clean1.128" />
+    <tool file="picard-1.128/picard_AddOrReplaceReadGroups.xml" />
+    <tool file="picard-1.128/picard_ReorderSam.xml" />
+    <tool file="picard-1.128/picard_ReplaceSamHeader.xml" />
+    <tool file="picard-1.128/rgPicardFixMate.xml" />
+    <tool file="picard-1.128/rgPicardMarkDups.xml" />
+    <tool file="picard-1.128/picard_SamFormatConverter.xml" />
+    <tool file="picard-1.128/picard_merge.xml" />
+    <tool file="picard-1.128/picard_DownsampleSam.xml" />
+
+    <tool file="picard-1.128/picard_BuildBamIndex.xml" />
+    <tool file="picard-1.128/picard_SortSam.xml" />
+    <tool file="picard-1.128/picard_CleanSam.xml" />
+  </section>
+
+  <section name="NGS: Picard (2.0.1)" id="picard2.0.1" organization_exclude="haky,cvrg">
+    <label text="Conversion" id="picard_conversion2.0.1"/>
+    <tool file="picard-2.0.1/picard_FastqToSam.xml" />
+    <tool file="picard-2.0.1/picard_SamToFastq.xml" />
+
+    <label text="QC/Metrics for sam/bam" id="qcsambam2.0.1"/>
+    <tool file="picard-2.0.1/picard_BamIndexStats.xml" />
+    <tool file="picard-2.0.1/rgPicardASMetrics.xml" />
+    <tool file="picard-2.0.1/rgPicardGCBiasMetrics.xml" />
+    <tool file="picard-2.0.1/rgPicardLibComplexity.xml" />
+    <tool file="picard-2.0.1/rgPicardInsertSize.xml" />
+    <tool file="picard-2.0.1/rgPicardHsMetrics.xml" />
+    <tool file="picard-2.0.1/picard_CollectQualityYieldMetrics.xml" />
+    <tool file="picard-2.0.1/rgPicardCollectWgsMetrics.xml" />
+    <tool file="picard-2.0.1/picard_CollectRnaSeqMetrics.xml" />
+
+    <label text="bam/sam Cleaning" id="picard-clean2.0.1" />
+    <tool file="picard-2.0.1/picard_AddOrReplaceReadGroups.xml" />
+    <tool file="picard-2.0.1/picard_ReorderSam.xml" />
+    <tool file="picard-2.0.1/picard_ReplaceSamHeader.xml" />
+    <tool file="picard-2.0.1/rgPicardFixMate.xml" />
+    <tool file="picard-2.0.1/rgPicardMarkDups.xml" />
+    <tool file="picard-2.0.1/picard_SamFormatConverter.xml" />
+    <tool file="picard-2.0.1/picard_merge.xml" />
+    <tool file="picard-2.0.1/picard_DownsampleSam.xml" />
+
+    <tool file="picard-2.0.1/picard_BuildBamIndex.xml" />
+    <tool file="picard-2.0.1/picard_SortSam.xml" />
+    <tool file="picard-2.0.1/picard_CleanSam.xml" />
+  </section>
+
+  <section name="NGS: Picard (2.7.1)" id="picard2.7.1" organization_exclude="haky,cvrg">
+    <label text="Conversion" id="picard_conversion2.7.1"/>
+    <tool file="picard-2.7.1/picard_FastqToSam.xml" />
+    <tool file="picard-2.7.1/picard_SamToFastq.xml" />
+
+    <label text="QC/Metrics for sam/bam" id="qcsambam2.7.1"/>
+    <tool file="picard-2.7.1/picard_BamIndexStats.xml" />
+    <tool file="picard-2.7.1/rgPicardASMetrics.xml" />
+    <tool file="picard-2.7.1/rgPicardGCBiasMetrics.xml" />
+    <tool file="picard-2.7.1/rgPicardLibComplexity.xml" />
+    <tool file="picard-2.7.1/rgPicardInsertSize.xml" />
+    <tool file="picard-2.7.1/rgPicardHsMetrics.xml" />
+    <tool file="picard-2.7.1/picard_CollectQualityYieldMetrics.xml" />
+    <tool file="picard-2.7.1/rgPicardCollectWgsMetrics.xml" />
+    <tool file="picard-2.7.1/picard_CollectRnaSeqMetrics.xml" />
+    <tool file="picard-2.7.1/picard_CollectSequencingArtifactMetrics.xml" />
+
+    <label text="bam/sam Cleaning" id="picard-clean2.7.1" />
+    <tool file="picard-2.7.1/picard_AddOrReplaceReadGroups.xml" />
+    <tool file="picard-2.7.1/picard_ReorderSam.xml" />
+    <tool file="picard-2.7.1/picard_ReplaceSamHeader.xml" />
+    <tool file="picard-2.7.1/rgPicardFixMate.xml" />
+    <tool file="picard-2.7.1/rgPicardMarkDups.xml" />
+    <tool file="picard-2.7.1/picard_SamFormatConverter.xml" />
+    <tool file="picard-2.7.1/picard_merge.xml" />
+    <tool file="picard-2.7.1/picard_DownsampleSam.xml" />
+
+    <tool file="picard-2.7.1/picard_BuildBamIndex.xml" />
+    <tool file="picard-2.7.1/picard_SortSam.xml" />
+    <tool file="picard-2.7.1/picard_CleanSam.xml" />
+    <tool file="picard-2.7.1/picard_MergeVCFs.xml" />
+  </section>
+
+  <section name="NGS: Indel Analysis" id="indel_analysis" organization_exclude="haky,cvrg">
+    <tool file="indels/sam_indel_filter.xml" />
+    <tool file="indels/indel_sam2interval.xml" />
+    <tool file="indels/indel_table.xml" />
+    <tool file="indels/indel_analysis.xml" />
+  </section>
+
+  <section name="NGS: GATK Tools" id="gatk" organization_exclude="haky,cvrg">
+    <label text="Alignment Utilities" id="gatk_bam_utilities"/>
+    <tool file="gatk/depth_of_coverage.xml" />
+    <tool file="gatk/print_reads.xml" />
+    
+    <label text="Realignment" id="gatk_realignment" />
+    <tool file="gatk/realigner_target_creator.xml" />
+    <tool file="gatk/indel_realigner.xml" />
+    
+    <label text="Base Recalibration" id="gatk_recalibration" />
+    <tool file="gatk/count_covariates.xml" />
+    <tool file="gatk/table_recalibration.xml" />
+    <tool file="gatk/analyze_covariates.xml" />
+    
+    <label text="Genotyping" id="gatk_genotyping" />
+    <tool file="gatk/unified_genotyper.xml" />
+    <tool file="gatk/unified_genotyper_DirectoryInput.xml" />
+    
+    <label text="Annotation" id="gatk_annotation" />
+    <tool file="gatk/variant_annotator.xml" />
+    
+    <label text="Filtration" id="gatk_filtration" />
+    <tool file="gatk/variant_filtration.xml" />
+    <tool file="gatk/variant_select.xml" />
+    
+    <label text="Variant Quality Score Recalibration" id="gatk_variant_quality_score_recalibration" />
+    <tool file="gatk/variant_recalibrator.xml" />
+    <tool file="gatk/variant_apply_recalibration.xml" />
+    
+    <label text="Variant Utilities" id="gatk_variant_utilities"/>
+    <tool file="gatk/variants_validate.xml" />
+    <tool file="gatk/variant_eval.xml" />
+    <tool file="gatk/variant_combine.xml" />
+  </section>
+
+  <section name="NGS: GATK2 Tools" id="gatk2"  organization_exclude="haky,cvrg">
+    <label text="Alignment Utilities" id="gatk2_bam_utilities"/>
+    <tool file="gatk2/gatk2_depth_of_coverage.xml" />
+    <tool file="gatk2/gatk2_reduce_reads.xml" />
+    
+    <label text="Realignment" id="gatk2_realignment" />
+    <tool file="gatk2/gatk2_realigner_target_creator.xml" />
+    <tool file="gatk2/gatk2_indel_realigner.xml" />
+    
+    <label text="Base Recalibration" id="gatk2_recalibration" />
+    <tool file="gatk2/gatk2_base_recalibrator.xml" />
+    <tool file="gatk2/gatk2_print_reads.xml" />
+<!--    <tool file="gatk2/analyze_covariates.xml" /> -->
+    
+    <label text="Genotyping" id="gatk2_genotyping" />
+    <tool file="gatk2/gatk2_unified_genotyper.xml" />
+    <tool file="gatk2/gatk2_unified_genotyper_DirectoryInput.xml" />
+    <tool file="gatk2/gatk2_haplotype_caller.xml" />    
+    
+    <label text="Annotation" id="gatk2_annotation" />
+    <tool file="gatk2/gatk2_variant_annotator.xml" />
+    
+    <label text="Filtration" id="gatk2_filtration" />
+    <tool file="gatk2/gatk2_variant_filtration.xml" />
+    <tool file="gatk2/gatk2_variant_select.xml" />
+    
+    <label text="Variant Quality Score Recalibration" id="gatk2_variant_quality_score_recalibration" />
+    <tool file="gatk2/gatk2_variant_recalibrator.xml" />
+    <tool file="gatk2/gatk2_variant_apply_recalibration.xml" />
+    
+    <label text="Variant Utilities" id="gatk2_variant_utilities"/>
+    <tool file="gatk2/gatk2_variants_validate.xml" />
+    <tool file="gatk2/gatk2_variant_eval.xml" />
+    <tool file="gatk2/gatk2_variant_combine.xml" />
+  </section>
+
+  <section name="NGS: GATK3 Tools" id="gatk3" organization_exclude="haky,cvrg">
+    <label text="Alignment Utilities" id="gatk3_bam_utilities"/>
+    <tool file="gatk3/gatk3_depth_of_coverage.xml" />
+    <tool file="gatk3/gatk3_reduce_reads.xml" />
+    <tool file="gatk3/gatk3_callable_loci.xml" />
+    <tool file="gatk3/gatk3_diagnose_targets.xml" />
+    <tool file="gatk3/gatk3_VariantsToTable.xml" />
+
+    <label text="Realignment" id="gatk3_realignment" />
+    <tool file="gatk3/gatk3_realigner_target_creator.xml" />
+    <tool file="gatk3/gatk3_indel_realigner.xml" />
+    <tool file="gatk3/gatk3_indel_realigner_for_mutect.xml" />
+
+    <label text="Base Recalibration" id="gatk3_recalibration" />
+    <tool file="gatk3/gatk3_base_recalibrator.xml" />
+    <tool file="gatk3/gatk3_print_reads.xml" />
+    <tool file="gatk3/gatk3_analyze_covariates.xml" />
+
+    <label text="Genotyping" id="gatk3_genotyping" />
+    <tool file="gatk3/gatk3_unified_genotyper.xml" />
+    <tool file="gatk3/gatk3_unified_genotyper_DirectoryInput.xml" />
+    <tool file="gatk3/gatk3_haplotype_caller.xml" />
+    <tool file="gatk3/gatk3_haplotype_caller_swift.xml" />
+
+    <label text="Annotation" id="gatk3_annotation" />
+    <tool file="gatk3/gatk3_variant_annotator.xml" />
+
+    <label text="Filtration" id="gatk3_filtration" />
+    <tool file="gatk3/gatk3_variant_filtration.xml" />
+    <tool file="gatk3/gatk3_variant_select.xml" />
+
+    <label text="Variant Quality Score Recalibration" id="gatk3_variant_quality_score_recalibration" />
+    <tool file="gatk3/gatk3_variant_recalibrator.xml" />
+    <tool file="gatk3/gatk3_variant_apply_recalibration.xml" />
+
+    <label text="Variant Utilities" id="gatk3_variant_utilities"/>
+    <tool file="gatk3/gatk3_variants_validate.xml" />
+    <tool file="gatk3/gatk3_variant_eval.xml" />
+    <tool file="gatk3/gatk3_variant_combine.xml" />
+    <tool file="gatk3/gatk3_genotypegvcfs.xml" />
+    <tool file="gatk3/gatk3_gvcf_combine.xml" />
+    <tool file="gatk3/gatk3_phase_by_transmission.xml" />
+
+    <label text="RNA-seq Utilities" id="gatk3_rnaseq_utilities"/>
+    <tool file="gatk3/gatk3_SplitNCigarReads.xml" />
+  </section>
+
+  <section name="NGS: GATK3 Tools (3.3)" id="gatk3.3" organization_exclude="haky,cvrg">
+    <label text="Alignment Utilities" id="gatk3.3_bam_utilities"/>
+    <tool file="gatk3.3/gatk3_depth_of_coverage.xml" />
+    <tool file="gatk3.3/gatk3_reduce_reads.xml" />
+    <tool file="gatk3.3/gatk3_callable_loci.xml" />
+    <tool file="gatk3.3/gatk3_diagnose_targets.xml" />
+    <tool file="gatk3.3/gatk3_VariantsToTable.xml" />
+
+    <label text="Realignment" id="gatk3.3_realignment" />
+    <tool file="gatk3.3/gatk3_realigner_target_creator.xml" />
+    <tool file="gatk3.3/gatk3_indel_realigner.xml" />
+    <tool file="gatk3.3/gatk3_indel_realigner_for_mutect.xml" />
+
+    <label text="Base Recalibration" id="gatk3.3_recalibration" />
+    <tool file="gatk3.3/gatk3_base_recalibrator.xml" />
+    <tool file="gatk3.3/gatk3_print_reads.xml" />
+    <tool file="gatk3.3/gatk3_analyze_covariates.xml" />
+
+    <label text="Genotyping" id="gatk3.3_genotyping" />
+    <tool file="gatk3.3/gatk3_unified_genotyper.xml" />
+    <tool file="gatk3.3/gatk3_unified_genotyper_DirectoryInput.xml" />
+    <tool file="gatk3.3/gatk3_haplotype_caller.xml" />
+    <tool file="gatk3.3/gatk3_haplotype_caller_swift.xml" />
+
+    <label text="Annotation" id="gatk3.3_annotation" />
+    <tool file="gatk3.3/gatk3_variant_annotator.xml" />
+
+    <label text="Filtration" id="gatk3.3_filtration" />
+    <tool file="gatk3.3/gatk3_variant_filtration.xml" />
+    <tool file="gatk3.3/gatk3_variant_select.xml" />
+
+    <label text="Variant Quality Score Recalibration" id="gatk3.3_variant_quality_score_recalibration" />
+    <tool file="gatk3.3/gatk3_variant_recalibrator.xml" />
+    <tool file="gatk3.3/gatk3_variant_apply_recalibration.xml" />
+
+    <label text="Variant Utilities" id="gatk3.3_variant_utilities"/>
+    <tool file="gatk3.3/gatk3_variants_validate.xml" />
+    <tool file="gatk3.3/gatk3_variant_eval.xml" />
+    <tool file="gatk3.3/gatk3_variant_combine.xml" />
+    <tool file="gatk3.3/gatk3_genotypegvcfs.xml" />
+    <tool file="gatk3.3/gatk3_gvcf_combine.xml" />
+    <tool file="gatk3.3/gatk3_phase_by_transmission.xml" />
+
+    <label text="RNA-seq Utilities" id="gatk3.3_rnaseq_utilities"/>
+    <tool file="gatk3.3/gatk3_SplitNCigarReads.xml" />
+  </section>
+
+  <section name="NGS: GATK3 Tools (3.6)" id="gatk3.6" organization_exclude="haky,cvrg">
+    <label text="Alignment Utilities" id="gatk3.6_bam_utilities"/>
+    <tool file="gatk3.6/gatk3_depth_of_coverage.xml" />
+    <tool file="gatk3.6/gatk3_reduce_reads.xml" />
+    <tool file="gatk3.6/gatk3_callable_loci.xml" />
+    <tool file="gatk3.6/gatk3_diagnose_targets.xml" />
+    <tool file="gatk3.6/gatk3_VariantsToTable.xml" />
+
+    <label text="Realignment" id="gatk3.6_realignment" />
+    <tool file="gatk3.6/gatk3_realigner_target_creator.xml" />
+    <tool file="gatk3.6/gatk3_indel_realigner.xml" />
+    <tool file="gatk3.6/gatk3_indel_realigner_for_mutect.xml" />
+
+    <label text="Base Recalibration" id="gatk3.6_recalibration" />
+    <tool file="gatk3.6/gatk3_base_recalibrator.xml" />
+    <tool file="gatk3.6/gatk3_print_reads.xml" />
+    <tool file="gatk3.6/gatk3_analyze_covariates.xml" />
+
+    <label text="Genotyping" id="gatk3.6_genotyping" />
+    <tool file="gatk3.6/gatk3_unified_genotyper.xml" />
+    <tool file="gatk3.6/gatk3_unified_genotyper_DirectoryInput.xml" />
+    <tool file="gatk3.6/gatk3_haplotype_caller.xml" />
+    <tool file="gatk3.6/gatk3_haplotype_caller_swift.xml" />
+
+    <label text="Annotation" id="gatk3.6_annotation" />
+    <tool file="gatk3.6/gatk3_variant_annotator.xml" />
+
+    <label text="Filtration" id="gatk3.6_filtration" />
+    <tool file="gatk3.6/gatk3_variant_filtration.xml" />
+    <tool file="gatk3.6/gatk3_variant_select.xml" />
+
+    <label text="Variant Quality Score Recalibration" id="gatk3.6_variant_quality_score_recalibration" />
+    <tool file="gatk3.6/gatk3_variant_recalibrator.xml" />
+    <tool file="gatk3.6/gatk3_variant_apply_recalibration.xml" />
+
+    <label text="Variant Utilities" id="gatk3.6_variant_utilities"/>
+    <tool file="gatk3.6/gatk3_variants_validate.xml" />
+    <tool file="gatk3.6/gatk3_variant_eval.xml" />
+    <tool file="gatk3.6/gatk3_variant_combine.xml" />
+    <tool file="gatk3.6/gatk3_genotypegvcfs.xml" />
+    <tool file="gatk3.6/gatk3_gvcf_combine.xml" />
+    <tool file="gatk3.6/gatk3_phase_by_transmission.xml" />
+
+    <label text="RNA-seq Utilities" id="gatk3.6_rnaseq_utilities"/>
+    <tool file="gatk3.6/gatk3_SplitNCigarReads.xml" />
+  </section>
+
+  <section name="NGS: GATK3 Tools (3.8)" id="gatk3.8" organization_exclude="haky,cvrg">
+    <label text="Alignment Utilities" id="gatk3.8_bam_utilities"/>
+    <tool file="gatk3.8/gatk3_depth_of_coverage.xml" />
+    <tool file="gatk3.8/gatk3_reduce_reads.xml" />
+    <tool file="gatk3.8/gatk3_callable_loci.xml" />
+    <tool file="gatk3.8/gatk3_diagnose_targets.xml" />
+    <tool file="gatk3.8/gatk3_VariantsToTable.xml" />
+
+    <label text="Realignment" id="gatk3.8_realignment" />
+    <tool file="gatk3.8/gatk3_realigner_target_creator.xml" />
+    <tool file="gatk3.8/gatk3_indel_realigner.xml" />
+    <tool file="gatk3.8/gatk3_indel_realigner_for_mutect.xml" />
+
+    <label text="Base Recalibration" id="gatk3.8_recalibration" />
+    <tool file="gatk3.8/gatk3_base_recalibrator.xml" />
+    <tool file="gatk3.8/gatk3_print_reads.xml" />
+    <tool file="gatk3.8/gatk3_analyze_covariates.xml" />
+
+    <label text="Genotyping" id="gatk3.8_genotyping" />
+    <tool file="gatk3.8/gatk3_unified_genotyper.xml" />
+    <tool file="gatk3.8/gatk3_unified_genotyper_DirectoryInput.xml" />
+    <tool file="gatk3.8/gatk3_haplotype_caller.xml" />
+    <tool file="gatk3.8/gatk3_haplotype_caller_swift.xml" />
+
+    <label text="Annotation" id="gatk3.8_annotation" />
+    <tool file="gatk3.8/gatk3_variant_annotator.xml" />
+
+    <label text="Filtration" id="gatk3.8_filtration" />
+    <tool file="gatk3.8/gatk3_variant_filtration.xml" />
+    <tool file="gatk3.8/gatk3_variant_select.xml" />
+
+    <label text="Variant Quality Score Recalibration" id="gatk3.8_variant_quality_score_recalibration" />
+    <tool file="gatk3.8/gatk3_variant_recalibrator.xml" />
+    <tool file="gatk3.8/gatk3_variant_apply_recalibration.xml" />
+
+    <label text="Variant Utilities" id="gatk3.8_variant_utilities"/>
+    <tool file="gatk3.8/gatk3_variants_validate.xml" />
+    <tool file="gatk3.8/gatk3_variant_eval.xml" />
+    <tool file="gatk3.8/gatk3_variant_combine.xml" />
+    <tool file="gatk3.8/gatk3_genotypegvcfs.xml" />
+    <tool file="gatk3.8/gatk3_gvcf_combine.xml" />
+    <tool file="gatk3.8/gatk3_phase_by_transmission.xml" />
+
+    <label text="RNA-seq Utilities" id="gatk3.8_rnaseq_utilities"/>
+    <tool file="gatk3.8/gatk3_SplitNCigarReads.xml" />
+  </section>
+
+  <section name="NGS: GATK4 Tools" id="gatk4" organization_exclude="haky,cvrg">
+    <label text="Diagnostics and Quality Control" id="gatk4_qc" />
+    <tool file="gatk4/gatk_CollectAlignmentSummaryMetrics.xml" />
+    <label text="SAM/BAM/CRAM tools" id="gatk4_sambamcram" />
+    <tool file="gatk4/gatk_BaseRecalibrator.xml" />
+    <tool file="gatk4/gatk_ApplyBQSR.xml" />
+    <tool file="gatk4/gatk_PrintReads.xml" />
+    <label text="VCF tools" id="gatk4_vcftools" />
+    <tool file="gatk4/gatk_HaplotypeCaller.xml" />
+    <tool file="gatk4/gatk_mutect2.xml" />
+    <tool file="gatk4/gatk_GenomicsDBImport.xml" />
+    <tool file="gatk4/gatk_GenotypeGVCFs.xml" />
+    <tool file="gatk4/gatk_FilterMutectCalls.xml" />
+  </section>
+
+  <section name="NGS: FermiKit Suite" id="variant_assembly" organization_exclude="haky,cvrg">
+    <label text="FermiKit Assembly" id="fermikit_assembly_section"/>
+    <tool file="fermikit/fermikit_assembly.xml" id="fermikit_assembly"/>
+    <label text="FermiKit Variant Calling" id="fermikit_vc_section"/>
+    <tool file="fermikit/fermikit_variant_caller.xml" id="fermikit_vc"/>
+  </section>
+  <section name="NGS: Variant Detection" id="variant_detection" organization_exclude="haky,cvrg">
+    <label text="Imputation" id="imputation"/>
+    <tool file="shapeit/shapeit_phase.xml"/>
+    <tool file="eagle/eagle_phase_plink.xml"/>
+    <tool file="eagle/eagle_phase_vcf.xml" />
+    <tool file="impute2/impute2.xml"/>
+    <label text="Atlas2" id="atlas2"/>
+    <tool file="atlas2/Atlas-Indel2.xml"/>
+    <tool file="atlas2/Atlas-SNP2.xml"/>
+    <tool file="swift/swift_atlas_wrapper.xml"/>
+    <tool file="swift/swift_atlas_wrapper_v2.xml"/>
+    <tool file="swift/swift_atlasIndel_wrapper.xml"/>
+    <tool file="atlas2/SOLiD-SNP-caller.xml"/>
+    <tool file="atlas2/vcfPrinter_1.1.xml"/>
+    <tool file="atlas2/atlas_postprocessing.xml"/>
+    <tool file="swift/swift_filter_vcf.xml"/>
+    <tool file="swift/swift_filter_sv_vcf.xml"/>
+    <tool file="swift/swift_sv_sort_vcf.xml"/>
+    <tool file="misc_tools/galaxy_tools/generate_master_site_list.xml"/>
+    <tool file="strelka/strelka.xml"/>
+
+    <label text="FreeBayes" id="freeBayes"/>
+    <tool file="freebayes/freebayes.xml"/>
+    <tool file="freebayes/freebayes_DirectoryInput.xml"/>
+    <tool file="freebayes/freebayes_swift.xml"/>
+    <tool file="freebayes/freebayes_bags.xml"/>
+
+    <label text="Isaac Variant Caller" id="isaac_variant"/>
+    <tool file="isaac/isaac_variant_caller.xml"/>
+
+    <label text="CONTRA" id="contra"/>
+    <tool file="contra/baseline.xml"/>
+    <tool file="contra/contra.xml"/>
+    <tool file="contra/contra_swift.xml"/>
+    <tool file="contra/contra_to_metasv.xml" />
+    <tool file="contra/contra_large_del.xml" />
+    <tool file="contra/bam_to_sam2.xml" />
+
+    <label text="CONSERTING" id="conserting"/>
+    <tool file="conserting/conserting_bam2wig.xml"/>
+    <tool file="conserting/conserting_process_coverage.xml"/>
+    <tool file="conserting/conserting_snv_detection.xml"/>
+    <tool file="conserting/conserting_allelicImbalance.xml"/>
+    <tool file="conserting/crest.xml"/>
+    <tool file="conserting/conserting.xml"/>
+    
+    <label text="CNVKIT" id="cnvkit"/>
+    <tool file="cnvkit/cnvkit_access.xml"/>
+    <tool file="cnvkit/cnvkit_target_bed_generator.xml"/>
+    <tool file="cnvkit/cnvkit_swift.xml"/>
+    <tool file="cnvkit/cnvkit.xml"/>
+    <tool file="cnvkit/cnvkit_wrapper.xml"/>
+    <tool file="cnvkit/cnvkit_call.xml"/>
+    <tool file="cnvkit/cnvkit_segment_to_vcf.xml"/>
+    
+    <label text="Additional" id="others"/>
+    <tool file="metasv/metasv_wrapper.xml" />
+    <tool file="metasv/metasv_swift.xml" />
+    <tool file="metasv/metasv_combine_vcfs.xml" />
+    <tool file="metasv/post_metasv.xml" />
+    <tool file="polymutt/polymutt.xml"/>
+    <tool file="somatic_sniper/somatic_sniper.xml" />
+    <tool file="gatk3/gatk3_mutect.xml"/>
+    <tool file="intogen/intogenWrapper.xml"/>
+    <tool file="platypus/platypus.xml"/>
+    <tool file="delly/delly.xml"/>
+    <tool file="delly/delly2_call.xml"/>
+    <tool file="delly/delly2_merge.xml"/>
+    <tool file="delly/delly2_swift.xml"/>
+    <tool file="delly/delly2_merge_swift.xml"/>
+    <tool file="lumpy/lumpyexpress_swift.xml" />
+    <tool file="pindel/pindel_swift.xml" />
+    <tool file="pindel/pindelwrapper.xml" />
+    <tool file="pindel/pindel2vcf.xml" />
+    <tool file="manta/manta_swift.xml" />
+    <tool file="breakdancer/breakdancer.xml" />
+    <tool file="breakdancer/breakdancer_swift.xml" />
+    <tool file="breakseq/breakseq_swift.xml" />
+    <!--<tool file="sortmerna/sortmerna_wrapper.xml"/> -->
+    
+    <!--<label text="Intogen" id="intogen"/>
+    <tool file="intogen/intogenWrapper.xml" />-->
+
+    <label text="snpeff" id="snpeff"/>
+    <tool file="snpeff/snpEff.xml"/>
+    <tool file="snpeff/snpSift_filter.xml"/>
+    <tool file="snpeff/snpSift_caseControl.xml"/>
+    <tool file="snpeff/snpSift_annotate.xml"/>
+    <tool file="snpeff/snpSift_int.xml"/>
+    <tool file="snpeff/snpsift_concordance.xml"/>
+
+    <label text="VarScan tools" id="varscan"/>
+    <tool file="varscan/varscan_somatic.xml"/>
+    <tool file="varscan/varscan_somatic.native.xml"/>
+    <tool file="varscan/varscan_processSomatic.xml"/>
+    <tool file="varscan/varscan_mpileup.xml"/>
+
+    <label text="GEMINI tools" id="gemini"/>
+    <tool file="gemini/gemini_annotate.xml"/>
+    <tool file="gemini/gemini_autosomal_recessive.xml"/>
+    <tool file="gemini/gemini_burden.xml"/>
+    <tool file="gemini/gemini_comp_hets.xml"/>
+    <tool file="gemini/gemini_db_info.xml"/>
+    <tool file="gemini/gemini_de_novo.xml"/>
+    <tool file="gemini/gemini_interactions.xml"/>
+    <tool file="gemini/gemini_load.xml"/>
+    <tool file="gemini/gemini_lof_sieve.xml"/>
+    <tool file="gemini/gemini_pathways.xml"/>
+    <tool file="gemini/gemini_query.xml"/>
+    <tool file="gemini/gemini_region.xml"/>
+    <tool file="gemini/gemini_roh.xml"/>
+    <tool file="gemini/gemini_stats.xml"/>
+    <tool file="gemini/gemini_windower.xml"/>
+
+    <label text="oncofuse" id="oncofuse"/>
+    <tool file="oncofuse/oncofuse.xml"/>
+    <tool file="oncofuse/compress_fusions.xml"/>
+  </section>
+  <section name="Consensus Genotyper for Exome Variants" id="cges_tools" organization_exclude="haky,cvrg">
+    <tool file="consensus_caller/consensus.xml" />
+    <tool file="consensus_caller/consensus_preprocessing/consensus_vcf_preprocess.xml" />
+    <tool file="cges_qc/cges_qc.xml" />
+  </section>
+
+  <section name="NGS: Interval Tools" id="interval_tools" organization_exclude="haky,cvrg">
+    <!-- <tool file="kent_tools/bedItemOverlapCount.xml" />
+    <tool file="kent_tools/bedIntersect.xml" /> -->
+    <label text="BEDTools" id="bedtools"/>
+    <tool file="bedtools/intersectBed_bed.xml" />
+    <tool file="bedtools/intersectBed_bam.xml" />
+    <tool file="bedtools/multiIntersectBed.xml" />
+    <tool file="bedtools/bamToBed.xml" />
+    <tool file="bedtools/coverageBed_counts.xml" />
+    <tool file="bedtools/genomeCoverageBed_bedgraph.xml" />
+    <tool file="bedtools/genomeCoverageBed_histogram.xml" />
+    <tool file="bedtools/unionBedGraphs.xml" />
+    <tool file="bedtools/bedtools_merge.xml" />
+  </section>
+
+  <section name="NGS: VCF Tools" id="vcf_tools" organization_exclude="haky,cvrg">
+    <label text="Formatting" id="vcf_formatting" /> 
+    <tool file="variant_detection/pileup2vcf.xml" />
+    <tool file="vcf_tools/vcftools.xml" />
+    <tool file="vcf_tools/vcfconvert.xml" />
+    <tool file="vcf_tools/vcfsort.xml" />
+    <tool file="vcf_tools/vcfcat.xml" />
+    <tool file="vcf_tools/vcftools_compare.xml" />
+    <tool file="tabix/bgzip.xml" />
+    <tool file="tabix/tabix.xml" />:w
+
+
+    <label text="Filtering" id="vcf_filtering" /> 
+    <tool file="vcf_tools/intersect.xml" />
+    <tool file="vcf_tools/extract.xml" />
+    <tool file="vcf_tools/filter.xml" />
+    <tool file="vcf_tools/vcftools_slice.xml" />
+    <tool file="vcflib/vcfkeepgeno.xml" />
+    <tool file="vcflib/vcfhethomratio.xml" />
+    <tool file="vcf_tools/vt_normalize.xml" />
+    <tool file="variant_detection/filterVarByQual.xml" />
+    <tool file="variant_detection/filterVarByDepth.xml" />
+
+    <label text="Annotation" id="vcf_annotation" /> 
+    <tool file="vcf_tools/annotate.xml" />
+    <tool file="vcf_tools/vcftools_annotate.xml" />
+    <tool file="annotate_variants/formatSNPs.xml" />
+    <tool file="annotate_variants/indelFormat.xml" />
+    <tool file="annotate_variants/submit_to_SS.xml" />
+    <tool file="annotate_variants/seattleSNPparser.xml" />
+    <tool file="annotate_variants/snp_Annotated2xmlV3.xml" />
+    <tool file="seattleseq/seattleseq.xml"/>
+    <tool file="annovar/annovar.xml"/>
+    <tool file="annovar/table_annovar.xml"/>
+    <tool file="fred_hutch/annovar_reformat.xml"/> 
+    <tool file="annotate_dgidb/dgidb_annotator.xml"/>
+    <tool file="vep/ensembl_vep.xml"/>
+    <tool file="cravat/cravat.xml"/>
+    <tool file="cravat/vcf_to_cravat.xml"/>
+  </section>
+
+  <!--<section name="NGS: CGA Tools" id="CGA_tools">
+   <tool file="cga_tools/cgatools_map2sam.xml" />
+   <tool file="cga_tools/cgatools_map2bam.xml" />
+   <tool file="globus/create_cga_dataset.xml" />
+   <tool file="globus/read_cga_dataset.xml"/>
+   <tool file="globus/cga_demuxer.xml" />
+   <tool file="globus/map2sam_condor_run.xml"/>
+  </section>-->
+
+  <section name="NGS: EMBOSS" id="emboss_5" organization_exclude="haky,cvrg">
+    <tool file="emboss_5/emboss_antigenic.xml" />
+    <tool file="emboss_5/emboss_backtranseq.xml" />
+    <tool file="emboss_5/emboss_banana.xml" />
+    <tool file="emboss_5/emboss_biosed.xml" />
+    <tool file="emboss_5/emboss_btwisted.xml" />
+    <tool file="emboss_5/emboss_cai_custom.xml" />
+    <tool file="emboss_5/emboss_cai.xml" />
+    <tool file="emboss_5/emboss_chaos.xml" />
+    <tool file="emboss_5/emboss_charge.xml" />
+    <tool file="emboss_5/emboss_checktrans.xml" />
+    <tool file="emboss_5/emboss_chips.xml" />
+    <tool file="emboss_5/emboss_cirdna.xml" />
+    <tool file="emboss_5/emboss_codcmp.xml" />
+    <tool file="emboss_5/emboss_coderet.xml" />
+    <tool file="emboss_5/emboss_compseq.xml" />
+    <tool file="emboss_5/emboss_cpgplot.xml" />
+    <tool file="emboss_5/emboss_cpgreport.xml" />
+    <tool file="emboss_5/emboss_cusp.xml" />
+    <tool file="emboss_5/emboss_cutseq.xml" />
+    <tool file="emboss_5/emboss_dan.xml" />
+    <tool file="emboss_5/emboss_degapseq.xml" />
+    <tool file="emboss_5/emboss_descseq.xml" />
+    <tool file="emboss_5/emboss_diffseq.xml" />
+    <tool file="emboss_5/emboss_digest.xml" />
+    <tool file="emboss_5/emboss_dotmatcher.xml" />
+    <tool file="emboss_5/emboss_dotpath.xml" />
+    <tool file="emboss_5/emboss_dottup.xml" />
+    <tool file="emboss_5/emboss_dreg.xml" />
+    <tool file="emboss_5/emboss_einverted.xml" />
+    <tool file="emboss_5/emboss_epestfind.xml" />
+    <tool file="emboss_5/emboss_equicktandem.xml" />
+    <tool file="emboss_5/emboss_est2genome.xml" />
+    <tool file="emboss_5/emboss_etandem.xml" />
+    <tool file="emboss_5/emboss_extractfeat.xml" />
+    <tool file="emboss_5/emboss_extractseq.xml" />
+    <tool file="emboss_5/emboss_freak.xml" />
+    <tool file="emboss_5/emboss_fuzznuc.xml" />
+    <tool file="emboss_5/emboss_fuzzpro.xml" />
+    <tool file="emboss_5/emboss_fuzztran.xml" />
+    <tool file="emboss_5/emboss_garnier.xml" />
+    <tool file="emboss_5/emboss_geecee.xml" />
+    <tool file="emboss_5/emboss_getorf.xml" />
+    <tool file="emboss_5/emboss_helixturnhelix.xml" />
+    <tool file="emboss_5/emboss_hmoment.xml" />
+    <tool file="emboss_5/emboss_iep.xml" />
+    <tool file="emboss_5/emboss_infoseq.xml" />
+    <tool file="emboss_5/emboss_isochore.xml" />
+    <tool file="emboss_5/emboss_lindna.xml" />
+    <tool file="emboss_5/emboss_marscan.xml" />
+    <tool file="emboss_5/emboss_maskfeat.xml" />
+    <tool file="emboss_5/emboss_maskseq.xml" />
+    <tool file="emboss_5/emboss_matcher.xml" />
+    <tool file="emboss_5/emboss_megamerger.xml" />
+    <tool file="emboss_5/emboss_merger.xml" />
+    <tool file="emboss_5/emboss_msbar.xml" />
+    <tool file="emboss_5/emboss_needle.xml" />
+    <tool file="emboss_5/emboss_newcpgreport.xml" />
+    <tool file="emboss_5/emboss_newcpgseek.xml" />
+    <tool file="emboss_5/emboss_newseq.xml" />
+    <tool file="emboss_5/emboss_noreturn.xml" />
+    <tool file="emboss_5/emboss_notseq.xml" />
+    <tool file="emboss_5/emboss_nthseq.xml" />
+    <tool file="emboss_5/emboss_octanol.xml" />
+    <tool file="emboss_5/emboss_oddcomp.xml" />
+    <tool file="emboss_5/emboss_palindrome.xml" />
+    <tool file="emboss_5/emboss_pasteseq.xml" />
+    <tool file="emboss_5/emboss_patmatdb.xml" />
+    <tool file="emboss_5/emboss_pepcoil.xml" />
+    <tool file="emboss_5/emboss_pepinfo.xml" />
+    <tool file="emboss_5/emboss_pepnet.xml" />
+    <tool file="emboss_5/emboss_pepstats.xml" />
+    <tool file="emboss_5/emboss_pepwheel.xml" />
+    <tool file="emboss_5/emboss_pepwindow.xml" />
+    <tool file="emboss_5/emboss_pepwindowall.xml" />
+    <tool file="emboss_5/emboss_plotcon.xml" />
+    <tool file="emboss_5/emboss_plotorf.xml" />
+    <tool file="emboss_5/emboss_polydot.xml" />
+    <tool file="emboss_5/emboss_preg.xml" />
+    <tool file="emboss_5/emboss_prettyplot.xml" />
+    <tool file="emboss_5/emboss_prettyseq.xml" />
+    <tool file="emboss_5/emboss_primersearch.xml" />
+    <tool file="emboss_5/emboss_revseq.xml" />
+    <tool file="emboss_5/emboss_seqmatchall.xml" />
+    <tool file="emboss_5/emboss_seqret.xml" />
+    <tool file="emboss_5/emboss_showfeat.xml" />
+    <tool file="emboss_5/emboss_shuffleseq.xml" />
+    <tool file="emboss_5/emboss_sigcleave.xml" />
+    <tool file="emboss_5/emboss_sirna.xml" />
+    <tool file="emboss_5/emboss_sixpack.xml" />
+    <tool file="emboss_5/emboss_skipseq.xml" />
+    <tool file="emboss_5/emboss_splitter.xml" />
+    <tool file="emboss_5/emboss_supermatcher.xml" />
+    <tool file="emboss_5/emboss_syco.xml" />
+    <tool file="emboss_5/emboss_tcode.xml" />
+    <tool file="emboss_5/emboss_textsearch.xml" />
+    <tool file="emboss_5/emboss_tmap.xml" />
+    <tool file="emboss_5/emboss_tranalign.xml" />
+    <tool file="emboss_5/emboss_transeq.xml" />
+    <tool file="emboss_5/emboss_trimest.xml" />
+    <tool file="emboss_5/emboss_trimseq.xml" />
+    <tool file="emboss_5/emboss_twofeat.xml" />
+    <tool file="emboss_5/emboss_union.xml" />
+    <tool file="emboss_5/emboss_vectorstrip.xml" />
+    <tool file="emboss_5/emboss_water.xml" />
+    <tool file="emboss_5/emboss_wobble.xml" />
+    <tool file="emboss_5/emboss_wordcount.xml" />
+    <tool file="emboss_5/emboss_wordmatch.xml" />
+  </section> 
+  <section id="pecaller" name="NGS: PECALLER" organization_exclude="haky,cvrg">
+    <tool file="pecaller/pemapper.xml"/> 
+    <tool file="pecaller/transfer_pemapper.xml"/>
+    <tool file="pecaller/pecaller.xml"/>
+  </section>
+  <section id="bgi_ngs" name="NGS: SOAP" organization_exclude="haky,cvrg">
+    <label text="Mapping" id="soap_mapping"/>
+    <tool file="bgisoap/soap1.xml"/>
+    <tool file="bgisoap/soap2.xml"/>
+    <label text="Indel Analysis" id="bgi_indel_analysis"/>
+    <tool file="bgisoap/msort.xml"/>
+    <tool file="bgisoap/soapsnp.xml"/>
+    <tool file="bgisoap/soappopindel.xml"/>
+    <label text="De Novo Assembly" id="bgi_de_novo_assembly"/>
+    <tool file="bgisoap/soapdenovo_configuration.xml" />
+    <tool file="bgisoap/soapdenovo1.xml"/>
+    <tool file="bgisoap/soapdenovo2.xml"/>
+    <tool file="bgisoap/soapdenovotrans.xml"/>
+    <tool file="bgisoap/soapdenovo2_pregraph.xml"/>
+    <tool file="bgisoap/soapdenovo2_contig.xml"/>
+    <tool file="bgisoap/soapdenovo2_map.xml"/>
+    <tool file="bgisoap/soapdenovo2_scaff.xml"/>
+    <tool file="bgisoap/soapCoverage.xml"/>
+    <tool file="bgisoap/gapCloser.xml"/>
+    <tool file="bgisoap/kmerfreq.xml" />
+    <tool file="bgisoap/cope.xml" />
+    <tool file="bgisoap/filter.xml"/>
+    <tool file="bgisoap/prepare.xml"/>
+    <tool file="bgisoap/gapcloser.xml"/>
+    <tool file="bgisoap/kmerfreq-ha-2.0.xml"/>
+    <tool file="bgisoap/corrector-ha-2.0.xml"/>
+    <tool file="bgisoap/mergepairlist.xml"/>
+    <tool file="bgisoap/sam2soap.xml"/>
+    <label id="bgi_splice_detection" text="Splice Detection"/>
+    <tool file="bgisoap/soapsplice.xml"/>
+    <label id="bgi_somatic_mut_detection" text="Somatic Mutation Detection"/>
+    <tool file="bgisoap/soappileup.xml"/>
+    <tool file="bgisoap/snvtest.xml"/>
+    <tool file="bgisoap/alleleqc.xml"/>
+    <tool file="bgisoap/snvdetect.xml"/>
+  </section>  
+    <!-- <label text="Data: Import and upload" id="rgimport" /> 
+    <tool file="data_source/upload.xml"/>
+    <tool file="data_source/access_libraries.xml" /> -->
+    
+  <section name="NGS: Simulation" id="ngs-simulation"  organization_exclude="haky,cvrg">
+    <tool file="ngs_simulation/ngs_simulation.xml" />
+  </section>
+  <section name="SNP/WGA: Data; Filters" id="rgdat" organization_exclude="haky,cvrg">
+    <label text="Data: Filter and Clean" id="rgfilter" />
+    <tool file="rgenetics/rgClean.xml"/>
+    <tool file="rgenetics/rgPedSub.xml"/>
+    <tool file="rgenetics/rgLDIndep.xml"/>
+    
+    <label text="Simulate" id="rgsim" />
+    <tool file="rgenetics/rgfakePhe.xml"/>
+    <tool file="rgenetics/rgfakePed.xml"/>
+  </section>
+  <section name="SNP/WGA: QC; LD; Plots" id="rgqcplot" organization_exclude="haky,cvrg">
+    
+    <label text="QC; Eigenstrat" id="rgvisual" />
+    <tool file="rgenetics/rgQC.xml"/>
+    <tool file="rgenetics/rgEigPCA.xml"/>
+    
+    <label text="LD; Manhattan/QQ; GRR" id="rgld" />
+    <tool file="rgenetics/rgHaploView.xml"/>
+    <tool file="rgenetics/rgManQQ.xml"/>
+    <tool file="rgenetics/rgGRR.xml"/>
+  </section>
+  <section name="SNP/WGA: Statistical Models" id="rgmodel" organization_exclude="haky,cvrg">
+    <tool file="rgenetics/rgCaCo.xml"/>
+    <tool file="rgenetics/rgTDT.xml"/>
+    <tool file="rgenetics/rgGLM.xml"/>
+    <tool file="rgenetics/rgManQQ.xml"/>
+  </section>
+
+  <section name="Phenotype Association" id="hgv" organization_exclude="haky,cvrg">
+    <tool file="evolution/codingSnps.xml" />
+    <tool file="evolution/add_scores.xml" />
+    <tool file="phenotype_association/sift.xml" />
+    <tool file="phenotype_association/linkToGProfile.xml" />
+    <tool file="phenotype_association/linkToDavid.xml"/>
+    <tool file="phenotype_association/ctd.xml" />
+    <tool file="phenotype_association/funDo.xml" />
+    <tool file="phenotype_association/snpFreq.xml" />
+    <tool file="phenotype_association/ldtools.xml" />
+    <tool file="phenotype_association/pass.xml" />
+    <tool file="phenotype_association/gpass.xml" />
+    <tool file="phenotype_association/beam.xml" />
+    <tool file="phenotype_association/lps.xml" />
+    <tool file="phenotype_association/hilbertvis.xml" />
+    <tool file="phenotype_association/freebayes.xml" />
+    <tool file="phenotype_association/master2pg.xml" />
+    <tool file="phenotype_association/vcf2pgSnp.xml" />
+    <tool file="phenotype_association/dividePgSnpAlleles.xml" />
+  </section>
+
+  <!--section name="Groovy" id="Groovy">
+    <tool file="groovy/groovy.xml"/>
+  </section-->
+  
+<!--  <label text="Default Galaxy TOOLBOX" id="default_galaxy_toolbox" /> -->
+  <label text="Proteomics Applications" id="prot_apps" organization_include="bdds,nihcommons"/>
+  <section name="PROTEOMICS: Conversion Tools" id="conversion" organization_include="bdds,nihcommons">
+    <tool file="protk/msconvert-001e77708ec9/msconvert2.xml" organization_include="bdds,nihcommons"/>
+    <tool file="protk/msconvert-001e77708ec9/msconvert2_raw.xml" organization_include="bdds,nihcommons"/>
+    <tool file="protk/protk-255b5b6ec617/mzml_to_mgf.xml" organization_include="bdds,nihcommons"/>
+    <tool file="protk/mascot-327b2d99d4c5/mascot_to_pepxml.xml" organization_include="bdds,nihcommons"/>
+    <tool file="protk/fasta_merge_files_and_filter_unique_sequences-2904d46167da/fasta_merge_files_and_filter_unique_sequences.xml" organization_include="bdds,msi"/>
+    <tool file="protk/mgf_formatter-29e7496f3907/mgf_formatter.xml" organization_include="bdds,msi" />
+  </section>
+  <section name="PROTEOMICS: Search Tools" id="search" organization_include="bdds,nihcommons">
+    <tool file="protk/protk-255b5b6ec617/tandem.xml" organization_include="bdds,nihcommons"/>
+    <tool file="protk/protk-255b5b6ec617/tandem_swift.xml" organization_include="bdds,nihcommons"/>
+    <tool file="protk/tpp_prophets-c04896f31ff7/create.xml" organization_include="bdds,nihcommons"/>
+    <tool file="protk/tpp_prophets-c04896f31ff7/search.xml" organization_include="bdds,nihcommons"/>
+    <tool file="protk/tpp_prophets-c04896f31ff7/spectra_search_swift.xml" organization_include="bdds,nihcommons"/>
+    <tool file="protk/protk-255b5b6ec617/omssa.xml" organization_include="bdds,nihcommons"/>
+    <tool file="protk/protk-255b5b6ec617/make_decoy.xml" organization_include="bdds,nihcommons"/>
+    <tool file="protk/mascot-327b2d99d4c5/mascot.xml" organization_include="bdds,nihcommons"/>
+    <tool file="protk/msgfplus-4f6cbe948065/msgfplus_search.xml" organization_include="bdds,nihcommons"/>
+    <tool file="protk/dbbuilder-b39347891609/dbbuilder.xml" organization_include="bdds,msi"/>
+    <tool file="search_gui/searchgui.xml" organization_include="msi"/>
+    <tool file="peptideshaker/peptide_shaker.xml" organization_include="msi"/>
+    <tool file="sixgill/sixgill_build.xml" organization_include="msi"/>
+    <tool file="sixgill/sixgill_filter.xml" organization_include="msi"/>
+    <tool file="sixgill/sixgill_makefasta.xml" organization_include="msi"/>
+    <tool file="sixgill/sixgill_merge.xml" organization_include="msi"/>
+    <tool file="map_peptides_to_bed/map_peptides_to_bed.xml" organization_include="bdds,msi"/>
+    <tool file="mz_to_sqlite/mz_to_sqlite.xml" organization_include="bdds,msi"/>    
+    <tool file="query_tabular/query_tabular.xml" organization_include="msi"/>
+    <tool file="sqlite_to_tabular/sqlite_to_tabular.xml" organization_include="msi"/>
+    <tool file="unipept/unipept.xml" organization_include="msi"/>
+    <tool file="split_tabular_columns/split_tabular_columns.xml" organization_include="msi"/>
+  </section>
+  <section name="PROTEOMICS: TPP Tools" id="tpp" organization_include="bdds,nihcommons">
+    <tool file="protk/tpp_prophets-c04896f31ff7/peptide_prophet.xml" organization_include="bdds,nihcommons"/>
+    <tool file="protk/tpp_prophets-c04896f31ff7/protein_prophet.xml" organization_include="bdds,nihcommons"/>
+    <tool file="protk/tpp_prophets-c04896f31ff7/interprophet.xml" organization_include="bdds,nihcommons"/>
+    <tool file="protk/protk-255b5b6ec617/xpress.xml" organization_include="bdds,nihcommons"/>
+    <tool file="protk/protk-255b5b6ec617/libra.xml" organization_include="bdds,nihcommons"/>
+    <tool file="protk/protk-255b5b6ec617/asapratio.xml" organization_include="bdds,nihcommons"/>
+  </section>
+  <section name="PROTEOMICS: Processing Tools" id="processing" organization_include="bdds,nihcommons">
+    <tool file="protk/tpp_prophets-c04896f31ff7/pepxml_to_table.xml" organization_include="bdds,nihcommons"/>
+    <tool file="protk/tpp_prophets-c04896f31ff7/protxml_to_table.xml" organization_include="bdds,nihcommons"/>
+    <tool file="protk/protk-255b5b6ec617/xls_to_table.xml" organization_include="bdds,nihcommons"/>
+  </section>
+
+  <!-- Standard galaxy tools below: -->
+  <label text="Microarray Tools" id="microarray" organization_exclude="haky,cvrg"/>
+  <section name="MMBGXs" id="microarray-rna"  organization_exclude="haky,cvrg">
+    <label text="RNA" id="rna" />
+    <tool file="mmbgx/mmbgx.xml" />
+    <tool file="mmbgx/mmbgx_merge.xml" />
+  </section>
+
+  <label text="Association Studies Tools" id="association_studies_tools" organization_include="haky" />
+  <section name="HAKY Tools" id="Hakytools" organization_include="haky">
+    <tool file="predixcan/predixcan_predict.xml" organization_include="haky" />
+    <tool file="predixcan/predixcan_associate.xml" organization_include="haky" />
+    <tool file="predixcan/predixcan_combo.xml" organization_include="haky" />
+    <tool file="metaxcan/metaxcan.xml" organization_include="haky" />
+  </section>
+
+  <label text="Data Manipulation" id="data_manipulation" organization_exclude="haky,cvrg"/>
+  <section name="ENCODE Tools" id="EncodeTools"  organization_exclude="haky,cvrg">
+    <tool file="encode/gencode_partition.xml" />
+    <tool file="encode/random_intervals.xml" />
+  </section>
+  <section name="Lift-Over" id="liftOver" organization_exclude="haky,cvrg">
+    <tool file="extract/liftOver_wrapper.xml" />
+  </section>
+  <section name="Text Manipulation" id="textutil" organization_exclude="haky,cvrg">
+    <tool file="filters/fixedValueColumn.xml" />
+    <tool file="stats/column_maker.xml" />
+    <tool file="filters/catWrapper.xml" />
+    <tool file="filters/cutWrapper.xml" />
+    <tool file="filters/mergeCols.xml" />
+    <tool file="filters/convert_characters.xml" />
+    <tool file="filters/CreateInterval.xml" />
+    <tool file="filters/cutWrapper.xml" />
+    <tool file="filters/changeCase.xml" />
+    <tool file="filters/pasteWrapper.xml" />
+    <tool file="filters/uniqWrapper.xml" />
+    <tool file="filters/remove_beginning.xml" />
+    <tool file="filters/randomlines.xml" />
+    <tool file="filters/headWrapper.xml" />
+    <tool file="filters/tailWrapper.xml" />
+    <tool file="filters/trimmer.xml" />
+    <tool file="filters/wc_gnu.xml" />
+    <tool file="filters/secure_hash_message_digest.xml" />
+    <tool file="stats/dna_filtering.xml" />
+    <tool file="new_operations/tables_arithmetic_operations.xml" />
+    <tool file="filters/regex.xml" />
+    <tool file="filters/regex_tabular.xml" />
+  </section>
+  <section name="Filter and Sort" id="filter" organization_exclude="haky,cvrg">
+    <tool file="stats/filtering.xml" />
+    <tool file="filters/sorter.xml" />
+    <tool file="filters/grep.xml" />
+    
+    <label text="GFF" id="gff" />
+    <tool file="filters/gff/extract_GFF_Features.xml" />
+    <tool file="filters/gff/gff_filter_by_attribute.xml" />
+    <tool file="filters/gff/gff_filter_by_feature_count.xml" />
+    <tool file="filters/gff/gtf_filter_by_attribute_values_list.xml" />
+  </section>
+  <section name="Join, Subtract and Group" id="group" organization_exclude="haky,cvrg">
+    <tool file="filters/joiner.xml" />
+    <tool file="filters/joiner_multiple.xml" />
+    <tool file="filters/joiner_multiple_bags.xml" organization_include="bdds,nihcommons"/>
+    <tool file="filters/compare.xml"/>
+    <tool file="new_operations/subtract_query.xml"/>
+    <tool file="stats/grouping.xml" />
+    <tool file="new_operations/column_join.xml" />
+  </section>
+  <section name="Convert Formats" id="convert" organization_exclude="haky,cvrg">
+    <tool file="filters/axt_to_concat_fasta.xml" />
+    <tool file="filters/axt_to_fasta.xml" />
+    <tool file="filters/axt_to_lav.xml" />
+    <tool file="filters/bed2gff.xml" />
+    <tool file="fasta_tools/fasta_to_tabular.xml" />
+    <tool file="filters/gff2bed.xml" />
+    <tool file="filters/lav_to_bed.xml" />
+    <tool file="maf/maf_to_bed.xml" />
+    <tool file="maf/maf_to_interval.xml" />
+    <tool file="maf/maf_to_fasta.xml" />
+    <tool file="fasta_tools/tabular_to_fasta.xml" />
+    <tool file="fastq/fastq_to_fasta.xml" />
+    <tool file="filters/wiggle_to_simple.xml" />
+    <tool file="filters/sff_extractor.xml" />
+    <tool file="filters/gtf2bedgraph.xml" />
+    <tool file="filters/wig_to_bigwig.xml" />
+    <tool file="filters/bam_to_bigwig.xml" />
+    <tool file="filters/bed_to_bigbed.xml" />
+    <tool file="filters/bdds-footprint-filter3.xml" />
+    <tool file="star/star_bam_to_wiggle.xml" />
+  </section>
+  <section name="Extract Features" id="features" organization_exclude="haky,cvrg">
+    <tool file="filters/ucsc_gene_bed_to_exon_bed.xml" />
+  </section>
+  <section name="Fetch Sequences" id="fetchSeq" organization_exclude="haky,cvrg">
+    <tool file="extract/extract_genomic_dna.xml" />
+  </section>
+  <section name="Fetch Alignments" id="fetchAlign" organization_exclude="haky,cvrg">
+    <tool file="maf/interval2maf_pairwise.xml" />
+    <tool file="maf/interval2maf.xml" />
+    <tool file="maf/maf_split_by_species.xml"/>
+    <tool file="maf/interval_maf_to_merged_fasta.xml" />
+    <tool file="maf/genebed_maf_to_fasta.xml"/>
+    <tool file="maf/maf_stats.xml"/>
+    <tool file="maf/maf_thread_for_species.xml"/>
+    <tool file="maf/maf_limit_to_species.xml"/>
+    <tool file="maf/maf_limit_size.xml"/>
+    <tool file="maf/maf_by_block_number.xml"/>
+    <tool file="maf/maf_reverse_complement.xml"/>
+    <tool file="maf/maf_filter.xml"/>
+  </section>
+  <section name="Get Genomic Scores" id="scores" organization_exclude="haky,cvrg">
+    <tool file="stats/wiggle_to_simple.xml" />
+    <tool file="stats/aggregate_binned_scores_in_intervals.xml" />
+    <tool file="extract/phastOdds/phastOdds_tool.xml" />
+  </section>
+  <section name="Operate on Genomic Intervals" id="bxops" organization_exclude="haky,cvrg">
+    <tool file="new_operations/intersect.xml" />
+    <tool file="new_operations/subtract.xml" />
+    <tool file="new_operations/merge.xml" />
+    <tool file="new_operations/concat.xml" />
+    <tool file="new_operations/basecoverage.xml" />
+    <tool file="new_operations/coverage.xml" />
+    <tool file="new_operations/complement.xml" />
+    <tool file="new_operations/cluster.xml" id="cluster" />
+    <tool file="new_operations/join.xml" />
+    <tool file="new_operations/get_flanks.xml" />
+    <tool file="new_operations/flanking_features.xml" />
+    <tool file="annotation_profiler/annotation_profiler.xml" />
+  </section>
+
+  <label text="Statistical Tools" id="statistical_tools" organization_exclude="haky,cvrg"/>
+  <section name="Statistics" id="stats" organization_exclude="haky,cvrg">
+    <tool file="stats/gsummary.xml" />
+    <tool file="filters/uniq.xml" />
+    <tool file="stats/cor.xml" />
+    <tool file="stats/generate_matrix_for_pca_lda.xml" />
+    <tool file="stats/lda_analy.xml" />
+    <tool file="stats/plot_from_lda.xml" />
+    <tool file="regVariation/t_test_two_samples.xml" />
+    <tool file="regVariation/compute_q_values.xml" />
+    <tool file="stats/MINE.xml" />
+    
+    <label text="GFF" id="gff" />
+    <tool file="stats/count_gff_features.xml" />
+    <label text="MCL" id="mcllable" />
+    <tool file="mcl/mcl.xml" />
+  </section>
+  <section name="Wavelet Analysis" id="dwt" organization_exclude="haky,cvrg">
+    <tool file="discreteWavelet/execute_dwt_var_perFeature.xml" />
+    <!--
+    Keep this section/tools commented until all of the tools have functional tests
+    <tool file="discreteWavelet/execute_dwt_IvC_all.xml" />
+    <tool file="discreteWavelet/execute_dwt_cor_aVa_perClass.xml" />
+    <tool file="discreteWavelet/execute_dwt_cor_aVb_all.xml" />
+    <tool file="discreteWavelet/execute_dwt_var_perClass.xml" />
+    -->
+  </section>
+  <section name="Graph/Display Data" id="plots" organization_exclude="haky,cvrg">
+    <tool file="plotting/histogram2.xml" />
+    <tool file="plotting/scatterplot.xml" />
+    <tool file="plotting/bar_chart.xml" />
+    <tool file="plotting/xy_plot.xml" />
+    <tool file="plotting/boxplot.xml" />
+    <tool file="visualization/GMAJ.xml" />
+    <tool file="visualization/LAJ.xml" />
+    <tool file="visualization/build_ucsc_custom_track.xml" />
+    <tool file="maf/vcf_to_maf_customtrack.xml" />
+    <tool file="mutation/visualize.xml" />
+  </section>
+  <section name="Regional Variation" id="regVar" organization_exclude="haky,cvrg">
+    <tool file="regVariation/windowSplitter.xml" />
+    <tool file="regVariation/featureCounter.xml" />
+    <tool file="regVariation/WeightedAverage.xml" />
+    <tool file="regVariation/quality_filter.xml" />
+    <tool file="regVariation/maf_cpg_filter.xml" />
+    <tool file="regVariation/getIndels_2way.xml" />
+    <tool file="regVariation/getIndels_3way.xml" />
+    <tool file="regVariation/getIndelRates_3way.xml" />
+    <tool file="regVariation/substitutions.xml" />
+    <tool file="regVariation/substitution_rates.xml" />
+    <tool file="regVariation/microsats_alignment_level.xml" />
+    <tool file="regVariation/microsats_mutability.xml" />
+    <tool file="regVariation/delete_overlapping_indels.xml" />
+    <tool file="regVariation/compute_motifs_frequency.xml" />
+    <tool file="regVariation/compute_motif_frequencies_for_all_motifs.xml" />
+    <tool file="regVariation/categorize_elements_satisfying_criteria.xml" />s
+    <tool file="regVariation/draw_stacked_barplots.xml" />
+    <!-- <tool file="regVariation/multispecies_MicrosatDataGenerator_interrupted_GALAXY.xml" />
+    <tool file="regVariation/microsatellite_birthdeath.xml" /> -->
+  </section>
+  <section name="Multiple regression" id="multReg"  organization_exclude="haky,cvrg">
+    <tool file="regVariation/linear_regression.xml" />
+    <tool file="regVariation/logistic_regression_vif.xml" />
+    <tool file="regVariation/best_regression_subsets.xml" />
+    <tool file="regVariation/rcve.xml" />
+    <tool file="regVariation/partialR_square.xml" />
+  </section>
+  <section name="Multivariate Analysis" id="multVar" organization_exclude="haky,cvrg">
+    <tool file="multivariate_stats/pca.xml" />
+    <tool file="multivariate_stats/cca.xml" />
+    <tool file="multivariate_stats/kpca.xml" />
+    <tool file="multivariate_stats/kcca.xml" />
+  </section>
+  
+  <label text="Fasta Tools" id="fasta_tools" organization_exclude="haky,cvrg"/>
+  <section name="Evolution" id="hyphy" organization_exclude="haky,cvrg">
+    <tool file="hyphy/hyphy_branch_lengths_wrapper.xml" />
+    <tool file="hyphy/hyphy_nj_tree_wrapper.xml" />
+    <tool file="hyphy/hyphy_dnds_wrapper.xml" />
+    <tool file="evolution/mutate_snp_codon.xml" />
+    <tool file="evolution/codingSnps.xml" />
+    <tool file="evolution/add_scores.xml" />
+    <tool file="hmmer/hmmer.xml" />
+    <tool file="hmmer/hmmpress.xml" />
+  </section>
+  <section name="Motif Tools" id="motifs" organization_exclude="haky,cvrg">
+    <tool file="meme/meme.xml"/>
+    <tool file="meme/fimo.xml"/>
+    <tool file="rgenetics/rgWebLogo3.xml" />
+  </section>
+  <section name="Multiple Alignments" id="clustal" organization_exclude="haky,cvrg">
+    <tool file="rgenetics/rgClustalw.xml" />
+    <tool file="rgenetics/rgClustalOmega.xml" />
+  </section>
+  <section name="Metagenomic analyses" id="tax_manipulation" organization_exclude="haky,cvrg">
+    <tool file="spades/metaspades.xml" />
+    <tool file="rapsearch/rapsearch.xml" />
+    <tool file="taxonomy/gi2taxonomy.xml" />
+    <tool file="taxonomy/t2t_report.xml" />
+    <tool file="taxonomy/t2ps_wrapper.xml" />
+    <tool file="taxonomy/find_diag_hits.xml" />
+    <tool file="taxonomy/lca.xml" />
+    <tool file="taxonomy/poisson2test.xml" />
+  </section>
+  <section name="FASTA manipulation" id="fasta_manipulation" organization_exclude="haky,cvrg">
+    <tool file="fasta_tools/fasta_compute_length.xml" />
+    <tool file="fasta_tools/fasta_filter_by_length.xml" />
+    <tool file="fasta_tools/fasta_concatenate_by_species.xml" />
+    <tool file="fasta_tools/fasta_to_tabular.xml" />
+    <tool file="fasta_tools/tabular_to_fasta.xml" />
+    <tool file="fastx_toolkit/fasta_formatter.xml" />
+    <tool file="fastx_toolkit/fasta_nucleotide_changer.xml" />
+    <tool file="fastx_toolkit/fastx_collapser.xml" />
+  </section>
+  <section name="NCBI BLAST+" id="ncbi_blast_plus_tools" organization_exclude="haky,cvrg">
+    <tool file="ncbi_blast_plus/ncbi_blastn_wrapper.xml" />
+    <tool file="ncbi_blast_plus/ncbi_blastp_wrapper.xml" />
+    <tool file="ncbi_blast_plus/blast_plus_remote_blastp.xml" />
+    <tool file="ncbi_blast_plus/ncbi_blastx_wrapper.xml" />
+    <tool file="ncbi_blast_plus/ncbi_tblastn_wrapper.xml" />
+    <tool file="ncbi_blast_plus/ncbi_tblastx_wrapper.xml" />
+    <tool file="ncbi_blast_plus/ncbi_segmasker_wrapper.xml" />
+    <tool file="ncbi_blast_plus/ncbi_rpsblast_wrapper.xml" />
+    <tool file="ncbi_blast_plus/ncbi_makeprofiledb.xml" />
+    <tool file="ncbi_blast_plus/ncbi_makeblastdb.xml" />
+    <tool file="ncbi_blast_plus/ncbi_dustmasker_wrapper.xml" />
+    <tool file="ncbi_blast_plus/ncbi_convert2blastmask_wrapper.xml" />
+    <tool file="ncbi_blast_plus/ncbi_blastdbcmd_wrapper.xml" />
+    <tool file="ncbi_blast_plus/ncbi_blastdbcmd_info.xml" />
+    <tool file="ncbi_blast_plus/blastxml_to_tabular.xml" />
+    <tool file="ncbi_blast_plus/blastxml_to_tabular_selectable.xml" />
+    <tool file="globus/condor_blastp_wrapper.xml" />
+    <tool file="myTools/filter_blast_results.xml" />
+  </section>
+  <section name="Ontology services" id="ontology_services" organization_exclude="haky,cvrg">
+    <label text="NCBO Services" id="ncbo" />
+    <tool file="NCBO_services/get_ontology.xml"/>
+    <tool file="NCBO_services/extract.xml"/>
+    <tool file="NCBO_services/get_ontology_view.xml"/>
+    <tool file="NCBO_services/ncbo_annotator.xml"/>
+    <tool file="NCBO_services/ncbo_recommender.xml"/>
+    <tool file="NCBO_services/ncbo_search.xml"/>
+    <tool file="NCBO_services/ncbo_resourceIndex.xml"/>
+  </section>
+
+  <label text="Data Management" id="data_management" organization_exclude="haky,cvrg"/>
+  <section name="History Management" id="history_management" organization_exclude="haky,cvrg">
+    <tool file="batch_processing/add_to_library.xml" />
+    <tool file="batch_processing/delete_history.xml" />
+    <tool file="batch_processing/notify_user.xml" />
+    <tool file="batch_processing/get_history_log.xml" />
+  </section>
+  <section name="Data Compression" id="data_compression" organization_exclude="haky,cvrg">
+    <tool file="gunzip/gunzip.xml" />
+  </section>
+  <section name="Batch Management" id="batch" organization_exclude="haky,cvrg">
+    <tool file="isaac/create_batch_for_fastqSamples.xml" />
+    <tool file="batch_processing/create_batch_for_workflows.xml" />
+    <tool file="trena/create_batch_minid_to_snap_aligner_workflow.xml" organization_include="bdds,nihcommons" />
+    <tool file="batch_processing/batch_submit.xml" />
+    <tool file="trena/batch_submit_trena.xml" organization_include="bdds,nihcommons" />
+    <tool file="batch_processing/monitor_batch.xml" />
+    <tool file="batch_processing/monitor_batch_bdds.xml" organization_include="bdds,nihcommons" />
+    <tool file="mtb/mtb_summary.xml" />
+  </section>
+  <section name="Optimized Workflows" id="optimized_workflows" organization_exclude="haky,cvrg">
+     <tool file="optimized_workflows/snpir_optimized_workflow.xml" organization_include="averahealth"/>
+     <tool file="optimized_workflows/dnaComplete_optimized_workflow.xml" organization_include="averahealth"/>
+     <tool file="optimized_workflows/dnaCompleteExome_optimized_workflow.xml" organization_include="averahealth"/>
+     <tool file="optimized_workflows/HLI_RNASeqQC_optimized_workflow.xml" organization_include="hli"/>
+     <tool file="optimized_workflows/HLI_ExomesSeqQC_optimized_workflow.xml" organization_include="hli"/>
+     <tool file="optimized_workflows/BDDS_dnaCompleteExome_optimized_workflow.xml" organization_include="bdds,nihcommons" />
+     <tool file="optimized_workflows/BDDS_dnase_optimized_workflow.xml" organization_include="bdds,nihcommons"/>
+     <tool file="optimized_workflows/BRI_RNASEQ_TrueSeq_optimized_workflow.xml" organization_include="benaroyaresearch,bri" />
+     <tool file="optimized_workflows/BRI_RNASEQ_TrueSeq_stranded_optimized_workflow.xml" organization_include="benaroyaresearch,bri" />
+     <tool file="optimized_workflows/BRI_RNASEQ_TrueSeq_stranded_plus_trinity_optimized_workflow.xml" organization_include="benaroyaresearch,bri" />
+     <tool file="optimized_workflows/BRI_RNASEQ_Nextera_optimized_workflow.xml" organization_include="benaroyaresearch,bri" />
+     <tool file="optimized_workflows/BRI_RNASEQ_Nextera_minus_trinity_optimized_workflow.xml" organization_include="benaroyaresearch,bri" />
+     <tool file="optimized_workflows/BRI_RNASEQ_sr_human_master_v0.2_plus_tcr_optimized_workflow.xml" organization_include="benaroyaresearch,bri" />
+     <tool file="optimized_workflows/BRI_RNASEQ_sr_human_master_v0.2_optimized_workflow.xml" organization_include="benaroyaresearch,bri" />
+     <tool file="optimized_workflows/BRI_RNASEQ_sr_other_master_v0.2_optimized_workflow.xml" organization_include="benaroyaresearch,bri" />
+     <tool file="optimized_workflows/BRI_RNASEQ_Nextera_sr_GRCm38_v0.2_STAR_complete_minus_trinity_optimized_workflow.xml" organization_include="benaroyaresearch,bri" />
+     <tool file="optimized_workflows/BRI_RNASEQ_Nextera_sr_GRCm38_v0.2_STAR_complete_minus_trinity_snpcheck_optimized_workflow.xml" organization_include="benaroyaresearch,bri" />
+     <tool file="optimized_workflows/BRI_RNASEQ_Nextera_sr_GRCm38_v0.2_STAR_complete_plus_trinity_optimized_workflow.xml" organization_include="benaroyaresearch,bri" />
+     <tool file="optimized_workflows/BRI_RNASEQ_Nextera_sr_GRCm38_v0.2_STAR_complete_plus_trinity_snpcheck_optimized_workflow.xml" organization_include="benaroyaresearch,bri" />
+     <tool file="optimized_workflows/BRI_RNASEQ_Truseq_stranded_sr_GRCm38_v0.2_STAR_complete_optimized_workflow.xml" organization_include="benaroyaresearch,bri" />
+     <tool file="optimized_workflows/BRI_RNASEQ_Truseq_stranded_sr_GRCm38_v0.2_STAR_snpcheck_complete_optimized_workflow.xml" organization_include="benaroyaresearch,bri" />
+     <tool file="optimized_workflows/BRI_RNASEQ_Truseq_stranded_sr_GRCm38_v0.2_STAR_snpcheck_storeUnmapped_fastqs_complete_optimized_workflow.xml" organization_include="benaroyaresearch,bri" />
+     <tool file="optimized_workflows/COLGATE_Mothur_workflow.xml" organization_include="colgate"/>
+<!--      <tool file="optimized_workflows/NU_JAE_dnaComplete_optimized_workflow.xml" organization_include="northwestern"/> -->
+<!--      <tool file="optimized_workflows/ITMI_VCFQC_optimized_workflow.xml" organization_include="itmi"/> -->
+<!--      <tool file="optimized_workflows/ITMI_VCFQC_optimized_with_transfer_workflow.xml" organization_include="itmi"/> -->
+<!--      <tool file="optimized_workflows/EMORY_dnaComplete_optimized_workflow.xml" organization_include="emory"/> -->
+     <tool file="mtb/mtb.xml" organization_include="pilot2" />
+  </section>
+  <section name="CGI tools" id="cgi_tools" organization_include="dev,pilot1">
+    <tool file="cgi_tools/CGI_m3p_tumor_optimized_workflow.xml"/>
+    <tool file="cgi_tools/CGI_m3p_merge_optimized_workflow.xml"/>
+    <tool file="cgi_tools/CGI_alignment.xml"/>
+    <tool file="cgi_tools/CGI_SNV.xml"/>
+    <tool file="cgi_tools/CGI_CNV.xml"/>
+    <tool file="cgi_tools/CGI_postprocess_vcf_add_target_coverage.xml"/>
+    <tool file="cgi_tools/CGI_postprocess_varscan_vcf_modify_AD_FREQ_fields.xml"/>
+    <tool file="cgi_tools/get_peptide_seqs.xml"/>
+    <tool file="cgi_tools/parse_netmhc.xml" />
+    <tool file="cgi_tools/filter_peptides_with_expression.xml" />
+    <tool file="cgi_tools/rank_neoantigens.xml" />
+    <tool file="cgi_tools/HCP_pipeline_v.1.0.1.xml" />
+    <tool file="cgi_tools/calculate_TMB.xml" />
+    <tool file="cgi_tools/QC_pipeline_v.1.0.0.xml" />
+    <tool file="cgi_tools/calculate_target_qc.xml" />
+  </section>
+  <section name="Tool Parameters" id="tool_parameters" organization_exclude="haky,cvrg">
+    <tool file="tool_parameters/datetime1.xml"/>
+  </section>
+  <!--<section name="SortMeRNA" id="sortmerna">
+     <tool file="sortmerna/sortmerna_wrapper.xml" />
+  </section>
+  <section name="Flexbar" id="flexbar">
+     <tool file="flexbar/flexbarWrapper.xml" />
+  </section>
+  <section name="Intogen" id="intogen">
+   <tool file="intogen/intogenWrapper.xml" />
+  </section>-->
+</toolbox>
