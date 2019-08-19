@@ -89,7 +89,10 @@ class KubernetesJobRunner(AsynchronousJobRunner):
 
     def setup_volumes(self):
         volume_claims = dict(volume.split(":") for volume in self.runner_params['k8s_persistent_volume_claims'].split(','))
-        mountable_volumes = [{'name': claim_name, 'persistentVolumeClaim': {'claimName': claim_name}} for claim_name in volume_claims]
+        # Editted by GG
+        # use hostPath instead of NFS
+        #mountable_volumes = [{'name': claim_name, 'persistentVolumeClaim': {'claimName': claim_name}} for claim_name in volume_claims]
+        mountable_volumes = [{'name': claim_name, 'hostPath': {'path': '/{0}'.format(claim_name), 'type': 'Directory'}} for claim_name in volume_claims]
         self.runner_params['k8s_mountable_volumes'] = mountable_volumes
         volume_mounts = [{'name': claim_name, 'mountPath': mount_path} for claim_name, mount_path in volume_claims.items()]
         self.runner_params['k8s_volume_mounts'] = volume_mounts
@@ -260,6 +263,9 @@ class KubernetesJobRunner(AsynchronousJobRunner):
         # TODO include other relevant elements that people might want to use from
         # TODO http://kubernetes.io/docs/api-reference/v1/definitions/#_v1_podspec
         k8s_spec_template["spec"]["securityContext"] = self.__get_k8s_security_context()
+
+        log.debug("!!!!!!!!!!!!! {0}".format(k8s_spec_template))
+
         return k8s_spec_template
 
     def __get_k8s_security_context(self):
@@ -312,6 +318,122 @@ class KubernetesJobRunner(AsynchronousJobRunner):
 
         if self._default_pull_policy:
             k8s_container["imagePullPolicy"] = self._default_pull_policy
+
+        ############## GG function ##############
+        import boto3
+        from botocore.errorfactory import ClientError
+        s3_client = boto3.client('s3')
+        s3_bucket = ajs.job_wrapper.app.config.config_dict["gg_s3_bucket"]
+        workspace_bucket = ajs.job_wrapper.app.config.config_dict["gg_workspace_bucket"]
+        s3_bucket_key_name = ajs.job_wrapper.app.config.config_dict["gg_s3_bucket_key_name"]
+
+        working_directory = ajs.job_wrapper.working_directory
+        command_line = ajs.job_wrapper.command_line
+
+        def check_if_s3_file_exist(path):
+            try:
+                s3_client.head_object(Bucket=s3_bucket, Key=path)
+                return True
+            except ClientError:
+                return False
+
+        def get_files_list(command_line):
+            # take a command line, return a dict of two lists of path, indices and datasets
+            indices = []
+            datasets = []
+            tmp_list = command_line.split()
+            print tmp_list
+            for item in tmp_list:
+                if "/mnt/galaxyIndices/" in item:
+                    indice_path = item[item.find("/mnt/galaxyIndices/"):]
+                    indice_path = indice_path.strip('"').strip('\'').strip()
+                    indices.append(indice_path)
+                elif "/scratch/" in item:
+                    dataset_path = item[item.find("/scratch/"):]
+                    dataset_path = dataset_path.strip('"').strip('\'').strip()
+                    datasets.append(dataset_path)
+            return {"indices": indices, "datasets": datasets}
+
+        def path_convert_local_to_bucket(path):
+            # add prefix "storage" for bucket path
+            bucket_path = "storage" + path
+            return bucket_path
+
+        # get files info for uploading
+        job_files_info = get_files_list(command_line)
+
+        # create a empty file for empty dirs in the working dir, so the dir get uploaded to S3
+        for (dirpath, dirnames, filenames) in os.walk(working_directory):
+            if len(dirnames) == 0 and len(filenames) == 0:
+                open(os.path.join(dirpath,"empty_file"), "a").close()
+        # upload/sync working_directory
+        for (dirpath, dirnames, filenames) in os.walk(working_directory):
+            for filename in filenames:
+                file_path = os.path.join(dirpath, filename)
+                if not check_if_s3_file_exist(path_convert_local_to_bucket(file_path)):
+                    file_path_bucket = path_convert_local_to_bucket(file_path)
+                    s3_client.upload_file(file_path, s3_bucket, file_path_bucket)
+
+        # upload datasets
+        for dataset in job_files_info["datasets"]:
+            if not check_if_s3_file_exist(path_convert_local_to_bucket(dataset)):
+                dataset_bucket = path_convert_local_to_bucket(dataset)
+                s3_client.upload_file(dataset, s3_bucket, dataset_bucket)
+                # delete the local file
+                os.remove(dataset)
+                # create link to the bucket file
+                os.symlink("/mounted_scratch/" + dataset_bucket, dataset)
+
+        # get the job_file
+        job_file = ajs.job_file
+
+        # prepare the replacement command
+        tmp_datasets_info = ""
+        for dataset in job_files_info["datasets"]:
+            tmp_datasets_info = tmp_datasets_info + "-d {0} ".format(dataset)
+        tmp_indices_info = ""
+        for indice in job_files_info["indices"]:
+            tmp_indices_info = tmp_indices_info + "-i {0} ".format(indice)
+        replacement_command = "if [ ! -f /mnt/galaxy_job_execution_script.py ]; then aws s3 cp s3://{5}/scripts/galaxy_job_execution_script.py /mnt/galaxy_job_execution_script.py; fi; python /mnt/galaxy_job_execution_script.py --bucket {0} --workdir {1} --jobfile {2} {3} {4} --workspacebucket {5};".format(s3_bucket, working_directory, job_file, tmp_datasets_info, tmp_indices_info, workspace_bucket)
+        
+        # overwrite k8s_container
+        k8s_container["args"] = ["-c", "--", replacement_command]
+        k8s_container["command"] = ["/bin/bash"]
+
+        # append env
+        env_to_append = [{        
+          "name": "AWS_ACCESS_KEY_ID",
+          "valueFrom": {
+            "secretKeyRef": {
+              "name": s3_bucket_key_name,
+              "key": "AWS_ACCESS_KEY_ID"
+            }
+          }
+        },
+        {
+          "name": "AWS_SECRET_ACCESS_KEY",
+          "valueFrom": {
+            "secretKeyRef": {
+              "name": s3_bucket_key_name,
+              "key": "AWS_SECRET_ACCESS_KEY"
+            }
+          }
+        }]
+
+        if "env" in k8s_container and k8s_container["env"] != None and k8s_container["env"] != []:
+            tmp_env = k8s_container["env"]
+            k8s_container["env"] = tmp_env + env_to_append
+        else:
+            k8s_container["env"] = env_to_append
+
+        #k8s_container["securityContext"] = [
+        #    {"runAsUser": "4000"},
+        #    {"runAsGroup": "4000"},
+        #    {"allowPrivilegeEscalation": "false"}
+        #]
+
+        #########################################
+
 
         return [k8s_container]
 

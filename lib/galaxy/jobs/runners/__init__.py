@@ -739,6 +739,23 @@ class AsynchronousJobRunner(BaseJobRunner, Monitors):
 
         # To ensure that files below are readable, ownership must be reclaimed first
         job_state.job_wrapper.reclaim_ownership()
+        
+        ############## GG function ##############
+        # download the working dir from bucket if it exists
+        gg_s3_bucket = job_state.job_wrapper.app.config.config_dict["gg_s3_bucket"]
+        gg_job_working_directory = job_state.job_wrapper.working_directory
+        import boto3
+        s3_client = boto3.client('s3')
+        gg_job_working_directory_bucket = "storage" + gg_job_working_directory
+        tmp_result = s3_client.list_objects(Bucket=gg_s3_bucket, Prefix=gg_job_working_directory_bucket)
+        if "Contents" in tmp_result and len(tmp_result["Contents"]) > 0:
+            for i in tmp_result["Contents"]:
+                file_path_bucket = i["Key"]
+                file_path_local = file_path_bucket.replace("storage","",1)
+                if not os.path.exists(os.path.dirname(file_path_local)):
+                    os.makedirs(os.path.dirname(file_path_local))
+                s3_client.download_file(gg_s3_bucket, file_path_bucket, file_path_local)
+        #########################################
 
         # wait for the files to appear
         which_try = 0
