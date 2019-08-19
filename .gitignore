@@ -70,33 +70,33 @@ shed_data_manager_conf.xml
 object_store_conf.xml
 job_metrics_conf.xml
 workflow_schedulers_conf.xml
-config/*
+#config/*
 config/plugins/interactive_environments/**/*.ini
 !config/plugins
-static/welcome.html.*
-static/welcome.html
+#static/welcome.html.*
+#static/welcome.html
 static/client_build_hash.txt
 
 # Tool data.
-tool-data/annotation_profiler_options.xml
-tool-data/annotation_profiler_valid_builds.txt
-tool-data/gatk_annotations.txt
-tool-data/gd.restriction_enzymes.txt
-tool-data/gd.species.txt
-tool-data/shared/igv/igv_build_sites.txt
-tool-data/shared/rviewer/rviewer_build_sites.txt
-tool-data/shared/ncbi/builds.txt
-tool-data/shared/ucsc/builds.txt
-tool-data/shared/ucsc/manual_builds.txt
-tool-data/shared/ensembl/builds.txt
-tool-data/shared/ucsc/publicbuilds.txt
-tool-data/shared/ucsc/ucsc_build_sites.txt
-tool-data/*.loc
-tool-data/genome/*
-tool-data/*.sample
-tool-data/testtoolshed.g2.bx.psu.edu/
-tool-data/toolshed.g2.bx.psu.edu/
-tool-data/**/*.fa
+#tool-data/annotation_profiler_options.xml
+#tool-data/annotation_profiler_valid_builds.txt
+#tool-data/gatk_annotations.txt
+#tool-data/gd.restriction_enzymes.txt
+#tool-data/gd.species.txt
+#tool-data/shared/igv/igv_build_sites.txt
+#tool-data/shared/rviewer/rviewer_build_sites.txt
+#tool-data/shared/ncbi/builds.txt
+#tool-data/shared/ucsc/builds.txt
+#tool-data/shared/ucsc/manual_builds.txt
+#tool-data/shared/ensembl/builds.txt
+#tool-data/shared/ucsc/publicbuilds.txt
+#tool-data/shared/ucsc/ucsc_build_sites.txt
+#tool-data/*.loc
+#tool-data/genome/*
+#tool-data/*.sample
+#tool-data/testtoolshed.g2.bx.psu.edu/
+#tool-data/toolshed.g2.bx.psu.edu/
+#tool-data/**/*.fa
 
 # Test output
 .pytest_cache/
