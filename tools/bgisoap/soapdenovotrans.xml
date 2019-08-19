@@ -1,0 +1,221 @@
+<tool id="soapdenovotrans" name="SOAPdenovo-trans" version="r240">
+    <description>- perform de novo transcriptome assembly</description>
+    <requirements>
+        <requirement type="package">bgisoap</requirement>
+    </requirements>
+    <command interpreter="python">
+        soapdenovotrans.py
+
+        ## Maximum read length
+        --max_read_length=$max_read_length
+        ## Average insert size
+        --avg_ins=$avg_ins
+        ## Reverse sequence?
+        --reverse_seq=$reverse_seq
+        ## Read operations
+        --asm_flags=$asm_flags
+        ## Rank
+        --rank=$rank
+
+        ## Check if using single or paired reads
+        --type_of_data=$data_type.single_paired
+
+        #if $data_type.single_paired == &quot;single&quot;
+            --format_of_data=$data_type.data_format.fastq_fasta
+            #if $data_type.data_format.fastq_fasta == &quot;fastq&quot;
+                --single_fastq_input1=$data_type.data_format.input1
+            #else
+                --single_fasta_input1=$data_type.data_format.input1
+            #end if
+        #else
+            --format_of_data=$data_type.data_format.fastq_fasta
+            #if $data_type.data_format.fastq_fasta == &quot;fastq&quot;
+                --single_fastq_input1=$data_type.data_format.input1
+                --single_fastq_input2=$data_type.data_format.input2
+            #else
+                --single_fasta_input1=$data_type.data_format.input1
+                --single_fasta_input2=$data_type.data_format.input2
+            #end if
+        #end if
+
+        ## Output files
+        --contig=$contig
+        --scafseq=$scafseq
+
+    </command>
+    <inputs>
+        <param format="input" label="Maximum read length" name="max_read_length" type="integer" value="150"/>
+        <!-- [LIB] -->
+        <param label="Average insert size" name="avg_ins" type="integer" value="259"/>
+        <param label="Reverse sequence?" name="reverse_seq" type="select" value="0">
+            <option value="0">forward-reverse</option>
+            <option value="1">reverse-forward</option>
+        </param>
+        <param label="Which operations should the reads be used for?" name="asm_flags" type="select" value="3">
+            <option value="1">Reads only used for contig assembly</option>
+            <option value="2">Reads only used for scaffold assembly</option>
+            <option value="3">Reads used for both contig and scaffold assembly</option>
+        </param>
+        <param label="Which order are the reads used while scaffolding" name="rank" type="integer" value="1"/>
+        <!-- Actual sequence data - can be single or paired reads -->
+        <conditional name="data_type">
+            <param label="What type of data are you using?" name="single_paired" type="select">
+                <option value="single">Single</option>
+                <option value="paired">Paired</option>
+            </param>
+            <when value="single">
+                <conditional name="data_format">
+                    <param label="What type of data are you using?" name="fastq_fasta" type="select">
+                        <option value="fastq">FASTQ</option>
+                        <option value="fasta">FASTA</option>
+                    </param>
+                    <when value="fastq">
+                        <param format="input" label="Forward FASTQ file" name="input1" type="data">
+                        </param>
+                    </when>
+                    <when value="fasta">
+                        <param format="input" label="Forward FASTA file" name="input1" type="data">
+                        </param>
+                    </when>
+                </conditional>
+            </when>
+            <when value="paired">
+                <conditional name="data_format">
+                    <param label="What type of data are you using?" name="fastq_fasta" type="select">
+                        <option value="fastq">FASTQ</option>
+                        <option value="fasta">FASTA</option>
+                    </param>
+                    <when value="fastq">
+                        <param format="input" label="Forward FASTQ file" name="input1" type="data">
+                        </param>
+                        <param format="input" label="Reverse FASTQ file" name="input2" type="data">
+                        </param>
+                    </when>
+                    <when value="fasta">
+                        <param format="input" label="Forward FASTA file" name="input1" type="data">
+                        </param>
+                        <param format="input" label="Reverse FASTA file" name="input2" type="data">
+                        </param>
+                    </when>
+                </conditional>
+            </when>
+        </conditional>
+        <!-- Other parameters - commented out until more information is provided by developers -->
+        <!--<param name="reads_info_file"-->
+        <!--type="Plain text"-->
+        <!--label="Information about solexa reads"/>-->
+        <!--<param name="init_memory_assumption"-->
+        <!--type="integer"-->
+        <!--label="Initiate the memory assumption to avoid further reallocation"/>-->
+        <!--<param name="kmer"-->
+        <!--type="integer"-->
+        <!--value="23"-->
+        <!--label="k value in kmer"/>-->
+        <!--<param name="ncpu"-->
+        <!--type="integer"-->
+        <!--value="8"-->
+        <!--label="Number of CPUs to use"/>-->
+        <!--<param name="fill_gaps"-->
+        <!--type="integer"-->
+        <!--label="Fill gaps in scaffold?"/>-->
+        <!--<param name="merge_level"-->
+        <!--type="select"-->
+        <!--value="1"-->
+        <!--label="Strength of merging similar sequences during contiging">-->
+        <!--<option value="0">0</option>-->
+        <!--<option value="1">1</option>-->
+        <!--<option value="2">2</option>-->
+        <!--<option value="3">3</option>-->
+        <!--</param>-->
+        <!--<param name="kmer_freq_cutoff"-->
+        <!--type="integer"-->
+        <!--value="0"-->
+        <!--label="Delete kmers with frequency no larger than?"/>-->
+        <!--<param name="edge_cov_cutoff"-->
+        <!--type="integer"-->
+        <!--value="1"-->
+        <!--label="Delete edges with coverage no larger than?"/>-->
+        <!--<param name="gap_len_diff"-->
+        <!--type="integer"-->
+        <!--value="50"-->
+        <!--label="Allowed length difference between estimated and filled gaps"/>-->
+        <!--<param name="min_len"-->
+        <!--type="integer"-->
+        <!--value="100"-->
+        <!--label="Length of shortest contig for scaffolding"/>-->
+        <!--<param name="unmask_contigs"-->
+        <!--label="Unmask contigs with high coverage before scaffolding"/>-->
+        <!--<param name="min_len"-->
+        <!--type="select"-->
+        <!--value="no"-->
+        <!--label="Filter kmers containing N">-->
+        <!--<option value="no">No</option>-->
+        <!--<option value="yes">Yes</option>-->
+        <!--</param>-->
+        <!--<param name="contig_cov_cutoff"-->
+        <!--type="integer"-->
+        <!--value="2"-->
+        <!--label="Size of coverage by contigs to be deleted"/>-->
+        <!--<param name="info"-->
+        <!--label="Provide information between read and scaffold"/>-->
+        <!--<param name="locus_max_output"-->
+        <!--type="integer"-->
+        <!--value="5"-->
+        <!--label="Output number of transcriptome no more than in one locus"/>-->
+        <!--<param name="scaffold_struc"-->
+        <!--type="select"-->
+        <!--value="no"-->
+        <!--label="scaffold structure exists">-->
+        <!--<option value="no">No</option>-->
+        <!--<option value="yes">Yes</option>-->
+        <!--</param>-->
+    </inputs>
+    <outputs>
+        <!-- Provide 2 files as output from SOAPdenovo-trans -->
+        <data format="output" label="SOAPdenovo-trans: Contig sequence file" name="contig" type="data">
+        </data>
+        <data format="output" label="SOAPdenovo-trans: Scaffold sequence file " name="scafseq" type="data">
+        </data>
+    </outputs>
+    <tests>
+        <test>
+            <param name="max_rd_len" value="50"/>
+            <output name="output" value="hello world"/>
+        </test>
+    </tests>
+    <help>
+
+**What it does**
+
+SOAPdenovo-Trans is a de novo transcriptome assembler based on the SOAPdenovo framework. This tool has been
+adapted for alternative splicing and different expression level among transcripts.
+
+**Options**
+
+The assembler accepts read files in two formats: FASTA or FASTQ. Mate-pair relationship could be indicated in
+two ways: two sequence files with reads in the same order belonging to a pair, or two adjacent reads in a single
+file (FASTA only) belonging to a pair.
+
+The flag &quot;asm_flag&quot; has three eligible values: 1 (reads only used for contig assembly), 2 (only used for
+scaffold assembly) and 3 (used for both contig and scaffold assembly).
+
+There are two types of paired-end libraries: a) forward-reverse, generated from fragmented DNA ends with typical
+insert size less than 800 bp; b) reverse-forward, generated from circularizing libraries with typical insert
+size greater than 2 Kb. User should set parameter for tag &quot;reverse_seq&quot; to indicate this: 0, forward-reverse; 1,
+reverse-forward.
+
+**Output**
+
+Two files are generated by the SOAPdenovo-trans assembly:
+
+1. A contig sequence file
+2. A scaffold sequence file
+
+**More information**
+
+For test data and more detailed information, click here_.
+
+.. _here: http://soap.genomics.org.cn/SOAPdenovo-Trans.html
+
+    </help>
+</tool>

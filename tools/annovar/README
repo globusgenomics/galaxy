@@ -1,0 +1,213 @@
+ANNOVAR needs to be installed manually in the following way:
+
+
+1)	If you already have ANNOVAR installed on your system, simply edit the tool-data/annovar.loc file to reflect locations of 
+	the perl scripts (annotate_variation.pl and convert2annovar.pl) and humandb directory (directory containing the annovar database files)
+1b) Restart galaxy instance for changes in .loc file to take effect
+
+
+2)	If you do not have ANNOVAR installed, request annovar download and sign license here: 
+		http://www.openbioinformatics.org/annovar/annovar_download_form.php
+
+	3)	Once downloaded, install annovar per the installation instructions and edit annovar.loc file to reflect location of directory containing perl scripts.
+			tool uses annotate_variation.pl  and  convert2annovar.pl
+	
+	4)	Then download all desired databases for all desired builds as follows:
+			annotate_variation.pl -downdb -buildver <build> [-webfrom annovar] <database> <humandb>
+	
+		where <humandb> is location where all database files should be stored
+		and <database> is the database file to download, e.g. refGene (see bottom of document for all available database files at the time of writing this tool)
+		and <build> can be hg18 or hg19 for humans, also other organisms available.
+	
+		list of all available databases can be found here: http://www.openbioinformatics.org/annovar/annovar_db.html
+	
+	5) edit the tool-data/annovar.loc file to reflect location of humandb folder
+	5b) restart galaxy instance for changes in .loc file to take effect
+
+6) Tool uses cgatools join for combining of files, this should be installed automatically with repository. If not, get a copy from Complete Genomics directly:
+		wget http://sourceforge.net/projects/cgatools/files/1.7.1/cgatools-1.7.1.5-linux_binary-x86_64.tar.gz
+		tar xvzf cgatools-1.7.1.5-linux_binary-x86_64.tar.gz		
+
+	and place the "cgatools" binary found in bin/ directory on your $PATH
+	
+	
+list of files in my own humandb folder:
+
+	hg18_ALL.sites.2012_04.txt
+	hg18_ALL.sites.2012_04.txt.idx
+	hg18_avsift.txt
+	hg18_avsift.txt.idx
+	hg18_CEU.sites.2010_07.txt
+	hg18_CEU.sites.2010_07.txt.idx
+	hg18_cg46.txt
+	hg18_cg46.txt.idx
+	hg18_cg69.txt
+	hg18_cg69.txt.idx
+	hg18_cytoBand.txt
+	hg18_dgv.txt
+	hg18_ensGeneMrna.fa
+	hg18_ensGene.txt
+	hg18_esp5400_aa.txt
+	hg18_esp5400_aa.txt.idx
+	hg18_esp5400_all.txt
+	hg18_esp5400_all.txt.idx
+	hg18_esp5400_ea.txt
+	hg18_esp5400_ea.txt.idx
+	hg18_esp6500_aa.txt
+	hg18_esp6500_aa.txt.idx
+	hg18_esp6500_all.txt
+	hg18_esp6500_all.txt.idx
+	hg18_esp6500_ea.txt
+	hg18_esp6500_ea.txt.idx
+	hg18_esp6500si_aa.txt
+	hg18_esp6500si_aa.txt.idx
+	hg18_esp6500si_all.txt
+	hg18_esp6500si_all.txt.idx
+	hg18_esp6500si_ea.txt
+	hg18_esp6500si_ea.txt.idx
+	hg18_example_db_generic.txt
+	hg18_example_db_gff3.txt
+	hg18_genomicSuperDups.txt
+	hg18_gerp++gt2.txt
+	hg18_gerp++gt2.txt.idx
+	hg18_gwasCatalog.txt
+	hg18_JPTCHB.sites.2010_07.txt
+	hg18_JPTCHB.sites.2010_07.txt.idx
+	hg18_keggMapDesc.txt
+	hg18_keggPathway.txt
+	hg18_kgXref.txt
+	hg18_knownGeneMrna.fa
+	hg18_knownGene.txt
+	hg18_ljb_all.txt
+	hg18_ljb_all.txt.idx
+	hg18_ljb_lrt.txt
+	hg18_ljb_lrt.txt.idx
+	hg18_ljb_mt.txt
+	hg18_ljb_mt.txt.idx
+	hg18_ljb_phylop.txt
+	hg18_ljb_phylop.txt.idx
+	hg18_ljb_pp2.txt
+	hg18_ljb_pp2.txt.idx
+	hg18_ljb_sift.txt
+	hg18_ljb_sift.txt.idx
+	hg18_phastConsElements44way.txt
+	hg18_refGeneMrna.fa
+	hg18_refGene.txt
+	hg18_refLink.txt
+	hg18_snp128NonFlagged.txt
+	hg18_snp128NonFlagged.txt.idx
+	hg18_snp128.txt
+	hg18_snp128.txt.idx
+	hg18_snp129NonFlagged.txt
+	hg18_snp129NonFlagged.txt.idx
+	hg18_snp129.txt
+	hg18_snp129.txt.idx
+	hg18_snp130NonFlagged.txt
+	hg18_snp130NonFlagged.txt.idx
+	hg18_snp130.txt
+	hg18_snp130.txt.idx
+	hg18_snp131NonFlagged.txt
+	hg18_snp131NonFlagged.txt.idx
+	hg18_snp131.txt
+	hg18_snp131.txt.idx
+	hg18_snp132NonFlagged.txt
+	hg18_snp132NonFlagged.txt.idx
+	hg18_snp132.txt
+	hg18_snp132.txt.idx
+	hg18_tfbsConsSites.txt
+	hg18_YRI.sites.2010_07.txt
+	hg18_YRI.sites.2010_07.txt.idx
+	hg19_AFR.sites.2012_04.txt
+	hg19_AFR.sites.2012_04.txt.idx
+	hg19_ALL.sites.2010_11.txt
+	hg19_ALL.sites.2010_11.txt.idx
+	hg19_ALL.sites.2012_02.txt
+	hg19_ALL.sites.2012_02.txt.idx
+	hg19_ALL.sites.2012_04.txt
+	hg19_ALL.sites.2012_04.txt.idx
+	hg19_AMR.sites.2012_04.txt
+	hg19_AMR.sites.2012_04.txt.idx
+	hg19_ASN.sites.2012_04.txt
+	hg19_ASN.sites.2012_04.txt.idx
+	hg19_avsift.txt
+	hg19_avsift.txt.idx
+	hg19_cg46.txt
+	hg19_cg46.txt.idx
+	hg19_cg69.txt
+	hg19_cg69.txt.idx
+	hg19_cosmic61.txt
+	hg19_cosmic61.txt.idx
+	hg19_cosmic63.txt
+	hg19_cosmic63.txt.idx
+	hg19_cosmic64.txt
+	hg19_cosmic64.txt.idx
+	hg19_cosmic65.txt
+	hg19_cosmic65.txt.idx
+	hg19_cytoBand.txt
+	hg19_dgv.txt
+	hg19_ensGeneMrna.fa
+	hg19_ensGene.txt
+	hg19_esp5400_aa.txt
+	hg19_esp5400_aa.txt.idx
+	hg19_esp5400_all.txt
+	hg19_esp5400_all.txt.idx
+	hg19_esp5400_ea.txt
+	hg19_esp5400_ea.txt.idx
+	hg19_esp6500_aa.txt
+	hg19_esp6500_aa.txt.idx
+	hg19_esp6500_all.txt
+	hg19_esp6500_all.txt.idx
+	hg19_esp6500_ea.txt
+	hg19_esp6500_ea.txt.idx
+	hg19_esp6500si_aa.txt
+	hg19_esp6500si_aa.txt.idx
+	hg19_esp6500si_all.txt
+	hg19_esp6500si_all.txt.idx
+	hg19_esp6500si_ea.txt
+	hg19_esp6500si_ea.txt.idx
+	hg19_EUR.sites.2012_04.txt
+	hg19_EUR.sites.2012_04.txt.idx
+	hg19_genomicSuperDups.txt
+	hg19_gerp++gt2.txt
+	hg19_gerp++gt2.txt.idx
+	hg19_gwasCatalog.txt
+	hg19_keggMapDesc.txt
+	hg19_keggPathway.txt
+	hg19_kgXref.txt
+	hg19_knownGeneMrna.fa
+	hg19_knownGene.txt
+	hg19_ljb_all.txt
+	hg19_ljb_all.txt.idx
+	hg19_ljb_lrt.txt
+	hg19_ljb_lrt.txt.idx
+	hg19_ljb_mt.txt
+	hg19_ljb_mt.txt.idx
+	hg19_ljb_phylop.txt
+	hg19_ljb_phylop.txt.idx
+	hg19_ljb_pp2.txt
+	hg19_ljb_pp2.txt.idx
+	hg19_ljb_sift.txt
+	hg19_ljb_sift.txt.idx
+	hg19_phastConsElements46way.txt
+	hg19_refGeneMrna.fa
+	hg19_refGene.txt
+	hg19_refLink.txt
+	hg19_snp130NonFlagged.txt
+	hg19_snp130NonFlagged.txt.idx
+	hg19_snp130.txt
+	hg19_snp130.txt.idx
+	hg19_snp131NonFlagged.txt
+	hg19_snp131NonFlagged.txt.idx
+	hg19_snp131.txt
+	hg19_snp132NonFlagged.txt
+	hg19_snp132NonFlagged.txt.idx
+	hg19_snp132.txt
+	hg19_snp132.txt.idx
+	hg19_snp135NonFlagged.txt
+	hg19_snp135NonFlagged.txt.idx
+	hg19_snp135.txt
+	hg19_snp137NonFlagged.txt
+	hg19_snp137NonFlagged.txt.idx
+	hg19_snp137.txt
+	hg19_tfbsConsSites.txt
+

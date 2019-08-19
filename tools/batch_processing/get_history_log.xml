@@ -1,0 +1,37 @@
+<tool id="log_history" name="Get history log">
+   <action module="galaxy_ext.globus.tools.actions.globus" class="HistoryManagement"/>
+   <description></description>
+   <requirements>
+     <requirement type="package">pymodules</requirement>
+   </requirements>
+   <command interpreter="python">
+     get_history_log.py 
+     -k $userkey
+     --history $historyid
+     --input $input
+     -u "$url" 
+     --out $log > $log 
+   </command>
+
+   <inputs>
+     <param name="url" type="hidden" label="URL" value="**"/>
+     <param name="userkey" type="hidden" size="100" label="Key" value="**"/>
+     <param name="historyid" type="hidden" size="100" label="History id" value="**"/>
+     <param format="data" name="input" type="data" label="History item that only exists in current history"/>
+   </inputs>
+
+   <outputs>
+     <data format="txt" name="log" label="Log for deleting history"/>
+   </outputs>
+
+   <help>
+
+.. class:: infomark
+
+**Delete history**
+   This tool should only be used within a workflow. To delete histories interactively use your history panel menu.
+
+   </help>
+
+</tool>
+

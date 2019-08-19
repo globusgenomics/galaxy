@@ -1,0 +1,56 @@
+<?xml version="1.0" ?>
+<tool id="qiime_gneiss_ilr-transform" name="qiime gneiss ilr-transform" version="022019">
+	<description> - Isometric Log-ratio Transform</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command>
+	<![CDATA[
+	qiime gneiss ilr-transform --i-table=$itable --i-tree=$itree --o-balances=obalances
+
+	#if str($cmdconfig) != 'None':
+	 --cmd-config=$cmdconfig
+	#end if
+	;
+	cp obalances.qza $obalances;
+	]]>
+	</command>
+	<inputs>
+		<param format="qza,no_unzip.zip" label="--i-table: FeatureTable[Composition] The feature table containing the samples in which the ilr transform will be performed. [required]" name="itable" optional="False" type="data"/>
+		<param format="qza,no_unzip.zip" label="--i-tree: Hierarchy A hierarchy of feature identifiers that defines the partitions of features.  Each tip in the hierarchycorresponds to the feature identifiers in the table. This tree can contain tip ids that are not present in the table, but all feature ids in the table must be present in this tree.  This assumes that all of the internal nodes in the tree have labels.  [required]" name="itree" optional="False" type="data"/>
+		<param label="--cmd-config: Use config file for command options" name="cmdconfig" optional="True" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="qza" label="${tool.name} on ${on_string}: balances.qza" name="obalances"/>
+	</outputs>
+	<help>
+		<![CDATA[
+Isometric Log-ratio Transform
+------------------------------
+
+Calculate balances given a hierarchy.
+
+Parameters
+----------
+table : FeatureTable[Composition]
+    The feature table containing the samples in which the ilr transform
+    will be performed.
+tree : Hierarchy
+    A hierarchy of feature identifiers that defines the partitions of
+    features.  Each tip in the hierarchycorresponds to the feature
+    identifiers in the table. This tree can contain tip ids that are not
+    present in the table, but all feature ids in the table must be present
+    in this tree.  This assumes that all of the internal nodes in the tree
+    have labels.
+
+Returns
+-------
+balances : FeatureTable[Balance]
+    The resulting balances from the ilr transform.
+    ]]>
+	</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

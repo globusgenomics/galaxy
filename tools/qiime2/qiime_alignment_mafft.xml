@@ -1,0 +1,53 @@
+<?xml version="1.0" ?>
+<tool id="qiime_alignment_mafft" name="qiime alignment mafft" version="022019">
+	<description> - De novo multiple sequence alignment with MAFFT</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command><![CDATA[
+ 
+  qiime alignment mafft --i-sequences=$isequences
+  #set $pnthreads = '${GALAXY_SLOTS:-4}'
+
+  #if str($pnthreads):
+   --p-n-threads="$pnthreads"
+  #end if
+
+  #if str($cmdconfig) != 'None':
+   --cmd-config=$cmdconfig
+  #end if
+  
+   --o-alignment=oalignment;
+   
+   cp oalignment.qza $oalignment
+
+]]></command>
+	<inputs>
+		<param format="qza,no_unzip.zip" label="--i-sequences: FeatureData[Sequence] - The sequences to be aligned.  [required]" name="isequences" optional="False" type="data"/>
+		<param label="--cmd-config: Use config file for command options" name="cmdconfig" optional="True" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="qza" label="${tool.name} on ${on_string}: alignment.qza" name="oalignment"/>
+	</outputs>
+	<help><![CDATA[
+De novo multiple sequence alignment with MAFFT
+----------------------------------------------
+
+Perform de novo multiple sequence alignment using MAFFT.
+
+Parameters
+----------
+sequences : FeatureData[Sequence]
+    The sequences to be aligned.
+
+Returns
+-------
+alignment : FeatureData[AlignedSequence]
+    The aligned sequences.
+ ]]>
+</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

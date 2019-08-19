@@ -1,0 +1,82 @@
+<tool id="sqrs_id1" name="sqrs" version="WFDB: 10.5.20">
+  <description>
+    single-channel QRS detector based on length transform
+  </description>
+  <requirements>
+    <requirement type="package">wfdb</requirement>
+  </requirements>
+
+  <command interpreter="python">
+     wfdb_wrapper.py   
+   --program sqrs
+   --record $record
+   --data $datafile
+   --outputfile $outputfile
+   #if $options.selectOptions == &quot;advanced&quot;:
+     --begintime $options.begintime
+     --stoptime $options.stoptime
+     --resolution $options.resolution
+     --threshold $options.threshold
+     --signal $options.signal
+   #end if
+
+  </command>
+
+  <inputs>
+    <param format="hea" label="Record ID" name="record" type="data"/>
+    <param format="dat" label="Data File (*.dat)" name="datafile" type="data"/>
+    <conditional name="options">
+      <param label="Modify Options?" name="selectOptions" type="select">
+        <option selected="true" value="default">Default options</option>
+        <option value="advanced">Modify options</option>
+      </param>
+
+      <when value="default"/>
+      <when value="advanced">
+        <param help="Begin at the specified time in record (default: start of the record)." label="Start Time" name="begintime" type="text" value="0"/>
+        <param help="Process until the specified time in record (default: the end of the record)." label="Stop Time" name="stoptime" type="text" value="e"/>
+	<param checked="False" falsevalue="false" help="Read the signal files in high-resolution mode (default: standard mode). These modes are identical for ordinary records. For multifrequency records, the standard decimation of oversampled signals to the frame rate is suppressed in high-resolution mode (rather, all other signals are resampled at the highest sampling frequency)." label="High-Resolution" name="resolution" truevalue="true" type="boolean"/>
+        <param help="use higher values to reduce false detections, or lower values to reduce the number of missed beats (default: 500)" label="Specify the detection threshold" name="threshold" type="integer" value="500"/>
+        <param help="Specify the signal (number or name) to be used for QRS detection (default: 0)." label="Signal for QRS detection" name="signal" type="integer" value="0"/>
+	
+      </when>
+    </conditional>
+  </inputs>
+
+  <outputs>
+    <data format="qrs" label="${tool.name} on ${on_string}: Reference annotation file" name="outputfile"/>
+  </outputs>
+
+  <help>
+
+::
+
+   sqrs attempts to locate QRS complexes in an ECG signal in the specified record.
+   The detector algorithm is based on example 10 in the WFDB Programmer’s Guide, 
+   which in turn is based on a Pascal program written by W.A.H. Engelse and 
+   C. Zeelenberg, ‘‘A single scan algorithm for QRS-detection and feature
+   extraction’’, Computers in Cardiology 6:37-42 (1979). sqrs does not include the
+   feature extraction capability of the Pascal program. The output of sqrs is an
+   annotation file (with annotator name qrs) in which all detected beats are
+   labelled normal; the annotation file may also contain ‘artifact’ annotations at
+   locations that sqrs believes are noise-corrupted.
+
+::
+
+  usage: sqrs -r RECORD [OPTIONS ...]
+  where RECORD is the name of the record to be analyzed, and OPTIONS may include any of::
+
+   -f TIME     begin at specified time
+   -H          read multifrequency signals in high resolution mode
+   -m THRESH   set detector threshold to THRESH (default: 500)
+   -s SIGNAL   analyze specified signal (default: 0)
+   -t TIME     stop at specified time
+
+::
+
+  If too many beats are missed, decrease THRESH;  if there are too many extra
+  detections, increase THRESH.
+
+  </help>
+
+</tool>

@@ -1,0 +1,72 @@
+<?xml version="1.0" ?>
+<tool id="qiime_alignment_mask" name="qiime alignment mask" version="022019">
+	<description> - Positional conservation and gap filtering.</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command><![CDATA[
+  
+  qiime alignment mask --i-alignment=$ialignment
+
+  #if str($cmdconfig) != 'None':
+   --cmd-config=$cmdconfig
+  #end if
+ 
+   --o-masked-alignment=omaskedalignment
+
+  #if $pminconservation:
+   --p-min-conservation=$pminconservation
+  #end if
+
+  #if $pmaxgapfrequency:
+   --p-max-gap-frequency=$pmaxgapfrequency
+  #end if
+  ;
+  cp omaskedalignment.qza $omaskedalignment
+
+]]></command>
+	<inputs>
+		<param format="qza,no_unzip.zip" label="--i-alignment: FeatureData[AlignedSequence] - The alignment to be masked.  [required]" name="ialignment" optional="False" type="data"/>
+		<param label="--cmd-config: Use config file for command options" name="cmdconfig" optional="True" type="data"/>
+		<param label="--p-min-conservation: The minimum relative frequency of at least one non-gap character in a column for that column to be retained. This relative frequency must be a number between 0.0 and 1.0 (inclusive). For example, if a value of 0.4 is provided, a column will only be retained if it contains at least one character that is present in at least 40% of the sequences.  [default: 0.4]" name="pminconservation" optional="True" type="float" value="0.4"/>
+		<param label="--p-max-gap-frequency: The maximum relative frequency of gap characters in a column for the column to be retained. This relative frequency must be a number between 0.0 and 1.0 (inclusive), where 0.0 retains only those columns without gap characters, and 1.0 retains all columns regardless of gap character frequency. [default: 1.0]" name="pmaxgapfrequency" optional="True" type="float" value="1.0"/>
+	</inputs>
+	<outputs>
+		<data format="qza" label="${tool.name} on ${on_string}: maskedalignment.qza" name="omaskedalignment"/>
+	</outputs>
+	<help><![CDATA[
+
+Positional conservation and gap filtering.
+------------------------------------------
+
+Mask (i.e., filter) unconserved and highly gapped columns from an
+alignment.
+
+Parameters
+----------
+alignment : FeatureData[AlignedSequence]
+    The alignment to be masked.
+max_gap_frequency : Float, optional
+    The maximum relative frequency of gap characters in a column for the
+    column to be retained. This relative frequency must be a number between
+    0.0 and 1.0 (inclusive), where 0.0 retains only those columns without
+    gap characters, and 1.0 retains all columns regardless of gap character
+    frequency.
+min_conservation : Float, optional
+    The minimum relative frequency of at least one non-gap character in a
+    column for that column to be retained. This relative frequency must be
+    a number between 0.0 and 1.0 (inclusive). For example, if a value of
+    0.4 is provided, a column will only be retained if it contains at least
+    one character that is present in at least 40% of the sequences.
+
+Returns
+-------
+masked_alignment : FeatureData[AlignedSequence]
+    The masked alignment.
+ ]]>
+</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

@@ -1,0 +1,27 @@
+﻿<macros>
+  <import>macro_extraStrelkaArguments.xml</import>
+  <macro name="customConfiguration">
+    <param name="binSize" type="integer" value="25000000" label="binSize" help="Jobs are parallelized over segments of the reference genome no larger than this size:"/>
+    <param name="minTier1Mapq" type="integer" value="20" min="0" max="40" help="between 0 and 40, minimum MAPQ score for PE reads at tier1:" label="minTier1Mapq" />
+    <param name="minTier2Mapq" type="integer" value="5" min="0" max="5" help="between 0 and 5, minimum MAPQ score for PE and SE reads at tier2:" label="minTier2Mapq" />
+    <param name="isWriteRealignedBam" type="boolean" checked="false" truevalue="1" falsevalue="0" label="isWriteRealignedBam" help="Optionally write out read alignments which were altered during the realignment step. At the completion of the workflow run, the realigned reads can be found in:"/>
+    <param name="ssnvPrior" type="float" value="0.000001" label="ssnvPrior" help="prior probability of a somatic snv or indel"/>
+    <param name="sindelPrior" type="float" value="0.000001" label="sindelPrior" help="prior probability of a somatic snv or indel"/>
+    <param name="ssnvNoise" type="float" value="0.0000005" label="ssnvNoise" help="probability of an snv or indel noise allele NB: in the calling model a noise allele is shared in tumor and normal samples, but occurs at any frequency."/>
+    <param name="sindelNoise" type="float" value="0.000001" label="sindelNoise" help="probability of an snv or indel noise allele NB: in the calling model a noise allele is shared in tumor and normal samples, but occurs at any frequency."/>
+    <param name="ssnvNoiseStrandBiasFrac" type="float" value="0.5" label="ssnvNoiseStrandBiasFrac" help="Fraction of snv noise attributed to strand-bias. It is not recommended to change this setting. However, if it is essential to turn the strand bias penalization off, the following is recommended: Assuming the current value of ssnvNoiseStrandBiasFrac is 0.5,
+(1) set ssnvNoiseStrandBiasFrac = 0
+(2) divide the current ssnvNoise value by 2"/>
+    <param name="ssnvQuality_LowerBound" type="integer" value="15" label="ssnvQuality_LowerBound" help="Somatic quality score (QSS_NT, NT=ref) below which somatic SNVs are marked as filtered:"/>
+    <param name="sindelQuality_LowerBound" type="integer" value="30" label="sindelQuality_LowerBound" help="Somatic quality score (QSI_NT, NT=ref) below which somatic indels are marked as filtered:"/>
+    <param name="isSkipDepthFilters" type="integer" value="1" label="isSkipDepthFilters" help="isSkipDepthFilters should be set to 1 to skip depth filtration for whole exome or other targeted sequencing data"/>
+    <param name="depthFilterMultiple" type="float" value="3.0" label="depthFilterMultiple" help="If the depth filter is not skipped, all variants which occur at a depth greater than depthFilterMultiple*chromosome mean depth will be filtered out."/>
+    <param name="snvMaxFilteredBasecallFrac" type="float" value="0.4" label="snvMaxFilteredBasecallFrac" help="Somatic SNV calls are filtered at sites where greater than this fraction of basecalls have been removed by the mismatch density filter in either sample."/>
+    <param name="snvMaxSpanningDeletionFrac" type="float" value="0.75" label="snvMaxSpanningDeletionFrac" help="Somatic SNV calls are filtered at sites where greater than this fraction of overlapping reads contain deletions which span the SNV call site."/>
+    <param name="indelMaxRefRepeat" type="integer" value="8" label="indelMaxRefRepeat" help="Somatic indel calls are filtered if they represent an expansion or contraction of a repeated pattern with a repeat count greater than indelMaxRefRepeat in the reference (ie. if indelMaxRefRepeat is 8, then the indel is filtered when it is an expansion/contraction of a homopolymer longer than 8 bases, a dinucleotide repeat longer than 16 bases, etc.)"/>
+    <param name="indelMaxWindowFilteredBasecallFrac" type="float" value="0.3" label="indelMaxWindowFilteredBasecallFrac" help="Somatic indel calls are filtered if greater than this fraction of basecalls in a window extending 50 bases to each side of an indel's call position have been removed by the mismatch density filter."/>
+    <param name="indelMaxIntHpolLength" type="integer" value="14" label="indelMaxIntHpolLength" help="Somatic indels are filtered if they overlap ’interrupted homopolymers’ greater than this length. The term 'interrupted homopolymer' is used to indicate the longest homopolymer which can be found intersecting or adjacent to the called indel when a single non-homopolymer base is allowed."/>
+    <param name="maxInputDepth" type="integer" value="10000" label="maxInputDepth" help="strelka will not accept input reads above this depth (they will be skipped until the depth drops below this value). Set this value &lt;= 0 to disable this feature. Using this filter will bound memory usage given extremely high depth input, but may be problematic in high-depth targeted sequencing applications."/>
+    <expand macro="extraStrelkaArguments"/>
+  </macro>
+</macros>

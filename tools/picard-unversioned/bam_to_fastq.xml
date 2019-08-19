@@ -1,0 +1,27 @@
+<tool id="bam_to_fastq" name="SAM/BAM to fastq" force_history_refresh="True" version="0.0.1">
+  <description>Convert SAM/BAM file to fastq</description>
+  <command interpreter="python">bam_to_fastq_wrapper.py $in_bam $out $out.id $__new_file_path__</command>
+  <inputs>
+    <param format="sam,bam" name="in_bam" type="data" label="SAM/BAM file"/>
+  </inputs>
+  <outputs>
+    <data format="fastqsanger" name="out" metadata_source="in_bam"/>
+  </outputs>
+
+<help>
+**What it does**
+
+Extract sequences and quality scores from a SAM/BAM file, converting into fastq files.
+
+**Input**
+
+A SAM/BAM alignment file. 
+
+**Output**
+
+Fastq files with sequence and quality data. Output qualities are in Sanger format.
+For single end data, one fastq file is produced; paired end data will have separate
+fastq files for the forward and reverse reads.
+</help>
+
+</tool>

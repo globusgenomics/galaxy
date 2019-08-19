@@ -1,0 +1,24 @@
+﻿
+
+
+<tool id="strelka" name="Strelka" version="1.0.1">
+  <!-- Made by Gregoire Seguin-Henry for geviteam in 2014 -->
+  
+  <macros>
+    <import>macro_main.xml</import>
+    <import>macro_inputs.xml</import>
+     <!--<import>macro_configuration.xml</import>
+    <import>macro_customConfiguration.xml</import>
+    <import>macro_extraStrelkaArguments.xml</import>-->
+    <import>macro_outputs.xml</import>
+    <import>macro_tests.xml</import>
+    <import>macro_help.xml</import>
+  </macros>
+  
+  <expand macro="main"/>
+  <expand macro="inputs"/>
+  <expand macro="outputs"/>
+  <expand macro="tests"/>
+  <expand macro="help"/>
+  
+</tool>

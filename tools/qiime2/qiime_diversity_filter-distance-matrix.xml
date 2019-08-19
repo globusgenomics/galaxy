@@ -1,0 +1,92 @@
+<?xml version="1.0" ?>
+<tool id="qiime_diversity_filter-distance-matrix" name="qiime diversity filter-distance-matrix" version="022019">
+	<description> - Filter samples from a distance matrix.</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command><![CDATA[
+  qiime diversity filter-distance-matrix --i-distance-matrix=$idistancematrix
+  
+  #def list_dict_to_string(list_dict):
+  	#set $file_list = list_dict[0]['additional_input'].__getattr__('file_name')
+  	#for d in list_dict[1:]:
+  		#set $file_list = $file_list + ',' + d['additional_input'].__getattr__('file_name')
+  	#end for
+  	#return $file_list
+  #end def
+  
+   --m-metadata-file=$list_dict_to_string($input_files_mmetadatafile)
+   
+  #if '__sq__' in str($pwhere):
+    #set $pwhere_temp = $pwhere.replace('__sq__', "'")
+    #set $pwhere = $pwhere_temp
+  #end if
+  
+  #if str($pwhere):
+   --p-where="$pwhere"
+  #end if  
+  
+  #if str($cmdconfig) != 'None':
+   --cmd-config=$cmdconfig
+  #end if
+  
+  #if $pexcludeids:
+   --p-exclude-ids
+  #else
+    --p-no-exclude-ids
+  #end if
+  
+   --o-filtered-distance-matrix=ofiltereddistancematrix;
+   
+  cp ofiltereddistancematrix.qza $ofiltereddistancematrix;
+  ]]></command>
+	<inputs>
+		<param format="qza,no_unzip.zip" label="--i-distance-matrix: DistanceMatrix Distance matrix to filter by sample. [required]" name="idistancematrix" optional="False" type="data"/>
+		<repeat name="input_files_mmetadatafile" optional="False" title="--m-metadata-file">
+			<param label="--m-metadata-file: Metadata file or artifact viewable as metadata. This option may be supplied multiple times to merge metadata. Sample metadata used with \`where\` parameter when selecting samples to retain, or with \`exclude_ids\` when selecting samples to discard.  [required]" name="additional_input" type="data" format="tabular,qza,no_unzip.zip" />
+		</repeat>
+		<param label="--p-where: SQLite WHERE clause specifying sample metadata criteria that must be met to be included in the filtered distance matrix. If not provided, all samples in \`metadata\` that are also in the input distance matrix will be retained.  [optional]" name="pwhere" optional="True" type="text"/>
+		<param label="--p-exclude-ids: --p-no-exclude-ids If \`True`, the samples selected by \`metadata\` or \`where\` parameters will be excluded from the filtered distance matrix instead of being retained.  [default: False]" name="pexcludeids" checked="False" type="boolean"/>
+		<param label="--cmd-config: Use config file for command options" name="cmdconfig" optional="True" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="qza" label="${tool.name} on ${on_string}: filtered-distance-matrix.qza" name="ofiltereddistancematrix"/>
+	</outputs>
+	<help><![CDATA[
+Filter samples from a distance matrix.
+---------------------------------------
+
+Filter samples from a distance matrix, retaining only the samples matching
+search criteria specified by \`metadata\` and \`where\` parameters (or
+retaining only the samples not matching that criteria, if \`exclude_ids\` is
+True). See the filtering tutorial on https://docs.qiime2.org for additional
+details.
+
+Parameters
+----------
+distance_matrix : DistanceMatrix
+    Distance matrix to filter by sample.
+metadata : Metadata
+    Sample metadata used with \`where\` parameter when selecting samples to
+    retain, or with \`exclude_ids\` when selecting samples to discard.
+where : Str, optional
+    SQLite WHERE clause specifying sample metadata criteria that must be
+    met to be included in the filtered distance matrix. If not provided,
+    all samples in \`metadata\` that are also in the input distance matrix
+    will be retained.
+exclude_ids : Bool, optional
+    If \`True`, the samples selected by \`metadata\` or \`where\` parameters
+    will be excluded from the filtered distance matrix instead of being
+    retained.
+
+Returns
+-------
+filtered_distance_matrix : DistanceMatrix
+    Distance matrix filtered to include samples matching search criteria
+      ]]>
+	</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

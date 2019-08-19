@@ -1,0 +1,17 @@
+<tool id="findLowCovRegions" name="Find regions of low coverage">
+	<description></description>
+	<command>awk '$4 &lt; $min_depth' $input > $low_coverage_regions</command>
+	<inputs>
+		<param name="input" type="data" format="bed" label="Bed file" optional="false"/>
+		<param name="min_depth" type="float" label="Minimum depth" help="Regions that have a depth less than this will be included" value="5.0"/>
+	</inputs>
+	<outputs>
+		<data name="low_coverage_regions" type="data" format="bed" label="Low coverage regions of ${input.name}"/>
+	</outputs>
+	<help>
+
+This tool finds genomic regions that have coverage lower than a specified value.  Useful for determining if any targeted regions were not targeted well (i.e., few reads aligned at these regions).
+
+	</help>
+</tool>
+

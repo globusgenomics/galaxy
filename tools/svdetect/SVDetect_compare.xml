@@ -1,0 +1,224 @@
+<tool id="svdetect_compare" name="Compare" version="SVDETECT: SVDetect_r0.8b; SAMTOOLS: 1.2; BEDTOOLS: 2.17.0">
+
+<description>structural variants between two samples</description>
+  <requirements>
+     <requirement type="package">svdetect</requirement>
+     <requirement type="package">perlmodules</requirement>
+     <requirement type="package">samtools</requirement>
+     <requirement type="package">bedtools</requirement>
+  </requirements>
+
+<command interpreter="perl">SVDetect_compare.pl links2compare -conf '$config_file' -l '$log_file' -N '$sample_name.$reference_name'
+
+#if $links2SV
+-out1 '$common_sv_file'
+-out2 '$sample_sv_file'
+-out3 '$reference_sv_file'
+#end if
+
+#if $file_conversion.file_conversion_select==&quot;convert&quot; and $file_conversion.links2circos
+-out4 '$common_circos_file'
+-out5 '$sample_circos_file'
+-out6 '$reference_circos_file'
+#end if
+
+#if $file_conversion.file_conversion_select==&quot;convert&quot; and $file_conversion.links2bed
+-out7 '$common_bed_file'
+-out8 '$sample_bed_file'
+-out9 '$reference_bed_file'
+#end if
+
+</command>
+
+<inputs>
+	<param label="Sample Name" name="sample_name" size="20" type="text" value="sample"/>
+	<param label="Sample read 1 length (bp)" name="sample_read1_length" size="10" type="integer" value="50"/>
+	<param label="Sample read 2 length (bp)" name="sample_read2_length" size="10" type="integer" value="50"/>
+   	<param format="sv" help=".sv file" label="Sample input file" name="sample_mates_file" type="data"/>
+	
+	<param label="Reference Name" name="reference_name" size="20" type="text" value="reference"/>
+	<param label="Reference read 1 length (bp)" name="reference_read1_length" size="10" type="integer" value="50"/>
+	<param label="Reference read 2 length (bp)" name="reference_read2_length" size="10" type="integer" value="50"/>
+   	<param format="sv" help=".sv file" label="Reference input file" name="reference_mates_file" type="data"/>
+	
+	<param label="Minimum overlap of links required as a fraction" name="min_overlap" size="10" type="float" value="0.05"/>
+	<param checked="True" falsevalue="0" label="Comparison of SVs with the same type only ?" name="same_sv_type" truevalue="1" type="boolean"/>
+
+	<param checked="True" falsevalue="0" label="Do you want to have filtered links in a tabulated file format showing significant SVs?" name="links2SV" truevalue="1" type="boolean"/>
+		
+	<conditional name="file_conversion">
+		<param help="Converts filtered links to Circos/BED files format for graphical view of SVs" label="Output file conversion" name="file_conversion_select" type="select">
+			<option value="do_not_convert">No</option>
+			<option value="convert">Yes</option>
+		</param>
+		<when value="do_not_convert">
+				<!-- do nothing here -->
+		</when>
+		<when value="convert">
+			<param checked="True" falsevalue="0" label="Converts the link list to the Circos link format" name="links2circos" truevalue="1" type="boolean"/>
+			<param checked="False" falsevalue="0" label="Converts the link list to the UCSC BED format" name="links2bed" truevalue="1" type="boolean"/>
+			<param label="Organism ID" name="organism_id" size="10" type="text" value="hs"/>
+			<repeat max="7" min="1" name="color_code" title="Color-code">
+				<param label="Color" name="color" type="select">
+					<option value="grey">grey</option>
+					<option value="black">black</option>
+					<option value="blue">blue</option>
+					<option value="green">green</option>
+					<option value="purple">purple</option>
+					<option value="orange">orange</option>
+					<option value="red">red</option>
+				</param>
+				<param label="Interval" name="interval" type="text" value="1,3"/>
+			</repeat>
+		</when>
+	</conditional>
+</inputs>
+
+
+
+<outputs>
+	<data format="sv" label="common.compared.sv" name="common_sv_file">
+		<filter>links2SV is True</filter>
+	</data>
+	<data format="sv" label="${sample_name}.compared.sv" name="sample_sv_file">
+		<filter>links2SV is True</filter>
+	</data>
+	<data format="sv" label="${reference_name}.compared.sv" name="reference_sv_file">
+		<filter>links2SV is True</filter>
+	</data>
+
+	<data format="segdup" label="common.compared.segdup" name="common_circos_file">
+		<filter>(
+			file_conversion['file_conversion_select']==&quot;convert&quot; and
+			file_conversion['links2circos'] is True
+			)
+		</filter>
+	</data>
+	<data format="segdup" label="${sample_name}.compared.segdup" name="sample_circos_file">
+		<filter>(
+			file_conversion['file_conversion_select']==&quot;convert&quot; and
+			file_conversion['links2circos'] is True
+			)
+		</filter>
+	</data>
+	<data format="segdup" label="${reference_name}.compared.segdup" name="reference_circos_file">
+		<filter>(
+			file_conversion['file_conversion_select']==&quot;convert&quot; and
+			file_conversion['links2circos'] is True
+			)
+		</filter>
+	</data>
+
+	<data format="bed" label="common.compared.bed" name="common_bed_file">
+		<filter>(
+			file_conversion['file_conversion_select']==&quot;convert&quot; and
+			file_conversion['links2bed'] is True
+			)
+		</filter>
+	</data>
+	<data format="bed" label="${sample_name}.compared.bed" name="sample_bed_file">
+		<filter>(
+			file_conversion['file_conversion_select']==&quot;convert&quot; and
+			file_conversion['links2bed'] is True
+			)
+		</filter>
+	</data>
+	<data format="bed" label="${reference_name}.compared.bed" name="reference_bed_file">
+		<filter>(
+			file_conversion['file_conversion_select']==&quot;convert&quot; and
+			file_conversion['links2bed'] is True
+			)
+		</filter>
+	</data>
+
+	<data format="txt" label="${sample_name}.${reference_name}.svdetect_compare.log" name="log_file"/>
+</outputs>
+
+
+
+<configfiles>
+	<configfile name="config_file">
+&lt;general&gt;
+output_dir=$__new_file_path__/svdetect
+&lt;/general&gt; 
+
+#if $file_conversion.file_conversion_select == &quot;convert&quot;
+#if $file_conversion.links2circos
+&lt;circos&gt;
+organism_id=${file_conversion.organism_id}
+&lt;colorcode&gt;
+#for $color_repeat in $file_conversion.color_code
+${color_repeat.color}=${color_repeat.interval}
+#end for
+&lt;/colorcode&gt;
+&lt;/circos&gt;
+#end if
+#if $file_conversion.links2bed
+&lt;bed&gt;
+&lt;colorcode&gt;
+#for $color_repeat in $file_conversion.color_code
+#if str($color_repeat.color)== &quot;grey&quot;
+190,190,190=${color_repeat.interval}
+#end if
+#if str($color_repeat.color)== &quot;black&quot;
+0,0,0=${color_repeat.interval}
+#end if
+#if str($color_repeat.color)== &quot;blue&quot;
+0,0,255=${color_repeat.interval}
+#end if
+#if str($color_repeat.color)== &quot;green&quot;
+0,255,0=${color_repeat.interval}
+#end if
+#if str($color_repeat.color)== &quot;purple&quot;
+153,50,205=${color_repeat.interval}
+#end if
+#if str($color_repeat.color)== &quot;orange&quot;
+255,140,0=${color_repeat.interval}
+#end if
+#if str($color_repeat.color)== &quot;red&quot;
+255,0,0=${color_repeat.interval}
+#end if
+#end for
+&lt;/colorcode&gt;
+&lt;/bed&gt;
+#end if
+#end if
+
+&lt;compare&gt;
+list_samples=${sample_name},${reference_name}
+list_read_lengths=${sample_read1_length}-${sample_read2_length},${reference_read1_length}-${reference_read2_length}
+sample_link_file=${sample_mates_file}
+reference_link_file=${reference_mates_file}
+min_overlap=${min_overlap}
+same_sv_type=${same_sv_type}
+sv_output=${links2SV}
+#if $file_conversion.file_conversion_select == &quot;convert&quot;
+circos_output=${$file_conversion.links2circos}
+bed_output=${$file_conversion.links2bed}
+#end if
+&lt;/compare&gt; 
+
+	</configfile>
+</configfiles>
+
+  <help>
+**What it does**
+
+SVDetect - Version : 0.8b
+
+Comparison of clusters between two samples to get common or sample-specific SVs
+
+This program is designed to compare filtered links between two anomalously mapped mate-pair/paired-end datasets
+and to identify common and sample-specific SVs (like the usual sample/reference design).
+Overlaps between coordinates of clusters and types of SVs are used as parameters of comparison.
+
+Manual documentation available at the http://svdetect.sourceforge.net/Site/Manual.html
+
+-----
+
+.. class:: infomark
+
+Contact Bruno Zeitouni (svdetect@curie.fr) for any questions or concerns about the Galaxy implementation of SVDetect.
+  </help>
+
+</tool>

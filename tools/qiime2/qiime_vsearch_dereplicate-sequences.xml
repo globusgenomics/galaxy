@@ -1,0 +1,57 @@
+<?xml version="1.0" ?>
+<tool id="qiime_vsearch_dereplicate-sequences" name="qiime vsearch dereplicate-sequences" version="022019">
+	<description> - Dereplicate sequences.</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command>
+	<![CDATA[
+	qiime vsearch dereplicate-sequences --i-sequences=$isequences --o-dereplicated-sequences=odereplicatedsequences
+
+	#if str($cmdconfig) != 'None':
+	 --cmd-config=$cmdconfig
+	#end if
+	 --o-dereplicated-table=odereplicatedtable;
+
+	cp odereplicatedsequences.qza $odereplicatedsequences;
+	cp odereplicatedtable.qza $odereplicatedtable;
+	]]>
+	</command>
+	<inputs>
+		<param format="qza,no_unzip.zip" label="--i-sequences: SampleData[JoinedSequencesWithQuality] | SampleData[SequencesWithQuality] | SampleData[Sequences] The sequences to be dereplicated. [required]" name="isequences" optional="False" type="data"/>
+
+		<param label="--cmd-config: Use config file for command options" name="cmdconfig" optional="True" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="qza" label="${tool.name} on ${on_string}: dereplicated-sequences.qza" name="odereplicatedsequences"/>
+		<data format="qza" label="${tool.name} on ${on_string}: dereplicated-table.qza" name="odereplicatedtable"/>
+	</outputs>
+	<help>
+		<![CDATA[
+Dereplicate sequences.
+-----------------------
+
+Dereplicate sequence data and create a feature table and feature
+representative sequences. Feature identfiers in the resulting artifacts
+will be the sha1 hash of the sequence defining each feature. If clustering
+of features into OTUs is desired, the resulting artifacts can be passed to
+the cluster_features_* methods in this plugin.
+
+Parameters
+----------
+sequences : SampleData[JoinedSequencesWithQuality] | SampleData[SequencesWithQuality] | SampleData[Sequences]
+    The sequences to be dereplicated.
+
+Returns
+-------
+dereplicated_table : FeatureTable[Frequency]
+    The table of dereplicated sequences.
+dereplicated_sequences : FeatureData[Sequence]
+    The dereplicated sequences.
+		]]>
+	</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

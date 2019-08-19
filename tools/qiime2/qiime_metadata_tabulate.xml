@@ -1,0 +1,70 @@
+<?xml version="1.0" ?>
+<tool id="qiime_metadata_tabulate" name="qiime metadata tabulate" version="022019">
+	<description> - Interactively explore Metadata in an HTML table</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command>
+	<![CDATA[
+	qiime metadata tabulate
+
+	#def list_dict_to_string(list_dict):
+		#set $file_list = list_dict[0]['additional_input'].__getattr__('file_name')
+		#for d in list_dict[1:]:
+			#set $file_list = $file_list + ' --m-input-file=' + d['additional_input'].__getattr__('file_name')
+		#end for
+		#return $file_list
+	#end def
+
+	 --m-input-file=$list_dict_to_string($input_files_minputfile)
+	#if str($cmdconfig) != 'None':
+	 --cmd-config=$cmdconfig
+	#end if
+
+	#if $ppagesize:
+	 --p-page-size=$ppagesize
+	#end if
+	 --o-visualization=ovisualization;
+	qiime tools export --input-path ovisualization.qzv --output-path out  && mkdir -p '$ovisualization.files_path'
+	&& cp -r out/* '$ovisualization.files_path'
+	&& mv '$ovisualization.files_path/index.html' '$ovisualization'
+	]]>
+	</command>
+	<inputs>
+		<repeat name="input_files_minputfile" optional="False" title="--m-input-file">
+			<param label="--m-input-file: Metadata file or artifact viewable as metadata. This option may be supplied multiple times to merge metadata. The metadata to tabulate.  [required]" name="additional_input" type="data" format="tabular,qza,no_unzip.zip" />
+		</repeat>
+
+		<param label="--p-page-size: The maximum number of Metadata records to display per page  [default: 100]" name="ppagesize" optional="True" type="integer" value="100"/>
+
+		<param label="--cmd-config: Use config file for command options" name="cmdconfig" optional="True" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="html" label="${tool.name} on ${on_string}: visualization.qzv" name="ovisualization"/>
+	</outputs>
+	<help>
+ <![CDATA[
+Interactively explore Metadata in an HTML table
+------------------------------------------------
+
+Generate a tabular view of Metadata. The output visualization supports
+interactive filtering, sorting, and exporting to common file formats.
+
+Parameters
+----------
+input : Metadata
+    The metadata to tabulate.
+page_size : Int, optional
+    The maximum number of Metadata records to display per page
+
+Returns
+-------
+visualization : Visualization
+		\
+   	]]>
+</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

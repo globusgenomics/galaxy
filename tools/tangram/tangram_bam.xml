@@ -1,0 +1,30 @@
+<tool id="tangram_bam" name="Tangram BAM" version="TANGRAM: default">
+  <requirements>
+    <requirement type="package">tangram</requirement>
+  </requirements>
+  <description>Format input BAM file to Mosaik BAM&quot;</description>
+  <command>
+    tangram_bam
+      -i $input
+      -r  &quot;\$TANGRAM_DATA/moblist_19Feb2010_sequence_length60.fa&quot; 
+      -o $output
+      #if str ( $target ) != &quot;all&quot;:
+          -t $target
+      #end if
+  </command>
+  <inputs>
+    <param format="bam" label="input a BAM File" name="input" type="data"/>
+    <!-- <param name="ref" type="data" format="fasta" label="input Reference file in Fasta format" /> -->
+    <param help="Optional. Default is all" label="Target chromosome region" name="target" type="text" value="all"/>
+  </inputs>
+  <outputs>
+    <data format="bam" label="${tool.name} on ${on_string}: Mosaik BAM for Tangram" name="output"/>
+  </outputs>
+  <help>
+
+**What it does**
+
+tangram_bam will add ZA tags that are required for the following detection. Uses the REF file for moblist_19Feb2010_sequence_length60.fa
+
+  </help>
+</tool>

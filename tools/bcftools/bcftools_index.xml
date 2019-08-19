@@ -1,0 +1,40 @@
+<tool id="BCF Tools Index" name="BCF Tools Index" version="SAMTOOLS: 0.1.18">
+  <description>This tool allows the user to index sorted BCF for random access.</description>
+
+  <requirements>
+        <requirement type="package" version="0.1.18">samtools</requirement>
+    </requirements>
+
+  <command interpreter="python">bcftools_wrapper.py bcftools index $input &gt; $output </command>
+
+  <inputs>
+    <param format="bcf" label="BCF File" name="input" type="data"/>
+  </inputs>
+
+  <outputs>
+    <data format="bcf" label="BCF index output" name="output"/>
+  </outputs>
+
+     <help>
+**What it does:** 
+
+This tool allows the user to index sorted BCF for random access using BCFtools index from the SAMtools set of utilities:
+
+http://samtools.sourceforge.net/samtools.shtml#4
+
+------
+
+**Citation:**
+
+For the underlying tool, please cite `Li H, Handsaker B, Wysoker A, Fennell T, Ruan J, Homer N, Marth G, Abecasis G, Durbin R; 1000 Genome Project Data Processing Subgroup. The Sequence Alignment/Map format and SAMtools. Bioinformatics. 2009 Aug 15;25(16):2078-9. &lt;http://www.ncbi.nlm.nih.gov/pubmed/19505943&gt;`_
+
+
+If you use this tool within Galaxy, please cite `Gregory Minevich, Danny S. Park, Daniel Blankenberg, Richard J. Poole, and Oliver Hobert.  CloudMap: A Cloud-based Pipeline for Analysis of Mutant Genome Sequences. (Genetics 2012 In Press)`__
+
+    .. __: http://biochemistry.hs.columbia.edu/labs/hobert/literature.html
+
+Correspondence to gm2123@columbia.edu (G.M.) or or38@columbia.edu (O.H.)
+
+    </help>
+
+</tool>

@@ -1,0 +1,17 @@
+<tool id="dada2-dereplicate-fastq" name="dada2: Dereplicate FASTQ" version="3.4.4">
+  <description>
+  </description>
+  <requirements>
+    <requirement type="package" version="3.4.4">R</requirement>
+  </requirements>
+  <command>
+    Rscript dada2-dereplicate-fastq.R
+  </command>
+  <inputs>
+  </inputs>
+  <outputs>
+  </outputs>
+  <citations>
+    <citation type="doi">10.1038/nmeth.3869</citation>
+  </citations>
+</tool>

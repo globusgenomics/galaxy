@@ -1,0 +1,185 @@
+<?xml version="1.0"?>
+
+<tool name="Atlas SNP2" id="Atlas_SNP2_id">
+  <description>
+  </description>
+
+  <command interpreter="python">
+     Atlas-SNP2.py   
+   $input_BAM
+   $input_FASTA
+   $platform
+
+    #if str( $target_region ):
+        $target_region
+    #else:
+	none
+    #end if
+
+   #if $outputVCF.output_VCF == "Yes":
+	#if str( $outputVCF.sample_name ):
+	   $outputVCF.sample_name
+	#else:
+           samplename
+        #end if
+   #else:
+	no
+   #end if
+
+    #if str( $cutoff ):
+        $cutoff
+    #else:
+	none
+    #end if
+
+    #if str( $min_coverage ):
+        $min_coverage
+    #else:
+	none
+    #end if
+
+    #if str( $prior_prob_e ):
+        $prior_prob_e
+    #else:
+	none
+    #end if
+
+    #if str( $prior_prob_l ):
+        $prior_prob_l
+    #else:
+	none
+    #end if
+
+    #if str( $filter_m ):
+        $filter_m
+    #else:
+	none
+    #end if
+
+    #if str( $filter_g ):
+        $filter_g
+    #else:
+	none
+    #end if
+
+    #if str( $filter_f ):
+        $filter_f
+    #else:
+	none
+    #end if
+
+    #if str( $filter_p ):
+        $filter_p
+    #else:
+	none
+    #end if
+
+   $input_BAI
+
+   $output
+   $output_vcf
+  </command>
+
+  <inputs>
+
+    <param name="input_BAM" type="data" format="bam" label="Select a BAM file" help="BAM format alignment file (Required to be sorted by start position)"/>
+    <param name="input_FASTA" type="data" format="fasta" label="Select a FASTA file as reference" help="FASTA format reference sequence file (Required)"/>
+    <param name="input_BAI" type="data" label="Select a .bai file as reference" help="The index file of the input BAM file (Required)"/>
+
+    <param name="platform" type="select" label="Choosing Platform:">
+        <option value="-x" selected="true">454 Titanium</option>
+        <option value="-s" >Illumina</option>
+    </param>
+
+    <param name="target_region" type="text"  value="" label="Target Region (optional)"  help="Only call SNPs on given target region" />
+
+    <conditional name="outputVCF">
+      <param name="output_VCF" type="select" label="Output genotypes in VCF format?">
+        <option value="Yes" >Yes</option>
+        <option value="No" selected="true">No</option>
+      </param>
+      <when value="No" />
+      <when value="Yes">
+        <param name="sample_name" type="text"  value="" label="Sample name used in VCF file" help="If you select outputting genotypes in VCF format, sample name must be specified."/>
+      </when>
+    </conditional>
+
+    <param name="cutoff" type="text"  value="" label="Posterior probability cutoff (optional)"  help="Posterior probability cutoff (Default is 0.95)" />
+    <param name="min_coverage" type="text"  value="" label="Minimal Coverage (optional)"  help="Minimal Coverage required for high confidence SNP calls (Default is 8)" />
+
+    <param name="prior_prob_e" type="text"  value="" label="-e, prior probability (optional)"  help="Prior(error|c) when variant coverage number is above 2 for 454 and Illumina data (Default is 0.1)" />
+    <param name="prior_prob_l" type="text"  value="" label="-l, prior probability (optional)"  help="Prior(error|c) when variant coverage number is 1 or 2 for 454 data (Default is 0.9) " />
+
+    <param name="filter_m" type="text"  value="" label="-m, maximum percentage of substitution bases (optional)"  help="maximum percentage of substitution bases allowed in the alignment (Default is 5.0) " />
+    <param name="filter_g" type="text"  value="" label="-g, maximum percentage of insertion and deletion bases (optional)"  help="maximum percentage of insertion and deletion bases allowed in the alignment (Default is 5.0) " />
+    <param name="filter_f" type="text"  value="" label="-f, maximum number of alignments (optional)"  help="maximum number of alignments allowed to be piled up on a site (Default is 1024) " />
+    <param name="filter_p" type="text"  value="" label="-p, insertion size for pair-end re-sequencing data (optional)"  help="insertion size for pair-end re-sequencing data (Default is 0) " />
+
+  </inputs>
+
+  <outputs>
+    <data name="output" label="Output of Atlas2-SNP2 on ${on_string}.snp" />
+    <data name="output_vcf" format="vcf" label="Output of Atlas2-SNP2 on ${on_string}.vcf" >
+       <filter>outputVCF['output_VCF'] == "Yes"</filter>
+    </data>
+  </outputs>
+
+  <help>
+Atlas-SNP2_ is designed to evaluate and distinguish true SNPs from sequencing and mapping errors in
+whole-exome capture sequencing (WECS) data.
+
+ .. _Atlas-SNP2: http://www.hgsc.bcm.tmc.edu/cascade-tech-software_atlas2_snp_indel_calling_pipeline-ti.hgsc
+
+**Usage:**
+
+ruby Atlas-SNP2.rb Atlas-SNP2.rb -i [in.sorted.bam] -r [reference.fa] -o [output file] [choosing platform] [Setting up VCF output] [choosing platform] [Setting up VCF output]
+
+**Arguments:**
+
+Atlas-SNP2 is coded in Ruby and basic usage can be viewed by running the program without any
+arguments.
+
+-i    FILE    BAM format alignment file (Required to be sorted by start position)
+
+-r    FILE    FASTA format reference sequence file (Required)
+
+-o    STR    name of output result file (Required)
+
+-t    STR    Only call SNPs on given target region (Optional, please refer "samtools view" for the target region format)
+
+Platform:
+
+-s    Illumina
+
+-x    454 Titanium
+
+Setting up VCF output:
+
+-v    Output genotypes in VCF format
+
+-n    Sample name used in VCF file (Required when choosing VCF output)
+
+-c    Posterior probability cutoff (Default is 0.95)
+
+-y    Minimal Coverage required for high confidence SNP calls (Default is 8)
+
+
+Setting up prior probability:
+
+-e    FLT    Prior(error|c) when variant coverage number is above 2 for 454 and Illumina data (Default is 0.1)
+
+-l    FLT    Prior(error|c) when variant coverage number is 1 or 2 for 454 data (Default is 0.9)
+
+Setting up filters:
+
+-m    FLT    maximum percentage of substitution bases allowed in the alignment (Default is 5.0)
+
+-g    FLT    maximum percentage of insertion and deletion bases allowed in the alignment (Default is 5.0)
+
+-f    INT    maximum number of alignments allowed to be piled up on a site (Default is 1024)
+
+-p    INT    insertion size for pair-end re-sequencing data (Default is 0)
+
+  </help>
+
+</tool>

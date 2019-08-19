@@ -1,0 +1,110 @@
+<?xml version="1.0" ?>
+<tool id="qiime_quality-control_exclude-seqs" name="qiime quality-control exclude-seqs" version="022019">
+	<description> - Exclude sequences by alignment</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command>
+    <![CDATA[
+    qiime quality-control exclude-seqs --i-reference-sequences=$ireferencesequences --i-query-sequences=$iquerysequences
+#if str($pevalue):
+ --p-evalue="$pevalue"
+#end if
+
+#if $ppercidentity:
+ --p-perc-identity=$ppercidentity
+#end if
+
+#if $ppercqueryaligned:
+ --p-perc-query-aligned=$ppercqueryaligned
+#end if
+
+#if str($cmdconfig) != 'None':
+ --cmd-config=$cmdconfig
+#end if
+ --o-sequence-hits=osequencehits --o-sequence-misses=osequencemisses
+#if str($pmethod) != 'None':
+ --p-method=$pmethod
+#end if
+
+#set $pthreads = '${GALAXY_SLOTS:-4}'
+
+#if str($pthreads):
+ --p-threads="$pthreads"
+#end if
+;
+cp osequencehits.qza $osequencehits;
+cp osequencemisses.qza $osequencemisses;
+  ]]>
+  </command>
+	<inputs>
+		<param format="qza,no_unzip.zip" label="--i-query-sequences: FeatureData[Sequence] Sequences to test for exclusion  [required]" name="iquerysequences" optional="False" type="data"/>
+		<param format="qza,no_unzip.zip" label="--i-reference-sequences: FeatureData[Sequence] Reference sequences to align against feature sequences  [required]" name="ireferencesequences" optional="False" type="data"/>
+
+		<param label="--p-method: Alignment method to use for matching feature
+                                  sequences against reference sequences
+                                  [default: blast]" name="pmethod" optional="True" type="select">
+			<option selected="True" value="None">Selection is Optional</option>
+			<option value="vsearch">vsearch</option>
+			<option value="blast">blast</option>
+			<option value="blastn-short">blastn-short</option>
+		</param>
+
+		<param label="--p-perc-identity: Reject match if percent identity to reference is lower. Must be in range [0.0, 1.0]  [default: 0.97]" name="ppercidentity" optional="True" type="float" value="0.97"/>
+		<param label="--p-evalue: BLAST expectation (E) value threshold for saving hits. Reject if E value is higher than threshold. This threshold is disabled by default.  [optional]" name="pevalue" optional="True" type="text"/>
+		<param label="--p-perc-query-aligned: Percent of query sequence that must align to reference in order to be accepted as a hit. [default: 0.97]" name="ppercqueryaligned" optional="True" type="float" value="0.97"/>
+
+		<param label="--cmd-config: Use config file for command options" name="cmdconfig" optional="True" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="qza" label="${tool.name} on ${on_string}: sequence-hits.qza" name="osequencehits"/>
+		<data format="qza" label="${tool.name} on ${on_string}: sequence-misses.qza" name="osequencemisses"/>
+	</outputs>
+	<help><![CDATA[
+Exclude sequences by alignment
+-------------------------------
+
+This method aligns feature sequences to a set of reference sequences to
+identify sequences that hit/miss the reference within a specified
+perc_identity, evalue, and perc_query_aligned. This method could be used to
+define a positive filter, e.g., extract only feature sequences that align
+to a certain clade of bacteria; or to define a negative filter, e.g.,
+identify sequences that align to contaminant or human DNA sequences that
+should be excluded from subsequent analyses. Note that filtering is
+performed based on the perc_identity, perc_query_aligned, and evalue
+thresholds (the latter only if method==BLAST and an evalue is set). Set
+perc_identity==0 and/or perc_query_aligned==0 to disable these filtering
+thresholds as necessary.
+
+Parameters
+----------
+query_sequences : FeatureData[Sequence]
+    Sequences to test for exclusion
+reference_sequences : FeatureData[Sequence]
+    Reference sequences to align against feature sequences
+method : Str % Choices({'blast', 'blastn-short', 'vsearch'}), optional
+    Alignment method to use for matching feature sequences against
+    reference sequences
+perc_identity : Float % Range(0.0, 1.0, inclusive_end=True), optional
+    Reject match if percent identity to reference is lower. Must be in
+    range [0.0, 1.0]
+evalue : Float, optional
+    BLAST expectation (E) value threshold for saving hits. Reject if E
+    value is higher than threshold. This threshold is disabled by default.
+perc_query_aligned : Float, optional
+    Percent of query sequence that must align to reference in order to be
+    accepted as a hit.
+
+Returns
+-------
+sequence_hits : FeatureData[Sequence]
+    Subset of feature sequences that align to reference sequences
+sequence_misses : FeatureData[Sequence]
+    Subset of feature sequences that do not align to reference sequences
+      ]]>
+	</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

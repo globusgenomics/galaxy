@@ -1,0 +1,47 @@
+<tool id="clipping_profile" name="Clipping Profile" version="RSEQC: 2.3.3">
+	<description>
+	 estimates clipping profile of RNA-seq reads from BAM or SAM file
+	</description>
+	<requirements>
+		<requirement type="package">R</requirement>
+		<requirement type="package">rseqc</requirement>
+                <requirement type="package">pymodules</requirement>
+	</requirements>
+	<command>
+		clipping_profile.py -i $input -o output 2&gt; $outputlog
+	</command>
+	<inputs>
+		<param format="bam,sam" label="Input .bam/.sam File" name="input" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="xls" from_work_dir="output.clipping_profile.xls" label="${tool.name} on ${on_string}: Clippling Profile" name="outputxls"/>
+		<data format="r" from_work_dir="output.clipping_profile.r" label="${tool.name} on ${on_string}: R script" name="outputr"/>
+                <data format="txt" label="${tool.name} on ${on_string}: log" name="outputlog"/>
+	</outputs>
+	<help>
+.. image:: https://code.google.com/p/rseqc/logo?cct=1336721062
+
+-----
+
+About RSeQC
++++++++++++
+
+The RSeQC package provides a number of useful modules that can comprehensively evaluate high throughput sequence data especially RNA-seq data. “Basic modules” quickly inspect sequence quality, nucleotide composition bias, PCR bias and GC bias, while “RNA-seq specific modules” investigate sequencing saturation status of both splicing junction detection and expression estimation, mapped reads clipping profile, mapped reads distribution, coverage uniformity over gene body, reproducibility, strand specificity and splice junction annotation.
+
+The RSeQC package is licensed under the GNU GPL v3 license.
+
+Inputs
+++++++++++++++
+
+Input BAM/SAM file
+	Alignment file in BAM/SAM format.
+
+
+Sample Output
+++++++++++++++
+
+.. image:: http://dldcc-web.brc.bcm.edu/lilab/liguow/RSeQC/figure/clipping_good.png
+
+
+	</help>
+</tool>

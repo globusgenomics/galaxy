@@ -1,0 +1,105 @@
+<tool id="tabix" name="tabix" version="TABIX: 0.2.6">
+    <description>Generic indexer for TAB-delimited genome position files.</description>
+    <requirements>
+        <requirement type="package">tabix</requirement>
+    </requirements>
+    <command>
+        #if str($optional.extension) == "vcf":
+          ln -s $input input.vcf;
+          bgzip -c input.vcf > ./input.vcf.gz;
+        #end if
+        python $__tool_directory__/tabix_wrapper.py
+
+    #if str($optional.extension) == &quot;tabular&quot;
+	#if str($optional.position) == &quot;no&quot;
+            -P '-0'
+        #end if
+        #if str($optional.columnseq) != &quot;&quot;
+            -P '-s $optional.columnseq'
+        #end if
+
+        #if str($optional.columnstart) != &quot;&quot;
+            -P '-b $optional.columnstart' 
+        #end if
+
+        #if str($optional.columnend) != &quot;&quot;
+            -P '-e $optional.columnend'
+        #end if
+
+        #if str($optional.skiplines) != &quot;&quot;
+            -P '-S $optional.skiplines'
+        #end if
+
+        #if str($optional.skipchar) != &quot;&quot;
+            -P '-c $optional.skipchar'
+        #end if
+    #end if
+
+    -P '-p $optional.extension'
+    #if str($optional.extension) == "vcf":
+        -i ./input.vcf.gz
+    #else:
+        -i $input
+    #end if
+
+    #if str($region) != &quot;None&quot;:
+        -P '$region'
+    #end if
+    -o $output    
+
+    </command>
+    <inputs>
+        <param format="gff,bed,sam,vcf,tabular,bgz" label="Input file" name="input" type="data">
+             </param>
+        <param label="Regions (seperate with spaces)" name="region" optional="true" type="text"> </param>
+        <conditional name="optional">
+            <param label="Input Extension" name="extension" type="select" value="tabular"> 
+                <option value="tabular">tabular</option>
+                <option value="gff">gff</option>
+                <option value="bed">bed</option>
+                <option value="sam">sam</option>
+                <option value="vcf">vcf</option>
+            </param>       
+            <when value="tabular">
+                     <param label="Column of sequence name" name="columnseq" optional="true" type="integer"/>
+                     <param label="Column of start chromosomal position" name="columnstart" optional="true" type="integer"/>
+                     <param label="Column of end chromosomal position" name="columnend" optional="true" type="integer"/>
+                     <param label="Skip first INT lines" name="skiplines" optional="true" type="integer"/>
+                     <param label="Skip lines started with CHAR" name="skipchar" optional="true" type="text"/>
+                     <param label="1-based? (if not, 0-based)" name="position" type="select" value="yes">
+                        <option value="yes">yes</option>
+                        <option value="no">no</option>
+                    </param>
+            </when>
+	    <when value="gff"/>
+            <when value="bed"/>
+            <when value="sam"/>
+            <when value="vcf"/>
+        </conditional>
+    </inputs>
+
+    <outputs>
+        <data format="tabix" name="output"/>
+    </outputs>
+
+    <help>
+**What it does:** 
+
+Tabix indexes a TAB-delimited genome position file in.tab.bgz and creates an index file in.tab.bgz.tbi when region is absent from the command-line. The input data file must be position sorted and compressed by bgzip which has a gzip(1) like interface. After indexing, tabix is able to quickly retrieve data lines overlapping regions specified in the format &quot;chr:beginPos-endPos&quot;. Fast data retrieval also works over network if URI is given as a file name and in this case the index file will be downloaded if it is not present locally.
+
+**Citation:**
+
+Tabix was written by Heng Li. The BGZF library was originally implemented by Bob Handsaker and modified by Heng Li for remote file access and in-memory caching.
+
+http://samtools.sourceforge.net/tabix.shtml
+
+**Example:**
+
+(grep ^&quot;#&quot; in.gff; grep -v ^&quot;#&quot; in.gff | sort -k1,1 -k4,4n) | bgzip &gt; sorted.gff.gz;
+
+tabix -p gff sorted.gff.gz;
+
+tabix sorted.gff.gz chr1:10,000,000-20,000,000;
+
+    </help>
+</tool>

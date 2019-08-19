@@ -1,0 +1,23 @@
+2014-09-19 20:15:42 wok.data             [WARNING] The MongoDB data provider can not be loaded.
+2014-09-19 20:15:42 wok.data             [WARNING] This data provider is necessary only if you are going to use a MongoDB database.
+2014-09-19 20:15:42 wok.data             [WARNING] To install it run the following command: pip install pymongo-2.5.2
+2014-09-19 20:15:42 oncodriveclust_compute-00000000 [INFO   ] --- [IntogenRun] --------------------------------------------
+Traceback (most recent call last):
+  File "/nfs/software/galaxy_dev/tools/intogen/runtime/pyenv/bin/oncodriveclust", line 9, in <module>
+    load_entry_point('oncodriveclust==0.4', 'console_scripts', 'oncodriveclust')()
+  File "/nfs/software/galaxy_dev/tools/intogen/runtime/pyenv/local/lib/python2.7/site-packages/pkg_resources.py", line 343, in load_entry_point
+    return get_distribution(dist).load_entry_point(group, name)
+  File "/nfs/software/galaxy_dev/tools/intogen/runtime/pyenv/local/lib/python2.7/site-packages/pkg_resources.py", line 2309, in load_entry_point
+    return ep.load()
+  File "/nfs/software/galaxy_dev/tools/intogen/runtime/pyenv/local/lib/python2.7/site-packages/pkg_resources.py", line 2015, in load
+    entry = __import__(self.module_name, globals(),globals(), ['__name__'])
+  File "/nfs/software/galaxy_dev/tools/intogen/runtime/pyenv/local/lib/python2.7/site-packages/oncodriveclust/command.py", line 6, in <module>
+    from analysis import OncodriveClustAnalysis
+  File "/nfs/software/galaxy_dev/tools/intogen/runtime/pyenv/local/lib/python2.7/site-packages/oncodriveclust/analysis.py", line 3, in <module>
+    from utils import *
+  File "/nfs/software/galaxy_dev/tools/intogen/runtime/pyenv/local/lib/python2.7/site-packages/oncodriveclust/utils.py", line 7, in <module>
+    from statsmodels.sandbox.stats.multicomp import fdrcorrection0
+ImportError: No module named statsmodels.sandbox.stats.multicomp
+2014-09-19 20:15:43 oncodriveclust_compute-00000000 [WARNING] Received signal SIGCLD
+2014-09-19 20:15:43 oncodriveclust_compute-00000000 [WARNING] No results were generated
+2014-09-19 20:15:43 oncodriveclust_compute-00000000 [INFO   ] Elapsed time: 0:00:01.274015

@@ -1,0 +1,25 @@
+<tool id="gmap_index" name="GMAP Create Index" version="GMAP: 1">
+  <requirements>
+    <requirement type="package">gsnap</requirement>
+  </requirements>
+  <description>for specified fasta file</description>
+  <command>mkdir -p $build_dir; cd $build_dir; gmap_build -d $ref_id -D $build_dir -k 15 $fasta_input; echo "$ref_id\t$ref_id\t$ref_name\t15\tsplicesties,introns,snps\tsnps\t$ref_path" >> $loc_file;echo $build_dir > $output_file</command>
+  <stdio>
+    <exit_code range="1:"  level="fatal"   description="Bad input dataset" />
+  </stdio>
+	<inputs>
+	  <param label="Path to fasta file" name="fasta_input" optional="false" type="text"/>
+          <param label="Prefix name" name="prefix" optional="false" type="text"/>
+          <param label="Path to build directory" name="build_dir" optional="false" type="text"/>
+          <param label="Path to Location File" name="loc_file" optional="false" type="text"/>
+          <param label="Path to location where reference file will be placed" name="ref_path" optional="false" type="text"/>
+          <param help="will be placed in location file" label="Reference name value" name="ref_name" optional="false" type="text"/>
+          <param help="will be placed in location file" label="Reference id value" name="ref_id" optional="false" type="text"/>
+	</inputs>
+	<outputs>
+	  <data format="txt" label="Index of ${fasta_input}" name="output_file" />
+	</outputs>
+        <help>
+        </help>
+
+</tool>

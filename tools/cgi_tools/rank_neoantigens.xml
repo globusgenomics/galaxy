@@ -1,0 +1,35 @@
+<tool id="rank_neoantigens" name="Rank neoantigens" version="" >
+  <description>based on affnity value fold-change with wildtype</description>
+  <requirements>
+    <requirement type="package">pymodules</requirement>
+    <requirement type="package" version="3.3.3">R</requirement>
+  </requirements>
+  <command>
+   python '$__tool_directory__/rank_neoantigens.py' 
+     -m $netmhc_file -n $peptide_index -p $filtered_neoantigens_fpkm > out_candidates.txt;
+   python '$__tool_directory__/add_vaf_to_antigen_list.py' -p out_candidates.txt -v $vcf_file > $out_candidates;
+   Rscript '$__tool_directory__/visualize_neoantigens.R' $out_candidates $out_pdf
+  </command>
+  <inputs>
+      <param name="netmhc_file" type="data" format="tabular,txt" label="netMHC Binding score file"/>
+      <param name="peptide_index" type="data" format="tabular,txt" label="Peptide index file" help="From tool that generates the peptide fasta file"/>
+      <param name="filtered_neoantigens_fpkm" type="data" format="tabular,txt" label="Filtered netMHC with FPKM values" help="Should be filtered list containing only Mutant hits" />
+      <param name="vcf_file" type="data" format="vcf" label="Consensus VCF"/>
+  </inputs>
+  <outputs>
+    <data format="tabular" label="${tool.name} on ${on_string}.txt" name="out_candidates"/>
+    <data format="pdf" label="${tool.name} on ${on_string}.pdf" name="out_pdf"/>
+  </outputs>
+  <tests>
+    <test>
+    </test>
+  </tests> 
+  <help>
+
+**What it does**
+
+Adds information from Wiltype affinity value from netMHC hits
+Removes duplicate hits
+
+  </help>
+</tool>

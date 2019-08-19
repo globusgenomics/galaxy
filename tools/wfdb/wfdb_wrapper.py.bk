@@ -1,0 +1,154 @@
+#!/usr/bin/python
+
+"""
+Runs wfdb commands on physionet db files
+wfdb_wrapper.py --program sqrs --record /scratch/go/galaxy/cvrg/100.hea
+
+usage: wfdb_wrapper.py [options]
+   -p, --program wfdb_command_name
+   -r, --record /filepath/to/record.hea
+   -d, --datafile /filepath/to/record.dat
+   -b, --begintime begin_time
+   -e, --stoptime stop_time
+       --resolution resolution
+   -t, --threshold threshold
+   -s, --signal signal
+   -o, --outputfile outputfilename
+
+"""
+
+import optparse, os, shutil, sys, tempfile, re, subprocess
+
+def stop_err( msg ):
+    sys.stderr.write( "%s\n" % msg )
+    sys.exit()
+
+def __main__():
+    #Parse Command Line
+    parser = optparse.OptionParser()
+    parser.add_option( '-p', '--program', dest='program', help='wfdb program to use' )
+    parser.add_option( '-r', '--record', dest='recordfile', help='/filepath/to/record.hea' )
+    parser.add_option( '-d', '--datafile', dest='datafile', help='/filepath/to/record.dat' )
+    parser.add_option( '-q', '--qrsfile', dest='qrsfile', help='/filepath/to/record.qrs' )
+    parser.add_option( '-a', '--atrfile', dest='atrfile', help='/filepath/to/record.atr' )
+    parser.add_option( '-b', '--begintime', dest='begintime', help='First time period to make calculations')
+    parser.add_option( '-e', '--stoptime', dest='stoptime', help='Last time period to make calculations')
+    parser.add_option( '--resolution', dest='resolution', help='resolution definition level')
+    parser.add_option( '-s', '--signal', dest='signal', help='Analyze specified signal')
+    parser.add_option( '-t', '--threshold', dest='threshold', help='Threshold')
+    parser.add_option( '-o', '--outputfile', dest='outputfile', help='Output file')
+
+    (options, args) = parser.parse_args()
+
+    # set environment variables
+    os.environ["LD_LIBRARY_PATH"] = os.environ["LD_LIBRARY_PATH"] + ":/mnt/galaxyTools/tools/wfdb/wfdb-10.5.18/lib64"
+
+    # create a temporary working directory
+    try:
+        tmp_wfdb_dir = tempfile.mkdtemp(dir="/tmp")
+
+        #cp any files to this temporary directory
+        if options.recordfile:
+            tmp_record_filename = os.path.basename(options.recordfile)
+            dest = "%s/%s" % (tmp_wfdb_dir, tmp_record_filename)
+            shutil.copyfile(options.recordfile, dest)
+            
+        if options.qrsfile:
+            tmp_qrs_filename = os.path.basename(options.qrsfile)
+            dest = "%s/%s" % (tmp_wfdb_dir, tmp_qrs_filename)
+            shutil.copyfile(options.qrs, dest)
+
+        if options.atrfile:
+            tmp_atr_filename = os.path.basename(options.atrfile)
+            dest = "%s/%s" % (tmp_wfdb_dir, tmp_atr_filename)
+            shutil.copyfile(options.atr, dest)
+
+        if options.datafile:
+            if options.datafile == "colocated":
+                record_name = re.sub('.hea', '', tmp_record_filename )
+                options.datafile = os.path.dirname(options.recordfile) + "/" + record_name + ".dat"
+            tmp_data_filename = os.path.basename(options.datafile)
+            dest = "%s/%s" % (tmp_wfdb_dir, tmp_data_filename)
+            shutil.copyfile(options.datafile, dest)
+
+
+        # set the temporary output filename for each program
+        if options.program == 'sqrs':
+            record_name = re.sub('.hea', '', tmp_record_filename )
+            qrs_tmp_outfile = "%s/%s.qrs" % (tmp_wfdb_dir, record_name)
+            #print qrs_tmp_outfile
+
+        # build command line
+        wfdb_dir = "/mnt/galaxyTools/tools/wfdb/wfdb-10.5.18/bin"
+        cmd = "%s/%s" % (wfdb_dir, options.program)
+        
+        if options.recordfile:
+            if tmp_record_filename:
+                record_name = re.sub('.hea', '', tmp_record_filename )
+                tmp_record = "%s/%s" % (tmp_wfdb_dir, record_name)
+                cmd += " -r %s" % (tmp_record)
+        if options.datafile:
+            if tmp_data_filename:
+                if options.program != "sqrs":
+                    cmd += " -something"
+        if options.qrsfile:
+            if tmp_qrs_filename:
+                if options.program != "sqrs":
+                    cmd += " -something"
+        if options.atrfile:
+            if tmp_atr_filename:
+                if options.program != "sqrs":
+                    cmd += " -something"
+        if options.begintime:
+            cmd += " -f %s" % (options.begintime)
+        if options.stoptime:
+            cmd += " -t %s" % (options.stoptime)
+        if options.resolution:
+            cmd += " -H"
+        if options.signal:
+            cmd += " -s %s" % (options.signal)
+        if options.threshold:
+            cmd += " -m %s" % (options.threshold)
+    
+        print cmd
+        ## execute job in tempdir, move and rename output to appropriate dir, delete tempdir
+        ## execute command in tempdir
+        tmp_out = tempfile.NamedTemporaryFile().name
+        tmp_stdout = open( tmp_out, 'w' )
+        tmp_err = tempfile.NamedTemporaryFile().name
+        tmp_stderr = open( tmp_err, 'w' )
+        proc = subprocess.Popen( args=cmd, shell=True, cwd=".", stdout=tmp_stdout, stderr=tmp_stderr )
+
+        returncode = proc.wait()
+        tmp_stderr.close()
+        # get stderr, allowing for case where it's very large
+        tmp_stderr = open( tmp_err, 'rb' )
+        stderr = ''
+        buffsize = 1048576
+        try:
+            while True:
+                stderr += tmp_stderr.read( buffsize )
+                if not stderr or len( stderr ) % buffsize != 0:
+                    break
+        except OverflowError:
+            pass
+        tmp_stdout.close()
+        tmp_stderr.close()
+        if returncode != 0:
+            raise Exception, stderr
+
+        # if job is sqrs, copy the new qrs to the output file
+        if options.program == 'sqrs':
+            shutil.copyfile(qrs_tmp_outfile, options.outputfile)
+
+
+    ## delete tempdir
+    finally:
+        try:
+            shutil.rmtree(tmp_wfdb_dir) # delete directory
+        except OSError, e:
+            if e.errno != 2: # code 2 - no such file or directory
+                raise
+
+if __name__=="__main__": __main__()
+

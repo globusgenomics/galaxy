@@ -1,0 +1,25 @@
+<tool id="map2bam" name="CGA Map2Bam">
+  <description>Converts CGI initial reference mappings into a sorted BAM format.</description>
+  <command>
+cgatools map2sam --reads=$reads --mappings=$mappings --reference=$reference 2> $output2 | samtools view -uS - | samtools sort - $output
+  </command>
+
+  <inputs>
+    <param format="tsv,bz2" name="reads" type="data" label="Complete Genomics reads file"/>
+    <param format="tsv.bz2" name="mappings" type="data" label="Complete Genomics mappings file"/>
+    <param format="crr" name="reference" type="data" label="Complete Genomics reference file"/>
+  </inputs>
+
+  <outputs>
+    <data format="bam" name="output"/>
+    <data format="txt" name="output2"/>
+  </outputs>
+
+
+  <help>
+    The Map2Bam converter takes as input Reads and Mappings files, a library 
+    structure file and a crr reference file and generates one sorted BAM file as an 
+    output.
+  </help>
+
+</tool>

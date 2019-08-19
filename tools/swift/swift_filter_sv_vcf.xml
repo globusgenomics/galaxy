@@ -1,0 +1,75 @@
+<tool description="filter a set of SV VCF files using SWIFT" id="swift_filter_sv_vcf" name="Filter SV VCF with SWIFT" version="SAMTOOLS: 1.2; VCFTOOLS: vcftools_0.1.11; VCFLIB: 10.27.2016">
+  <description/>
+ <requirements>
+    <requirement type="package">swift</requirement>
+    <requirement type="package">samtools</requirement>
+    <requirement type="package">ruby</requirement>
+    <requirement type="package">vcftools</requirement>
+    <requirement type="package">vcflib</requirement>
+  </requirements>
+
+  <command interpreter="python">
+      swift_filter_sv_vcf.py
+      --output $output_config 
+      --output-dir $output_config.extra_files_path
+
+      #if $bedfile:
+        --bed $bedfile
+      #end if
+
+      #if $input_source.source_type == &quot;config&quot;:
+        --vcf-dir $input_source.input_config.extra_files_path
+        ##--config $input_source.input_config
+      #else:
+        --vcf-dir $input_source.vcfdir
+      #end if
+      #if $info_filters: 
+          #for $i, $s in enumerate ($info_filters)
+              -p '-f &quot; ${s.info_filter} &quot;'
+          #end for
+      #end if
+
+      #if $genotype_filters:
+          #for $i, $s in enumerate ($genotype_filters)
+              -p '-g &quot; ${s.genotype_filter} &quot;'
+          #end for
+      #end if
+
+  </command>
+  <inputs>
+    <param format="bed" help="" label="Target file (bed)" name="bedfile" optional="True" type="data"/>
+    <conditional name="input_source">
+      <param help="" label="Where are input VCF files?" name="source_type" type="select">
+        <option value="config">From Config File</option>
+        <option default="True" value="path">Input path</option>
+      </param>
+      <when value="config">
+        <param format="data" help="Config file containing location VCF directories." label="Config File" name="input_config" type="data"/>
+      </when>
+      <when value="path">
+        <param help="Directory path in server with all VCF files." label="VCF directory path" name="vcfdir" type="text"/>
+      </when>
+    </conditional>
+    <!--<param name="outputdir" type="text" label="Output Directory Path" help=""/>-->
+    <repeat name="info_filters" title="Info filter ( -f )">
+       <param label="( i.e., FILTER = PASS, NUM_SVTOOLS > 1 )" name="info_filter" type="text" help="Add space betwen characters"/>
+    </repeat>
+    <repeat name="genotype_filters" title="Genotype filter ( -g )">
+       <param label="( i.e., !( GT = 0/0 ) )" name="genotype_filter" type="text" help="Add space betwen characters"/>
+    </repeat>
+  </inputs>
+
+  <outputs> 
+    <data format="html" name="output_config" label="${tool.name} on ${on_string}
+ (filtered vcfs)"/>
+  </outputs>
+  <help>
+
+**What it does**
+
+Performs filtering on VCF files using SWIFT to massively parallelize the provess
+
+**Outputs**
+
+  </help>
+</tool>

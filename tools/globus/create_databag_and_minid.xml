@@ -1,0 +1,39 @@
+<tool id="create_databag_and_minid_globus" name="Create BDBag and MINID">
+  <description>from selected dataset</description>
+  <action module="galaxy_ext.globus.tools.actions.globus" class="BatchSubmit"/>
+  <requirements>
+    <requirement type="package">pymodules</requirement>
+  </requirements>
+  <command interpreter="python">create_databag_and_minid.py 
+     -p $output1.extra_files_path -o $output1
+     #for $datafile in $src_dataset:
+       -d "$datafile.dataset" "$datafile.dataset.extra_files_path" "$datafile.dataset.name" "$datafile.dataset.ext"
+     #end for
+     -t "$goauth"
+     -u $minid_user
+     -e $minid_email
+     --minid-title "$minid_title"
+  </command>
+   <stdio>
+     <exit_code range="1:"  level="warning"   description="Bad input dataset" />
+   </stdio>
+   <inputs>
+     <repeat name="src_dataset" title="Include in DataBag" min="1">
+       <param name="dataset" type="data" size="100" label="Include dataset"/>
+     </repeat> 
+     <param name="goauth" type="hidden" value="**" label="Globus Auth Token">
+       <sanitizer sanitize="False"/>
+     </param>
+     <param name="userapi" type="hidden" size="100" value="None" label="Galaxy API Key"/>
+     <param name="url" type="hidden" size="100" value="None" label="GG URL"/>
+     <param name="minid_user" type="text" size="100" value="User Name" label="Minid User"/>
+     <param name="minid_email" type="text" size="100" value="User email" label="Minid Email"/>
+     <param name="minid_title" type="text" size="100" value="Minid Title" label="Minid Title"/>
+   </inputs>
+   <outputs>
+     <data format="txt" name="output1" label="${tool.name} on ${minid_title}"/>
+   </outputs>
+<help>
+
+</help>
+</tool>

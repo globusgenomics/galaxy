@@ -1,0 +1,72 @@
+<?xml version="1.0" ?>
+<macros>
+    <token name="@VERSION@">2.3.5</token>
+    <xml name="requirements">
+        <requirements>
+            <requirement type="package" version="2.3.5">eagle</requirement>
+            <requirement type="package">samtools</requirement>
+            <yield/>
+        </requirements>
+    </xml>
+    <xml name="stdio">
+        <stdio>
+            <exit_code range="1:" />
+        </stdio>
+    </xml>
+    <xml name="region_selection_option">
+          <conditional name="use_region_options">
+              <param name="use_region_options_select" type="select" label="Do you want to use region selection options?">
+                  <option value="use_chr_region_options_yes">Chromosome only</option>
+                  <option value="use_chr_basepair_region_options_yes">Chromosome + base pair</option>
+                  <option value="use_region_options_no" selected="True">No</option>
+              </param>
+
+              <when value="use_chr_region_options_yes">
+                  <param name="chrom" type="integer" value="0" default="0" label="Chromosome to analyze (if input has multiple chromosome)"/>
+              </when>
+              <when value="use_chr_basepair_region_options_yes">
+                  <param name="chrom" type="integer" value="0" default="0" label="Chromosome to analyze (if input has multiple chromosome)"/>
+                  <param name="bpStart" type="integer" value="0" default="0" label="Minimum base pair position to analyze"/>
+                  <param name="bpEnd" type="integer" value="1000000000" default="1000000000" label="Maximum base pair position to analyze"/>
+              </when>
+          </conditional>
+    </xml>
+
+  <token name="@PREPARE_INPUT_FILE@">
+<![CDATA[
+  #if $use_reference_panel.use_reference_panel_select == "use_reference_panel_yes":
+      #set $input_ref_vcf = 'input.ref.vcf.gz'
+      #if $use_reference_panel.vcf_ref.is_of_type('vcf'):
+          bgzip -c 'use_reference_panel.vcf_ref' > $input_ref_vcf &&
+          bcftools index $input_ref_vcf &&
+     #elif $use_reference_panel.vcf_ref.is_of_type('vcf_bgzip')
+         ln -s '$use_reference_panel.vcf_ref' $input_ref_vcf &&
+         bcftools index $input_ref_vcf &&
+     #elif $use_reference_panel.vcf_ref.is_of_type('bcf'):
+          #set $input_ref_vcf = 'input.ref.bcf'
+          ln -s '$use_reference_panel.vcf_ref' $input_ref_vcf &&
+          bcftools index $input_ref_vcf &&
+     #elif $use_reference_panel.vcf_ref.is_of_type('bcf_bgzip')
+          ln -s '$use_reference_panel.vcf_ref' $input_ref_vcf &&
+          bcftools index $input_ref_vcf &&
+      #end if
+
+      #set $input_target_vcf = 'input.target.vcf.gz'
+      #if $use_reference_panel.vcf_target.is_of_type('vcf'):
+          bgzip -c '$use_reference_panel.vcf_target' > $input_target_vcf &&
+          bcftools index $input_target_vcf &&
+     #elif $use_reference_panel.vcf_target.is_of_type('vcf_bgzip')
+         ln -s '$use_reference_panel.vcf_target' $input_target_vcf &&
+         bcftools index $input_target_vcf &&
+      #elif $use_reference_panel.vcf_target.is_of_type('bcf'):
+          #set $input_target_vcf = 'input.target.bcf'
+          ln -s 'use_reference_panel.vcf_target' $input_target_vcf &&
+          bcftools index $input_target_vcf &&
+     #elif $use_reference_panel.vcf_target.is_of_type('bcf_bgzip')
+          ln -s '$use_reference_panel.vcf_target' $input_target_vcf &&
+          bcftools index $input_target_vcf &&
+      #end if
+  #end if
+]]>
+</token>
+</macros>

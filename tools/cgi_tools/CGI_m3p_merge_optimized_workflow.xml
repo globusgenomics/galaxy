@@ -1,0 +1,65 @@
+<tool id="CGI_m3p_merge_optimized" name="CGI MP3 Tumor merge samples" version="BWA: 0.7.12; SAMTOOLS: 1.2; SAMBAMBA: v0.5.4" >
+  <description>for CNV analysis</description>
+  <!--<action class="GlobusOptimizedWorkflows" module="galaxy_ext.globus.tools.actions.globus"/>-->
+  <parallelism method="basic"/>
+  <requirements>
+    <requirement type="package">samtools</requirement>
+    <requirement type="package">sambamba</requirement>
+    <requirement type="package">pymodules</requirement>
+    <requirement type="package">java</requirement>
+    <requirement type="package">cgi_tools</requirement>
+    <requirement type="package">R</requirement>
+  </requirements>
+  <command interpreter="python">
+   CGI_m3p_merge_optimized_05012016.py 
+    ##use precomputed indexes
+    --lib-size $lib_size
+
+    ## output dir file
+    --output-dir $output_dir.extra_files_path
+    ##--output-file $output_dir
+    --output-log $output_log
+    #if str($input_type.input_type_select) == "single_dataset":
+      #for $i, $s in enumerate( $input_type.src_dataset ):
+        $s.input_path.extra_files_path/optimized*
+      #end for
+    #else:
+     #from glob import glob
+     #set $inputDs = glob("%s/*/dataset_*/optimized*" % $input_type.input_path.extra_files_path)
+     #for $inputDir in $inputDs:
+       $inputDir
+     #end for
+    #end if
+    &gt;  $output_log
+  </command>
+  <inputs>
+    <param label="Size of the mate pair library" name="lib_size" type="integer" value="350"/>
+    <conditional name="input_type">
+      <param name="input_type_select" label="Input source" type="select" help="A directory object contains multiple samples within the same history item">
+        <option selected="True" value="single_dataset">Multiple dataset in history</option>
+        <option value="directory_object">Directory object</option>
+      </param>
+      <when value="single_dataset">
+        <repeat name="src_dataset" title="Input dataset" min="1">
+          <param name="input_path" type="data" size="100" label="Input alignment files"/>
+        </repeat>
+      </when>
+      <when value="directory_object">
+        <param name="input_path" type="data" size="100" label="Input directory object"/>
+      </when>
+    </conditional>
+  </inputs>
+  <outputs>
+    <data format="txt" label="${tool.name} on ${on_string}}: output DIR object" name="output_dir"/>
+    <data format="txt" label="${tool.name} on ${on_string}: log" name="output_log"/>
+  </outputs>
+  <tests>
+    <test>
+    </test>
+  </tests> 
+  <help>
+
+**What it does**
+
+  </help>
+</tool>

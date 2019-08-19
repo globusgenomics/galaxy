@@ -1,0 +1,302 @@
+<tool id="contra_tool" name="Contra Copy number analysis" version="BEDTOOLS: 2.17.0; SAMTOOLS: 0.1.18; CONTRA: CONTRA.v2.0.4">
+  <description>: Copy Number Analysis for Targeted Resequencing</description>
+  <requirements>
+    <requirement type="package" version="2.17.0">bedtools</requirement>
+    <requirement type="package" version="0.1.18">samtools</requirement>
+    <requirement type="package">R</requirement>
+    <requirement type="package">contra</requirement>
+    <requirement type="package">pymodules</requirement>
+  </requirements>
+  <command interpreter="python">
+	contra_wrapper.py
+	
+	##Ref Genome
+	#if $genomeSource.refGenomeSource == &quot;history&quot;:
+        	-p &quot;-f ${genomeSource.ownFile}&quot;
+        #else:
+        ##use precomputed indexes
+        	-p &quot;-f ${genomeSource.indices.fields.path}&quot;
+	#end if
+	
+	##Required files
+	-p &quot;-t $target_file&quot;
+	-p &quot;-s $alignment_file&quot;
+	#if $controlSource.refControlSource == &quot;history&quot;:
+         	-p &quot;-c ${controlSource.control_file}&quot;
+        #else:
+        ##use precomputed indexes
+        	-p &quot;-c ${controlSource.indices.fields.path}&quot;
+        #end if
+	
+	##Optional parameter
+        
+        #if $option.option == &quot;modify_parameters&quot;:
+        
+        	-p &quot;--numBin $option.numBin&quot;
+        	-p &quot;--minReadDepth $option.minReadDepth&quot;
+        	-p &quot;--minNBases $option.minNbases&quot;
+		
+		#if str($option.sam) == &quot;true&quot;:
+	        	-p &quot;--sam&quot;
+        	#end if
+        	
+        	#if str($option.bed) == &quot;true&quot;:
+	        	-p &quot;--bed&quot;
+        	#end if
+        	
+        	-p &quot;--pval $option.pval&quot;
+        	--sampleName $option.sampleName
+		
+		#if str($option.nomultimapped) == &quot;true&quot;:
+	        	-p &quot;--nomultimapped&quot;
+        	#end if
+        	
+        	#if str($option.plot) == &quot;true&quot;:
+	        	-p &quot;--plot&quot;
+        	#end if
+        	
+        	-p &quot;--minExon $option.minExon&quot;
+        	-p &quot;--minControlRdForCall $option.minControlRdForCall&quot;
+        	-p &quot;--minTestRdForCall $option.minTestRdForCall&quot;
+        	-p &quot;--minAvgForCall $option.minAvgForCall&quot;
+                #if str($option.regionSize_cond.regionSize) == &quot;true&quot;:
+                    -p &quot;--maxRegionSize $option.regionSize_cond.maxRegionSize&quot;
+                    -p &quot;--targetRegionSize $option.regionSize_cond.targetRegionSize&quot;
+        	#end if
+        	#if str($option.largeDeletion_cond.largeDeletion) == &quot;true&quot;:
+	        	-p &quot;--largeDeletion&quot;
+                        -p &quot;--smallSegment $option.largeDeletion_cond.smallSegment&quot;
+                        -p &quot;--largeSegment $option.largeDeletion_cond.largeSegment&quot;
+        	#end if
+        	
+        	-p &quot;--lrCallStart $option.lrCallStart&quot;
+        	-p &quot;--lrCallEnd $option.lrCallEnd&quot;
+        	-p &quot;--passSize $option.passSize&quot;
+        #end if
+	
+	##File to generate the bam list
+	##--contra-output $html_file
+	##--contra-dir $html_file.extra_files_path
+        ##--contra-vcf $output_vcf
+        ##--contra-txt $output_txt
+	--contra-vcf $output_vcf
+  </command>
+	<inputs>
+	
+		<conditional name="genomeSource">
+			<param label="Will you select a reference from your history or use a built-in fasta file?" name="refGenomeSource" type="select">
+				<option value="indexed">Use a built-in index</option>
+				<option value="history">Use one from the history</option>
+			</param>
+			<when value="indexed">
+				<param label="Select a reference genome" name="indices" type="select">
+				  <options from_data_table="all_fasta">
+				    <filter column="2" type="sort_by"/>
+				    <validator message="No indexes are available" type="no_options"/>
+				  </options>
+				</param>
+			</when>
+			<when value="history">
+				<param format="fasta" label="Select a reference from history" name="ownFile" type="data"/>
+			</when>
+		</conditional>
+	
+		<param format="bed" help="" name="target_file" optional="false" type="data"/>		
+		<param format="bam,sam" help="" name="alignment_file" optional="false" type="data"/>
+		
+		
+		<conditional name="controlSource">
+			<param label="Will you select a reference from your history or use a built-in control file?" name="refControlSource" type="select">
+				<option value="indexed">Use a built-in control</option>
+				<option value="history">Use one from the history</option>
+			</param>
+			<when value="indexed">
+				<param label="Select a baseline control" name="indices" type="select">
+				  <options from_data_table="baseline_files">
+				    <filter column="2" type="sort_by"/>
+				    <validator message="No files available" type="no_options"/>
+				  </options>
+				</param>
+			</when>
+			<when value="history">
+				<param format="bam,sam,bed,tabular" help="" name="control_file" optional="false" type="data"/>
+			</when>
+		</conditional>
+		
+		<conditional name="option">
+			<param help="" label="Optional Parameters" name="option" optional="true" type="select">
+				<option selected="true" value="default_parameters">Default Parameters</option>
+				<option value="modify_parameters">Modify Parameters</option>
+			</param>
+			<when value="modify_parameters">
+				<param name="numBin" optional="true" type="integer" value="20"/>
+				<param name="minReadDepth" optional="true" type="integer" value="10"/>
+				<param name="minNbases" optional="true" type="integer" value="10"/>
+				<param help="" label="sam" name="sam" optional="true" type="select">
+					<option value="true">true</option>
+					<option selected="true" value="false">false</option>
+				</param>
+				<param help="" label="bed" name="bed" optional="true" type="select">
+					<option value="true">true</option>
+					<option selected="true" value="false">false</option>
+				</param>
+				<param name="pval" optional="true" type="float" value="0.05"/>
+				<param name="sampleName" optional="true" type="text" value="Contra_Output"/>
+				<param help="" label="no multimapped" name="nomultimapped" optional="true" type="select">
+					<option value="true">true</option>
+					<option selected="true" value="false">false</option>
+				</param>
+				<param help="" label="plot" name="plot" optional="true" type="select">
+					<option value="true">true</option>
+					<option selected="true" value="false">false</option>
+				</param>
+				<param name="minExon" optional="true" type="integer" value="2000"/>
+				<param name="minControlRdForCall" optional="true" type="integer" value="5"/>
+				<param name="minTestRdForCall" optional="true" type="integer" value="0"/>
+				<param name="minAvgForCall" optional="true" type="integer" value="20"/>
+                                <conditional name="regionSize_cond">
+                                    <param help="Default is 0" label="Set max Region size" name="regionSize" type="select">
+                                        <option selected="True" value="false">No</option>
+                                        <option value="true">Yes</option>
+                                    </param>
+                                    <when value="false"/>
+                                    <when value="true">
+                                        <param name="maxRegionSize" optional="true" type="integer" value="0"/>
+                                        <param name="targetRegionSize" optional="true" type="integer" value="200"/>
+                                    </when>
+                                </conditional>
+                                <conditional name="largeDeletion_cond">
+				    <param help="" label="large deletion" name="largeDeletion" optional="true" type="select">
+				        <option value="true">true</option>
+				        <option selected="true" value="false">false</option>
+				    </param>
+				    <when value="true">
+                                        <param name="smallSegment" optional="true" type="integer" value="1"/>
+                                        <param name="largeSegment" optional="true" type="integer" value="25"/>
+                                    </when>
+                                    <when value="false"/>
+                                </conditional>
+				<param name="lrCallStart" optional="true" type="float" value="-0.3"/>
+				<param name="lrCallEnd" optional="true" type="float" value="0.3"/>
+				<param name="passSize" optional="true" type="float" value="0.5"/>
+		
+			</when>
+		</conditional>	
+	</inputs>
+	<outputs>
+                <data format="vcf" label="${tool.name} on ${on_string}: (vcf)" name="output_vcf"/>
+	</outputs>
+	<help>
+|
+
+
+**Reference**
+	http://contra-cnv.sourceforge.net/
+
+-----
+
+**What it does**
+
+CONTRA is a tool for copy number variation (CNV) detection for targeted resequencing data such as those from whole-exome capture data. CONTRA calls copy number gains and losses for each target region with key strategies include the use of base-level log-ratios to remove GC-content bias, correction for an imbalanced library size effect on log-ratios, and the estimation of log-ratio variations via binning and interpolation. It takes standard alignment formats (BAM/SAM) and output in variant call format (VCF 4.0) for easy integration with other next generation sequencing analysis package.
+
+
+-----
+ 
+**Required Parameters**
+
+::
+
+  -t, --target         Target region definition file [BED format] 
+
+  -s, --test           Alignment file for the test sample [BAM/SAM] 
+
+  -c, --control        Alignment file for the control sample 
+                       [BAM/SAM/BED – baseline file]
+
+  --bed                **option has to be supplied for control
+                       with baseline file.** 
+
+  -f, --fasta          Reference genome [FASTA]
+
+  -o, --outFolder      the folder name (and its path) to store the output 
+                       of the analysis (this new folder will be created – 
+                       error message occur if the folder exists) 
+
+-----
+
+**Optional Parameters**
+
+::
+
+  --numBin              Numbers of bins to group the regions. User can 
+                        specify multiple experiments with different numbers
+                        of bins (comma separated). [Default: 20] 
+
+  --minReadDepth        The threshold for minimum read depth for each bases 
+                        (see Step 2 in CONTRA workflow) [Default: 10] 
+
+  --minNBases           The threshold for minimum number of bases for each 
+                        target regions (see Step 2 in CONTRA workflow) 
+                        [Default: 10] 
+
+  --sam                 If the specified test and control samples are in 
+                        SAM format. [Default: False] (It will always take 
+                        BAM samples as default) 
+
+  --bed                 If specified, control will be a baseline file in 
+                        BED format. [Default: False] 
+                        Please refer to the Baseline Script section for 
+                        instruction how to create baseline files from set 
+                        of BAMfiles. A set of baseline files from different 
+                        platform have also been provided in the CONTRA 
+                        download page. 
+
+  --pval                The p-value threshold for filtering. Based on Adjusted 
+                        P-Values. Only regions that pass this threshold will 
+                        be included in the VCF file. [Default: 0.05] 
+
+  --sampleName          The name to be appended to the front of the default output 
+                        name. By default, there will be nothing appended. 
+
+  --nomultimapped       The option to remove multi-mapped reads 
+                        (using SAMtools with mapping quality &gt; 0). 
+                        [default: FALSE] 
+
+  -p, --plot            If specified, plots of log-ratio distribution for each 
+                        bin will be included in the output folder [default: FALSE] 
+
+  --minExon             Minimum number of exons in one bin (if less than this number
+                        , bin that contains small number of exons will be merged to 
+                        the adjacent bins) [Default : 2000] 
+
+  --minControlRdForCall Minimum Control ReadDepth for call [Default: 5] 
+
+  --minTestRdForCall    Minimum Test ReadDepth for call [Default: 0] 
+
+  --minAvgForCall       Minimum average coverage for call [Default: 20] 
+
+  --maxRegionSize       Maximum region size in target region (for breaking 
+                        large regions into smaller regions. By default, 
+                        maxRegionSize=0 means no breakdown). [Default : 0] 
+
+  --targetRegionSize    Target region size for breakdown (if maxRegionSize 
+                        is non-zero) [Default: 200] 
+
+  -l, --largeDeletion   If specified, CONTRA will run large deletion analysis (CBS).
+                        User must have DNAcopy R-library installed to run the 
+                        analysis. [False] 
+
+  --smallSegment        CBS segment size for calling large variations [Default : 1] 
+
+  --largeSegment        CBS segment size for calling large variations [Default : 25] 
+
+  --lrCallStart         Log ratios start range that will be used to call CNV 
+                        [Default : -0.3] 
+
+  --lrCallEnd           Log ratios end range that will be used to call CNV 
+                        [Default : 0.3] 
+
+  --passSize            Size of exons that passed the p-value threshold compare 
+                        to the original exons size [Default: 0.5] 
+	</help>
+</tool>

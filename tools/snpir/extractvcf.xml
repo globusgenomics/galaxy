@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<tool name="Extract VCF" id="extract_vcf" version="1.1">
+  <requirements>
+    <requirement type="package">R</requirement>
+  </requirements>
+  <description>
+    Extract variants from VCF given a raw VCF
+  </description>
+
+  <command interpreter="Rscript">
+    extractvcf.R  
+    $inputBED $inputVCF $outputVCF 
+  </command>
+
+  <inputs>
+    <param name="inputBED" type="data" format="bed,tabular" label="Select an input BED file" />
+    <param name="inputVCF" type="data" format="vcf,tabular" label="Select an input VCF file" help="You need to extract the VCF header from the file" />
+  </inputs>
+  <outputs>
+    <data name="outputVCF" format="vcf" label="${tool.name} on ${on_string}" />
+  </outputs>
+
+  <help>
+
+.. class:: infomark
+
+**Purpose**
+
+Filter for intronic variants close to splicing junctions, by Robert Piskol (piskol@stanford.edu) 
+							   Gokul Ramaswami (gokulr@stanford.edu) 07/25/2013
+
+This program takes a variant file and a gene annotation file in UCSC text format
+and filters all variants that are in intronic regions in a distance closer than a user selected value.
+         
+
+Arguments:
+infile FILE	- File containing a list of variants to be filtered
+outfile FILE	- Output file for filtered variants
+genefile FILE	- File in UCSC txt format (sorted by chomosome and position)
+splicedist N	- Maximum filter distance from splicing junction for variants (default: 4)
+help		- Show this help screen                 
+
+
+------
+
+.. class:: infomark
+
+**Inputs, outputs, and parameters**
+
+
+
+  </help>
+
+</tool>

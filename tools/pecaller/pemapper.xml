@@ -1,0 +1,109 @@
+<tool id="pemapper" name="PEmapper" version="PEMAPPER: 2016-3-3">
+  <description> is a reference-based NGS short-read mapping program </description>
+  <requirements>
+    <requirement type="package">pecaller</requirement>
+  </requirements>
+  <command>
+<![CDATA[
+        #if $singleOrPaired.tag == "single":
+          #for $i, $s in enumerate( $singleOrPaired.single_fastqs )
+            #set $input_path = $s.input_directory_path_file
+            #set $link_name = "forward_" + str($i) + ".fastqsanger"
+            ln -s $input_path $link_name;
+          #end for
+          pemapper sampleName $index sa $forward_file $bisul $minMatchPercent $maxThread $maxReads;
+        #else:
+          #for $i, $s in enumerate( $singleOrPaired.paired_fastqs )
+            #set $f_input_path = $s.forward_input_directory_path_file
+            #set $f_link_name = "forward_" + str($i) + ".fastqsanger"
+            #set $r_input_path = $s.reverse_input_directory_path_file
+            #set $r_link_name = "reverse_" + str($i) + ".fastqsanger"
+            ln -s $f_input_path $f_link_name; ln -s $r_input_path $r_link_name;
+          #end for
+          pemapper sampleName $index pa $forward_file $reverse_file 500 0 $bisul $minMatchPercent $maxThread $maxReads;
+        #end if
+
+gunzip sampleName.indel.txt.gz
+]]>
+  </command>
+
+  <stdio>
+    <exit_code range="1:" level="fatal" description="Error" />
+  </stdio>
+
+   <inputs>
+          <!--<param name="outputName" type="text" label="name your output"/>-->
+          <param name="index" type="select" label="Select a reference genome" help="If your genome of interest is not listed, please contact globus genomics admin">
+                    <options from_data_table="pemapper_indexes"></options>
+          </param>
+
+          <conditional name="singleOrPaired">
+            <param label="Is this library mate-paired?" name="tag" type="select">
+              <option value="single">Single end</option>
+              <option value="paired">Paired end</option>
+            </param>
+            <when value="single">
+              <repeat name="single_fastqs" title="Single End Fastq files" min="1">
+                <param format="fastqsanger,fastq" help="" label="Single end Fastq file input" name="input_directory_path_file" type="data"/>
+              </repeat>
+            </when>
+            <when value="paired">
+              <repeat name="paired_fastqs" title="Paired End Fastq files" min="1">
+                <param format="fastqsanger,fastq" help="" label="Forward Fastq file input" name="forward_input_directory_path_file" type="data"/>
+                <param format="fastqsanger,fastq" help="" label="Reverse Fastq file input" name="reverse_input_directory_path_file" type="data"/>
+              </repeat>
+              <param label="Maximum distance" name="maxDist" type="integer" value="500"/>
+              <param label="Minimum distance" name="minDist" type="integer" value="0"/>
+            </when>
+          </conditional>
+
+          <param label="Is bisulfite? [Y, N]" name="bisul" type="text" value="N"/>
+          <param label="Minimum match percentage" name="minMatchPercent" type="float" value="0.85"/>
+          <param label="Maximum threads" name="maxThread" type="integer" value="24"/>
+          <param label="Maximum reads" name="maxReads" type="integer" value="200000000"/>
+   </inputs>
+
+   <outputs>
+      <data format="tabular" label="${tool.name} on ${on_string} (summary)" name="out_summary" from_work_dir="sampleName.summary.txt"/> 
+      <data format="pileup" label="${tool.name} on ${on_string} (call genotype)" name="out_pileup" from_work_dir="sampleName.pileup.gz"/>
+      <data format="tabular" label="${tool.name} on ${on_string} (final output)" name="indel" from_work_dir="sampleName.indel.txt"/>  
+   </outputs>
+<configfiles>
+<configfile name="forward_file"> #slurp
+#if $singleOrPaired.tag == "single":
+#for $i, $s in enumerate( $singleOrPaired.single_fastqs ):
+#set $link_name = "forward_" + str($i) + ".fastqsanger"
+$link_name
+#end for
+#else:
+#for $i, $s in enumerate( $singleOrPaired.paired_fastqs ):
+#set $f_link_name = "forward_" + str($i) + ".fastqsanger"
+$f_link_name
+#end for
+#end if
+</configfile>
+<configfile name="reverse_file"> #slurp
+#if $singleOrPaired.tag == "paired":
+#for $i, $s in enumerate( $singleOrPaired.paired_fastqs ):
+#set $r_link_name = "reverse_" + str($i) + ".fastqsanger"
+$r_link_name
+#end for
+#end if
+</configfile>
+</configfiles>
+   <tests>
+     <test>
+     </test>
+   </tests>
+   <help>
+**PEmapper and PEcaller**
+
+PEmapper_ and PEcaller_ are reference-based NGS short-read mapping and variant calling programs written by Dr.David J. Cutler at Emory University.
+ 
+.. _PEmapper: https://sourceforge.net/projects/pemapper/
+.. _PEcaller: https://github.com/wingolab-org/pecaller
+   </help>
+</tool>
+
+
+

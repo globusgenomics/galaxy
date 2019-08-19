@@ -1,0 +1,47 @@
+<tool id="globus_publish_upload" name="Globus Publication Upload" tool_type="globus_multi_datasource"
+      force_history_refresh="True">
+   <description>Upload dataset to the Globus Data Publication service.</description>
+    <action module="galaxy.tools.actions.globus" class="PublishUpload"/>
+   <command interpreter="python">
+    transfer_to_publish.py 
+       --session $sess
+       --token "$token" 
+       --src_epname $src_epname
+       --src_eppath $src_eppath
+       --dest_epname $dest_epname
+       --dest_eppath $dest_eppath
+       --from_dataset $from_dataset
+       --from_dataset_extra $from_dataset.extra_files_path
+       --name "$dataset_name"
+       --author "$dataset_author"
+       --collection "$dataset_collection"
+       $outfile  $outfile.id  $__new_file_path__
+   </command>
+   <inputs>
+     <param name="token" type="hidden" value="" >
+     <sanitizer>
+        <valid>
+          <add value="|"/>
+        </valid>
+      </sanitizer>
+     </param>
+	<param name="hostname" type="hidden" value="" />
+     <param name="sess" type="hidden"/>
+     <param name="src_epname" type="hidden" value="" label="" />
+     <param name="src_eppath" type="hidden" value="" label="" />
+     <param name="from_dataset" type="data" label="Send this dataset">
+     </param>
+     <param name="dest_epname" type="text" size="100" value="globuspublish#bdds-publication" label="Endpoint" />
+     <param name="dest_eppath" type="text" size="100" value="auto_pub_" label="Path" />
+     <param name="dataset_name" type="text" size="100" label="Name" />
+     <param name="dataset_author" type="text" size="100" label="Author" />
+     <param name="dataset_collection" type="text" size="100" value="39" label="Collection" />
+
+</inputs>
+   <outputs>
+     <data name="outfile" type="data" format="txt" />
+   </outputs>
+   <help>
+     Upload dataset to the Globus Data Publication service.
+   </help>
+</tool>

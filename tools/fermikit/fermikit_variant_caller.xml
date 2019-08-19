@@ -1,0 +1,82 @@
+<tool id="fermikit_vc" name="FermiKit Variant Caller" version="FERMIKIT: 0.13; SAMTOOLS: 1.2; BWA: 0.7.12">
+  <requirements>
+    <requirement type="package">fermikit</requirement>
+    <requirement type="package">samtools</requirement>
+    <requirement type="package">bwa</requirement>
+  </requirements>
+  <description/>
+  <command interpreter="python">
+    fermikit_variant_caller.py
+      --fileSource ${genomeSource.refGenomeSource}
+      #if $genomeSource.refGenomeSource == &quot;history&quot;
+        ##build index on the fly
+        --ref ${genomeSource.ownFile}
+      #else
+        ##use precomputed indexes
+        --ref ${genomeSource.indices.fields.path}
+      #end if
+
+      ## input file
+      --input-assembly $input_assembly
+
+      ## output file
+      --output-snp $output_snp
+      --output-sv $output_sv
+
+  </command>
+
+  <inputs>
+    <conditional name="genomeSource">
+      <param label="Will you select a reference genome from your history or use a built-in index?" name="refGenomeSource" type="select">
+        <option value="indexed">Use a built-in index</option>
+        <option value="history">Use one from the history</option>
+      </param>
+      <when value="indexed">
+        <param label="Select a reference genome" name="indices" type="select">
+          <options from_data_table="bwa_indexes">
+            <filter column="2" type="sort_by"/>
+            <validator message="No indexes are available" type="no_options"/>
+          </options>
+        </param>
+      </when>
+      <when value="history">
+        <param format="fasta" label="Select a reference from history" metadata_name="dbkey" name="ownFile" type="data"/>
+      </when>
+    </conditional>
+    <param format="gz" help="Output from FermiKit Assembly step" label="Input Assembled file" name="input_assembly" type="data"/>
+  </inputs>
+
+  <outputs>
+    <data format="vcf" label="${tool.name} on ${on_string}: SV" name="output_sv"/>
+    <data format="vcf" label="${tool.name} on ${on_string}: SNP" name="output_snp"/>
+  </outputs>
+
+  <tests>
+    <test>
+    </test>
+    <test>
+    </test>
+    <test>
+    </test>
+  </tests>
+  <help>
+**What it does**
+
+FermiKit
+
+
+------
+
+**Input formats**
+
+This tool takes as input the output assembly file from the FermiKit assembly tool
+
+------
+
+**License and citation**
+
+This tool uses `FermiKit`_
+
+.. _FermiKit: https://github.com/lh3/fermikit
+  </help>
+</tool>

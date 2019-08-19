@@ -1,0 +1,88 @@
+<collection>
+    <title>Mutations</title>
+    <loader>
+        <plugin>tsv-loader</plugin>
+        <parameter>
+            <key>data</key>
+            <value>/results/gene_sample-fimpact.tsv</value>
+        </parameter>
+        <parameter>
+            <key>NULL_VALUE</key>
+            <value>\N</value>
+        </parameter>
+    </loader>
+    <fields>
+        <field>
+            <label>genes</label>
+            <title>Genes</title>
+            <id>GENE_ID</id>
+            <type>string</type>
+        </field>
+        <field>
+            <label>samples</label>
+            <title>Samples</title>
+            <id>SAMPLE</id>
+            <type>string</type>
+        </field>
+        <field>
+            <label>sift-score</label>
+            <title>SIFT score</title>
+            <id>SIFT_SCORE</id>
+            <type>double</type>
+        </field>
+        <field>
+            <label>sift-transfic</label>
+            <title>SIFT transfic</title>
+            <id>SIFT_TRANSFIC</id>
+            <type>double</type>
+        </field>
+        <field>
+            <label>sift-class</label>
+            <title>SIFT transfic class</title>
+            <id>SIFT_TRANSFIC_CLASS</id>
+            <type>string</type>
+        </field>
+        <field>
+            <label>pph2-score</label>
+            <title>PPH2 score</title>
+            <id>PPH2_SCORE</id>
+            <type>double</type>
+        </field>
+        <field>
+            <label>pph2-transfic</label>
+            <title>PPH2 transfic</title>
+            <id>PPH2_TRANSFIC</id>
+            <type>double</type>
+        </field>
+        <field>
+            <label>pph2-class</label>
+            <title>PPH2 transfic class</title>
+            <id>PPH2_TRANSFIC_CLASS</id>
+            <type>string</type>
+        </field>
+        <field>
+            <label>ma-score</label>
+            <title>MA score</title>
+            <id>MA_SCORE</id>
+            <type>double</type>
+        </field>
+        <field>
+            <label>ma-transfic</label>
+            <title>MA transfic</title>
+            <id>MA_TRANSFIC</id>
+            <type>double</type>
+        </field>
+        <field>
+            <label>ma-class</label>
+            <title>MA transfic class</title>
+            <id>MA_TRANSFIC_CLASS</id>
+            <type>string</type>
+        </field>
+    </fields>
+    <links>
+        <link>
+            <collection>${genes}</collection>
+            <field>GENE_ID</field>
+        </link>
+    </links>
+</collection>

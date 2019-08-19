@@ -1,0 +1,418 @@
+<tool id="gatk4_ApplyBQSR.xml" name="ApplyBQSR" version="GATK4: GenomeAnalysisTK-4; SAMTOOLS: 1.1">
+  <description>Apply base quality score recalibration</description>
+  <requirements>
+      <requirement type="package" version="gatk-4.0.5.0">gatk4</requirement>
+      <requirement type="package" version="1.1">samtools</requirement>
+      <requirement type="package" version="1.8.0">java</requirement>
+  </requirements>
+  <macros>
+    <import>gatk_macros.xml</import>
+  </macros>
+  <command interpreter="python">gatk_wrapper.py
+   --max_jvm_heap_fraction "1"
+   -d "-I" "${reference_source.input_bam}" "${reference_source.input_bam.ext}" "gatk_input"
+   #if str( $reference_source.input_bam.metadata.bam_index ) != "None":
+       -d "" "${reference_source.input_bam.metadata.bam_index}" "bam_index" "gatk_input" ##hardcode galaxy ext type as bam_index
+   #end if
+   -t "ApplyBQSR"
+   -p '
+    --bqsr-recal-file ${input_recal}
+    #if $reference_source.reference_source_selector != "history":
+        -R "${reference_source.ref_file.fields.path}"
+    #end if
+    --output "${output_bam}"
+    '
+    
+    ##start standard gatk options
+    ###if $gatk_param_type.gatk_param_type_selector == "advanced":
+    ##    #include source=$standard_gatk_options#
+    ###end if
+    
+    #if str( $reference_source.reference_source_selector ) == "history":
+        -d "-R" "${reference_source.ref_file}" "${reference_source.ref_file.ext}" "gatk_input_reference_fasta"
+        --picard_jar "/mnt/galaxyTools/tools/picard/1.121/CreateSequenceDictionary.jar"
+    #end if
+    ##end standard gatk options
+    
+    ##start analysis specific options
+    #if $analysis_param_type.analysis_param_type_selector == "advanced":
+        -p '
+        --add-output-sam-program-record --add-output-vcf-command-line
+        #if str($analysis_param_type.cloudIndexPrefetchBuffer) != "-1":
+          --cloud-index-prefetch-buffer ${analysis_param_type.cloudIndexPrefetchBuffer}
+        #end if
+        #if str($analysis_param_type.cloudPrefetchBuffer) != "40":
+          --cloud-prefetch-buffer ${analysis_param_type.cloudPrefetchBuffer}
+        #end if
+        #for $filter in str( $analysis_param_type.disableReadFilter ).split(','):
+          #if $filter is not "None":
+            --disable-read-filter $filter
+          #end if
+        #end for
+        $analysis_param_type.disableToolDefaultReadFilters
+        $analysis_param_type.disableSequenceDictionaryValidation
+        #if str( $analysis_param_type.gcs_max_retries ) != "20"
+          --gcs-max-retries ${analysis_param_type.gcs_max_retries}
+        #end if
+        #if str( $analysis_param_type.interval_exclusion_padding ) != "0"
+          --interval-exclusion-padding ${analysis_param_type.interval_exclusion_padding}
+        #end if
+        #if str( $analysis_param_type.interval_merging_rule ) != "ALL"
+          --interval-merging-rule ${analysis_param_type.interval_merging_rule}
+        #end if
+        #if str( $analysis_param_type.interval_padding ) != "0"
+          --interval-padding ${analysis_param_type.interval_padding}
+        #end if
+        #if str( $analysis_param_type.interval_set_rule ) != "UNION"
+          --interval-set-rule ${analysis_param_type.interval_set_rule}
+        #end if
+        $analysis_param_type.lenient
+        #if str( $analysis_param_type.preserve_qscores_less_than ) != "6"
+          --preserve-qscores-less-than ${analysis_param_type.preserve_qscores_less_than}
+        #end if
+        #if str( $analysis_param_type.quantize_quals ) != "0"
+          --quantize-quals ${analysis_param_type.quantize_quals}
+        #end if
+        $analysis_param_type.emit_original_quals
+        $analysis_param_type.useOriginalQualities
+        #set default_read_filters = ["WellformedReadFilter"]
+        #for $read_filter in $analysis_param_type.read_filter:
+          #if $read_filter.read_filter_type.read_filter_type_selector not in $default_read_filters:
+            --read-filter ${read_filter.read_filter_type.read_filter_type_selector}
+            #if $read_filter.read_filter_type.read_filter_type_selector == "AmbiguousBaseReadFilter"
+              #if $read_filter.read_filter_type.AmbiguousBaseReadFilter_type.AmbiguousBaseReadFilter_type_select == "number":
+                --ambig-filter-bases $read_filter.read_filter_type.AmbiguousBaseReadFilter_type.ambigFilterBases
+              #else
+                --ambig-filter-bases $read_filter.read_filter_type.AmbiguousBaseReadFilter_type.ambigFilterFrac
+              #end if
+            #else
+              #for $name, $param in $read_filter.read_filter_type.iteritems():
+                #if $name not in [ "__current_case__", "read_filter_type_selector" ]:
+                    #if hasattr( $param.input, 'truevalue' ):
+                        ${param}
+                    #else:
+                        --${name} ${param}
+                    #end if
+                #end if
+              #end for
+            #end if
+          #end if
+        #end for
+        #if str($analysis_param_type.readValidationStringency) != "SILENT"
+          --read-validation-stringency $analysis_param_type.readValidationStringency
+        #end if
+        '
+        #for $interval_count, $input_intervals in enumerate( $analysis_param_type.input_interval_repeat ):
+            -d "--intervals" "${input_intervals.input_intervals}" "${input_intervals.input_intervals.ext}" "input_intervals_${interval_count}"
+        #end for
+        #for $interval_count, $input_intervals in enumerate( $analysis_param_type.input_exclude_interval_repeat ):
+            -d "--exclude-intervals" "${input_intervals.input_exclude_intervals}" "${input_intervals.input_exclude_intervals.ext}" "input_exlude_intervals_${interval_count}"
+        #end for
+    #end if
+  </command>
+  <inputs>
+    <param format="csv,gatk_report" help="-bqsr,--bqsr_recal_file &amp;lt;recal_file&amp;gt;" label="Covariates table recalibration file" name="input_recal" type="data"/>
+    <conditional name="reference_source">
+      <param label="Choose the source for the reference list" name="reference_source_selector" type="select">
+        <option value="cached">Locally cached</option>
+        <option value="history">History</option>
+      </param>
+      <when value="cached">
+        <param format="bam" help="-I,--input_file &amp;lt;input_file&amp;gt;" label="BAM file" name="input_bam" type="data">
+        </param>
+        <param help="-R,--reference_sequence &amp;lt;reference_sequence&amp;gt;" label="Using reference genome" name="ref_file" type="select">
+          <options from_data_table="gatk3_picard_indexes">
+                <filter column="3" type="sort_by"/>
+
+          </options>
+        </param>
+      </when>
+      <when value="history">
+        <param format="bam" help="-I,--input_file &amp;lt;input_file&amp;gt;" label="BAM file" name="input_bam" type="data"/>
+        <param format="fasta" help="-R,--reference_sequence &amp;lt;reference_sequence&amp;gt;" label="Using reference file" name="ref_file" type="data">
+        </param>
+      </when>
+    </conditional>
+    <!--<conditional name="gatk_param_type">
+      <param label="Basic or Advanced GATK options" name="gatk_param_type_selector" type="select">
+        <option selected="True" value="basic">Basic</option>
+        <option value="advanced">Advanced</option>
+      </param>
+      <when value="basic"></when>
+      <when value="advanced">
+        <expand macro="advanced_options" />
+      </when>
+    </conditional>-->
+    
+    <conditional name="analysis_param_type">
+      <param label="Basic or Advanced Analysis options" name="analysis_param_type_selector" type="select">
+        <option selected="True" value="basic">Basic</option>
+        <option value="advanced">Advanced</option>
+      </param>
+      <when value="basic"></when>
+      <when value="advanced">
+        <param help="Size of the cloud-only prefetch buffer (in MB; 0 to disable). Defaults to cloudPrefetchBuffer if unset. -CIPB,--cloudIndexPrefetchBuffer &amp;lt;cloudIndexPrefetchBuffer&amp;gt;" label="Cloud Index Prefetch Buffer" name="cloudIndexPrefetchBuffer" type="text" value="-1"/>
+        <param help="Size of the cloud-only prefetch buffer (in MB; 0 to disable). -CPB,--cloudPrefetchBuffer &amp;lt;cloudPrefetchBuffer&amp;gt;" label="Cloud Prefetch Buffer" name="cloudPrefetchBuffer" type="integer" value="40"/>
+        <param help="-gcs_retries,--gcs_max_retries &amp;lt;gcs_max_retries&amp;gt;: If the GCS bucket channel errors out, how many times it will attempt to re-initiate the connection." label="GCS max retries" name="gcs_max_retries" type="integer" value="20"/>
+        <param help="-ixp,--interval_exclusion_padding &amp;lt;interval_exclusion_padding&amp;gt;: Amount of padding (in bp) to add to each interval you are excluding." label="Interval Exclusion Padding" name="interval_exclusion_padding" type="integer" value="0"/>
+        <param help="--interval_merging_rule,-imr &amp;lt;interval_merging_rule&amp;gt;: Interval merging rule for abutting intervals." label="Interval merging rule" name="interval_merging_rule" type="select">
+          <option value="ALL" selected="true">ALL</option>
+          <option value="OVERLAPPING_ONLY">OVERLAPPING_ONLY</option>
+        </param>
+        <param help="-ip,--interval_padding &amp;lt;interval_padding&amp;gt;: Amount of padding (in bp) to add to each interval you are including." label="Interval Padding" name="interval_padding" type="integer" value="0"/>
+        <param help="--interval_set_rule,-isr &amp;lt;interval_set_rule&amp;gt;: Set merging approach to use for combining interval inputs." label="Interval set rule" name="interval_set_rule" type="select">
+          <option value="UNION" selected="true">UNION</option>
+          <option value="INTERSECTION">INTERSECTION</option>
+        </param>
+        <repeat help="-L,--intervals &amp;lt;intervals&amp;gt;" name="input_interval_repeat" title="Operate on Genomic intervals">
+          <param format="bed,gatk_interval,picard_interval_list,vcf" label="Genomic intervals" name="input_intervals" type="data"/>
+        </repeat>
+        <repeat help="-XL,--excludeIntervals &amp;lt;excludeIntervals&amp;gt;" name="input_exclude_interval_repeat" title="Exclude Genomic intervals">
+          <param format="bed,gatk_interval,picard_interval_list,vcf" label="Genomic intervals" name="input_exclude_intervals" type="data"/>
+        </repeat>
+        <param help="-preserveQ,--preserve_qscores_less_than &amp;lt;preserve_qscores_less_than&amp;gt;: Bases with quality scores less than this threshold won't be recalibrated" label="Preserve qscores less than" name="preserve_qscores_less_than" type="integer" value="6"/>
+        <param help="-qq,--quantize_quals &amp;lt;quantize_quals&amp;gt;: Quantize quality scores to a given number of levels" label="Quantize quals" name="quantize_quals" type="integer" value="0"/>
+        <param checked="false" falsevalue="" help="--emit_original_quals; -EOQ&amp;lt;emit_original_quals&amp;gt;: Emit original base qualities under the OQ tag" label="Emit original qualities" name="emit_original_quals" truevalue="--emit-original-quals" type="boolean"/>
+        <param checked="false" falsevalue="" help="--useOriginalQualities; -OQ&amp;lt;useOriginalQualities&amp;gt;: Use the base quality scores from the OQ tag" label="Use original qualities" name="useOriginalQualities" truevalue="--use-original-qualities" type="boolean"/>
+        <repeat help="-rf,--read_filter &amp;lt;read_filter&amp;gt;" name="read_filter" title="Read Filter">
+            <conditional name="read_filter_type">
+              <param label="Read Filter Type" name="read_filter_type_selector" type="select">
+                <option value="AlignmentAgreesWithHeaderReadFilter">AlignmentAgreesWithHeaderReadFilter</option>
+                <option value="AllowAllReadsReadFilter">AllowAllReadsReadFilter</option>
+                <option value="AmbiguousBaseReadFilter">AmbiguousBaseReadFilter</option>
+                <option value="CigarContainsNoNOperator">CigarContainsNoNOperator</option>
+                <option value="FirstOfPairReadFilter">FirstOfPairReadFilter</option>
+                <option value="FragmentLengthReadFilter">FragmentLengthReadFilter</option>
+                <option value="GoodCigarReadFilter">GoodCigarReadFilter</option>
+                <option value="HasReadGroupReadFilter">HasReadGroupReadFilter</option>
+                <option value="LibraryReadFilter">LibraryReadFilter</option>
+                <option value="MappedReadFilter">MappedReadFilter</option>
+                <option value="MappingQualityAvailableReadFilter">MappingQualityAvailableReadFilter</option>
+                <option value="MappingQualityNotZeroReadFilter">MappingQualityNotZeroReadFilter</option>
+                <option value="MappingQualityReadFilter">MappingQualityReadFilter</option>
+                <option value="MatchingBasesAndQualsReadFilter">MatchingBasesAndQualsReadFilter</option>
+                <option value="MateDifferentStrandReadFilter">MateDifferentStrandReadFilter</option>
+                <option value="MateOnSameContigOrNoMappedMateReadFilter">MateOnSameContigOrNoMappedMateReadFilter</option>
+                <option value="MetricsReadFilter">MetricsReadFilter</option>
+                <option value="NonZeroFragmentLengthReadFilter">NonZeroFragmentLengthReadFilter</option>
+                <option value="NonZeroReferenceLengthAlignmentReadFilter">NonZeroReferenceLengthAlignmentReadFilter</option>
+                <option value="NotDuplicateReadFilter">NotDuplicateReadFilter</option>
+                <option value="NotSecondaryAlignmentReadFilter">NotSecondaryAlignmentReadFilter</option>
+                <option value="NotSupplementaryAlignmentReadFilter">NotSupplementaryAlignmentReadFilter</option>
+                <option value="OverclippedReadFilter">OverclippedReadFilter</option>
+                <option value="PairedReadFilter">PairedReadFilter</option>
+                <option value="PassesVendorQualityCheckReadFilter">PassesVendorQualityCheckReadFilter</option>
+                <option value="PlatformReadFilter">PlatformReadFilter</option>
+                <option value="PlatformUnitReadFilter">PlatformUnitReadFilter</option>
+                <option value="PrimaryAlignmentReadFilter">PrimaryAlignmentReadFilter</option>
+                <option value="ProperlyPairedReadFilter">ProperlyPairedReadFilter</option>
+                <option value="ReadGroupBlackListReadFilter">ReadGroupBlackListReadFilter</option>
+                <option value="ReadGroupReadFilter">ReadGroupReadFilter</option>
+                <option value="ReadLengthEqualsCigarLengthReadFilter">ReadLengthEqualsCigarLengthReadFilter</option>
+                <option value="ReadLengthReadFilter">ReadLengthReadFilter</option>
+                <option value="ReadNameReadFilter">ReadNameReadFilter</option>
+                <option value="ReadStrandFilter">ReadStrandFilter</option>
+                <option value="SampleReadFilter">SampleReadFilter</option>
+                <option value="SecondOfPairReadFilter">SecondOfPairReadFilter</option>
+                <option value="SeqIsStoredReadFilter">SeqIsStoredReadFilter</option>
+                <option value="ValidAlignmentEndReadFilter">ValidAlignmentEndReadFilter</option>
+                <option value="ValidAlignmentStartReadFilter">ValidAlignmentStartReadFilter</option>
+                <option value="WellformedReadFilter">WellformedReadFilter</option>
+              </param>
+              <when value="AlignmentAgreesWithHeaderReadFilter"></when>
+              <when value="AllowAllReadsReadFilter"></when>
+              <when value="AmbiguousBaseReadFilter">
+                <conditional name="AmbiguousBaseReadFilter_type">
+                  <param name="AmbiguousBaseReadFilter_type_select" type="select" label="Method to specify threshod">
+                    <option value="number">Threshold number</option>
+                    <option value="fraction" selected="true">Threshold fraction</option>
+                  </param>
+                  <when value="number">
+                    <param help="--ambigFilterBases &amp;lt;ambigFilterBases&amp;gt;: Threshold number of ambiguous bases" label="Ambiguous Filter Bases" name="ambigFilterBases" type="integer" value="0"/>
+                  </when>
+                  <when value="fraction">
+                    <param help="--ambigFilterFrac &amp;lt;ambigFilterFrac&amp;gt;: Threshold fraction of ambiguous bases" label="Ambiguous Filter Fraction" name="ambigFilterFrac" type="float" value="0.05"/>
+                  </when>
+                </conditional>
+              </when>
+              <when value="CigarContainsNoNOperator"></when>
+              <when value="FirstOfPairReadFilter"></when>
+              <when value="FragmentLengthReadFilter">
+                <param label="Maximum Fragment length Read Filter" name="maxFragmentLength" type="integer" value="1000000" help="--maxFragmentLength,-maxFragmentLength &amp;lt;maxFragmentLength&amp;gt;: Keep only read pairs with fragment length at most equal to the given value"/>
+              </when>
+              <when value="GoodCigarReadFilter"></when>
+              <when value="HasReadGroupReadFilter"></when>
+              <when value="LibraryReadFilter">
+                <param label="Library to keep" name="library" type="text" value="Enter value" help="--library,-library &amp;lt;maxFragmentLength&amp;gt;"/> 
+              </when>
+              <when value="MappedReadFilter"></when>
+              <when value="MappingQualityAvailableReadFilter"></when>
+              <when value="MappingQualityNotZeroReadFilter"></when>
+              <when value="MappingQualityReadFilter">
+                <param label="Minimum read mapping quality required to consider a read for calling" name="minimumMappingQuality" type="integer" value="10" help="--minimumMappingQuality,-minimumMappingQuality &amp;lt;minimumMappingQuality&amp;gt;"/>
+                <param label="Maximum read mapping quality required to consider a read for calling" name="maximumMappingQuality" type="integer" value="1000" help="--maximumMappingQuality,-maximumMappingQuality &amp;lt;maximumMappingQuality&amp;gt;"/>
+              </when>
+              <when value="MatchingBasesAndQualsReadFilter"></when>
+              <when value="MateDifferentStrandReadFilter"></when>
+              <when value="MateOnSameContigOrNoMappedMateReadFilter"></when>
+              <when value="MetricsReadFilter"></when>
+              <when value="NonZeroFragmentLengthReadFilter"></when>
+              <when value="NonZeroReferenceLengthAlignmentReadFilter"></when>
+              <when value="NotDuplicateReadFilter"></when>
+              <when value="NotSecondaryAlignmentReadFilter"></when>
+              <when value="NotSupplementaryAlignmentReadFilter"></when>
+              <when value="OverclippedReadFilter">
+                <param checked="false" falsevalue="" help="--dontRequireSoftClipsBothEnds,-dontRequireSoftClipsBothEnds &amp;lt;dontRequireSoftClipsBothEnds&amp;gt;: Allow a read to be filtered out based on having only 1 soft-clipped block. By default, both ends must have a soft-clipped block, setting this flag requires only 1 soft-clipped block." label="Don't Require Soft Clips on Both Ends" name="dontRequireSoftClipsBothEnds" truevalue="--dontRequireSoftClipsBothEnds" type="boolean"/>
+                <param label="Filter reads with less than this number of aligned bases" name="filterTooShort" type="integer" value="30" help="--filterTooShort,-filterTooShort &amp;lt;filterTooShort&amp;gt;"/>
+              </when>
+              <when value="PairedReadFilter"></when>
+              <when value="PassesVendorQualityCheckReadFilter"></when>
+              <when value="PlatformReadFilter">
+                <param label="Keep reads with RG:PL attribute containing this string" name="PLFilterName" type="text" value="" help="--PLFilterName,-PLFilterName &amp;lt;PLFilterName&amp;gt;"/>
+              </when>
+              <when value="PlatformUnitReadFilter">
+                <param label="Keep reads with platform units not in this list" name="blackListedLanes" type="text" value="" help="--blackListedLanes,-blackListedLanes &amp;lt;blackListedLanes&amp;gt;"/>
+              </when>
+              <when value="PrimaryAlignmentReadFilter"></when>
+              <when value="ProperlyPairedReadFilter"></when>
+              <when value="ReadGroupBlackListReadFilter">
+                <param label="Read Group black list" name="blackList" type="text" value="" help="--blackList,-blackList &amp;lt;blackList&amp;gt;"/>
+              </when>
+              <when value="ReadGroupReadFilter">
+                <param label="Read group name to keep" name="keepReadGroup" type="text" value="" help="--keepReadGroup,-keepReadGroup &amp;lt;keepReadGroup&amp;gt;"/>
+              </when>
+              <when value="ReadLengthEqualsCigarLengthReadFilter"></when>
+              <when value="ReadLengthReadFilter">
+                <param label="Minimum read length" name="minReadLength" type="integer" value="1" help="--minReadLength,-minReadLength &amp;lt;minReadLength&amp;gt;"/>
+                <param label="Maximum read length" name="maxReadLength" type="integer" value="1000" help="--maxReadLength,-maxReadLength &amp;lt;maxReadLength&amp;gt;"/>
+              </when>
+              <when value="ReadNameReadFilter">
+                <param label="Read name to keep" name="readName" type="text" value="" help="--readName,-readName &amp;lt;readName&amp;gt;"/>
+              </when>
+              <when value="ReadStrandFilter">
+                <param checked="false" falsevalue="" help="--keepReverse,-keepReverse &amp;lt;keepReverse&amp;gt;" label="Keep reverse strand reads" name="keepReverse" truevalue="--keepReverse" type="boolean"/>
+              </when>
+              <when value="SampleReadFilter">
+                <param label="The name of the sample(s) to keep, filtering out all others" name="sample" type="text" value=""/>
+              </when>
+              <when value="SecondOfPairReadFilter"></when>
+              <when value="SeqIsStoredReadFilter"></when>
+              <when value="ValidAlignmentEndReadFilter"></when>
+              <when value="ValidAlignmentStartReadFilter"></when>
+              <when value="WellformedReadFilter"></when>
+            </conditional>
+        </repeat>
+        <param help="--disableReadFilter,-DF &amp;lt;disableReadFilter&amp;gt;" label="Read filters to be disabled before analysis" name="disableReadFilter" type="select" multiple="true">
+          <option value="AlignmentAgreesWithHeaderReadFilter">AlignmentAgreesWithHeaderReadFilter</option>
+          <option value="AllowAllReadsReadFilter">AllowAllReadsReadFilter</option>
+          <option value="AmbiguousBaseReadFilter">AmbiguousBaseReadFilter</option>
+          <option value="CigarContainsNoNOperator">CigarContainsNoNOperator</option>
+          <option value="FirstOfPairReadFilter">FirstOfPairReadFilter</option>
+          <option value="FragmentLengthReadFilter">FragmentLengthReadFilter</option>
+          <option value="GoodCigarReadFilter">GoodCigarReadFilter</option>
+          <option value="HasReadGroupReadFilter">HasReadGroupReadFilter</option>
+          <option value="LibraryReadFilter">LibraryReadFilter</option>
+          <option value="MappedReadFilter">MappedReadFilter</option>
+          <option value="MappingQualityAvailableReadFilter">MappingQualityAvailableReadFilter</option>
+          <option value="MappingQualityNotZeroReadFilter">MappingQualityNotZeroReadFilter</option>
+          <option value="MappingQualityReadFilter">MappingQualityReadFilter</option>
+          <option value="MatchingBasesAndQualsReadFilter">MatchingBasesAndQualsReadFilter</option>
+          <option value="MateDifferentStrandReadFilter">MateDifferentStrandReadFilter</option>
+          <option value="MateOnSameContigOrNoMappedMateReadFilter">MateOnSameContigOrNoMappedMateReadFilter</option>
+          <option value="MetricsReadFilter">MetricsReadFilter</option>
+          <option value="NonZeroFragmentLengthReadFilter">NonZeroFragmentLengthReadFilter</option>
+          <option value="NonZeroReferenceLengthAlignmentReadFilter">NonZeroReferenceLengthAlignmentReadFilter</option>
+          <option value="NotDuplicateReadFilter">NotDuplicateReadFilter</option>
+          <option value="NotSecondaryAlignmentReadFilter">NotSecondaryAlignmentReadFilter</option>
+          <option value="NotSupplementaryAlignmentReadFilter">NotSupplementaryAlignmentReadFilter</option>
+          <option value="OverclippedReadFilter">OverclippedReadFilter</option>
+          <option value="PairedReadFilter">PairedReadFilter</option>
+          <option value="PassesVendorQualityCheckReadFilter">PassesVendorQualityCheckReadFilter</option>
+          <option value="PlatformReadFilter">PlatformReadFilter</option>
+          <option value="PlatformUnitReadFilter">PlatformUnitReadFilter</option>
+          <option value="PrimaryAlignmentReadFilter">PrimaryAlignmentReadFilter</option>
+          <option value="ProperlyPairedReadFilter">ProperlyPairedReadFilter</option>
+          <option value="ReadGroupBlackListReadFilter">ReadGroupBlackListReadFilter</option>
+          <option value="ReadGroupReadFilter">ReadGroupReadFilter</option>
+          <option value="ReadLengthEqualsCigarLengthReadFilter">ReadLengthEqualsCigarLengthReadFilter</option>
+          <option value="ReadLengthReadFilter">ReadLengthReadFilter</option>
+          <option value="ReadNameReadFilter">ReadNameReadFilter</option>
+          <option value="ReadStrandFilter">ReadStrandFilter</option>
+          <option value="SampleReadFilter">SampleReadFilter</option>
+          <option value="SecondOfPairReadFilter">SecondOfPairReadFilter</option>
+          <option value="SeqIsStoredReadFilter">SeqIsStoredReadFilter</option>
+          <option value="ValidAlignmentEndReadFilter">ValidAlignmentEndReadFilter</option>
+          <option value="ValidAlignmentStartReadFilter">ValidAlignmentStartReadFilter</option>
+          <option value="WellformedReadFilter">WellformedReadFilter</option>
+        </param>
+        <param label="Read validation stringency" name="readValidationStringency" type="select" help="--readValidationStringency,-VS &amp;lt;keepReadGroup&amp;gt;: Validation stringency for all SAM files read by this program">
+          <option value="STRICT">STRICT</option>
+          <option value="LENIENT">LENIENT</option>
+          <option value="SILENT" selected="true">SILENT</option>
+        </param>
+        <param checked="false" falsevalue="" help="--disableSequenceDictionaryValidation: If specified, do not check the sequence dictionaries from our inputs for compatibility. Use at your own risk!" label="Disable Sequence Dictionalry Validation" name="disableSequenceDictionaryValidation" truevalue="--disable-sequence-dictionary-validation" type="boolean"/>
+        <param checked="false" falsevalue="" help="--disable-tool-default-read-filters" label="Disable Tool Default Read Filters" name="disableToolDefaultReadFilters" truevalue="--disable-tool-default-read-filters" type="boolean"/>
+        <param checked="false" falsevalue="" help="--lenient; -LE" label="Lenient processing of VCF files" name="lenient" truevalue="--lenient" type="boolean"/>
+
+      </when>
+    </conditional>
+  </inputs>
+  <outputs>
+    <data format="bam" label="${tool.name} on ${on_string} (BAM)" name="output_bam"/>
+  </outputs>
+  <tests>
+      <test>
+          <param name="reference_source_selector" value="history"/>
+          <param ftype="fasta" name="ref_file" value="phiX.fasta"/>
+          <param ftype="bam" name="input_bam" value="gatk/gatk_indel_realigner/gatk_indel_realigner_out_1.bam"/>
+          <param name="rod_bind_type_selector" value="dbsnp"/>
+          <param ftype="bed" name="input_rod" value="gatk/fake_phiX_variant_locations.bed"/>
+          <param name="standard_covs" value="True"/>
+          <param name="covariates" value="ReadGroupCovariate,HomopolymerCovariate,MinimumNQSCovariate,PositionCovariate"/>
+          <param name="gatk_param_type_selector" value="basic"/>
+          <param name="analysis_param_type_selector" value="basic"/>
+          <output file="gatk/gatk_count_covariates/gatk_count_covariates_out_1.csv" name="output_recal"/> 
+          <output compare="contains" file="gatk/gatk_count_covariates/gatk_count_covariates_out_1.log.contains" name="output_log"/>
+      </test>
+  </tests>
+  <help>
+.. class:: warningmark
+
+"This calculation is critically dependent on being able to skip over known variant sites. Please provide a dbSNP ROD or a VCF file containing known sites of genetic variation."
+  
+**What it does**
+
+This walker is designed to work as the first pass in a two-pass processing step. It does a by-locus traversal operating only at sites that are not in dbSNP. We assume that all reference mismatches we see are therefore errors and indicative of poor base quality. This walker generates tables based on various user-specified covariates (such as read group, reported quality score, cycle, and dinucleotide) Since there is a large amount of data one can then calculate an empirical probability of error given the particular covariates seen at this site, where p(error) = num mismatches / num observations The output file is a CSV list of (the several covariate values, num observations, num mismatches, empirical quality score) The first non-comment line of the output file gives the name of the covariates that were used for this calculation.  Note: ReadGroupCovariate and QualityScoreCovariate are required covariates and will be added for the user regardless of whether or not they were specified Note: This walker is designed to be used in conjunction with TableRecalibrationWalker.
+
+For more information on base quality score recalibration using the GATK, see this `tool specific page &lt;http://www.broadinstitute.org/gatk/gatkdocs/org_broadinstitute_sting_gatk_walkers_bqsr_BaseRecalibrator.html&gt;`_.
+
+To learn about best practices for variant detection using GATK, see this `overview &lt;http://www.broadinstitute.org/gatk/guide/topic?name=best-practices&gt;`_.
+
+If you encounter errors, please view the `GATK FAQ &lt;http://www.broadinstitute.org/gatk/guide/topic?name=faqs&gt;`_.
+
+------
+
+**Inputs**
+
+GenomeAnalysisTK: BaseRecalibrator accepts an aligned BAM input file.
+
+
+**Outputs**
+
+The output is in CSV format.
+
+
+Go `here &lt;http://www.broadinstitute.org/gatk/guide/topic?name=intro&gt;`_ for details on GATK file formats.
+
+-------
+
+**Citation**
+
+For the underlying tool, please cite `DePristo MA, Banks E, Poplin R, Garimella KV, Maguire JR, Hartl C, Philippakis AA, del Angel G, Rivas MA, Hanna M, McKenna A, Fennell TJ, Kernytsky AM, Sivachenko AY, Cibulskis K, Gabriel SB, Altshuler D, Daly MJ. A framework for variation discovery and genotyping using next-generation DNA sequencing data. Nat Genet. 2011 May;43(5):491-8. &lt;http://www.ncbi.nlm.nih.gov/pubmed/21478889&gt;`_
+
+Please also site `McKenna A, Hanna M, Banks E, Sivachenko A, Cibulskis K, Kernytsky A, Garimella K, Altshuler D, Gabriel S, Daly M, DePristo MA (2010). The Genome Analysis Toolkit: a MapReduce framework for analyzing next-generation DNA sequencing data. Genome Res. 20:1297-303. Epub 2010 Jul 19. &lt;http://www.ncbi.nlm.nih.gov/pubmed/20644199&gt;`_
+
+If you use this tool in Galaxy, please cite `Blankenberg D, Von Kuster G, Coraor N, Ananda G, Lazarus R, Mangan M, Nekrutenko A, Taylor J. Galaxy: a web-based genome analysis tool for experimentalists. Curr Protoc Mol Biol. 2010 Jan;Chapter 19:Unit 19.10.1-21. &lt;http://www.ncbi.nlm.nih.gov/pubmed/20069535&gt;`_
+
+  </help>
+</tool>

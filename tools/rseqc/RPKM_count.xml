@@ -1,0 +1,144 @@
+<tool id="RPKM_count" name="RPKM Count" version="SAMTOOLS: 1.2; RSEQC: 2.3.3">
+	<description>calculates raw count and RPKM values for transcript at exon, intron, and mRNA level</description>
+	<requirements>
+		<requirement type="package">samtools</requirement>
+		<requirement type="package">rseqc</requirement>
+                <requirement type="package">pymodules</requirement>
+	</requirements>
+	<command interpreter="python"> samtoolshelper.py RPKM_count.py -i $input -o output -r $refgene
+		#if str($strand_type.strand_specific) == &quot;pair&quot;
+			-d
+			#if str($strand_type.pair_type) == &quot;sd&quot;
+				'1++,1--,2+-,2-+'
+			#else
+				'1+-,1-+,2++,2--'
+			#end if
+		#end if
+
+		#if str($strand_type.strand_specific) == &quot;single&quot;
+			-d
+			#if str($strand_type.single_type) == &quot;s&quot;
+				'++,--'
+			#else
+				'+-,-+'
+			#end if
+		#end if
+
+		#if $skiphits
+			-u
+		#end if
+
+		#if $onlyexonic
+			-e
+		#end if
+             2&gt; $outputlog
+	</command>
+	<inputs>
+		<param format="bam" label="input bam/sam file" name="input" type="data"/>
+		<param format="bed" label="Reference gene model" name="refgene" type="data"/>
+		<conditional name="strand_type">
+			<param label="Strand-specific?" name="strand_specific" type="select" value="None">
+				<option value="none">None</option>
+				<option value="pair">Pair-End RNA-seq</option>
+				<option value="single">Single-End RNA-seq</option>
+			</param>
+			<when value="pair">
+				<param display="radio" label="Pair-End Read Type (format: mapped --&gt; parent)" name="pair_type" type="select" value="sd">
+					<option value="sd"> read1 (positive --&gt; positive; negative --&gt; negative), read2 (positive --&gt; negative; negative --&gt; positive)</option>
+					<option value="ds">read1 (positive --&gt; negative; negative --&gt; positive), read2 (positive --&gt; positive; negative --&gt; negative)</option>
+				</param>
+			</when>
+			<when value="single">
+				<param display="radio" label="Single-End Read Type (format: mapped --&gt; parent)" name="single_type" type="select" value="s">
+					<option value="s">positive --&gt; positive; negative --&gt; negative</option>
+					<option value="d">positive --&gt; negative; negative --&gt; positive</option>
+				</param>
+			</when>
+			<when value="none"/>
+		</conditional>
+		<param label="Skip Multiple Hit Reads" name="skiphits" type="boolean" value="false"/>
+		<param label="Only use exonic (UTR exons and CDS exons) reads, otherwise use all reads" name="onlyexonic" type="boolean" value="false"/>
+	</inputs>
+	<outputs>
+		<data format="xls" from_work_dir="output_read_count.xls" label="${tool.name} on ${on_string}: Read Count PDF" name="outputxls"/>
+                <data format="txt" label="${tool.name} on ${on_string}: log" name="outputlog"/>
+	</outputs>
+	<help>
+.. image:: https://code.google.com/p/rseqc/logo?cct=1336721062
+
+-----
+
+About RSeQC
++++++++++++
+
+The RSeQC package provides a number of useful modules that can comprehensively evaluate high throughput sequence data especially RNA-seq data. “Basic modules” quickly inspect sequence quality, nucleotide composition bias, PCR bias and GC bias, while “RNA-seq specific modules” investigate sequencing saturation status of both splicing junction detection and expression estimation, mapped reads clipping profile, mapped reads distribution, coverage uniformity over gene body, reproducibility, strand specificity and splice junction annotation.
+
+The RSeQC package is licensed under the GNU GPL v3 license.
+
+Inputs
+++++++++++++++
+
+Input BAM/SAM file
+	Alignment file in BAM/SAM format.
+
+Reference gene model
+	Gene model in BED format.
+
+Strand sequencing type (default=none)
+	See Infer Experiment tool if uncertain.
+
+Options
+++++++++++++++
+
+Skip Multiple Hit Reads
+	Use Multiple hit reads or use only uniquely mapped reads.
+
+Only use exonic reads 
+	Renders program only used exonic (UTR exons and CDS exons) reads, otherwise use all reads.
+
+Sample Output
+++++++++++++++
+
+=====	========	========	======================	=====	===========	=============	=============	========	========
+chrom	start		end		accession		score	gene strand 	tag count (+)	tag count (-)	RPKM (+)	RPKM (-)
+=====	========	========	======================	=====	===========	=============	=============	========	========
+chr1	29213722	29313959	NM_001166007_intron_1	0	+		431		4329		0.086		0.863
+chr1	29314417	29319841	NM_001166007_intron_2	0	+		31		1		0.114		0.004
+chr1	29320054	29323726	NM_001166007_intron_3	0	+		32		0		0.174		0
+chr1	29323831	29338376	NM_001166007_intron_4	0	+		33		2		0.045		0.003
+chr1	29338419	29342203	NM_001166007_intron_5	0	+		7		0		0.037		0
+chr1	29342279	29344735	NM_001166007_intron_6	0	+		35		4		0.285		0.033
+chr1	29344954	29356911	NM_001166007_intron_7	0	+		34		2		0.057		0.003
+chr1	29356999	29359604	NM_001166007_intron_8	0	+		19		1		0.146		0.008
+chr1	29359757	29362337	NM_001166007_intron_9	0	+		31		0		0.24		0
+chr1	29362435	29365765	NM_001166007_intron_10	0	+		11		1		0.066		0.006
+chr1	29365938	29379615	NM_001166007_intron_11	0	+		63		0		0.092		0
+chr1	29379824	29391493	NM_001166007_intron_12	0	+		383		8		0.656		0.014
+chr1	29391670	29424318	NM_001166007_intron_13	0	+		817		10		0.5		0.006
+chr1	29424447	29435847	NM_001166007_intron_14	0	+		28		0		0.049		0
+chr1	29435949	29438879	NM_001166007_intron_15	0	+		12		0		0.082		0
+chr1	29438960	29442210	NM_001166007_intron_16	0	+		22		2		0.135		0.012
+chr1	29442315	29443330	NM_001166007_intron_17	0	+		9		0		0.177		0
+chr1	29213602	29213722	NM_001166007_exon_1	0	+		164		0		27.321		0
+chr1	29313959	29314417	NM_001166007_exon_2	0	+		1699		4		74.158		0.175
+chr1	29319841	29320054	NM_001166007_exon_3	0	+		528		1		49.554		0.094
+chr1	29323726	29323831	NM_001166007_exon_4	0	+		168		0		31.985		0
+chr1	29338376	29338419	NM_001166007_exon_5	0	+		88		0		40.911		0
+chr1	29342203	29342279	NM_001166007_exon_6	0	+		11		3		29.986		0.789
+chr1	29344735	29344954	NM_001166007_exon_7	0	+		290		10		26.472		0.913
+chr1	29356911	29356999	NM_001166007_exon_8	0	+		146		1		33.166		0.227
+chr1	29359604	29359757	NM_001166007_exon_9	0	+		404		11		52.786		1.437
+chr1	29362337	29362435	NM_001166007_exon_10	0	+		85		7		17.339		1.428
+chr1	29365765	29365938	NM_001166007_exon_11	0	+		198		2		22.88		0.231
+chr1	29379615	29379824	NM_001166007_exon_12	0	+		306		5		29.269		0.478
+chr1	29391493	29391670	NM_001166007_exon_13	0	+		243		7		27.445		0.791
+chr1	29424318	29424447	NM_001166007_exon_14	0	+		298		7		46.18		1.085
+chr1	29435847	29435949	NM_001166007_exon_15	0	+		396		8		77.611		1.568
+chr1	29438879	29438960	NM_001166007_exon_16	0	+		307		0		75.767		0
+chr1	29442210	29442315	NM_001166007_exon_17	0	+		138		0		26.273		0
+chr1	29443330	29446558	NM_001166007_exon_18	0	+		2434		84		15.074		0.52
+chr1	29213602	29446558	NM_001166007_mRNA	0	+		8006		150		27.704		0.519
+=====	========	========	======================	=====	===========	=============	=============	========	========
+	
+	</help>
+</tool>

@@ -1,0 +1,48 @@
+<?xml version="1.0" ?>
+<tool id="qiime_phylogeny_midpoint-root" name="qiime phylogeny midpoint-root" version="022019">
+	<description> - Midpoint root an unrooted phylogenetic tree.</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command>
+		<![CDATA[
+		qiime phylogeny midpoint-root --i-tree=$itree
+
+	#if str($cmdconfig) != 'None':
+	 --cmd-config=$cmdconfig
+	#end if
+	 --o-rooted-tree=orootedtree;
+
+	cp orootedtree.qza $orootedtree;
+	]]>
+	</command>
+	<inputs>
+		<param format="qza,no_unzip.zip" label="--i-tree: Phylogeny[Unrooted] The phylogenetic tree to be rooted. [required]" name="itree" optional="False" type="data"/>
+		<param label="--cmd-config: Use config file for command options" name="cmdconfig" optional="True" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="qza" label="${tool.name} on ${on_string}: rooted-tree.qza" name="orootedtree"/>
+	</outputs>
+	<help>
+		<![CDATA[
+Midpoint root an unrooted phylogenetic tree.
+---------------------------------------------
+
+Midpoint root an unrooted phylogenetic tree.
+
+Parameters
+----------
+tree : Phylogeny[Unrooted]
+    The phylogenetic tree to be rooted.
+
+Returns
+-------
+rooted_tree : Phylogeny[Rooted]
+    The rooted phylogenetic tree.
+    ]]>
+	</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

@@ -1,0 +1,23 @@
+gyrA	21	Glu -> Gln
+gyrA	95	Ser -> Thr
+gyrA	384	Ala->Val
+gyrA	668	Gly -> Asp
+gyrB	291	Met->Ile
+mmpL5	794	Thr -> Ile
+mmpL5	948	Ile -> Val
+embR	110	Cys->Tyr
+embR	372	Cys -> Gly
+embR	376	Phe -> Leu
+katG	463	Arg -> Leu
+ddlA	365	Thr -> Ala
+gidB	92	Glu -> Asp
+embA	913	Pro->Ser
+embB	378	Glu->Ala
+embC	270	Thr->Ile
+embC	394	Asn->Asp
+embC	738	Arg->Gln
+iniA	481	His->Gln
+oxyR	13	Leu->Phe
+oxyR-ahpC promoter region	-88	
+rpoC	172	Ala->Val
+Rv1268c-embR	-207	

@@ -1,0 +1,132 @@
+<tool id="kmerfreq_ha" name="KmerFreq HA" version="r240">
+    <description>- a kmer frequency counter</description>
+    <requirements>
+        <requirement type="package">bgisoap</requirement>
+    </requirements>
+    <command interpreter="python">
+        kmerfreq_ha_2.0.py
+
+        --format_of_data=$data_format.fastq_fasta
+        #if $data_format.fastq_fasta == &quot;fastq&quot;
+          #for $i in $data_format.libraries
+            --paired_fastq_input1=$i.input1
+            --paired_fastq_input2=$i.input2
+          #end for
+        #else
+          #for $i in $data_format.libraries
+            --paired_fasta_input1=$i.input1
+            --paired_fasta_input2=$i.input2
+          #end for
+        #end if
+
+        ## Check if using default or custom parameters
+        --default_full_settings_type=$default_full_settings.settings_type
+        #if $default_full_settings.settings_type == &quot;full&quot;
+          --kmer_size=$default_full_settings.kmer_size
+          --read_length=$default_full_settings.read_length
+          --ignore_first=$default_full_settings.ignore_first
+          --ignore_last=$default_full_settings.ignore_last
+          --use_num_bases=$default_full_settings.use_num_bases
+          ## Don't need to expose -l input read list file param
+          ## Don't need to expose output prefix
+          --hash_size=$default_full_settings.hash_size
+          --thread_num=$default_full_settings.thread_num
+          --max_read_length=$default_full_settings.max_read_length
+          --bloom_filter=$default_full_settings.bloom_filter
+          --bloom_array_size=$default_full_settings.bloom_array_size
+          --num_processing_steps=$default_full_settings.num_processing_steps
+        #end if
+
+        ## Output files
+        --stat=$stat
+        --gz_freq=$gz_freq
+        --filelist=$filelist
+    </command>
+    <inputs>
+        <conditional name="data_format">
+            <param label="What type of data are you using?" name="fastq_fasta" type="select">
+                <option value="fastq">FASTQ</option>
+                <option value="fasta">FASTA</option>
+            </param>
+            <when value="fastq">
+                <repeat min="1" name="libraries" title="libraries">
+                    <param format="input" label="Forward FASTQ file" name="input1" type="data">
+                    </param>
+                    <param format="input" label="Reverse FASTQ file" name="input2" type="data">
+                    </param>
+                </repeat>
+            </when>
+            <when value="fasta">
+                <repeat min="1" name="libraries" title="libraries">
+                    <param format="input" label="Forward FASTA file" name="input1" type="data">
+                    </param>
+                    <param format="input" label="Reverse FASTA file" name="input2" type="data">
+                    </param>
+                </repeat>
+            </when>
+        </conditional>
+        <conditional name="default_full_settings">
+            <param help="Default settings are suitable for most analyses. If you want full control, use Full parameter list" label="kmerfreq settings to use" name="settings_type" type="select">
+                <option value="default">Default</option>
+                <option value="full">Full parameter list</option>
+            </param>
+            <when value="default"/>
+            <when value="full">
+                <param help="Kmer size should be set between 13 and 27" label="Kmer size" name="kmer_size" type="integer" value="17"/>
+                <param help="The read length used to get kmers. If this value is left blank, the actual length of the read will be used by default" label="Read length" name="read_length" optional="true" type="integer"/>
+                <param help="This option is set when sequencing quality is low at the beginning of reads" label="Number of bases to ignore at the start of the read?" name="ignore_first" type="integer" value="0"/>
+                <param help="This option is set when sequencing quality is low at the end of reads" label="Number of bases to ignore at the end of the read" name="ignore_last" type="integer" value="0"/>
+                <param help="This option is used for when sequencing depth is too high. All bases will be used by default if this parameter is left blank." label="Total number of bases to use for kmers" name="use_num_bases" optional="true" type="integer"/>
+                <param help="KmerFreq will increase the hashset memory space when it is insufficient" label="Initial size of hash table" name="hash_size" type="integer" value="50000000"/>
+                <param help="For increasing processing speed of KmerFreq. This param should be less than the number of available CPU cores" label="Number of threads to use" name="thread_num" type="integer" value="1"/>
+                <param help="KmerFreq will allocate memory buffer based on the read length" label="Maximum read length" name="max_read_length" type="integer" value="100"/>
+                <param help="Reduce memory usage by using the Bloom filter to remove kmers with frequencies lower than or equal to 2" label="Use Bloom filter to reduce memory usage?" name="bloom_filter" type="select" value="0">
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </param>
+                <param help="This parameter can be calculated using this formula:(genome_size+genome_size*coverage*error_rate*kmer_size)*5/4" label="Set Bloom array size" name="bloom_array_size" type="integer" value="1000000000"/>
+                <param help="More steps will use less memory but processing time will be increased" label="Number of steps to be used for KmerFreq processing" name="num_processing_steps" type="integer" value="1"/>
+            </when>
+        </conditional>
+    </inputs>
+    <outputs>
+        <data format="Tabular" label="Statistics file" name="stat"/>
+        <data format="Tabular" label="Frequency information" name="gz_freq"/>
+        <data format="Tabular" label="Input file list" name="filelist"/>
+    </outputs>
+    <tests>
+        <test>
+            <!--
+                GapCloser –b config_file –a scaffold_file –o output_file
+            -->
+            <param name="refGenomeSource" value="indexed"/>
+            <param name="indices" value="phiX"/>
+            <param name="sPaired" value="single"/>
+            <param ftype="fastqsanger" name="input1" value="bwa_wrapper_in1.fastqsanger"/>
+            <param name="source_select" value="pre_set"/>
+            <param name="suppressHeader" value="true"/>
+            <output file="bwa_wrapper_out1.sam" ftype="sam" name="output" sort="True"/>
+        </test>
+    </tests>
+    <help>
+**What it does**
+
+KmerFreq corrects the sequencing errors based on the kmer frequency spectrum (KFS). It assumes that most
+low-frequency Kmers were generated by sequencing errors, so the key of error correction is that the distinguish
+rate of the low-frequency and high-frequency Kmers, the larger Kmer size, the better of this effect but need
+more computing resource. In order to get an accurate result, we balanced the trimmed length and
+delete ratio with the accuracy level. The practical Kmer size should be chosen based on the genome
+characteristic.
+
+30X data is preferred for calculation of the Kmer frequency spectrum.
+
+-----
+
+**Outputs**
+
+Two output files are generated by KmerFreq:
+
+1. stat
+2. freq
+    </help>
+</tool>

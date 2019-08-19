@@ -1,0 +1,90 @@
+<collection>
+    <title>Mutations</title>
+    <loader>
+        <plugin>tsv-loader</plugin>
+        <parameter>
+            <key>data</key>
+            <value>/results/pathway.tsv</value>
+        </parameter>
+        <parameter>
+            <key>NULL_VALUE</key>
+            <value>\N</value>
+        </parameter>
+    </loader>
+    <fields>
+        <field>
+            <label>pathwayid</label>
+            <title>Pathwayid</title>
+            <id>PATHWAY_ID</id>
+            <type>string</type>
+            <primary-key>true</primary-key>
+        </field>
+        <field>
+            <label>count</label>
+            <title>Gene count</title>
+            <id>GENE_COUNT</id>
+            <type>integer</type>
+        </field>
+        <field>
+            <label>zscore</label>
+            <title>Zscore</title>
+            <id>FM_ZSCORE</id>
+            <type>double</type>
+        </field>
+        <field>
+            <label>fm-bias</label>
+            <title>Pvalue</title>
+            <id>FM_PVALUE</id>
+            <type>double</type>
+        </field>
+        <field>
+            <label>fm-bias</label>
+            <title>Qvalue</title>
+            <id>FM_QVALUE</id>
+            <type>double</type>
+        </field>
+        <field>
+            <label>recurrence</label>
+            <title>Total number of mutated genes</title>
+            <id>SAMPLE_FREQ</id>
+            <type>integer</type>
+        </field>
+        <field>
+            <label>samples</label>
+            <title>Total number of samples</title>
+            <id>SAMPLE_TOTAL</id>
+            <type>integer</type>
+        </field>
+        <field>
+            <label>mut-freq</label>
+            <title>Mutation frequency</title>
+            <id>SAMPLE_PROP</id>
+            <type>double</type>
+        </field>
+
+        <field>
+            <label>gene recurrence</label>
+            <title>Total number of mutated genes</title>
+            <id>GENE_FREQ</id>
+            <type>integer</type>
+        </field>
+        <field>
+            <label>gene total</label>
+            <title>Total number of genes</title>
+            <id>GENE_TOTAL</id>
+            <type>integer</type>
+        </field>
+        <field>
+            <label>gene-freq</label>
+            <title>Mutation frequency by gene</title>
+            <id>GENE_PROP</id>
+            <type>double</type>
+        </field>
+    </fields>
+    <links>
+        <link>
+            <collection>${pathways}</collection>
+            <field>PATHWAY_ID</field>
+        </link>
+    </links>
+</collection>

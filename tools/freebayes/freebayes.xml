@@ -1,0 +1,675 @@
+<tool id="freebayes" name="FreeBayes" version="FREEBAYES: v0.9.21-19-gc003c1e; SAMTOOLS: 0.1.18">
+  <requirements>
+    <requirement type="package">freebayes</requirement>
+    <requirement type="package" version="0.1.18">samtools</requirement>
+  </requirements>
+  <description> - Bayesian genetic variant detector</description>
+  <command>
+    ##set up input files
+    #set $reference_fasta_filename = &quot;localref.fa&quot;
+    #if str( $reference_source.reference_source_selector ) == &quot;history&quot;:
+        ln -s &quot;${reference_source.ref_file}&quot; &quot;${reference_fasta_filename}&quot; &amp;&amp;
+        samtools faidx &quot;${reference_fasta_filename}&quot; 2&gt;&amp;1 || echo &quot;Error running samtools faidx for FreeBayes&quot; &gt;&amp;2 &amp;&amp;
+    #else:
+        #set $reference_fasta_filename = str( $reference_source.ref_file.fields.path )
+    #end if
+    #for $bam_count, $input_bam in enumerate( $reference_source.input_bams ):
+        ln -s &quot;${input_bam.input_bam}&quot; &quot;localbam_${bam_count}.bam&quot; &amp;&amp;
+        ln -s &quot;${input_bam.input_bam.metadata.bam_index}&quot; &quot;localbam_${bam_count}.bam.bai&quot; &amp;&amp;
+    #end for
+    ##finished setting up inputs
+    
+    ##start FreeBayes commandline
+    freebayes
+    #for $bam_count, $input_bam in enumerate( $reference_source.input_bams ):
+        --bam &quot;localbam_${bam_count}.bam&quot;
+    #end for
+    --fasta-reference &quot;${reference_fasta_filename}&quot; 
+    
+    ##outputs
+    --vcf &quot;${output_vcf}&quot;
+    
+    ##advanced options
+    #if str( $options_type.options_type_selector ) == &quot;advanced&quot;:
+        ##additional outputs
+        #if $options_type.output_trace_option:
+            --trace &quot;${output_trace}&quot;
+        #end if
+        #if $options_type.output_failed_alleles_option:
+            --failed-alleles &quot;${output_failed_alleles_bed}&quot;
+        #end if
+        
+        ##additional inputs
+        #if str( $options_type.target_limit_type.target_limit_type_selector ) == &quot;limit_by_target_file&quot;:
+            --targets &quot;${options_type.target_limit_type.input_target_bed}&quot;
+        #elif str( $options_type.target_limit_type.target_limit_type_selector ) == &quot;limit_by_region&quot;:
+            --region &quot;${options_type.target_limit_type.region_chromosome}:${options_type.target_limit_type.region_start}..${options_type.target_limit_type.region_end}&quot;
+        #end if
+        #if $options_type.input_sample_file:
+            --samples &quot;${options_type.input_sample_file}&quot;
+        #end if
+        #if $options_type.input_populations_file:
+            --populations &quot;${options_type.input_populations_file}&quot;
+        #end if
+        #if $options_type.input_cnv_map_bed:
+            --cnv-map &quot;${options_type.input_cnv_map_bed}&quot;
+        #end if
+        #if str( $options_type.input_variant_type.input_variant_type_selector ) == &quot;provide_vcf&quot;:
+            --variant-input &quot;${options_type.input_variant_type.input_variant_vcf}&quot;
+            ${options_type.input_variant_type.only_use_input_alleles}
+        #end if
+        #if $options_type.haplotype_basis_alleles:
+            --haplotype-basis-alleles &quot;${options_type.haplotype_basis_alleles}&quot;
+        #end if
+        
+        
+        ##reporting
+        #if str( $options_type.section_reporting_type.section_reporting_type_selector ) == &quot;set&quot;:
+            --pvar &quot;${options_type.section_reporting_type.pvar}&quot;
+            ${options_type.section_reporting_type.show_reference_repeats}
+        #end if
+        
+        ##population model
+        #if str( $options_type.section_population_model_type.section_population_model_type_selector ) == &quot;set&quot;:
+            --theta &quot;${options_type.section_population_model_type.theta}&quot;
+            --ploidy &quot;${options_type.section_population_model_type.ploidy}&quot;
+            ${options_type.section_population_model_type.pooled}
+        #end if
+        
+        ##reference allele
+        #if str( $options_type.use_reference_allele_type.use_reference_allele_type_selector ) == &quot;include_reference_allele&quot;:
+            --use-reference-allele
+            ${options_type.use_reference_allele_type.diploid_reference}
+            --reference-quality &quot;${options_type.use_reference_allele_type.reference_quality_mq},${options_type.use_reference_allele_type.reference_quality_bq}&quot;
+        #end if
+        
+        ##allele scope
+        #if str( $options_type.section_allele_scope_type.section_allele_scope_type_selector ) == &quot;set&quot;:
+            ${options_type.section_allele_scope_type.no_snps}
+            ${options_type.section_allele_scope_type.no_indels}
+            ${options_type.section_allele_scope_type.no_mnps}
+            ${options_type.section_allele_scope_type.no_complex}
+            --use-best-n-alleles &quot;${options_type.section_allele_scope_type.use_best_n_alleles}&quot;
+            #if $options_type.section_allele_scope_type.max_complex_gap:
+                --max-complex-gap &quot;${options_type.section_allele_scope_type.max_complex_gap}&quot;
+            #end if
+        #end if
+        
+        ##indel realignment
+        ${options_type.left_align_indels}
+        
+        ##input filters
+        #if str( $options_type.section_input_filters_type.section_input_filters_type_selector ) == &quot;set&quot;:
+            ${options_type.section_input_filters_type.use_duplicate_reads}
+            #if str( $options_type.section_input_filters_type.quality_filter_type.quality_filter_type_selector ) == &quot;apply_filters&quot;:
+                --min-mapping-quality &quot;${options_type.section_input_filters_type.quality_filter_type.min_mapping_quality}&quot;
+                --min-base-quality &quot;${options_type.section_input_filters_type.quality_filter_type.min_base_quality}&quot;
+                --min-supporting-quality &quot;${options_type.section_input_filters_type.quality_filter_type.min_supporting_quality_mq},${options_type.section_input_filters_type.quality_filter_type.min_supporting_quality_bq}&quot;
+            #elif str( $options_type.section_input_filters_type.quality_filter_type.quality_filter_type_selector ) == &quot;standard_filters&quot;:
+                --standard-filters
+            #end if
+            --mismatch-base-quality-threshold &quot;${options_type.section_input_filters_type.mismatch_base_quality_threshold}&quot;
+            #if $options_type.section_input_filters_type.read_mismatch_limit:
+                --read-mismatch-limit &quot;${options_type.section_input_filters_type.read_mismatch_limit}&quot;
+            #end if
+            --read-max-mismatch-fraction &quot;${options_type.section_input_filters_type.read_max_mismatch_fraction}&quot;
+            #if $options_type.section_input_filters_type.read_snp_limit:
+                --read-snp-limit &quot;${options_type.section_input_filters_type.read_snp_limit}&quot;
+            #end if
+            #if $options_type.section_input_filters_type.read_indel_limit:
+                --read-indel-limit &quot;${options_type.section_input_filters_type.read_indel_limit}&quot;
+            #end if
+            --indel-exclusion-window &quot;${options_type.section_input_filters_type.indel_exclusion_window}&quot;
+            --min-alternate-fraction &quot;${options_type.section_input_filters_type.min_alternate_fraction}&quot;
+            --min-alternate-count &quot;${options_type.section_input_filters_type.min_alternate_count}&quot;
+            --min-alternate-qsum &quot;${options_type.section_input_filters_type.min_alternate_qsum}&quot;
+            --min-alternate-total &quot;${options_type.section_input_filters_type.min_alternate_total}&quot;
+            --min-coverage &quot;${options_type.section_input_filters_type.min_coverage}&quot;
+        #end if
+        
+        ##bayesian priors
+        #if str( $options_type.section_bayesian_priors_type.section_bayesian_priors_type_selector ) == &quot;set&quot;:
+            ${options_type.section_bayesian_priors_type.no_ewens_priors}
+            ${options_type.section_bayesian_priors_type.no_population_priors}
+            ${options_type.section_bayesian_priors_type.hwe_priors}
+        #end if
+        
+        ##observation prior expectations
+        #if str( $options_type.section_observation_prior_expectations_type.section_observation_prior_expectations_type_selector ) == &quot;set&quot;:
+            ${options_type.section_observation_prior_expectations_type.binomial_obs_priors}
+            ${options_type.section_observation_prior_expectations_type.allele_balance_priors}
+        #end if
+        
+        ##algorithmic features
+        #if str( $options_type.section_algorithmic_features_type.section_algorithmic_features_type_selector ) == &quot;set&quot;:
+            --site-selection-max-iterations &quot;${options_type.section_algorithmic_features_type.site_selection_max_iterations}&quot;
+            --genotyping-max-iterations &quot;${options_type.section_algorithmic_features_type.genotyping_max_iterations}&quot;
+            --genotyping-max-banddepth &quot;${options_type.section_algorithmic_features_type.genotyping_max_banddepth}&quot;
+            --posterior-integration-limits &quot;${options_type.section_algorithmic_features_type.posterior_integration_limits_n},${options_type.section_algorithmic_features_type.posterior_integration_limits_m}&quot;
+            ${options_type.section_algorithmic_features_type.no_permute}
+            ${options_type.section_algorithmic_features_type.exclude_unobserved_genotypes}
+            #if $options_type.section_algorithmic_features_type.genotype_variant_threshold:
+                --genotype-variant-threshold &quot;${options_type.section_algorithmic_features_type.genotype_variant_threshold}&quot;
+            #end if
+            ${options_type.section_algorithmic_features_type.use_mapping_quality}
+            --read-dependence-factor &quot;${options_type.section_algorithmic_features_type.read_dependence_factor}&quot;
+            ${options_type.section_algorithmic_features_type.no_marginals}
+        #end if
+        
+    #end if
+  </command>
+  <inputs>
+    <conditional name="reference_source">
+      <param label="Choose the source for the reference list" name="reference_source_selector" type="select">
+        <option value="cached">Locally cached</option>
+        <option value="history">History</option>
+      </param>
+      <when value="cached">
+        <repeat min="1" name="input_bams" title="Sample BAM file">
+            <param format="bam" label="BAM file" name="input_bam" type="data">
+              <validator type="unspecified_build"/>
+              <validator message="Sequences are not currently available for the specified build." metadata_column="value" metadata_name="dbkey" table_name="sam_fa_indexes" type="dataset_metadata_in_data_table"/>
+            </param>
+        </repeat>
+        <param label="Using reference genome" name="ref_file" type="select">
+          <options from_data_table="sam_fa_indexes">
+            <!-- <filter type="sam_fa_indexes" key="dbkey" ref="input_bam" column="value"/> does not yet work in a repeat...--> 
+          </options>
+          <validator message="A built-in reference genome is not available for the build associated with the selected input file" type="no_options"/>
+        </param>
+      </when>
+      <when value="history"> <!-- FIX ME!!!! -->
+        <repeat min="1" name="input_bams" title="Sample BAM file">
+            <param format="bam" label="BAM file" name="input_bam" type="data"/>
+        </repeat>
+        <param format="fasta" label="Using reference file" name="ref_file" type="data"/>
+      </when>
+    </conditional>
+    
+    <conditional name="options_type">
+      <param label="Basic or Advanced options" name="options_type_selector" type="select">
+        <option selected="True" value="basic">Basic</option>
+        <option value="advanced">Advanced</option>
+      </param>
+      <when value="basic">
+        <!-- Do nothing here -->
+      </when>
+      <when value="advanced">
+        
+        <!-- output -->
+        <param checked="False" falsevalue="" label="Write out failed alleles file" name="output_failed_alleles_option" truevalue="--failed-alleles" type="boolean"/>
+        <param checked="False" falsevalue="" label="Write out algorithm trace file" name="output_trace_option" truevalue="--trace" type="boolean"/>
+        
+        
+        <!-- input -->
+        <conditional name="target_limit_type">
+          <param label="Limit analysis to listed targets" name="target_limit_type_selector" type="select">
+            <option selected="True" value="do_not_limit">Do not limit</option>
+            <option value="limit_by_target_file">Limit by target file</option>
+            <option value="limit_by_region">Limit to region</option>
+          </param>
+          <when value="do_not_limit">
+            <!-- Do nothing here -->
+          </when>
+          <when value="limit_by_target_file">
+            <param format="bed" label="Limit analysis to targets listed in the BED-format FILE." name="input_target_bed" type="data"/>
+          </when>
+          <when value="limit_by_region">
+            <param label="Region Chromosome" name="region_chromosome" type="text" value=""/> <!--only once? -->
+            <param label="Region Start" name="region_start" type="integer" value=""/>
+            <param label="Region End" name="region_end" type="integer" value=""/>
+          </when>
+        </conditional>
+        <param format="txt" label="Limit analysis to samples listed (one per line) in the FILE" name="input_sample_file" optional="True" type="data"/>
+        <param format="txt" label="Populations File" name="input_populations_file" optional="True" type="data"/>
+        <param format="bed" label="Read a copy number map from the BED file FILE" name="input_cnv_map_bed" optional="True" type="data"/>
+        <conditional name="input_variant_type">
+          <param label="Provide variants file" name="input_variant_type_selector" type="select">
+            <option selected="True" value="do_not_provide">Do not provide</option>
+            <option value="provide_vcf">Provide VCF file</option>
+          </param>
+          <when value="do_not_provide">
+            <!-- Do nothing here -->
+          </when>
+          <when value="provide_vcf">
+            <param format="vcf" label="Use variants reported in VCF file as input to the algorithm" name="input_variant_vcf" type="data"/>
+            <param checked="False" falsevalue="" label="Only provide variant calls and genotype likelihoods for sites in VCF" name="only_use_input_alleles" truevalue="--only-use-input-alleles" type="boolean"/>
+          </when>
+        </conditional>
+        <param format="vcf" label="Only use variant alleles provided in this input VCF for the construction of complex or haplotype alleles" name="haplotype_basis_alleles" optional="True" type="data"/>
+        
+        <!-- reporting -->
+        <conditional name="section_reporting_type">
+          <param label="Set Reporting options" name="section_reporting_type_selector" type="select">
+            <option selected="True" value="do_not_set">Do not set</option>
+            <option value="set">Set</option>
+          </param>
+          <when value="do_not_set">
+            <!-- do nothing here -->
+          </when>
+          <when value="set">
+            <param label="Report sites if the probability that there is a polymorphism at the site is greater" name="pvar" type="float" value="0.0001"/>
+            <param checked="False" falsevalue="" label="Calculate and show information about reference repeats" name="show_reference_repeats" truevalue="--show-reference-repeats" type="boolean"/>
+          </when>
+        </conditional>
+        
+        
+        <!-- population model -->
+        <conditional name="section_population_model_type">
+          <param label="Set population model options" name="section_population_model_type_selector" type="select">
+            <option selected="True" value="do_not_set">Do not set</option>
+            <option value="set">Set</option>
+          </param>
+          <when value="do_not_set">
+            <!-- do nothing here -->
+          </when>
+          <when value="set">
+            <param help="This serves as the single parameter to the Ewens Sampling Formula prior model" label="expected mutation rate or pairwise nucleotide diversity among the population" name="theta" type="float" value="0.001"/>
+            <param label="default ploidy for the analysis" name="ploidy" type="integer" value="2"/>
+            <param checked="False" falsevalue="" help="When using this flag, set --ploidy to the number of alleles in each sample." label="Assume that samples result from pooled sequencing" name="pooled" truevalue="--pooled" type="boolean"/>
+          </when>
+        </conditional>
+        
+        <!-- reference allele -->
+            <conditional name="use_reference_allele_type">
+              <param label="Include the reference allele in the analysis" name="use_reference_allele_type_selector" type="select">
+                <option selected="True" value="do_not_include_reference_allele">Do not include</option>
+                <option value="include_reference_allele">Include</option>
+              </param>
+              <when value="do_not_include_reference_allele">
+                <!-- Do nothing here -->
+              </when>
+              <when value="include_reference_allele">
+                <param checked="False" falsevalue="" label="Treat reference as diploid" name="diploid_reference" truevalue="--diploid-reference" type="boolean"/>
+                <param label="Assign mapping quality" name="reference_quality_mq" type="integer" value="100"/>
+                <param label="Assign base quality" name="reference_quality_bq" type="integer" value="60"/>
+              </when>
+            </conditional>     
+        
+        <!-- allele scope -->
+        <conditional name="section_allele_scope_type">
+          <param label="Set allele scope options" name="section_allele_scope_type_selector" type="select">
+            <option selected="True" value="do_not_set">Do not set</option>
+            <option value="set">Set</option>
+          </param>
+          <when value="do_not_set">
+            <!-- do nothing here -->
+          </when>
+          <when value="set">
+            <param checked="False" falsevalue="" label="Ignore SNP alleles" name="no_snps" truevalue="--no-snps" type="boolean"/>
+            <param checked="False" falsevalue="" label="Ignore insertion and deletion alleles" name="no_indels" truevalue="--no-indels" type="boolean"/>
+            <param checked="False" falsevalue="" label="Ignore multi-nuceotide polymorphisms, MNPs" name="no_mnps" truevalue="--no-mnps" type="boolean"/>
+            <param checked="False" falsevalue="" label="Ignore complex events (composites of other classes)" name="no_complex" truevalue="--no-complex" type="boolean"/>
+            <param help="Ranked by sum of supporting quality scores; Set to 0 to use all" label="Evaluate only the best N SNP alleles" min="0" name="use_best_n_alleles" type="integer" value="0"/>
+            <param label="Allow complex alleles with contiguous embedded matches of up to this length" name="max_complex_gap" optional="True" type="integer" value=""/>
+          </when>
+        </conditional>
+        
+        <!-- indel realignment -->
+        <param checked="False" falsevalue="" label="Left-realign and merge gaps embedded in reads" name="left_align_indels" truevalue="--left-align-indels" type="boolean"/>
+        
+        <!-- input filters -->
+        <conditional name="section_input_filters_type">
+          <param label="Set input filters options" name="section_input_filters_type_selector" type="select">
+            <option selected="True" value="do_not_set">Do not set</option>
+            <option value="set">Set</option>
+          </param>
+          <when value="do_not_set">
+            <!-- do nothing here -->
+          </when>
+          <when value="set">
+            <param checked="False" falsevalue="" label="Include duplicate-marked alignments in the analysis" name="use_duplicate_reads" truevalue="--use-duplicate-reads" type="boolean"/>
+            <conditional name="quality_filter_type">
+              <param label="Apply Quality filters" name="quality_filter_type_selector" type="select">
+                <option selected="True" value="standard_filters">Apply standard</option>
+                <option value="apply_filters">Apply specified</option>
+              </param>
+              <when value="standard_filters">
+                <!-- Do nothing here --> <!-- standard-filters -->
+              </when>
+              <when value="apply_filters">
+                <param label="Exclude alignments from analysis if they have a mapping quality less than" name="min_mapping_quality" type="integer" value="0"/>
+                <param label="Exclude alleles from analysis if their supporting base quality less than" name="min_base_quality" type="integer" value="0"/>
+                <param label="In order to consider an alternate allele, at least one supporting alignment must have mapping quality" name="min_supporting_quality_mq" type="integer" value="0"/>
+                <param label="In order to consider an alternate allele, at least one supporting alignment must have base quality" name="min_supporting_quality_bq" type="integer" value="0"/>
+              </when>
+            </conditional>
+            <param label="Count mismatches toward read-mismatch-limit if the base quality of the mismatch is &gt;=" name="mismatch_base_quality_threshold" type="integer" value="10"/>
+            <param label="Exclude reads with more than N mismatches where each mismatch has base quality &gt;= mismatch-base-quality-threshold" name="read_mismatch_limit" optional="True" type="integer" value=""/>
+            <param label="Exclude reads with more than N [0,1] fraction of mismatches where each mismatch has base quality &gt;= mismatch-base-quality-threshold" name="read_max_mismatch_fraction" type="float" value="1.0"/>
+            <param label="Exclude reads with more than N base mismatches, ignoring gaps with quality &gt;= mismatch-base-quality-threshold" name="read_snp_limit" optional="True" type="integer" value=""/>
+            <param label="Exclude reads with more than N separate gaps" name="read_indel_limit" optional="True" type="integer" value=""/>
+            <param label="Ignore portions of alignments this many bases from a putative insertion or deletion allele" name="indel_exclusion_window" type="integer" value="0"/>
+            <param label="Require at least this fraction of observations supporting an alternate allele within a single individual in the in order to evaluate the position" name="min_alternate_fraction" type="float" value="0"/>
+            <param label="Require at least this count of observations supporting an alternate allele within a single individual in order to evaluate the position" name="min_alternate_count" type="integer" value="1"/>
+            <param label="Require at least this sum of quality of observations supporting an alternate allele within a single individual in order to evaluate the position" name="min_alternate_qsum" type="integer" value="0"/>
+            <param label="Require at least this count of observations supporting an alternate allele within the total population in order to use the allele in analysis" name="min_alternate_total" type="integer" value="1"/>
+            <param label="Require at least this coverage to process a site" name="min_coverage" type="integer" value="0"/>
+          </when>
+        </conditional>
+        
+        
+        <!-- bayesian priors -->
+        <conditional name="section_bayesian_priors_type">
+          <param label="Set bayesian priors options" name="section_bayesian_priors_type_selector" type="select">
+            <option selected="True" value="do_not_set">Do not set</option>
+            <option value="set">Set</option>
+          </param>
+          <when value="do_not_set">
+            <!-- do nothing here -->
+          </when>
+          <when value="set">
+            <param checked="False" falsevalue="" label="Turns off the Ewens' Sampling Formula component of the priors" name="no_ewens_priors" truevalue="--no-ewens-priors" type="boolean"/>
+            <param checked="False" falsevalue="" help="Equivalent to --pooled --no-ewens-priors" label="No population priors" name="no_population_priors" truevalue="--no-population-priors" type="boolean"/>
+            <param checked="False" falsevalue="" label="Use the probability of the combination arising under HWE given the allele frequency as estimated by observation frequency" name="hwe_priors" truevalue="--hwe-priors" type="boolean"/>
+          </when>
+        </conditional>
+        
+        <!-- observation prior expectations -->
+        <conditional name="section_observation_prior_expectations_type">
+          <param label="Set observation prior expectations options" name="section_observation_prior_expectations_type_selector" type="select">
+            <option selected="True" value="do_not_set">Do not set</option>
+            <option value="set">Set</option>
+          </param>
+          <when value="do_not_set">
+            <!-- do nothing here -->
+          </when>
+          <when value="set">
+            <param checked="False" falsevalue="" label="Incorporate expectations about osbervations into the priors, Uses read placement probability, strand balance probability, and read position (5'-3') probability" name="binomial_obs_priors" truevalue="--binomial-obs-priors" type="boolean"/>
+            <param checked="False" falsevalue="" label="Use aggregate probability of observation balance between alleles as a component of the priors.  Best for observations with minimal inherent reference bias" name="allele_balance_priors" truevalue="--allele-balance-priors" type="boolean"/>
+          </when>
+        </conditional>
+        
+        
+        <!-- algorithmic features -->
+        <conditional name="section_algorithmic_features_type">
+          <param label="Set algorithmic features options" name="section_algorithmic_features_type_selector" type="select">
+            <option selected="True" value="do_not_set">Do not set</option>
+            <option value="set">Set</option>
+          </param>
+          <when value="do_not_set">
+            <!-- do nothing here -->
+          </when>
+          <when value="set">
+            <param help="Set to 0 to prevent use of this algorithm for site selection, and to a low integer for improvide site selection at a slight performance penalty" label="Uses hill-climbing algorithm to search posterior space for N iterations to determine if the site should be evaluated." name="site_selection_max_iterations" type="integer" value="5"/>
+            <param label="Iterate no more than N times during genotyping step" name="genotyping_max_iterations" type="integer" value="25"/>
+            <param label="Integrate no deeper than the Nth best genotype by likelihood when genotyping" name="genotyping_max_banddepth" type="integer" value="6"/>
+            <param help="Integrate all genotype combinations in our posterior space which include no more than N samples with their Mth best data likelihood." label="Posteriror integration limit N" name="posterior_integration_limits_n" type="integer" value="1"/>
+            <param help="Integrate all genotype combinations in our posterior space which include no more than N samples with their Mth best data likelihood." label="Posteriror integration limit M" name="posterior_integration_limits_m" type="integer" value="3"/>
+            <param checked="False" falsevalue="" label="Do not scale prior probability of genotype combination given allele frequency by the number of permutations of included genotypes" name="no_permute" truevalue="--no-permute" type="boolean"/>
+            <param checked="False" falsevalue="" label="Skip sample genotypings for which the sample has no supporting reads" name="exclude_unobserved_genotypes" truevalue="--exclude-unobserved-genotypes" type="boolean"/>
+            <param label="Limit posterior integration to samples where the second-best genotype likelihood is no more than log(N) from the highest genotype likelihood for the sample" name="genotype_variant_threshold" optional="True" type="integer" value=""/>
+            <param checked="False" falsevalue="" label="Use mapping quality of alleles when calculating data likelihoods" name="use_mapping_quality" truevalue="--use-mapping-quality" type="boolean"/>
+            <param label="Incorporate non-independence of reads by scaling successive observations by this factor during data likelihood calculations" name="read_dependence_factor" type="float" value="0.9"/>
+            <param checked="False" falsevalue="" label="Do not calculate the marginal probability of genotypes.  Saves time and improves scaling performance in large populations" name="no_marginals" truevalue="--no-marginals" type="boolean"/>
+          </when>
+        </conditional>
+        
+        
+      </when>
+    </conditional>
+    
+  </inputs>
+  <outputs>
+    <data format="vcf" label="${tool.name} on ${on_string} (variants)" name="output_vcf"/>
+    <data format="bed" label="${tool.name} on ${on_string} (failed alleles)" name="output_failed_alleles_bed">
+        <filter>options_type['options_type_selector'] == &quot;advanced&quot; and options_type['output_failed_alleles_option'] is True</filter>
+    </data>
+    <data format="txt" label="${tool.name} on ${on_string} (trace)" name="output_trace">
+        <filter>options_type['options_type_selector'] == &quot;advanced&quot; and options_type['output_trace_option'] is True</filter>
+    </data>
+  </outputs>
+  <tests>
+    <test>
+     <param name="reference_source_selector" value="history"/>
+      <param ftype="fasta" name="ref_file" value="phiX.fasta"/>
+      <param ftype="bam" name="input_bam" value="fake_phiX_reads_1.bam"/>
+      <param name="options_type_selector" value="basic"/>
+      <output compare="contains" file="freebayes_out_1.vcf.contains" name="output_vcf"/>
+    </test>
+  </tests>
+  <help>
+**What it does**
+
+This tool uses FreeBayes to call SNPS given a reference sequence and a BAM alignment file.
+
+FreeBayes is a high-performance, flexible, and open-source Bayesian genetic variant detector. It operates on BAM alignment files, which are produced by most contemporary short-read aligners.
+
+In addition to substantial performance improvements over its predecessors (PolyBayes, GigaBayes, and BamBayes), it expands the scope of SNP and small-indel variant calling to populations of individuals with heterogeneous copy number. FreeBayes is currently under active development. 
+
+Go `here &lt;http://bioinformatics.bc.edu/marthlab/FreeBayes&gt;`_ for details on FreeBayes.
+
+------
+
+**Inputs**
+
+FreeBayes accepts an input aligned BAM file.
+
+
+**Outputs**
+
+The output is in the VCF format.
+
+-------
+
+**Settings**::
+
+  input and output:
+
+   -b --bam FILE   Add FILE to the set of BAM files to be analyzed.
+   -c --stdin      Read BAM input on stdin.
+   -v --vcf FILE   Output VCF-format results to FILE.
+   -f --fasta-reference FILE
+                   Use FILE as the reference sequence for analysis.
+                   An index file (FILE.fai) will be created if none exists.
+                   If neither --targets nor --region are specified, FreeBayes
+                   will analyze every position in this reference.
+   -t --targets FILE
+                   Limit analysis to targets listed in the BED-format FILE.
+   -r --region &lt;chrom&gt;:&lt;start_position&gt;..&lt;end_position&gt;
+                   Limit analysis to the specified region, 0-base coordinates,
+                   end_position not included (same as BED format).
+   -s --samples FILE
+                   Limit analysis to samples listed (one per line) in the FILE.
+                   By default FreeBayes will analyze all samples in its input
+                   BAM files.
+   --populations FILE
+                   Each line of FILE should list a sample and a population which
+                   it is part of.  The population-based bayesian inference model
+                   will then be partitioned on the basis of the populations.
+   -A --cnv-map FILE
+                   Read a copy number map from the BED file FILE, which has
+                   the format:
+                      reference sequence, start, end, sample name, copy number
+                   ... for each region in each sample which does not have the
+                   default copy number as set by --ploidy.
+   -L --trace FILE  Output an algorithmic trace to FILE.
+   --failed-alleles FILE
+                   Write a BED file of the analyzed positions which do not
+                   pass --pvar to FILE.
+   -@ --variant-input VCF
+                   Use variants reported in VCF file as input to the algorithm.
+                   A report will be generated for every record in the VCF file.
+   -l --only-use-input-alleles
+                   Only provide variant calls and genotype likelihoods for sites
+                   and alleles which are provided in the VCF input, and provide
+                   output in the VCF for all input alleles, not just those which
+                   have support in the data.
+   --haplotype-basis-alleles VCF
+                   When specified, only variant alleles provided in this input
+                   VCF will be used for the construction of complex or haplotype
+                   alleles.
+
+  reporting:
+
+   -P --pvar N     Report sites if the probability that there is a polymorphism
+                   at the site is greater than N.  default: 0.0001
+   -_ --show-reference-repeats
+                   Calculate and show information about reference repeats in
+                   the VCF output.
+
+  population model:
+
+   -T --theta N    The expected mutation rate or pairwise nucleotide diversity
+                   among the population under analysis.  This serves as the
+                   single parameter to the Ewens Sampling Formula prior model
+                   default: 0.001
+   -p --ploidy N   Sets the default ploidy for the analysis to N.  default: 2
+   -J --pooled     Assume that samples result from pooled sequencing.
+                   When using this flag, set --ploidy to the number of
+                   alleles in each sample.
+
+  reference allele:
+
+   -Z --use-reference-allele
+                   This flag includes the reference allele in the analysis as
+                   if it is another sample from the same population.
+   -H --diploid-reference
+                   If using the reference sequence as a sample (-Z),
+                   treat it as diploid.  default: false (reference is haploid)
+   --reference-quality MQ,BQ
+                   Assign mapping quality of MQ to the reference allele at each
+                   site and base quality of BQ.  default: 100,60
+
+  allele scope:
+
+   -I --no-snps    Ignore SNP alleles.
+   -i --no-indels  Ignore insertion and deletion alleles.
+   -X --no-mnps    Ignore multi-nuceotide polymorphisms, MNPs.
+   -u --no-complex Ignore complex events (composites of other classes).
+   -n --use-best-n-alleles N
+                   Evaluate only the best N SNP alleles, ranked by sum of
+                   supporting quality scores.  (Set to 0 to use all; default: all)
+   -E --max-complex-gap N
+                   Allow complex alleles with contiguous embedded matches of up
+                   to this length.
+
+  indel realignment:
+
+   -O --left-align-indels
+                   Left-realign and merge gaps embedded in reads. default: false
+
+  input filters:
+
+   -4 --use-duplicate-reads
+                   Include duplicate-marked alignments in the analysis.
+                   default: exclude duplicates
+   -m --min-mapping-quality Q
+                   Exclude alignments from analysis if they have a mapping
+                   quality less than Q.  default: 30
+   -q --min-base-quality Q
+                   Exclude alleles from analysis if their supporting base
+                   quality is less than Q.  default: 20
+   -R --min-supporting-quality MQ,BQ
+                   In order to consider an alternate allele, at least one supporting
+                   alignment must have mapping quality MQ, and one supporting 
+                   allele must have base quality BQ. default: 0,0, unset
+   -Q --mismatch-base-quality-threshold Q
+                   Count mismatches toward --read-mismatch-limit if the base
+                   quality of the mismatch is &gt;= Q.  default: 10
+   -U --read-mismatch-limit N
+                   Exclude reads with more than N mismatches where each mismatch
+                   has base quality &gt;= mismatch-base-quality-threshold.
+                   default: ~unbounded
+   -z --read-max-mismatch-fraction N
+                   Exclude reads with more than N [0,1] fraction of mismatches where
+                   each mismatch has base quality &gt;= mismatch-base-quality-threshold
+                   default: 1.0
+   -$ --read-snp-limit N
+                   Exclude reads with more than N base mismatches, ignoring gaps
+                   with quality &gt;= mismatch-base-quality-threshold.
+                   default: ~unbounded
+   -e --read-indel-limit N
+                   Exclude reads with more than N separate gaps.
+                   default: ~unbounded
+   -0 --standard-filters  Use stringent input base and mapping quality filters
+                   Equivalent to -m 30 -q 20 -R 0 -S 0
+   -x --indel-exclusion-window
+                   Ignore portions of alignments this many bases from a
+                   putative insertion or deletion allele.  default: 0
+   -F --min-alternate-fraction N
+                   Require at least this fraction of observations supporting
+                   an alternate allele within a single individual in the
+                   in order to evaluate the position.  default: 0.0
+   -C --min-alternate-count N
+                   Require at least this count of observations supporting
+                   an alternate allele within a single individual in order
+                   to evaluate the position.  default: 1
+   -3 --min-alternate-qsum N
+                   Require at least this sum of quality of observations supporting
+                   an alternate allele within a single individual in order
+                   to evaluate the position.  default: 0
+   -G --min-alternate-total N
+                   Require at least this count of observations supporting
+                   an alternate allele within the total population in order
+                   to use the allele in analysis.  default: 1
+   -! --min-coverage N
+                   Require at least this coverage to process a site.  default: 0
+
+  bayesian priors:
+
+   -Y --no-ewens-priors
+                   Turns off the Ewens' Sampling Formula component of the priors.
+   -k --no-population-priors
+                   Equivalent to --pooled --no-ewens-priors
+   -w --hwe-priors Use the probability of the combination arising under HWE given
+                   the allele frequency as estimated by observation frequency.
+
+  observation prior expectations:
+
+   -V --binomial-obs-priors
+                   Incorporate expectations about osbervations into the priors,
+                   Uses read placement probability, strand balance probability,
+                   and read position (5'-3') probability.
+   -a --allele-balance-priors
+                   Use aggregate probability of observation balance between alleles
+                   as a component of the priors.  Best for observations with minimal
+                   inherent reference bias.
+
+  algorithmic features:
+
+   -M --site-selection-max-iterations N
+                   Uses hill-climbing algorithm to search posterior space for N
+                   iterations to determine if the site should be evaluated.  Set to 0
+                   to prevent use of this algorithm for site selection, and
+                   to a low integer for improvide site selection at a slight
+                   performance penalty. default: 5.
+   -B --genotyping-max-iterations N
+                   Iterate no more than N times during genotyping step. default: 25.
+   --genotyping-max-banddepth N
+                   Integrate no deeper than the Nth best genotype by likelihood when
+                   genotyping. default: 6.
+   -W --posterior-integration-limits N,M
+                   Integrate all genotype combinations in our posterior space
+                   which include no more than N samples with their Mth best
+                   data likelihood. default: 1,3.
+   -K --no-permute
+                   Do not scale prior probability of genotype combination given allele
+                   frequency by the number of permutations of included genotypes.
+   -N --exclude-unobserved-genotypes
+                   Skip sample genotypings for which the sample has no supporting reads.
+   -S --genotype-variant-threshold N
+                   Limit posterior integration to samples where the second-best
+                   genotype likelihood is no more than log(N) from the highest
+                   genotype likelihood for the sample.  default: ~unbounded
+   -j --use-mapping-quality
+                   Use mapping quality of alleles when calculating data likelihoods.
+   -D --read-dependence-factor N
+                   Incorporate non-independence of reads by scaling successive
+                   observations by this factor during data likelihood
+                   calculations.  default: 0.9
+   -= --no-marginals
+                   Do not calculate the marginal probability of genotypes.  Saves
+                   time and improves scaling performance in large populations.
+
+
+------
+
+**Citation**
+
+For the underlying tool, please cite `Erik Garrison and Gabor Marth. Haplotype-based variant detection from short-read sequencing &lt;http://arxiv.org/abs/1207.3907&gt;`_.
+
+If you use this tool in Galaxy, please cite Blankenberg D, et al. *In preparation.*
+
+  </help>
+</tool>

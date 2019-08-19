@@ -1,0 +1,51 @@
+<tool id="bedtools_merge" name="Merge" version="BEDTOOLS: 2.17.0">
+	<description>overlapped regions in BED file</description>
+	
+    <requirements>
+            <requirement type="package">bedtools</requirement>
+    </requirements>
+    
+	<command>mergeBed
+            -i '$input'
+	#if str($distance):
+          -d  $distance
+        #end if
+        &gt; '$output'
+	</command>
+
+	<inputs>
+            <param format="bed" label="The BED file to merge overlapping regions" name="input" type="data"/>
+            <param help="Default is 0. That is, overlapping and book-ended features are merged." label="Maximum distance between features allowed for features to be merged" name="distance" type="integer" value="0"/>
+	</inputs>
+
+	<outputs>
+		<data format="bed" label="${input.name} (Merged BED file)" metadata_source="input" name="output"/>
+	</outputs>
+
+<help>
+**What it does**
+
+This tool merges overlapping BED/GFF/VCF entries into a single interval. 
+
+
+------
+
+.. class:: warningmark
+
+This tool requires that `bedtools`__ has been installed on your system.
+
+.. class:: infomark
+
+------
+
+This tool is part of the `bedtools package`__ from the `Quinlan laboratory`__. If you use this tool, please cite `Quinlan AR, and Hall I.M. BEDTools: A flexible framework for comparing genomic features. Bioinformatics, 2010, 26, 6.`__
+
+    .. __: http://code.google.com/p/bedtools/
+    .. __: http://code.google.com/p/bedtools/
+    .. __: http://cphg.virginia.edu/quinlan/
+    .. __: http://bioinformatics.oxfordjournals.org/content/26/6/841.short
+
+
+
+</help>
+</tool>

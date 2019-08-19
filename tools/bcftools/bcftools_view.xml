@@ -1,0 +1,176 @@
+<tool id="bcftools_view" name="bcftools view" version="SAMTOOLS: 1.2">
+    <requirements>
+        <requirement type="package">samtools</requirement>
+    </requirements>
+    <description>Converts BCF format to VCF format</description>
+    <command>
+        bcftools view 
+            #if str( $G ) == &quot;true&quot;: 
+                -G
+            #end if
+            #if str( $g ) == &quot;true&quot;:
+                -g
+            #end if
+            #if str( $c ) == &quot;true&quot;:
+                -c
+            #end if
+
+            #if str( $H ) == &quot;only_header&quot;:
+                -h
+            #end if
+            #if str( $H ) == &quot;no_header&quot;:
+                -H
+            #end if
+
+            #if str( $G ) == &quot;b&quot;:
+                -b
+            #end if
+            #if str( $G ) == &quot;u&quot;:
+                -u
+            #end if
+            #if str( $G ) == &quot;z&quot;:
+                -z
+            #end if
+            #if str( $G ) == &quot;v&quot;:
+                -v
+            #end if
+
+	    #if $target_region_cond.target_region == &quot;region&quot;:
+                #if $target_region_cond.input_type_cond.input_type == &quot;file&quot;:
+                    -R &quot;$target_region_cond.input_type_cond.input_region_file&quot;
+                #else:
+                    -r &quot;$target_region_cond.input_type_cond.input_region_text&quot;
+                #end if
+	    #end if
+            #if $target_region_cond.target_region == &quot;target&quot;:
+                #if $target_region_cond.input_type_cond.input_type == &quot;file&quot;:
+                    -T &quot;$target_region_cond.input_type_cond.input_target_file&quot;
+                #else:
+                    -t &quot;$target_region_cond.input_type_cond.input_target_text&quot;
+                #end if
+            #end if
+
+            #if $samples_cond.samples_input == &quot;file&quot;:
+                -S &quot;$samples_cond.input_samples_file&quot;
+	    #end if
+            #if $samples_cond.samples_input == &quot;text&quot;:
+                -s &quot;$samples_cond.input_samples_text&quot;
+            #end if
+	$input -o $output
+    </command>
+    <inputs>
+        <param format="bcf" label="Choose a bcf file to view" name="input" type="data"/>
+        <param label="Suppress all individual genotype information." name="G" type="select">
+            <option value="true">Yes</option>
+            <option selected="true" value="false">No</option>
+        </param>
+        <param label="Include only sites with one or more homozygous (hom), heterozygous (het) or missing (miss) genotypes" name="g" type="select">
+            <option value="true">Yes</option>
+            <option selected="true" value="false">No</option>
+        </param>
+        <param label="Minimum allele count (INFO/AC) of sites to be printed" name="c" type="select">
+            <option value="true">Yes</option>
+            <option selected="true" value="false">No</option>
+        </param>
+        <param label="Print the header only or suppress the header in VCF output" name="H" type="select">
+            <option value="only_header">Only Print header</option>
+            <option value="no_header">Do not Print Header in VCF</option>
+            <option selected="true" value="header_included">Print Header in VCF</option>
+        </param>
+        <param label="Output type" name="O" type="select">
+            <option value="b">Compressed BCF</option>
+            <option value="u">Uncompressed BCF</option>
+            <option value="z">Compressed VCF</option>
+            <option selected="true" value="v">Uncompressed VCF</option>
+        </param>
+        <conditional name="target_region_cond">
+            <param help="Region requires indexed VCF/BCF files, while Target does not. Region is faster." label="Use Target or Region option" name="target_region" type="select">
+                <option value="none">Optional</option>
+                <option value="region">Region</option>
+                <option selected="true" value="target">Target</option>
+            </param>
+            <when value="none"/>
+            <when value="region">
+                <conditional name="input_type_cond">
+                    <param label="Specify region by file or text input" name="input_type" type="select">
+                        <option selected="true" value="none">None</option>
+                        <option value="file">Indexed VCF/BCF</option>
+                        <option value="text">Text</option>
+                    </param>
+                    <when value="none"/>
+                    <when value="file">
+                        <param format="bcf,vcf,tabix" help="The columns of the tab-delimited file are: CHROM, POS, and, optionally, POS_TO, where positions are 1-based and inclusive." label="Region File" name="input_region_file" type="data"/>
+                    </when>
+                    <when value="text">
+                        <param help="chr|chr:pos|chr:from-to|chr:from-[,…]" label="Comma-separated list of regions" name="input_region_text" type="text"/>
+                    </when>
+                </conditional>
+            </when>
+            <when value="target">
+                <conditional name="input_type_cond">
+                    <param label="Specify targets by file or text input" name="input_type" type="select">
+                        <option selected="True" value="file">VCF/BCF</option>
+                        <option value="text">Text</option>
+                    </param>
+                    <when value="file">
+                        <param format="bcf,vcf,tabix" help="The columns of the tab-delimited file are: CHROM, POS, and, optionally, POS_TO, where positions are 1-based and inclusive." label="Target File" name="input_target_file" type="data"/>
+                    </when>
+                    <when value="text">
+                        <param help="[^]chr|chr:pos|chr:from-to|chr:from-[,…]. Targets can be prefixed with '^' to request logical complement. For example, '^X,Y,MT' indicates that sequences X, Y and MT should be skipped." label="Comma-separated list of targets" name="input_target_text" type="text"/>
+                    </when>
+                </conditional>
+            </when>
+        </conditional>
+        <param label="Trim alternate alleles not seen in subset." name="A" type="select">
+            <option value="true">Yes</option>
+            <option selected="true" value="false">No</option>
+        </param>
+        <param help="currently INFO/AC and INFO/AN." label="Skip (re)calculate INFO fields for the subset" name="I" type="select"> 
+            <option value="true">Yes</option>
+            <option selected="true" value="false">No</option>
+        </param>
+        <conditional name="samples_cond">
+            <param label="Specify samples to include or exclude" name="samples_input" type="select">
+                <option selected="True" value="all">Include all</option>
+                <option value="file">Sample File</option>
+                <option value="text">Text</option>
+            </param>
+            <when value="all"/>
+            <when value="file">
+                <param format="tabular,text" help="File of sample names to include or exclude if prefixed with '^'. One sample per line." label="Samples File" name="input_samples_file" type="data"/>
+            </when>
+            <when value="text">
+                <param label="Comma-separated list of samples to include or exclude if prefixed with '^'" name="input_samples_text" type="text"/>
+            </when>
+        </conditional>
+    </inputs>
+    <outputs>
+        <data format="vcf" name="output">
+            <change_format>
+                <when format="bcf" input="O" value="u"/>
+                <when format="tbx" input="O" value="b"/>
+            </change_format>
+        </data>
+    </outputs>
+    <help>
+**What it does:** 
+
+This tool converts BCF files into VCF files using BCFtools view from the SAMtools set of utilities:
+
+http://samtools.github.io/bcftools/bcftools.html#view
+
+------
+
+**Citation:**
+
+For the underlying tool, please cite `Li H, Handsaker B, Wysoker A, Fennell T, Ruan J, Homer N, Marth G, Abecasis G, Durbin R; 1000 Genome Project Data Processing Subgroup. The Sequence Alignment/Map format and SAMtools. Bioinformatics. 2009 Aug 15;25(16):2078-9. &lt;http://www.ncbi.nlm.nih.gov/pubmed/19505943&gt;`_
+
+
+If you use this tool within Galaxy, please cite `Gregory Minevich, Danny S. Park, Daniel Blankenberg, Richard J. Poole, and Oliver Hobert.  CloudMap: A Cloud-based Pipeline for Analysis of Mutant Genome Sequences. (Genetics 2012 In Press)`__
+
+    .. __: http://biochemistry.hs.columbia.edu/labs/hobert/literature.html
+
+Correspondence to gm2123@columbia.edu (G.M.) or or38@columbia.edu (O.H.)
+
+    </help>
+</tool>

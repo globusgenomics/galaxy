@@ -1,0 +1,22 @@
+<tool id="cwl_prepare_inputs" name="CWL Prepare Inputs">
+  <description>prepare cwl inputs</description>
+  <command interpreter="python"> 
+    cwl_prepare_inputs.py
+    --inputs '$inputs'
+    --json-inputs-output "$json_inputs_output"
+  </command>
+  <inputs>
+    <param name="inputs" type="text" size="100" label="Inputs JSON">
+      <sanitizer sanitize="False"/>
+    </param>
+  </inputs>
+  <outputs>
+    <data name="json_inputs_output" type="data"/>
+  </outputs>
+  <help>
+
+**What it does**
+Accept a cwl workflow and a json input, prepare files locally for CWL runner
+
+  </help>
+</tool>

@@ -1,0 +1,138 @@
+<tool id="varscan_somatic_native" name="VarScan Somatic (Native Output)" version="VARSCAN: 2.3.5">
+  <description>
+        somatic mutation caller for cancer genomics
+  </description>
+  <requirements>
+        <requirement type="package" version="2.3.5">VarScan</requirement>
+  </requirements>
+  <command interpreter="perl">
+  	
+	varscan_somatic.pl 
+  	&quot;COMMAND::java -Xmx10G -jar \$JAVA_JAR_PATH/VarScan.v2.3.5.jar somatic&quot; 
+  	&quot;NORMAL::$normal&quot; 
+  	&quot;TUMOR::$tumor&quot;
+	&quot;TUMORBAM::$tumorbam&quot;
+	&quot;SNP::$snp&quot;
+	&quot;INDEL::$indel&quot;
+        &quot;LOG::$log&quot;
+  	
+	&quot;OPTION::--min-coverage $min_coverage&quot;
+	&quot;OPTION::--min-coverage-normal $min_coverage_normal&quot;
+	&quot;OPTION::--min-coverage-tumor $min_coverage_tumor&quot;
+	
+	&quot;OPTION::--min-var-freq $min_var_freq&quot;
+	&quot;OPTION::--min-freq-for-hom $min_freq_for_hom&quot;
+	
+	&quot;OPTION::--normal-purity $normal_purity&quot;	
+	&quot;OPTION::--tumor-purity $tumor_purity&quot;		
+	
+	&quot;OPTION::--p-value $p_value&quot;	
+	&quot;OPTION::--somatic-p-value $somatic_p_value&quot;	
+
+	&quot;OPTION::--strand-filter $strand_filter&quot;	
+	&quot;OPTION::--validation $validation&quot;	
+	
+
+  	
+  </command>
+
+  <inputs>
+
+	<param format="pileup" help="The SAMtools mpileup file for normal sample" label="normal mpileup file" name="normal" type="data"/>
+	<param format="pileup" help="The SAMtools mpileup file for tumor sample" label="tumor mpileup file" name="tumor" type="data"/>
+	<param format="bam" help="The BAM file of the tumor sample used in mpileup step" label="tumor BAM file" name="tumorbam" type="data"/>
+
+	<param help="" label="min-coverage" name="min_coverage" optional="true" type="integer" value="8"/>
+	<param help="" label="min-coverage-normal" name="min_coverage_normal" optional="true" type="integer" value="8"/>
+	<param help="" label="min-coverage-tumor" name="min_coverage_tumor" optional="true" type="integer" value="6"/>
+	
+	<param help="" label="min-var-freq" name="min_var_freq" optional="true" type="float" value="0.10"/>
+	<param help="" label="min-freq-for-hom" name="min_freq_for_hom" optional="true" type="float" value="0.75"/>
+	
+	<param help="" label="normal-purity" name="normal_purity" optional="true" type="float" value="1.00"/>
+	<param help="" label="tumor-purity" name="tumor_purity" optional="true" type="float" value="1.00"/>
+	
+
+	<param help="" label="p-value" name="p_value" optional="true" type="text" value="0.99"/>
+	<param help="" label="somatic-p-value" name="somatic_p_value" optional="true" type="text" value="0.05"/>
+
+	<param help="" label="strand-filter" name="strand_filter" optional="true" type="integer" value="1"/>
+	<param help="" label="validation" name="validation" optional="true" type="integer" value="0"/>
+	
+  </inputs>
+  <outputs>
+        <data format="txt" label="${tool.name} result on ${on_string} (log) " name="log" type="data"/>
+	<data format="txt" label="${tool.name} result on ${on_string} (SNP)" name="snp" type="data"/>
+	<data format="txt" label="${tool.name} result on ${on_string} (INDEL)" name="indel" type="data"/>
+	
+
+  </outputs>
+  	
+  <help> 
+
+.. class:: infomark
+
+**What it does**
+
+::
+
+ VarScan is a platform-independent mutation caller for targeted, exome, and whole-genome resequencing data generated on Illumina, SOLiD, Life/PGM, Roche/454, and similar instruments. The newest version, VarScan 2, is written in Java, so it runs on most  operating systems. It can be used to detect different types of variation:
+
+    Germline variants (SNPs an dindels) in individual samples or pools of samples.
+    Multi-sample variants (shared or private) in multi-sample datasets (with mpileup).
+    Somatic mutations, LOH events, and germline variants in tumor-normal pairs.
+    Somatic copy number alterations (CNAs) in tumor-normal exome data.
+
+
+**Input**
+
+::
+
+  mpileup normal file - The SAMtools mpileup file for normal
+  mpileup tumor file - The SAMtools mpileup file for tumor
+ 
+
+**Parameters**
+
+::
+
+  min-coverage	
+  	Minimum read depth at a position to make a call [8]
+
+  min-coverage-normal	
+  	Minimum coverage in normal to call somatic [8]
+  	
+  min-coverage-tumor	
+  	Minimum coverage in tumor to call somatic [6]
+  	
+  min-var-freq 
+  	Minimum variant frequency to call a heterozygote [0.10]  	  	
+
+  min-freq-for-hom
+  	Minimum frequency to call homozygote [0.75]
+  	
+  normal-purity 
+  	Estimated purity (non-tumor content) of normal sample [1.00]
+  	
+  tumor-purity
+  	Estimated purity (tumor content) of tumor sample [1.00]
+  
+  p-value
+  	Default p-value threshold for calling variants [0.99]
+  	
+  somatic-p-value
+  	P-value threshold to call a somatic site [0.05]  	
+  
+  strand-filter
+  	If set to 1, removes variants with &gt;90% strand bias
+  	
+  validation 
+  	If set to 1, outputs all compared positions even if non-variant
+  
+  output-vcf
+  	If set to 1, outputs in VCF format [Default]
+
+
+  
+  </help>
+</tool>

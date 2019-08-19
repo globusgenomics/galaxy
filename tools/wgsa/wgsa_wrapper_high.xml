@@ -1,0 +1,123 @@
+<tool id="wgsa_wrapper_with_download_minid_output_high" name="WGSA VCF Annotation (High-mem)">
+  <description> with Download and MINID output</description>
+  <action module="galaxy_ext.globus.tools.actions.globus" class="HistoryManagement"/>
+  <command> 
+    #import os
+    ## get path for fastq files
+    tmp_dir=`mktemp -d`;
+    input_d="\$tmp_dir/input"; output_d="\$tmp_dir/output";tmpout="\$tmp_dir/tmp"; work_dir="\$tmp_dir/work";
+    mkdir \$input_d; mkdir \$output_d;mkdir \$tmpout; mkdir \$work_dir;
+    python $__tool_directory__/wgsa_wrapper_with_download_minid_output.to_s3.py
+    --tmp-dir \$tmp_dir
+    --input-minid $input_minid
+    --wgsa-path \$WGSA_PATH
+    --variant-type $variant_type
+    --output $output
+    --stdout $stdout_output
+    --stderr $stderr_output
+    --xmx 100G
+    #for $db_value in str($db_type).split(',') :
+      --db "$db_value"
+    #end for
+    -t "$goauth_token"
+  </command>
+  <requirements>
+    <requirement type="package" version="vcftools_0.1.14">vcftools</requirement>
+    <requirement type="package">wgsa</requirement>
+    <requirement type="package">java</requirement>
+    <requirement type="package">pymodules</requirement>
+  </requirements>
+  <inputs>
+    <param name="input_minid" type="text" size="100" label="VCF Input Minid">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="variant_type" type="select" label="Variant type to annotate">
+      <option value="snps">SNPs</option>
+      <option value="indels">INDELS</option>
+      <option value="both">Both</option>
+    </param>
+    <param name="db_type" type="select" label="Annotation database to include" help="multiple options possible" multiple="True">
+      <option value="ANNOVAR/Ensembl">ANNOVAR/Ensembl</option>
+      <option value="ANNOVAR/RefSeq">ANNOVAR/RefSeq</option>
+      <option value="ANNOVAR/UCSC">ANNOVAR/UCSC</option>
+      <option value="SnpEff/Ensembl">SnpEff/Ensembl</option>
+      <option value="SnpEff/RefSeq">SnpEff/RefSeq</option>
+      <option value="VEP/Ensembl">VEP/Ensembl</option>
+      <option value="dbNSFP3_variant">dbNSFP3_variant</option>
+      <option value="dbSNP">dbSNP</option>
+      <option value="Aloft">Aloft</option>
+      <option value="Clinvar">Clinvar</option>
+      <option value="GTEx">GTEx</option>
+      <option value="1000G mask">1000G mask</option>
+      <option value="RepeatMasker">RepeatMasker</option>
+      <option value="fitCons">fitCons</option>
+      <option value="LINSIGHT">LINSIGHT</option>
+      <option value="GenoCanyon">GenoCanyon</option>
+      <option value="GenoSkyline-Plus">GenoSkyline-Plus</option>
+      <option value="1000G phase 3 allele frequencies">1000G phase 3 allele frequencies</option>
+      <option value="UK10K allele frequencies">UK10K allele frequencies</option>
+      <option value="ESP6500 allele frequencies">ESP6500 allele frequencies</option>
+      <option value="ExAC frequencies">ExAC frequencies</option>
+      <option value="ExAC nonTCGA subset frequencies">ExAC nonTCGA subset frequencies</option>
+      <option value="ExAC nonpsych subset frequencies">ExAC nonpsych subset frequencies</option>
+      <option value="gnomAD exomes frequencies">gnomAD exomes frequencies</option>
+      <option value="gnomAD genomes frequencies">gnomAD genomes frequencies</option>
+      <option value="snoRNA miRNA">snoRNA miRNA</option>
+      <option value="UTR3 miRNA target">UTR3 miRNA target</option>
+      <option value="RegulomeDB">RegulomeDB</option>
+      <option value="DANN">DANN</option>
+      <option value="fathmm-MKL">fathmm-MKL</option>
+      <option value="fathmm-XF coding">fathmm-XF coding</option>
+      <option value="fathmm-XF non-coding">fathmm-XF non-coding</option>
+      <option value="ENCODE_TFBS">ENCODE_TFBS</option>
+      <option value="ENCODE_Dnase">ENCODE_Dnase</option>
+      <option value="EnhancerFinder">EnhancerFinder</option>
+      <option value="Genehancer">Genehancer</option>
+      <option value="Eigen and EigenPC">Eigen and EigenPC</option>
+      <option value="Topologically_Associating_Domains">Topologically_Associating_Domains</option>
+      <option value="FANTOM5_enhancer_permissive">FANTOM5_enhancer_permissive</option>
+      <option value="FANTOM5_enhancer_robust">FANTOM5_enhancer_robust</option>
+      <option value="FANTOM5_enhancer_target">FANTOM5_enhancer_target</option>
+      <option value="FANTOM5_enhancer_expression">FANTOM5_enhancer_expression</option>
+      <option value="FANTOM5_CAGE_peak_permissive">FANTOM5_CAGE_peak_permissive</option>
+      <option value="FANTOM5_CAGE_peak_robust">FANTOM5_CAGE_peak_robust</option>
+      <option value="PhyloP_primate">PhyloP_primate</option>
+      <option value="PhyloP_placental">PhyloP_placental</option>
+      <option value="PhyloP_vertebrate">PhyloP_vertebrate</option>
+      <option value="PhastCons_primates">PhastCons_primates</option>
+      <option value="PhastCons_placental">PhastCons_placental</option>
+      <option value="PhastCons_vertebrate">PhastCons_vertebrate</option>
+      <option value="VindijiaNeandertal genotypes">VindijiaNeandertal genotypes</option>
+      <option value="SuperEnhancer">SuperEnhancer</option>
+      <option value="EnsemblRB_Overviews">EnsemblRB_Overviews</option>
+      <option value="EnsemblRB_TFBS">EnsemblRB_TFBS</option>
+      <option value="EnsemblRB_Cell_Type_Activity">EnsemblRB_Cell_Type_Activity</option>
+      <option value="EnsemblRB_Cell_Type_Segmentations">EnsemblRB_Cell_Type_Segmentations</option>
+      <option value="ENCODE_Cell_Type_Segmentations">ENCODE_Cell_Type_Segmentations</option>
+      <option value="Roadmap-15-state_model">Roadmap-15-state_model</option>
+      <option value="Roadmap-25-state_model">Roadmap-25-state_model</option>
+      <option value="Roadmap_peak_calls">Roadmap_peak_calls</option>
+    </param>
+    <param name="goauth_token" type="hidden" value= "**" size="100" label="Globus Auth Token">
+        <sanitizer>
+        <valid>
+          <add value="|"/>
+        </valid>
+      </sanitizer>
+    </param>
+  </inputs>
+  <outputs>
+    <data name="output" type="data" format="txt" label="Minid for history"/>
+    <data name="stdout_output" type="data" format="txt" label="WGSA run stdout"/>
+    <data name="stderr_output" type="data" format="txt" label="WGSA run stderr"/>
+  </outputs>
+  <stdio>
+    <regex match=".*" source="both" level="log" description="tool progress"/>
+  </stdio>
+  <help>
+
+**What it does**
+Runs annotation using WGSA tool on VCFs
+
+  </help>
+</tool>

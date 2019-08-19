@@ -1,0 +1,188 @@
+<tool id="proteomics_search_mascot_1" name="Mascot MSMS Search" version="1.0.1">
+
+
+   <requirements>
+	    <requirement type="package">protkgem</requirement>
+	    <requirement type="package">ruby</requirement>
+   </requirements>
+
+	<description>Mascot MS/MS Search</description>
+
+
+	<command>mascot_search.rb 
+
+#if $database.source_select=="built_in":
+-d $database.dbkey
+#else 
+-d $database.custom_db
+#end if
+
+-f $fragment_ion_tol 
+
+-S $server $input_file 
+
+-o $output 
+
+-r
+
+## Quantitation
+--quant='$quantitation'
+
+## Variable Mods
+
+--var-mods='$variable_mods'
+--fix-mods='$fixed_mods'
+--allowed-charges=$allowed_charges	
+
+--enzyme=$enzyme
+--instrument=$instrument
+--precursor-ion-tol-units=$precursor_tolu
+--email=$email 
+-v $missed_cleavages
+
+#if $security.security_use
+--use-security
+--username $security.username
+--password $security.password
+#end if
+
+#if $proxy
+--proxy $proxy
+#end if
+
+	</command>
+
+	<inputs>
+	
+    <param name="input_file" type="data" format="mgf" multiple="false" label="MSMS File" help="A Mascot Generic Format file containing MSMS Spectra"/>
+
+	<conditional name="database">
+		<param name="source_select" type="select" label="Database Type">
+			<option value="built_in">Built-In</option>
+			<option value="custom_defined">Custom</option>
+		</param>
+		<when value="built_in">
+			<param name="dbkey" type="select" format="text" >
+				<label>Database</label>
+				<options from_file="mascot_databases.loc">
+					<column name="name" index="0" />
+					<column name="value" index="2" />
+				</options>
+			</param>
+		</when>
+		<when value="custom_defined">
+			<param name="custom_db" type="text" size="80" value="SwissProt" label="Database Name" help="Exact name of a database defined on the Mascot server (case-sensitive)"/>
+		</when>
+	</conditional>
+
+	<param name="variable_mods" format="text" type="select" multiple="true" label="Variable Modifications" help="Multiple values allowed">
+		<options from_file="mascot_mods.loc">
+			<column name="name" index="0" />
+			<column name="value" index="2" />
+		</options>
+	</param>		
+
+	<param name="fixed_mods" format="text" type="select" multiple="true" label="Fixed Modifications" help="Multiple values allowed">
+		<options from_file="mascot_mods.loc">
+			<column name="name" index="0" />
+			<column name="value" index="2" />
+		</options>
+	</param>
+	
+        <param name="quantitation" format="text" type="select" multiple="false" label="Quantitation" help="">
+                <options from_file="mascot_quantitation.loc">
+                        <column name="name" index="0" />
+                        <column name="value" index="2" />
+                </options>
+        </param>
+
+	<param name="missed_cleavages" type="select" format="text">
+		<label>Missed Cleavages Allowed</label>
+	    <option value="0">0</option>		
+		<option value="1">1</option>
+		<option value="2">2</option>
+	</param>
+	
+	<param name="enzyme" type="select" format="text">
+	    <label>Enzyme</label>
+	    <option value="Trypsin">Trypsin</option>		
+	</param>
+	
+	<param name="allowed_charges" type="select" format="text">
+	    <label>Peptide Charge</label>
+		<option value="8-">8-</option>
+		<option value="7-">7-</option>
+		<option value="6-">6-</option>
+		<option value="5-">5-</option>
+		<option value="4-">4-</option>
+		<option value="3-">3-</option>
+		<option value="2-,3- and 4-">2-,3- and 4-</option>
+		<option value="2- and 3-">2- and 3-</option>
+		<option value="2-">2-</option>
+		<option value="1-,2- and 3-">1-,2- and 3-</option>
+		<option value="1-">1-</option>
+		<option value="Mr">Mr</option>
+		<option value="1+">1+</option>
+	    <option value="1+, 2+ and 3+">1+,2+ and 3+</option>		
+		<option value="2+">2+</option>
+		<option value="2+ and 3+">2+ and 3+</option>
+		<option value="2+,3+ and 4+">2+,3+ and 4+</option>
+		<option value="3+">3+</option>
+		<option value="4+">4+</option>
+		<option value="5+">5+</option>
+		<option value="6+">6+</option>
+		<option value="7+">7+</option>
+		<option value="8+">8+</option>
+	</param>
+	
+	<param name="instrument" type="select" format="text">
+	    <label>Instrument</label>
+		<option value="ESI-QUAD-TOF">ESI-QUAD-TOF</option>
+		<option value="MALDI-TOF-PSD">MALDI-TOF-PSD</option>
+		<option value="ESI-TRAP">ESI-TRAP</option>
+		<option value="ESI-QUAD">ESI-QUAD</option>
+		<option value="ESI-FTICR">ESI-FTICR</option>
+	    <option value="MALDI-TOF-TOF">MALDI-TOF-TOF</option>
+		<option value="ESI-4SECTOR">ESI-4SECTOR</option>
+		<option value="FTMS-ECD">FTMS-ECD</option>
+		<option value="ETD-TRAP">ETD-TRAP</option>
+		<option value="MALDI-QUAD-TOF">MALDI-QUAD-TOF</option>
+		<option value="MALDI-QIT-TOF">MALDI-QIT-TOF</option>
+		<option value="MALDI-ISD">MALDI-ISD</option>
+		<option value="CID+ETD">CID+ETD</option>
+	</param>
+	
+	<param name="fragment_ion_tol" label="Fragment Ion Tolerance" type="float" value="0.65" min="0" max="10000" help="Fragment ion tolerance in Daltons"/>
+
+	<param name="precursor_ion_tol" label="Precursor Ion Tolerance (Da or ppm)" type="float" value="100" min="0" max="10000" help="Enter a value in Daltons or ppm depending on the units chosen below"/>
+	<param name="precursor_tolu" type="select" format="text">
+	    <label>Precursor Ion Tolerance Units</label>
+	    <option value="ppm">ppm</option>		
+		<option value="Da">Da</option>
+	</param>
+
+	<param name="server" type="text" label="URL to the cgi directory on the Mascot Server " size="60" value="http://www.exampleserver.com/mascot/cgi/"/>
+	<param name="proxy" type="text" label="Proxy Server URL including proxy port" size="60" value="" help="eg http://proxy.latrobe.edu.au:8080"/>
+
+	<conditional name="security">
+		<param name="security_use" type="boolean" label="Use Mascot Security?" help="Select this if you need to enter a username and password" truevalue="true" falsevalue="false" />
+		<when value="false" />
+		<when value="true">
+			<param name="username" type="text" label="Username" size="60" value="" help="Username on Mascot Server"/>
+			<param name="password" type="text" label="Password" size="60" value="" help="Mascot Password. Password is encrypted when over the internet but is stored in clear-text on the Galaxy server"/>
+		</when>
+	</conditional>
+	<param name="email" type="text" label="Email " size="60" value="" help=""/>
+	
+	
+
+  </inputs>
+  <outputs>
+    <data format="mascotdat" name="output" metadata_source="input_file" label="mascot_vs_${database.dbkey if $database.has_key('dbkey') else $database.custom_db}.${input_file.display_name}.mascotdat"/>
+  </outputs>
+
+  <help>
+	Run a Mascot Search
+  </help>
+
+</tool>

@@ -1,0 +1,76 @@
+<tool id="cru3d_linescan" name="Linescan">
+	<description></description>
+<requirements>
+  <requirement type="package">pymodules</requirement>
+</requirements>
+
+<command interpreter="python">
+  CRU3D_linescan.py --root_dir $__root_dir__ --html_file "$html_file" --files_path "$html_file.extra_files_path" --simulation "$simulation.extra_files_path" --domain_x $domain_x --domain_y $domain_y --domain_z $domain_z --B_TOT_DYE $B_TOT_DYE --c0 $ca_i  --K_ON_DYE $K_ON_DYE --K_OFF_DYE $K_OFF_DYE --num_scans $num_scans --scan_interval $scan_interval --pixel_size $pixel_size --x_start $x_start --x_end $x_end --axis $axis.selection --offset_1 $axis.offset_1 --offset_2 $axis.offset_2 --var_x $axis.var_x --var_y $axis.var_y --var_z $axis.var_z --noise_sigma $noise_sigma
+</command>
+<inputs>
+  <param name="simulation" type="data" format="html" label="Simulation data"/>
+  <param name="noise_sigma" type="float" value="0.125" min="0" label="Noise Sigma" help="Standard deviation of Gaussian noise in units of basal fluorescence signal."/>
+  <param name="num_scans" type="integer" value="251" min="0" label="Number of scans"/>
+  <param name="scan_interval" type="integer" value="2" min="0" label="Mesh state files per scan"/>
+  <param name="pixel_size" type="float" value="0.15" min="0" label="Pixel size [um]"/>
+  <param name="x_start" type="float" value="-3.0" min="0" label="Scan start position [um]"/>
+  <param name="x_end" type="float" value="3.0" min="0" label="Scan end position [um]"/>
+  
+  <conditional name="axis">
+    <param name="selection" type="select" label="Scan axis">
+      <option value="X">X</option>
+      <option value="Y">Y</option>
+      <option value="Z" selected="true">Z</option>
+    </param>
+    <when value="X">
+      <param name="offset_1" type="float" value="0" label="Y offset [um]"/>
+      <param name="offset_2" type="float" value="0" label="Z offset [um]"/>
+      <param name="var_x" type="float" value="0.1154" min="0" label="PSF X variance"/>
+      <param name="var_y" type="float" value="0.0289" min="0" label="PSF Y variance"/>
+      <param name="var_z" type="float" value="0.0289" min="0" label="PSF Z variance"/>
+    </when>
+    <when value="Y">
+      <param name="offset_1" type="float" value="0" label="X offset [um]"/>
+      <param name="offset_2" type="float" value="0" label="Z offset [um]"/>
+      <param name="var_x" type="float" value="0.1154" min="0" label="PSF X variance"/>
+      <param name="var_y" type="float" value="0.0289" min="0" label="PSF Y variance"/>
+      <param name="var_z" type="float" value="0.0289" min="0" label="PSF Z variance"/>
+    </when>
+    <when value="Z">
+      <param name="offset_1" type="float" value="0.1075" label="X offset [um]"/>
+      <param name="offset_2" type="float" value="0" label="Y offset [um]"/>
+      <param name="var_x" type="float" value="0.0289" min="0" label="PSF X variance"/>
+      <param name="var_y" type="float" value="0.1154" min="0" label="PSF Y variance"/>
+      <param name="var_z" type="float" value="0.0289" min="0" label="PSF Z variance"/>
+    </when>
+  </conditional>
+  <param name="domain_x" type="float" value="4" min="0" label="Domain size (X) [um]"/>
+  <param name="domain_y" type="float" value="4" min="0" label="Domain size (Y) [um]"/>
+  <param name="domain_z" type="float" value="4" min="0" label="Domain size (Z) [um]"/>
+  <param name="ca_i" type="float" value="0.1" min="0" label="Ca2+ (cytosolic) [um]"/>
+  <param name="K_ON_DYE" type="float" value="0.10" min="0" label="K_ON_DYE [1/uM-ms]"/>
+  <param name="K_OFF_DYE" type="float" value="0.11" min="0" label="K_OFF_DYE [1/ms]"/>
+  <param name="B_TOT_DYE" type="float" value="50" min="0" label="B_TOT_DYE [um]"/>
+    </inputs>
+	<outputs>
+		<data format="html" name="html_file" label="CRU3DLinescanOutput.html" />
+	</outputs>
+	<help>
+
+
+.. class:: warningmark
+
+The input dataset must be the output of a spark simulation.
+
+-----
+
+This tool generates a linescan plot from a spark simulation.
+
+-----
+
+**Example Linescan**
+
+.. image:: ${static_path}/images/cru3d_linescan.png
+
+	</help>
+</tool>

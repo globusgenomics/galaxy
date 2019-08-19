@@ -1,0 +1,40 @@
+<tool id="helloworld" name="Hello World Example">
+  <description>Hello World</description>
+  <command interpreter="python">
+    helloworld.py 
+    $out_file1
+    $name
+  </command>
+  <inputs>
+    <param name="name" type="text" label="Greetee Name"/>
+  </inputs>
+  <outputs>
+    <data name="out_file1" type="data" format="txt"/>
+  </outputs>
+  <tests>
+    <test>
+      <param name="namefield" value="Bob"/>
+      <output name="out_file1" type="txt" file="helloworld_out.txt"/>
+    </test>
+  </tests>
+  <help>
+  .. class:: warningmark
+    
+  **WARNING:** Be careful saying hello to strangers.
+    
+-----
+    
+**What it does**
+    
+  Writes a file with a friendly greeting.
+    
+-----
+    
+**Example**
+    
+Saying Hello to Bob::
+    
+    Hello Bob!
+
+  </help>
+</tool>

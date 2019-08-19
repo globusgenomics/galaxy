@@ -1,0 +1,258 @@
+<tool force_history_refresh="True" id="soapdenovo2_pregraph" name="pregraph" version="BGISOAP: default">
+    <requirements>
+        <requirement type="package">bgisoap</requirement>
+    </requirements>
+    <command interpreter="python">
+        soapdenovo2_pregraph.py
+
+        ## Reference source
+        --file_source=$config_source.config_source_select
+        #if $config_source.config_source_select == &quot;history&quot;:
+            ##Select config from history
+            --config=$config_source.own_file
+        #else:
+            ##Create new config file
+            ## Parameters required in config file
+            ## Maximum read length
+            --max_read_length=$config_source.max_read_length
+
+            #for $i in $config_source.libraries
+                ##[LIB]
+                ## Average insert size
+                --avg_ins=$i.avg_ins
+                ## Reverse sequence?
+                --reverse_seq=$i.reverse_seq
+                ## Read operations
+                --asm_flags=$i.asm_flags
+                ## Use only first 100 bps of each read
+                --rd_len_cutoff=$i.rd_len_cutoff
+                ## Rank
+                --rank=$i.rank
+                ## The cutoff of a pair number for a reliable connection (at least 3 for short insert size)
+                --pair_num_cutoff=$i.pair_num_cutoff
+                ## Minimum aligned length to contigs for a reliable read location (at least 32 for short insert size)
+                --map_len=$i.map_len
+
+                ## Check if using single or paired reads
+                --type_of_data=$i.data_type.single_paired
+                #if $i.data_type.single_paired == &quot;single&quot;
+                    --format_of_data=$i.data_type.data_format.fastq_fasta
+                    #if $i.data_type.data_format.fastq_fasta == &quot;fastq&quot;
+                        --single_fastq_input1=$i.data_type.data_format.input1
+                    #else if $i.data_type.data_format.fastq_fasta == &quot;fasta&quot;
+                        --single_fasta_input1=$i.data_type.data_format.input1
+                    #else
+                        --single_bam_input1=$i.data_type.data_format.input1
+                    #end if
+                #else
+                    --format_of_data=$i.data_type.data_format.fastq_fasta
+                    #if $i.data_type.data_format.fastq_fasta == &quot;fastq&quot;
+                        --paired_fastq_input1=$i.data_type.data_format.input1
+                        --paired_fastq_input2=$i.data_type.data_format.input2
+                    #else if $i.data_type.data_format.fastq_fasta == &quot;fasta&quot;
+                        --paired_fasta_input1=$i.data_type.data_format.input1
+                        --paired_fasta_input2=$i.data_type.data_format.input2
+                    #else
+                        --paired_bam_input1=$i.data_type.data_format.input1
+                        --paired_bam_input2=$i.data_type.data_format.input2
+                    #end if
+                #end if
+            #end for
+        #end if
+
+        ## Check if using default or custom parameters
+        --default_full_settings_type=$default_full_settings.settings_type
+        #if $default_full_settings.settings_type == &quot;full&quot;
+            --ncpu=$default_full_settings.ncpu
+            --init_memory_assumption=$default_full_settings.init_memory_assumption
+            --output_extra_info=$default_full_settings.output_extra_info
+            --kmer_freq_cutoff=$default_full_settings.kmer_freq_cutoff
+        #end if
+
+        ## Need to decide either SOAPdenovo-63mer or SOAPdenovo-127mer to use 
+        --kmer_size=$kmer_size
+        
+        ## Multiple output files
+        --kmer_freq=$kmer_freq
+        --edge=$edge ## This is a gzipped binary file
+        --pre_arc=$pre_arc
+        --vertex=$vertex
+        --pregraph_basic=$pregraph_basic
+        --soap_config=$soap_config
+
+    </command>
+    <inputs>
+        <conditional name="config_source">
+            <param label="Select a config file from history or create a new one?" name="config_source_select" type="select">
+                <option value="history">Use one from history</option>
+                <option value="create">Create new config file</option>
+            </param>
+            <when value="history">
+                <param label="Select config file from history" metadata_name="dbkey" name="own_file" type="data"/>
+            </when>
+            <when value="create">
+                <param format="input" label="Maximum read length" name="max_read_length" type="integer" value="90"/>
+                <repeat min="1" name="libraries" title="libraries">
+                    <!-- [LIB] -->
+                    <param label="Average insert size" name="avg_ins" type="integer" value="200"/>
+                    <param label="Reverse sequence?" name="reverse_seq" type="select" value="0">
+                        <option value="0">forward-reverse</option>
+                        <option value="1">reverse-forward</option>
+                    </param>
+                    <param label="Which operations should the reads be used for?" name="asm_flags" type="select" value="3">
+                        <option value="3">For contig and scaffold assembly</option>
+                        <option value="1">For only contig assembly</option>
+                        <option value="2">For only scaffold assembly</option>
+                    </param>
+                    <param label="Input the length of base pairs to use from reads" name="rd_len_cutoff" type="integer" value="100"/>
+                    <param label="Which order are the reads used while scaffolding" name="rank" type="integer" value="1"/>
+                    <param label="Pair number cutoff for a reliable connection" name="pair_num_cutoff" type="integer" value="3"/>
+                    <param label="Length of contig that has to be aligned for a reliable read location" name="map_len" type="integer" value="32"/>
+                    <!-- Actual sequence data - can be single or paired reads -->
+                    <conditional name="data_type">
+                        <param label="What type of data are you using?" name="single_paired" type="select">
+                            <option value="single">Single</option>
+                            <option value="paired">Paired</option>
+                        </param>
+                        <when value="single">
+                            <conditional name="data_format">
+                                <param label="What type of data are you using?" name="fastq_fasta" type="select">
+                                    <option value="fastq">FASTQ</option>
+                                    <option value="fasta">FASTA</option>
+                                    <option value="bam">BAM</option>
+                                </param>
+                                <when value="fastq">
+                                    <param format="input" label="Forward FASTQ file" name="input1" type="data">
+                                    </param>
+                                </when>
+                                <when value="fasta">
+                                    <param format="input" label="Forward FASTA file" name="input1" type="data">
+                                    </param>
+                                </when>
+                                <when value="bam">
+                                    <param format="input" label="Forward BAM file" name="input1" type="data">
+                                    </param>
+                                </when>
+                            </conditional>
+                        </when>
+                        <when value="paired">
+                            <conditional name="data_format">
+                                <param label="What is the format of your sequence data?" name="fastq_fasta" type="select">
+                                    <option value="fastq">FASTQ</option>
+                                    <option value="fasta">FASTA</option>
+                                    <option value="bam">BAM</option>
+                                </param>
+                                <when value="fastq">
+                                    <param format="input" label="Forward FASTQ file" name="input1" type="data">
+                                    </param>
+                                    <param format="input" label="Reverse FASTQ file" name="input2" type="data">
+                                    </param>
+                                </when>
+                                <when value="fasta">
+                                    <param format="input" label="Forward FASTA file" name="input1" type="data">
+                                    </param>
+                                    <param format="input" label="Reverse FASTA file" name="input2" type="data">
+                                    </param>
+                                </when>
+                                <when value="bam">
+                                    <param format="input" label="Forward BAM file" name="input1" type="data">
+                                    </param>
+                                    <param format="input" label="Reverse BAM file" name="input2" type="data">
+                                    </param>
+                                </when>
+                            </conditional>
+                        </when>
+                    </conditional>
+                </repeat>
+            </when>
+        </conditional>
+
+        <!--Other parameters -->
+        <conditional name="default_full_settings">
+            <param help="Default settings is suitable for most mapping needs. If you want full control, use Full parameter list" label="SOAP settings to use" name="settings_type" type="select">
+                <option value="default">Default</option>
+                <option value="full">Full parameter list</option>
+            </param>
+            <when value="default"/>
+            <when value="full">
+                <param label="Number of CPUs to use" name="ncpu" type="integer" value="8"/>
+                <param label="Initialize memory assumption to avoid further reallocation, unit GB" name="init_memory_assumption" type="integer" value="0"/>
+                <param label="Provide extra information for resolving repeats in contig step?" name="output_extra_info" type="select" value="NO">
+                    <option value="NO">No</option>
+                    <option value="YES">Yes</option>
+                </param>
+                <param label="K-mer frequency limit. K-mers with higher frequencies will  be removed from processing" name="kmer_freq_cutoff" type="integer" value="0"/>
+            </when>
+        </conditional>
+        <param label="k value in kmer" max="127" min="13" name="kmer_size" type="integer" value="23"/>
+    </inputs>
+    <outputs>
+        <data format="text" label="pregraph: kmer frequency" name="kmer_freq">
+        </data>
+        <data format="text" label="pregraph: edge gzipped" name="edge">
+        </data>
+        <data format="text" label="pregraph: pre arc" name="pre_arc">
+        </data>
+        <data format="text" label="pregraph: vertex" name="vertex">
+        </data>
+        <data format="text" label="pregraph: pregraph" name="pregraph_basic">
+        </data>
+        <data format="text" label="pregraph: configuration file" name="soap_config">
+        </data>
+    </outputs>
+    <tests>
+        <test>
+            <param name="max_read_length" value="50"/>
+            <output name="contig" value="hello world"/>
+        </test>
+    </tests>
+    <help>
+**What it does**
+
+SOAPdenovo is a novel short-read assembly method that can build a de novo draft assembly for the human-sized genomes.
+The program is specially designed to assemble Illumina GA short reads. It creates new opportunities for building
+reference sequences and carrying out accurate analyses of unexplored genomes in a cost effective way.
+
+-----
+
+The pregraph step in SOAPdenovo2 is responsible for loading raw read data into memory and constructing the Bruijn graph
+structure which is used to represent the overlap between reads.
+
+-----
+
+Output files from pregraph::
+
+  kmerFreq          Each row shows the number of Kmers with a frequency equals the row number.
+                    Note that those peaks of frequencies which are the integral multiple of 63
+                    are due to the data structure.
+
+  edge              Each record gives the information of an edge in the pre-graph: length, k-mers
+                    on both ends, average kmer coverage, whether it's reverse-complementarily
+                    identical and the sequence.
+
+  markOnEdge        For using reads to solve small repeats.
+
+  path              For using reads to solve small repeats.
+
+  preArc            Contains information about the connections between edges which are established by the read paths.
+
+  vertex            K-mers at the ends of edges.
+
+  preGraphBasic     Shows basic information about the pre-graph: number of vertex, K value, number of edges, maximum
+                    read length, etc.
+
+  config file       Contains information required by the SOAPdenovo2 process.
+
+-----
+
+**Authors**
+
+Ruibang Luo and Zhenyu Li, 2012-7-10
+
+**More information**
+
+For test data and more detailed information, click here_.
+
+.. _here: http://soap.genomics.org.cn/soapdenovo.html
+    </help>
+</tool>

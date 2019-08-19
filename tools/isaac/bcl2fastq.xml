@@ -1,0 +1,173 @@
+<tool id="bcl2fastq" name="BCL2Fastq" version="ILLUMINA: v2.15.0.4">
+    <action class="HistoryManagement" module="galaxy_ext.globus.tools.actions.globus"/>
+    <description>Convert BCL to fastq</description>
+
+    <requirements>
+        <requirement type="package">illumina</requirement>
+        <requirement type="package">pymodules</requirement>
+    </requirements>
+
+    <command interpreter="python">
+        bcl2fastq.py
+        #if $input_format.input_format_selector == &quot;tar&quot;:
+            --input-tar $input_format.input_tar_file
+            --input-name $input_format.input_tar_file.name
+        #else:
+            --input-dir $input_format.input_illumina_file.extra_files_path
+            --input-name $input_format.input_illumina_file.name
+        #end if 
+        #if str($samplesheet) != "None":
+            --samplesheet $samplesheet
+        #else:
+            --samplesheet "$__root_dir__/tools/isaac/createSamplesheet_template.csv"
+        #end if
+        #if str($config_input_cond.config_input_type) == "yes":
+            --input-config $config_input_cond.config_file
+        #end if
+
+        -p &quot;$ignore_missing_bcls&quot; -p &quot;$ignore_missing_filter&quot; -p &quot;$ignore_missing_locs&quot;
+        --fastq-out $out_fastqfiles --fastq-out-dir $out_fastqfiles.extra_files_path
+        --reports-out $out_reports --reports-out-dir $out_reports.extra_files_path
+        --stats-out $out_stats --stats-out-dir $out_stats.extra_files_path
+        --interop-out $out_interop --interop-out-dir $out_interop.extra_files_path
+        #if $add_to_library.add_to_library_selector == &quot;yes&quot;:
+            --userkey $userkey
+            --url &quot;$url&quot;
+        #end if
+    </command>
+    <inputs>
+        <conditional name="input_format">
+            <param label="Illumina file format" name="input_format_selector" type="select">
+                <option selected="True" value="tar">Tarred Illumina file</option>
+                <option value="untarred">Illumina Directory Structure</option>
+            </param>
+            <when value="tar">
+                <param format="tar,tabular" help="This should be an Illumina directory structure which has been transferred and is tarred" label="Input Illumina Tar file" name="input_tar_file" type="data"/>
+            </when>
+            <when value="untarred">
+                <param format="txt" help="This should be an Illumina directory structure which has been untarred" label="Input Illumina Untarred file" name="input_illumina_file" type="data"/>
+            </when>
+        </conditional>
+        <param format="txt,tabular,csv" help="If performing demultiplexing user will have to provide a properly formatted SampleSheet.csv file" label="SampleSheet file" name="samplesheet" optional="True" type="data"/>
+        <conditional name="config_input_cond">
+            <param label="Does the flowcell contain different library types" name="config_input_type" type="select" help="i.e. Exome, RNA-seq. You will need to provide a sample configuration file">
+                <option selected="True" value="no">No</option>
+                <option value="yes">Yes</option>
+            </param>
+            <when value="no"></when>
+            <when value="yes">
+                <param format="tabular" help="File should be a three column table where first column is a unique sample name which also appears on the SampleSheet.csv file, second column is a vendor name, and third column is the library type." label="Sample configuration file" name="config_file" type="data"/>
+            </when>
+        </conditional>
+
+        <!--<param name="minimum_trimmed_read_length" type="integer" label="Minimum read length after adapter trimming" value="32" help="Default is 32" />-->
+        <param falsevalue="" help="" label="Ignore missing bcls" name="ignore_missing_bcls" selected="True" truevalue="--ignore-missing-bcls" type="boolean"/>
+        <param falsevalue="" help="" label="Ignore missing filter" name="ignore_missing_filter" selected="False" truevalue="--ignore-missing-filter" type="boolean"/>
+        <param falsevalue="" help="" label="Ignore missing locs" name="ignore_missing_locs" selected="False" truevalue="--ignore-missing-locs" type="boolean"/>
+        <conditional name="add_to_library">
+            <param label="Add Outputs to Shared Library" name="add_to_library_selector" type="select">
+                <option value="yes">Yes</option>
+                <option selected="True" value="no">No</option>
+            </param>
+            <when value="no"/>
+            <when value="yes">
+                <param label="URL" name="url" type="hidden"/>
+                <param label="Key" name="userkey" size="100" type="hidden"/>
+            </when>
+        </conditional>
+    </inputs>
+    <outputs>
+        <data format="txt" label="BCL2Fastq Fastq file on ${on_string}" name="out_fastqfiles"/>
+        <data format="txt" label="BCL2Fastq Reports file on ${on_string}" name="out_reports"/>
+        <data format="txt" label="BCL2Fastq Stats file on ${on_string}" name="out_stats"/>
+        <data format="txt" label="BCL2Fastq Interop file on ${on_string}" name="out_interop"/>
+    </outputs>
+
+    <help>
+
+SampleSheet format must be the following:
+
+[Header]
+
+Experiment Name,VM_Hamilton_Kapa_PCR_v2_Pooled
+
+Date
+
+Workflow,GenerateFASTQ
+
+Application,HISEq FASTQ Only
+
+Assay,TruSeq HT
+
+Description
+
+Chemistry,Default
+
+
+[Reads]
+
+151
+
+151
+
+
+[Settings]
+
+Adapter,AGATCGGAAGAGCACACGTCTGAACTCCAGTCA,,
+
+AdapterRead2,AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT,,
+
+
+[Data]
+
+Lane,Sample_ID,Sample_Name,index,Sample_Project
+
+1,Kapa_NA12878_250pm_A12,Kapa_NA12878_250pm_A12,GTCCGCAC,Kapa_NA12878_250pm_A12
+
+1,Kapa_NA12878_250pm_B12,Kapa_NA12878_250pm_B12,GTGAAACG,Kapa_NA12878_250pm_B12
+
+1,Kapa_NA12878_250pm_C12,Kapa_NA12878_250pm_C12,GTGGCCTT,Kapa_NA12878_250pm_C12
+
+1,Kapa_NA12878_250pm_D12,Kapa_NA12878_250pm_D12,GTTTCGGA,Kapa_NA12878_250pm_D12
+
+1,Kapa_NA12878_250pm_E12,Kapa_NA12878_250pm_E12,CGTACGTA,Kapa_NA12878_250pm_E12
+
+1,Kapa_NA12878_250pm_F12,Kapa_NA12878_250pm_F12,GAGTGGAT,Kapa_NA12878_250pm_F12
+
+1,Kapa_NA12878_250pm_G12,Kapa_NA12878_250pm_G12,ACTGATAT,Kapa_NA12878_250pm_G12
+
+1,Kapa_NA12878_250pm_H12,Kapa_NA12878_250pm_H12,ATTCCTTT,Kapa_NA12878_250pm_H12
+
+2,Kapa_NA12878_250pm_A12,Kapa_NA12878_250pm_A12,GTCCGCAC,Kapa_NA12878_250pm_A12
+
+2,Kapa_NA12878_250pm_B12,Kapa_NA12878_250pm_B12,GTGAAACG,Kapa_NA12878_250pm_B12
+
+2,Kapa_NA12878_250pm_C12,Kapa_NA12878_250pm_C12,GTGGCCTT,Kapa_NA12878_250pm_C12
+
+2,Kapa_NA12878_250pm_D12,Kapa_NA12878_250pm_D12,GTTTCGGA,Kapa_NA12878_250pm_D12
+
+2,Kapa_NA12878_250pm_E12,Kapa_NA12878_250pm_E12,CGTACGTA,Kapa_NA12878_250pm_E12
+
+2,Kapa_NA12878_250pm_F12,Kapa_NA12878_250pm_F12,GAGTGGAT,Kapa_NA12878_250pm_F12
+
+2,Kapa_NA12878_250pm_G12,Kapa_NA12878_250pm_G12,ACTGATAT,Kapa_NA12878_250pm_G12
+
+2,Kapa_NA12878_250pm_H12,Kapa_NA12878_250pm_H12,ATTCCTTT,Kapa_NA12878_250pm_H12
+
+3,Kapa_NA12878_250pm_A12,Kapa_NA12878_250pm_A12,GTCCGCAC,Kapa_NA12878_250pm_A12
+
+3,Kapa_NA12878_250pm_B12,Kapa_NA12878_250pm_B12,GTGAAACG,Kapa_NA12878_250pm_B12
+
+3,Kapa_NA12878_250pm_C12,Kapa_NA12878_250pm_C12,GTGGCCTT,Kapa_NA12878_250pm_C12
+
+3,Kapa_NA12878_250pm_D12,Kapa_NA12878_250pm_D12,GTTTCGGA,Kapa_NA12878_250pm_D12
+
+3,Kapa_NA12878_250pm_E12,Kapa_NA12878_250pm_E12,CGTACGTA,Kapa_NA12878_250pm_E12
+
+3,Kapa_NA12878_250pm_F12,Kapa_NA12878_250pm_F12,GAGTGGAT,Kapa_NA12878_250pm_F12
+
+3,Kapa_NA12878_250pm_G12,Kapa_NA12878_250pm_G12,ACTGATAT,Kapa_NA12878_250pm_G12
+
+
+    </help>
+</tool>

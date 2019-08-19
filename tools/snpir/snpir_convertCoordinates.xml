@@ -1,0 +1,61 @@
+<tool id="snpir_convert_coordinates" name="SNPiR convert coordinates" version="SNPIR: 12-May-2014; JAVA: jre1.7.0_51; SAMTOOLS: 1.2; UCSC_TOOLS: 20140801; BEDTOOLS: 2.17.0">
+  <requirements>
+    <requirement type="package">snpir</requirement>
+    <requirement type="package">java</requirement>
+    <requirement type="package">samtools</requirement>
+    <requirement type="package">ucsc_tools</requirement>
+    <requirement type="package">bedtools</requirement>
+  </requirements>
+  <description>Convert the position of reads that map across splicing junctions onto the genome</description>
+  <command>
+    #if $input_format.select_input_format == &quot;sam&quot;:
+      cat $input_format.inputSamFile | 
+    #else:
+      samtools view $input_format.inputBamFile | 
+    #end if
+    
+    java -Xmx2g convertCoordinates  &gt; $outFile
+
+  </command>
+  <inputs>
+    <conditional name="input_format">
+      <param label="SAM/BAM" name="select_input_format" type="select">
+        <option value="sam">SAM</option>
+        <option value="bam">BAM</option>
+      </param>
+      <when value="sam">
+        <param format="sam" help="If empty, upload or import a SAM dataset." label="SAM" name="inputSamFile" type="data"/>
+      </when>
+      <when value="bam">
+        <param format="bam" help="If empty, upload or import a BAM dataset." label="BAM" name="inputBamFile" type="data"/>
+      </when>
+    </conditional>
+  </inputs>
+  <outputs>
+    <data format="sam" label="${tool.name} on ${on_string}" name="outFile"/>
+  </outputs>
+  <tests>
+    <test>
+    </test>
+  </tests>
+  <help>
+
+.. class:: infomark
+
+**Purpose**
+
+Convert the position of reads that map across splicing junctions onto the genome
+
+------
+
+.. class:: infomark
+
+**Inputs, outputs, and parameters**
+
+The output file is a sam,and contains the same information as the input file except for the appropraite
+additional (or modified) read group tags. Bam is recommended since it is smaller.
+
+
+
+  </help>
+</tool>

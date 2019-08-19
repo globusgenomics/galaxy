@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<tool_dependency>
+    <package name="fastq_validator" version="1.0.0">
+        <install version="1.0">
+            <actions>
+                <action type="download_by_url" target_filename="fastQValidator_0.1.1a.tgz">
+                    http://genome.sph.umich.edu/w/images/2/20/FastQValidatorLibStatGen.0.1.1a.tgz
+                </action>
+                <action type="shell_command">make all</action>
+                <action type="move_file">
+                    <source>fastQValidator/bin</source>
+                    <destination>$INSTALL_DIR</destination>
+                </action>
+                <action type="set_environment">
+                    <environment_variable name="PATH" action="prepend_to">$INSTALL_DIR/bin</environment_variable>
+                </action>
+            </actions>
+        </install>
+        <readme>
+           View the FastQ Validator overview at http://genome.sph.umich.edu/wiki/FastQValidator.
+        </readme>
+    </package>
+</tool_dependency>

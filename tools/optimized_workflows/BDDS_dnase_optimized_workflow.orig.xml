@@ -1,0 +1,45 @@
+<tool id="BDDS_dnase_optimized" name="DNAse Analisys Optimized Workflow (BDDS)" version="BWA: 0.7.12; SAMTOOLS: 1.2; SAMBAMBA: v0.5.4">
+  <description/>
+  <!--<action class="GlobusOptimizedWorkflows" module="galaxy.tools.actions.globus"/>-->
+  <parallelism method="basic"/>
+  <requirements>
+    <requirement type="package">snap</requirement>
+    <requirement type="package">samtools</requirement>
+    <requirement type="package">sambamba</requirement>
+    <requirement type="package">pymodules</requirement>
+    <requirement type="package">fseq</requirement>
+    <requirement type="package">meme</requirement>
+    <requirement type="package">java</requirement>
+    <requirement type="package">bedtools</requirement>
+    <requirement type="package">perlmodules</requirement>
+    <requirement type="package">ucsc_tools</requirement>
+  </requirements>
+  <command interpreter="python">
+     BDDS_dnase_optimized_05242016.py --sample $sample_id --config $config_file --output-bed $output_bed --meme-db $meme_db --input-fasta $fasta_ref
+      ## SNAP reference files
+      --snap-ref ${snap_ref_file.fields.path}
+      >  $output_log
+  </command>
+  <inputs>
+    <param help="" label="SNAP reference genome" name="snap_ref_file" type="select">
+      <options from_data_table="snap_indexes"/>
+    </param>
+    <param format="fasta" label="FASTA database file" name="fasta_ref" type="data"/>
+    <param format="tabular,txt" label="Encode file containing location of samples" name="config_file" type="data"/>
+    <param format="memexml" label="MEME database file" name="meme_db" type="data"/>
+    <param label="Sample ID" name="sample_id" type="text" value="" optional="False"/>
+  </inputs>
+  <outputs>
+    <data format="bed" label="${tool.name} on ${on_string}: bed" name="output_bed"/>
+    <data format="txt" label="${tool.name} on ${on_string}: log" name="output_log"/>
+  </outputs>
+  <tests>
+    <test>
+    </test>
+  </tests> 
+  <help>
+
+**What it does**
+
+  </help>
+</tool>

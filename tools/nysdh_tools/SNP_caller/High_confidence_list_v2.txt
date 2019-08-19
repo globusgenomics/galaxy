@@ -1,0 +1,91 @@
+Antimicrobial	Locus	NT	Codon	WT_nt	Alt_nt	WT_aa	Alt_aa	Status	Note
+Ethambutol	embB	916,918	306	ATG	CTG,GTG,ATA,ATT,ATC	Met	Leu,Val,Ile,Ile,Ile	Coding	
+Ethambutol	embB	1216,1217	406	GGC	AGC,GAC,GCC,TGC	Gly	Ser,Asp,Ala,Cys	Coding	
+Ethambutol	embB	1490	497	CAG	CGG	Gln	Arg	Coding	
+Fluoroquinolones	gyrA	220	74	GCC	TCC	Ala	Ser	Coding	
+Fluoroquinolones	gyrA	269	90	GCG	GTG	Ala	Val	Coding	
+Fluoroquinolones	gyrA	271	91	TCG	CCG	Ser	Pro	Coding	
+Fluoroquinolones	gyrA	280,281	94	GAC	AAC,CAC,TAC,GGC,GCC	Asp	Asn,His,Tyr,Gly,Ala	Coding	
+Fluoroquinolones	gyrA	305	102	CCC	CAC	Pro	His	Coding	
+Fluoroquinolones	gyrB	1528	510	AAC	GAC	Asn	Asp	Coding	
+Isoniazid	katG	836	279	GGC	GAC	Gly	Asp	Coding	
+Isoniazid	katG	944,945	315	AGC	ATC,AAC,ACC,AGA,ATG	Ser	Ile,Asn,Thr,Arg,Met	Coding	
+Isoniazid	kasA	805	269	GGT	AGT	Gly	Ser	Coding	
+Isoniazid	oxyR-ahpC	-88	-88	G	A	-	-	Non-coding	Classic position -46
+Isoniazid	oxyR-ahpC	-81	-81	C	T	-	-	Non-coding	Classic position -39
+Ethionamid/Isoniazid	Rv1482c-mabA	-15	-15	C	T	-	-	Non-coding	
+Ethionamid/Isoniazid	Rv1482c-mabA	-8	-8	T	A,C	-	-	Non-coding	
+Isoniazid	mabA	609	203	CTG	CTA	Leu	Leu	Coding	
+Pyrazinamide	Rv2044c-pncA	-11	-11	A	G	-	-	Non-coding	
+Pyrazinamide	pncA	388	388	-	+AGGTCGATG	-	+ArgSerMet	INDEL	
+Pyrazinamide	pncA	7	3	GCG	CCG	Ala	Pro	Coding	
+Pyrazinamide	pncA	29	10	CAG	CCG	Gln	Pro	Coding	
+Pyrazinamide	pncA	35	12	GAC	GCC	Asp	Ala	Coding	
+Pyrazinamide	pncA	40	14	TGC	CGC	Cys	Arg	Coding	
+Pyrazinamide	pncA	50	17	GGC	GAC	Gly	Asp	Coding	
+Pyrazinamide	pncA	56	19	CTG	CCG	Leu	Pro	Coding	
+Pyrazinamide	pncA	62	21	GTA	GGA	Val	Gly	Coding	
+Pyrazinamide	pncA	101	34	TAC	TCC	Tyr	Ser	Coding	
+Pyrazinamide	pncA	104	35	CTG	CGG	Leu	Arg	Coding	
+Pyrazinamide	pncA	123	41	TAC	TAG	Tyr	STOP	Coding	
+Pyrazinamide	pncA	137	46	GCA	GTA	Ala	Val	Coding	
+Pyrazinamide	pncA	139	47	ACC	GCC	Thr	Ala	Coding	
+Pyrazinamide	pncA	152	51	CAC	CCC,CGC	His	Pro,Arg	Coding	
+Pyrazinamide	pncA	160	54	CCG	ACG	Pro	Thr	Coding	
+Pyrazinamide	pncA	169	57	CAC	TAC	His	Tyr	Coding	
+Pyrazinamide	pncA	188	63	GAC	GGC	Asp	Gly	Coding	
+Pyrazinamide	pncA	196	66	TCG	CCG	Ser	Pro	Coding	
+Pyrazinamide	pncA	199	67	TCG	CCG	Ser	Pro	Coding	
+Pyrazinamide	pncA	202,203	68	TGG	CGG,GGC,TTG	Trp	Arg,Gly,Leu	Coding	
+Pyrazinamide	pncA	212	71	CAT	CGT	His	Arg	Coding	
+Pyrazinamide	pncA	214	72	TGC	CGC	Cys	Arg	Coding	
+Pyrazinamide	pncA	226	76	ACT	CCT	Thr	Pro	Coding	
+Pyrazinamide	pncA	245	82	CAT	CGT	His	Arg	Coding	
+Pyrazinamide	pncA	254	85	CTG	CCG	Leu	Pro	Coding	
+Pyrazinamide	pncA	288	96	AAG	AAT	Lys	Asn	Coding	
+Pyrazinamide	pncA	289	97	GGT	AGT	Gly	Ser	Coding	
+Pyrazinamide	pncA	297	99	TAC	TAG	Tyr	STOP	Coding	
+Pyrazinamide	pncA	305	102	GCG	GTG	Ala	Val	Coding	
+Pyrazinamide	pncA	309	103	TAC	TAG	Tyr	STOP	Coding	
+Pyrazinamide	pncA	312	104	AGC	AGG	Ser	Arg	Coding	
+Pyrazinamide	pncA	340	114	ACG	CCG	Thr	Pro	Coding	
+Pyrazinamide	pncA	347	116	CTG	CGG	Leu	Arg	Coding	
+Pyrazinamide	pncA	362	121	CGG	CCG	Arg	Pro	Coding	
+Pyrazinamide	pncA	384	128	GTC	GGC	Val	Gly	Coding	
+Pyrazinamide	pncA	389	130	GTG	GGG	Val	Gly	Coding	
+Pyrazinamide	pncA	401	134	GCC	GTC	Ala	Val	Coding	
+Pyrazinamide	pncA	410	137	CAT	CGT	His	Arg	Coding	
+Pyrazinamide	pncA	413	138	TGT	TAT	Cys	Tyr	Coding	
+Pyrazinamide	pncA	415,416	139	GTG	ATG,CTG,GCG	Val	Met,Leu,Ala	Coding	
+Pyrazinamide	pncA	418	140	CGC	AGC	Arg	Ser	Coding	
+Pyrazinamide	pncA	422	141	CAG	CCG	Gln	Pro	Coding	
+Pyrazinamide	pncA	425	142	ACG	AAG	Thr	Lys	Coding	
+Pyrazinamide	pncA	464	155	GTG	GGG	Val	Gly	Coding	
+Pyrazinamide	pncA	476	159	CTG	CCG	Leu	Pro	Coding	
+Pyrazinamide	pncA	478	160	ACA	CCA	Thr	Pro	Coding	
+Pyrazinamide	pncA	481	161	GCG	CCG	Ala	Pro	Coding	
+Pyrazinamide	pncA	485	162	GGT	GAT	Gly	Asp	Coding	
+Pyrazinamide	pncA	512	171	GCG	GAG	Ala	Glu	Coding	
+Pyrazinamide	pncA	515	172	CTG	CCG	Leu	Pro	Coding	
+Pyrazinamide	pncA	554	185	AGC	ACC	Ser	Thr	Coding	
+Rifampicin	rpoB	508	170	GTC	TTC	Val	Phe	Coding	E. coli Position 251
+Rifampicin	rpoB	1289	430	CTG	CCG	Leu	Pro	Coding	E. coli Position 511
+Rifampicin	rpoB	1295	432	CAA	CTA,CCA	Gln	Leu,Pro	Coding	E. coli Position 513
+Rifampicin	rpoB	1303,1304	435	GAC	GTC,TAC	Asp	Val,Tyr	Coding	E. coli Position 516
+Rifampicin	rpoB	1322	441	TCG	TTG	Ser	Leu	Coding	E. coli Position 522
+Rifampicin	rpoB	1334,1335	445	CAC	AAC,GAC,TAC,CGC,CTC	His	Asn,Asp,Tyr,Arg,Leu	Coding	E. coli Position 526
+Rifampicin	rpoB	1349,1350	450	TCG	TTG,TGG,TGT	Ser	Leu,Trp,Cys	Coding	E. coli Position 531
+Rifampicin	rpoB	1355	452	CTG	CCG	Leu	Pro	Coding	E. coli Position 533
+Rifampicin	rpoB	1471	491	ATC	TTC	Ile	Phe	Coding	E. coli Position 572
+Streptomycin	rrs	491	491	C	T	-	-	Non-coding	
+Streptomycin	rrs	512	512	C	T	-	-	Non-coding	
+Streptomycin	rrs	513	513	A	C,T	-	-	Non-coding	
+Streptomycin	rrs	516	516	C	T	-	-	Non-coding	
+Streptomycin	rrs	906	906	A	C	-	-	Non-coding	
+Streptomycin	rrs	1400	1400	A	G	-	-	Non-coding	
+Streptomycin	rpsL	128	43	AAG	AGG	Lys	Arg	Coding	
+Streptomycin	rpsL	262,263	88	AAG	CAG,AGG	Lys	Gln,Arg	Coding
+Kanamycin	Rv2417c-eis	-10	-10	G	A	-	-	Non-coding	
+Kanamycin	Rv2417c-eis	-14	-14	C	T	-	-	Non-coding	
+Kanamycin	Rv2417c-eis	-37	-37	G	T	-	-	Non-coding	
+Kanamycin	rrs	1400	1400	A	G	-	-	Non-coding

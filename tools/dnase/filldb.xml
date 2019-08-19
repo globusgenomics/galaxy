@@ -1,0 +1,23 @@
+<tool id="filldb" name="FillDB" version="filldb: 1.0">
+    <description> fills database by dnase footprint output </description>
+    <requirements>
+      <requirement type="package">pymodules</requirement>
+      <requirement type="package" version="3.2.5">R</requirement>
+      <requirement type="package">filldb</requirement>
+    </requirements>
+    <command interpreter="python">
+      filldb_wrapper.py
+      --dbconnect $dbconnect
+      --fimo $fimo
+      --out-dir $output.extra_files_path
+      --output $output
+    </command>
+      <inputs>
+         <param format="bam" help="" name="input" optional="false" type="data" label="Input BAM" />
+      </inputs>
+      <outputs>
+         <data format="csv" label="${tool.name} on ${on_string}" name="output"/>
+      </outputs>
+      <help>
+      </help>
+</tool>

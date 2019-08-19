@@ -1,0 +1,30 @@
+﻿<macros>
+  <macro name="extraStrelkaArguments">
+
+    <conditional name="extra_arguments">
+    <param name="extra_arguments_switch" type="select" label="Do you Want to add extraStrelkaArguments?">
+      <option value="No" selected="true">No</option>
+      <option value="Yes">Yes</option>
+    </param>
+    <when value="No">
+      <!-- do nothing -->
+    </when>
+    <when value="Yes">
+      <param name="a" type="boolean" value="" label="--ignore-conflicting-read-names" help="Do not report an error if two input reads share the same QNAME and read number"/>
+      <param name="b" type="boolean" value="" label="-used-allele-count-min-qscore"/>
+      <param name="barg" type="text" value="arg" label="-used-allele-count-min-qscore arg" help="Filter the allele counts printed to the somatic VCF output to correspond to bases with quality score >= arg"/>
+      <param name="c" type="boolean" value="" label="--candidate-indel-input-vcf"/>
+      <param name="carg" format="vcf.gz" type="data" value="indels.vcf.gz" label="--candidate-indel-input-vcf indels.vcf.gz" help="Add candidate indels from the specified vcf file. Option can be provided multiple times to combine evidence from multiple vcf files.Input Vcf files must be bgzip compressed and tabix indexed. Any vcf records besides simple indels should be ignored (in theory), although complex SVs/symbolic alleles have not been tested and may cause the method to fail.">
+        <!--<validator type="*.vcf.gz"/>-->
+      </param>
+      <param name="d" type="boolean" value="" label="--force-output-vcf"/>
+      <param name="darg" format="vcf.gz" type="data" value="variants.vcf.gz" label="--force-output-vcf variants.vcf.gz" help="For each SNV or indel in the vcf file, strelka will output an SNV or indel in the 'all.somatic.*.vc' files, even if the QSS_NT score is zero. This can be useful to extract depth and allele counts at sites across a series of samples.Input Vcf files must be bgzip compressed and tabix indexed. Any vcf records besides SNVs and simple indels should be ignored (in theory), although complex SVs/symbolic alleles have not been tested and may cause the method to fail.">
+        <!--<validator type="*.vcf.gz"/>-->
+      </param>
+      <param name="e" type="boolean" value="" label="-min-small-candidate-indel-read-frac"/>
+      <param name="earg" type="text" value="arg" label="-min-small-candidate-indel-read-frac arg" help="For small indels (no more than 4 bases), unless at least this fraction of intersecting reads contain the small indel in at least one sample, it cannot become a candidate for realignment and indel calling. A read is counted only if it passes the mapping score threshold. (default: 0.1)"/>
+    </when>
+    </conditional>
+    
+  </macro>
+</macros>

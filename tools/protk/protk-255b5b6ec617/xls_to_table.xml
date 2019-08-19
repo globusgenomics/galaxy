@@ -1,0 +1,26 @@
+<tool id="xls_to_table_1" name="Excel to Table" version="1.0.0">
+	<requirements>
+		<requirement type="package">protkgem</requirement>
+                <requirement type="package">ruby</requirement>
+	</requirements>
+  <description>Converts an excel spreadsheet to a tab delimited text file</description>
+
+
+<!-- Note .. the input file is assumed to be the first argument -->
+<command>xls_to_table.rb $input_file -o $output</command>
+
+
+<inputs>
+
+	<param name="input_file" type="data" format="xls"  multiple="false" label="Input File" help="An Excel Spreadsheet"/>
+
+</inputs>
+<outputs>
+	<data format="csv" name="output" metadata_source="input_file" label="${input_file.display_name}.csv" />
+</outputs>
+
+<help>
+	Convert an Excel Spreadsheet to Tab delimited text
+</help>
+
+</tool>

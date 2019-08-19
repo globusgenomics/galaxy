@@ -1,0 +1,38 @@
+<tool id="reanalyze" name="cellranger reanalyze" version="CELL RANGER: 2.2.0">
+<description> takes gene-barcode matrices produced by cellranger count or cellranger aggr
+  and reruns the dimensionality reduction, clustering, and gene expression algorithms using
+  tunable parameter settings
+</description>
+    <requirements>
+      <requirement type="package" version="2.2.0">cellranger</requirement>
+      <requirement type="package" version="v2.19.1">illumina</requirement>
+      <requirement type="package">pymodules</requirement>
+    </requirements>
+
+<command>
+    #set $h5_file =  str($output.extra_files_path) + "/filtered_gene_bc_matrices_h5.h5"
+    mkdir $output.extra_files_path;
+    ln -s $matrix $h5_file;
+
+    python $__tool_directory__/reanalyze.py
+    --id $id
+    --matrix $h5_file
+
+    --output-dir $output.extra_files_path
+
+</command>
+
+<inputs>
+    <param name="id" type="text" label="A unique run ID string: e.g. AGG123_reanalysis (--id)" help=""/>
+    <param name="matrix" type="data" format="h5" label="matrix (--matrix)" help="Path to a filtered_gene_bc_matrices_h5.h5 or raw_gene_bc_matrices_h5.h5 from a completed pipestance"/>
+</inputs>
+
+<outputs>
+    <data format="tabular" name="output" label="${tool.name} on ${on_string} main output"/>
+</outputs>
+
+<help>
+
+</help>
+
+</tool>

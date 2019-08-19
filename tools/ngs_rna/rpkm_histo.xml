@@ -1,0 +1,16 @@
+<tool id="exprHisto" name="Expression histogram">
+        <description>of rna-seq data</description>
+        <command interpreter="perl">rpkmHisto.pl -i $fpkm_file > $output</command>
+        <inputs>
+                <param name="fpkm_file" type="data" format="tabular" label="FPKM tracking file from Cufflinks" help="For gene-level expression, use genes.fpkm_tracking, for transcript-level expression, use isoforms.fpkm_tracking" optional="false"/>
+        </inputs>
+        <outputs>
+                <data name="output" type="data" format="tabular" label="${tool.name} on ${on_string} (Results)"/>
+        </outputs>
+        <help>
+
+This tool prints a histogram of the expression levels from cufflinks output files.
+
+        </help>
+</tool>
+

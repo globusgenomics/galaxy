@@ -1,0 +1,17 @@
+<tool id="bedIntersect" name="Bed Intersect" version="KENT: 20121024">
+	<description>Intersects two bed files</description>
+	<requirements>
+		<requirement type="package" version="default">kent</requirement>
+	</requirements>
+	<command>bedIntersect $bed_a $bed_b $bed_output</command>
+	<inputs>
+		<param format="bed" label="First bed file" name="bed_a" optional="false" type="data"/>
+		<param format="bed" label="Second bed file" name="bed_b" optional="false" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="bed" label="Intersection of bed files on ${on_string}" name="bed_output" type="data"/>
+	</outputs>
+        <help>
+        </help>
+
+</tool>

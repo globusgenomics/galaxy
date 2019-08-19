@@ -1,0 +1,5 @@
+    <!-- Location of SRMA dict file and other files -->
+    <table name="tmap_indexes" comment_char="#">
+        <columns>value, dbkey, name, path</columns>
+        <file path="tool-data/tmap_index.loc" />
+    </table>

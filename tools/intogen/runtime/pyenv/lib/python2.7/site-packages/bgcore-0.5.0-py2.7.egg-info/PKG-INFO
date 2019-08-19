@@ -1,0 +1,24 @@
+Metadata-Version: 1.1
+Name: bgcore
+Version: 0.5.0
+Summary: Biomedical Genomics Python core libraries
+Home-page: https://bitbucket.org/bbglab/bgcore
+Author: Biomedical Genomics Group @ Universitat Pompeu Fabra
+Author-email: nuria.lopez@upf.edu
+License: UPF Free Source Code
+Description: 
+        Biomedical Genomics Python core libraries
+        
+Platform: UNKNOWN
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: License :: Other/Proprietary License
+Classifier: Environment :: Console
+Classifier: Intended Audience :: Science/Research
+Classifier: Natural Language :: English
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2.6
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Topic :: Scientific/Engineering
+Classifier: Topic :: Scientific/Engineering :: Bio-Informatics

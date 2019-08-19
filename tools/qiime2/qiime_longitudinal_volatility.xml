@@ -1,0 +1,115 @@
+<?xml version="1.0" ?>
+<tool id="qiime_longitudinal_volatility" name="qiime longitudinal volatility" version="022019">
+	<description> - Volatility analysis</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command>
+	<![CDATA[
+	qiime longitudinal volatility --p-state-column="$pstatecolumn"
+
+	#def list_dict_to_string(list_dict):
+		#set $file_list = list_dict[0]['additional_input'].__getattr__('file_name')
+		#for d in list_dict[1:]:
+			#set $file_list = $file_list + ' --m-metadata-file=' + d['additional_input'].__getattr__('file_name')
+		#end for
+		#return $file_list
+	#end def
+
+	 --m-metadata-file=$list_dict_to_string($input_files_mmetadatafile)
+	 --p-default-group-column="$pdefaultgroupcolumn"
+	 --p-individual-id-column="$pindividualidcolumn"
+	  --p-default-metric="$pdefaultmetric"
+	#if str($itable) != 'None':
+	 --i-table=$itable
+	#end if
+
+	#if str($cmdconfig) != 'None':
+	 --cmd-config=$cmdconfig
+	#end if
+	 --o-visualization=ovisualization
+
+	#if str($pyscale) != 'None':
+	 --p-yscale=$pyscale
+	#end if
+	;
+	qiime tools export --input-path ovisualization.qzv --output-path out   && mkdir -p '$ovisualization.files_path'
+	&& cp -r out/* '$ovisualization.files_path'
+	&& mv '$ovisualization.files_path/index.html' '$ovisualization'
+	]]>
+	</command>
+	<inputs>
+		<repeat name="input_files_mmetadatafile" optional="False" title="--m-metadata-file">
+			<param label="--m-metadata-file: Metadata file or artifact viewable as metadata. This option may be supplied multiple times to merge metadata. Sample metadata file containing individual_id_column.  [required]" name="additional_input" type="data" format="tabular,qza,no_unzip.zip" />
+		</repeat>
+
+		<param label="--p-state-column: Metadata column containing state (e.g., Time) across which samples are paired. [required]" name="pstatecolumn" optional="False" type="text"/>
+
+		<param label="--p-individual-id-column: Metadata column containing IDs for individual subjects.  [required]" name="pindividualidcolumn" optional="False" type="text"/>
+
+		<param label="--p-default-group-column: The default metadata column on which to
+                                  separate groups for comparison (all
+                                  categorical metadata columns will be
+                                  available in the visualization).  [optional]" name="pdefaultgroupcolumn" optional="False" type="text"/>
+
+		<param label="--p-default-metric: Numeric metadata or artifact column to test
+                                  by default (all numeric metadata columns
+                                  will be available in the visualization).
+                                  [optional]" name="pdefaultmetric" optional="False" type="text"/>
+
+		<param format="qza,no_unzip.zip" label="--i-table: FeatureTable[RelativeFrequency] Feature table to optionally use for paired comparisons.  [optional]" name="itable" optional="True" type="data"/>
+
+		<param label="--p-yscale: y-axis scaling strategy to apply.  [default:
+                                  linear]" name="pyscale" optional="True" type="select">
+			<option selected="True" value="None">Selection is Optional</option>
+			<option value="pow">log</option>
+			<option value="linear">logit</option>
+			<option value="sqrt">symlog</option>
+			<option value="log">linear</option>
+		</param>
+
+		<param label="--cmd-config: Use config file for command options" name="cmdconfig" optional="True" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="html" label="${tool.name} on ${on_string}: visualization.qzv" name="ovisualization"/>
+	</outputs>
+	<help>
+		<![CDATA[
+Volatility analysis
+--------------------
+
+Plot an interactive control chart of a single dependent variable, "metric",
+across multiple groups contained in sample metadata column "group_column".
+
+Parameters
+----------
+table : FeatureTable[RelativeFrequency], optional
+    Feature table to optionally use for paired comparisons.
+metadata : Metadata
+    Sample metadata file containing individual_id_column.
+state_column : Str
+    Metadata column containing state (e.g., Time) across which samples are
+    paired.
+individual_id_column : Str
+    Metadata column containing IDs for individual subjects.
+default_group_column : Str, optional
+    The default metadata column on which to separate groups for comparison
+    (all categorical metadata columns will be available in the
+    visualization).
+default_metric : Str, optional
+    Numeric metadata or artifact column to test by default (all numeric
+    metadata columns will be available in the visualization).
+yscale : Str % Choices({'linear', 'log', 'pow', 'sqrt'}), optional
+    y-axis scaling strategy to apply.
+
+Returns
+-------
+visualization : Visualization
+		\
+		]]>
+	</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

@@ -1,0 +1,25 @@
+<tool id="vcfcat" name="VCFcat:" version="0.0.1">
+  <description>Concatenate VCF datasets</description>
+  <command>cp "${input1}" "${out_file1}";grep -v ^"#" "${input2}" >> "${out_file1}"</command>
+  <inputs>
+    <param format="vcf" name="input1" type="data" label="Select first VCF dataset"/>
+    <param format="vcf" name="input2" type="data" label="Select VCF dataset to concatenate"/>
+  </inputs>
+  <outputs>
+    <data format="vcf" name="out_file1" />
+  </outputs>
+  <tests>
+    <test>
+      <param name="input1" value="vcfsort-test1-input.vcf"/>
+      <param name="input2" value="vcfsort-test1-input.vcf"/>
+      <output name="out_file1" file="vcfsort-test1.vcf"/>
+    </test>
+    </tests>
+  <help>
+
+This tool uses native UNIX commands to concatenate VCF dataset.
+
+
+
+</help>
+</tool>

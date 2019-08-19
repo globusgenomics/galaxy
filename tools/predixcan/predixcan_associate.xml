@@ -1,0 +1,42 @@
+<tool id="predixcan_associate" name="PrediXcan Associate " version="09-07-2016">
+  <description>association test between the predicted expression levels and phenotype</description>
+  <requirements>
+      <requirement type="package">pymodule</requirement>
+      <requirement type="package">predixcan</requirement>
+      <requirement type="package">tabix</requirement>
+      <requirement type="package">R</requirement>
+  </requirements>
+  <command>
+    mkdir $output.extra_files_path;
+    PrediXcan.py
+    --assoc
+    --pheno $pheno_file
+    --pred_exp $pred_file
+    $regression_type
+    #if str($filter_file) != "None":
+      --filter $filter_file $filter_value
+    #end if    
+    --output_dir $output.extra_files_path
+    ; cp $output.extra_files_path/association.txt $output
+  </command>
+  <inputs>
+    <param format="txt,tabular" help="Filter files can specify a subset rows in the pheno file to perform the association on." label="Filter file" name="filter_file" type="data" optional="True"/>
+    <param help="" label="Filter value" value="2" name="filter_value" type="text"/>
+    <param help="Phenotype files are expected to be in a format similar to the format required for PLINK."  label="Phenotype file" name="pheno_file" type="data" format="txt,tabular"/>
+    <param format="txt,tabular" help="predicted transcriptome from previous run of PrediXcan" label="Predicted file" name="pred_file" type="data"/>
+    <param name="regression_type" type="select">
+      <option value="--logistic">logistic</option>
+      <option value="--linear" selected="true">linear</option>
+      <option value="--survival">survival</option>
+    </param>
+  </inputs>
+
+  <outputs>
+    <data format="txt,csv" label="${tool.name} on ${on_string}" name="output"/>
+  </outputs>
+
+  <tests>
+  </tests>
+  <help>
+  </help>
+</tool>

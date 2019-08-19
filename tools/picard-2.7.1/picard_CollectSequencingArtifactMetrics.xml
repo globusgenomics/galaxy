@@ -1,0 +1,184 @@
+<tool id="picard2.7.1_CollectSequencingArtifactMetrics" name="CollectSequencingArtifactMetrics" version="PICARD: 2.7.1; JAVA: jre1.7.0_51">
+  <description>Collect metrics to quantify single-base sequencing artifacts</description>
+  <requirements>
+    <requirement type="package" version="2.7.1">picard</requirement>
+    <requirement type="package" version="1.8.0">java</requirement>
+  </requirements>
+  <command interpreter="python">
+    picard_wrapper.py -i "$inputFile" -d "$out_file.files_path" -n "$out_prefix" 
+      -j "\$JAVA_JAR_PATH/picard.jar CollectSequencingArtifactMetrics" --tmpdir "${__new_file_path__}"
+      #if $genomeSource.refGenomeSource == "history":
+        --ref-file "$genomeSource.ownFile"
+      #else 
+        --ref "${genomeSource.index.fields.path}"
+      #end if
+
+      #if str( $intervals ) != "None":
+	 --intervals "${intervals}"
+      #end if
+      #if str( $dbsnp ) != "None":
+         --dbsnp "${dbsnp}"
+      #end if      
+
+      #if str( $minimum_quality_score ) != "20"
+        --minimum_quality_score "${minimum_quality_score}"
+      #end if
+
+      #if str( $minimum_mapping_quality ) != "30"
+        --minimum_mapping_quality "${minimum_mapping_quality}"
+      #end if
+
+      #if str( $minimum_insert_size ) != "60"
+        --minimum_insert_size "${minimum_insert_size}"
+      #end if
+
+      #if str( $maximum_insert_size ) != "600"
+        --maximum_insert_size "${maximum_insert_size}"
+      #end if
+      --include_unpaired $include_unpaired
+      --include_duplicates $include_duplicates
+      --include_non_pf_reads $include_non_pf_reads
+      --tandem_reads $tandem_reads
+      --use_oq $use_oq
+      ###if str( $context_size ) != "1"
+      ##  --context_size "${context_size}"
+      ###end if
+      --assumesorted "${assume_sorted}"
+      ; cp $out_file.files_path/metrics.out.error_summary_metrics $out_file
+      ; cp $out_file.files_path/metrics.out.pre_adapter_detail_metrics $pre_adapter_detail_metrics_file
+      ; cp $out_file.files_path/metrics.out.pre_adapter_summary_metrics $pre_adapter_summary_metrics_file
+      ; cp $out_file.files_path/metrics.out.bait_bias_detail_metrics $bait_bias_detail_metrics_file
+      ; cp $out_file.files_path/metrics.out.bait_bias_summary_metrics $bait_bias_summary_metrics_file
+  </command>
+   
+  <inputs>
+    <param format="sam,bam" help="If empty, upload or import a SAM/BAM dataset" label="Select SAM/BAM dataset or dataset collection" name="inputFile" type="data"/>
+    <param help="Use this remind you what the job was for" label="Title for the output file" name="out_prefix" size="80" type="text" value="Dupes Marked"/>
+    <conditional name="genomeSource">
+      <param label="Select Reference Genome" name="refGenomeSource" type="select">
+        <option selected="true" value="default">Use the assigned data genome/build</option>
+        <option value="indexed">Select a different built-in genome</option>
+        <option value="history">Use a genome (fasta format) from my history</option>
+      </param>
+      <when value="default">
+        <param help="Galaxy thinks that the reads in you dataset were aligned against this reference. If this is not correct, use the 'Select a build-in reference genome' option of the 'Select Reference Genome' dropdown to select approprtiate Reference." label="Check the assigned reference genome" name="index" type="select">
+          <options from_data_table="all_fasta">
+                <filter column="3" type="sort_by"/>
+          <filter column="dbkey" key="dbkey" multiple="True" ref="inputFile" separator="," type="data_meta"/>
+          <validator message="No reference build available for selected input" type="no_options"/>
+          </options>
+        </param>
+      </when>
+      <when value="indexed">
+        <param help="This list contains genomes cached at this Galaxy instance. If your genome of interest is not present here request it by using 'Help' link at the top of Galaxy interface or use the 'Use a genome (fasta format) from my history' option of the 'Select Reference Genome' dropdown." label="Select a built-in reference genome" name="index" type="select">
+          <options from_data_table="all_fasta">
+                <filter column="3" type="sort_by"/>
+          </options>
+        </param>
+      </when>
+      <when value="history">
+        <param format="fasta" help="This option works best for relatively small genomes. If you are working with large human-sized genomes, send request to Galaxy team for adding your reference to this Galaxy instance by using 'Help' link at the top of Galaxy interface." label="Select a reference genome from history" metadata_name="dbkey" name="ownFile" type="data"/>
+      </when>
+    </conditional>
+
+    <param format="picard_interval_list" help="INTERVALS; An optional list of intervals to restrict analysis to" label="Interval list" name="intervals" optional="True" type="data"/>
+    <param format="bam" help="DB_SNP; VCF format dbSNP file, used to exclude regions around known polymorphisms from analysis" label="DBSNP file" name="dbsnp" optional="True" type="data"/>
+
+    <param help="MINIMUM_QUALITY_SCORE; The minimum base quality score for a base to be included in analysis; default=20" label="Minimum quality score" name="minimum_quality_score" type="integer" value="20"/>
+    <param help="MINIMUM_MAPPING_QUALITY; The minimum mapping quality score for a base to be included in analysis; default=30" label="Minimum mapping quality" name="minimum_mapping_quality" type="integer" value="30"/>
+    <param help="MINIMUM_INSERT_SIZE; The minimum insert size for a read to be included in analysis; default=60" label="Minimum insert size" name="minimum_insert_size" type="integer" value="60"/>
+    <param help="MAXIMUM_INSERT_SIZE; The maximum insert size for a read to be included in analysis. Set to 0 to have no maximum; default=600" label="Maximum insert size" name="maximum_insert_size" type="integer" value="600"/>
+    <param checked="false" falsevalue="false" help="INCLUDE_UNPAIRED" label="Include unpaired reads" name="include_unpaired" truevalue="true" type="boolean"/>
+    <param checked="false" falsevalue="false" help="INCLUDE_DUPLICATES" label="Include duplicate reads" name="include_duplicates" truevalue="true" type="boolean"/>
+    <param checked="false" falsevalue="false" help="INCLUDE_NON_PF_READS " label="Include non pf reads" name="include_non_pf_reads" truevalue="true" type="boolean"/>
+    <param checked="false" falsevalue="false" help="TANDEM_READS; Set to true if mate pairs are being sequenced from the same strand, i.e. they're expected to face the same direction" label="Include tandem reads" name="tandem_reads" truevalue="true" type="boolean"/>
+    <param checked="true" falsevalue="false" help="USE_OQ - When available, use original quality scores for filtering" label="Use OQ" name="use_oq" truevalue="true" type="boolean"/>
+    <param checked="true" falsevalue="false" help="ASSUME_SORTED" label="Assume the input file is already sorted" name="assume_sorted" truevalue="true" type="boolean"/>
+      
+  </inputs>
+  <outputs>
+      <data format="txt" label="${tool.name}_${out_prefix}.error_summary_metrics" name="out_file"/>
+      <data format="txt" label="${tool.name}_${out_prefix}.pre_adapter_detail_metrics" name="pre_adapter_detail_metrics_file"/>
+      <data format="txt" label="${tool.name}_${out_prefix}.pre_adapter_summary_metrics" name="pre_adapter_summary_metrics_file"/>
+      <data format="txt" label="${tool.name}_${out_prefix}.bait_bias_detail_metrics" name="bait_bias_detail_metrics_file"/>
+      <data format="txt" label="${tool.name}_${out_prefix}.bait_bias_summary_metrics" name="bait_bias_summary_metrics_file"/>
+  </outputs>
+  
+   <stdio>
+    <exit_code level="fatal" range="1:"/>
+  </stdio>
+  <tests>
+
+  </tests>
+  <help>
+
+.. class:: infomark
+
+**Purpose**
+
+Collect metrics to quantify single-base sequencing artifacts.
+
+-----
+
+This tool examines two sources of sequencing errors associated with hybrid selection protocols. These errors are divided into two broad categories, pre-adapter and bait-bias. Pre-adapter errors can arise from laboratory manipulations of a nucleic acid sample e.g. shearing and occur prior to the ligation of adapters for PCR amplification (hence the name pre-adapter).
+
+Bait-bias artifacts occur during or after the target selection step, and correlate with substitution rates that are 'biased', or higher for sites having one base on the reference/positive strand relative to sites having the complementary base on that strand. For example, during the target selection step, a (G>T) artifact might result in a higher substitution rate at sites with a G on the positive strand (and C on the negative), relative to sites with the flip (C positive)/(G negative). This is known as the 'G-Ref' artifact.
+
+-------
+
+**Settings**::
+
+   INTERVALS=File                     An optional list of intervals to restrict analysis to. Default value: null.
+
+   DB_SNP=File                        VCF format dbSNP file, used to exclude regions around known polymorphisms 
+                                      from analysis. Default value: null.
+
+   MINIMUM_QUALITY_SCORE=Integer      The minimum base quality score for a base to be included in analysis. 
+                                      Default value: 20. This option can be set to 'null' to clear the default value.
+
+   MINIMUM_MAPPING_QUALITY=Integer    The minimum mapping quality score for a base to be included in analysis. 
+                                      Default value: 30. This option can be set to 'null' to clear the default value.
+
+   MINIMUM_INSERT_SIZE=Integer    The minimum insert size for a read to be included in analysis. Default value: 60. 
+                                  This option can be set to 'null' to clear the default value.
+
+   MAXIMUM_INSERT_SIZE=Integer    The maximum insert size for a read to be included in analysis. Set to 0 to have 
+                                  no maximum. Default value: 600. This option can be set to 'null' to clear the 
+                                  default value.
+
+   INCLUDE_UNPAIRED=Boolean       Include unpaired reads. If set to true then all paired reads will be included as 
+                                  well - MINIMUM_INSERT_SIZE and MAXIMUM_INSERT_SIZE will be ignored. Default 
+                                  value: false. This option can be set to 'null' to clear the default value. 
+                                  Possible values: {true, false}
+
+   INCLUDE_DUPLICATES=Boolean     Include duplicate reads. If set to true then all reads flagged as duplicates will 
+                                  be included as well. Default value: false. This option can be set to 'null' to 
+                                  clear the default value. Possible values: {true, false}
+
+   INCLUDE_NON_PF_READS=Boolean   Whether or not to include non-PF reads. Default value: false. This option can 
+                                  be set to 'null' to clear the default value. Possible values: {true, false}
+
+   TANDEM_READS=Boolean          Set to true if mate pairs are being sequenced from the same strand, i.e. they're 
+                                 expected to face the same direction. Default value: false. This option can be 
+                                 set to 'null' to clear the default value. Possible values: {true, false}
+
+   USE_OQ=Boolean                When available, use original quality scores for filtering. Default value: true. 
+                                 This option can be set to 'null' to clear the default value. 
+                                 Possible values: {true, false}
+
+   CONTEXT_SIZE=Integer          The number of context bases to include on each side of the assayed base. Default 
+                                 value: 1. This option can be set to 'null' to clear the default value.
+
+   FILE_EXTENSION=String         Append the given file extension to all metric file names. Default value: null.
+
+   INPUT=File                    Input SAM or BAM file. Required.
+
+   OUTPUT=File                   File to write the output to. Required.
+				 
+   ASSUME_SORTED=Boolean
+   AS=Boolean                    If true (default), then the sort order in the header file will be ignored.  Default 
+                                 value: true. Possible values: true, false
+
+
+  </help>
+</tool>

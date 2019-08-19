@@ -1,0 +1,127 @@
+<tool id="gemini_query" name="GEMINI query" version="GRABIX: 0.1.3; TABIX: 0.2.6; SAMTOOLS: 0.1.19; BEDTOOLS: 2.19.1">
+    <description>Querying the GEMINI database</description>
+    <requirements>
+            <!--<requirement type="package" version="0.10.0">gemini</requirement>-->
+            <requirement type="package">pymodules</requirement>
+            <requirement type="package" version="0.1.3">grabix</requirement>
+            <requirement type="package" version="0.2.6">tabix</requirement>
+            <requirement type="package" version="0.1.19">samtools</requirement>
+            <requirement type="package" version="2.19.1">bedtools</requirement>
+            <yield/>
+    </requirements>
+    <version_command>gemini --version</version_command>
+    <command>
+<![CDATA[
+        gemini query
+
+            --in "${in}"
+
+            #if $gt_filter.strip():
+                --gt-filter "${gt_filter}"
+            #end if
+
+            #if $sample_filter.strip():
+                --sample-filter "${sample_filter}"
+            #end if
+
+            $show_samples
+            $show_families
+            $family_wise
+            $header
+            $dgidb
+            #if $region.strip():
+                --region "${region}"
+            #end if
+            #if int($min_kindreds) > 0:
+                --min-kindreds $min_kindreds
+            #end if
+            ##--format FORMAT       Format of output (JSON, TPED or default) # we will take default for the time being
+            ##   --sample-delim STRING The delimiter to be used with the --show-samples option.
+
+            #if $q.strip():
+                -q "${q}"
+            #end if
+
+            "${ infile }"
+            > "${ outfile }"
+]]>
+    </command>
+                <!--
+            ##TODO:
+              - -carrier-summary-by-phenotype CARRIER_SUMMARY
+                        Output columns of counts of carriers and non-carriers
+                        stratified by the given sample phenotype column-->
+    <stdio>
+            <exit_code range="1:"/>
+            <exit_code range=":-1"/>
+            <regex match="Error:"/>
+            <regex match="Exception:"/>
+    </stdio>
+    <inputs>
+        <param format="sqlite" label="GEMINI database" name="infile" type="data"/>
+
+        <param area="True" help="(-q)" label="The query to be issued to the database" name="q" size="5x50" type="text">
+            <sanitizer invalid_char="">
+                <valid initial="string.printable">
+                </valid>
+            </sanitizer>
+        </param>
+        <param area="True" help="(--gt-filer)" label="Restrictions to apply to genotype values" name="gt_filter" size="5x50" type="text">
+            <sanitizer invalid_char="">
+                <valid initial="string.printable">
+                </valid>
+            </sanitizer>
+        </param>
+        <param area="True" help="(--sample-filter)" label="SQL filter to use to filter the sample table" name="sample_filter" size="5x50" type="text">
+            <sanitizer invalid_char="">
+                <valid initial="string.printable">
+                </valid>
+            </sanitizer>
+        </param>
+
+        <param checked="False" falsevalue="" help="(--show-samples)" label="Add a column of all sample names with a variant to each variant" name="show_samples" truevalue="--show-samples" type="boolean"/>
+
+        <param checked="False" falsevalue="" help="(--show-families)" label="Add a column listing all of the families with a variant to each variant" name="show_families" truevalue="--show-families" type="boolean"/>
+
+        <param checked="False" falsevalue="" help="(--family-wise)" label="Perform the sample-filter on a family-wise basis" name="family_wise" truevalue="--family-wise" type="boolean"/>
+
+        <param checked="False" falsevalue="" help="(--header)" label="Add a header of column names to the output" name="header" truevalue="--header" type="boolean"/>
+
+        <!-- TODO: is there any default values set? -->
+        <param help="-1 means default values (--min-kindreds)" lebel="Minimum number of families for a variant passing a family-wise filter to be in" name="min_kindreds" size="4" type="integer" value="-1"/>
+
+        <param checked="False" falsevalue="" help="(--dgidb)" label="Request drug-gene interaction info from DGIdb" name="dgidb" truevalue="--dgidb" type="boolean"/>
+
+        <param help="(--in)" label="A variant must be in either all, none or any samples passing the sample-query filter" name="in" type="select">
+            <option value="all">Return a variant if all samples matching the query have the variant. (all)</option>
+            <option value="none">Return a variant if the variant does not appear in any of the matching samples. (none)</option>
+            <option value="any">Return all of the variant which are in all of the matching samples and not in any of the non-matching samples. (any)</option>
+            <option value="only">Return a variant if the variant is only in the matching samples and not in any of the non-matching samples. (only)</option>
+        </param>
+
+        <param help="e.g. chr1:10-20 (--region)" label="Restrict query to this region" name="region" size="30" type="text" value=""/>
+
+
+    </inputs>
+    <outputs>
+        <data format="tabular" label="${tool.name} on ${on_string}" name="outfile"/>
+    </outputs>
+    <tests>
+        <test>
+        </test>
+    </tests>
+    <help>
+**What it does**
+
+The real power in the GEMINI framework lies in the fact that all of your genetic variants have been stored in a convenient database in the context of a wealth of genome annotations that facilitate variant interpretation. 
+The expressive power of SQL allows one to pose intricate questions of one’s variation data. This tool offers you an easy way to query your variants!
+
+http://gemini.readthedocs.org/en/latest/content/querying.html
+
+@CITATION@
+    </help>
+    <citations>
+        <citation type="doi">10.1371/journal.pcbi.1003153</citation>
+        <yield/>
+    </citations>
+</tool>

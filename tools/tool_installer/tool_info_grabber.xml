@@ -1,0 +1,44 @@
+<tool id="tool_info_grabber" name="tool_info_grabber">
+  <description>Creates tool info file for options list in repo_installer tool.</description>
+  <command interpreter="python">tool_info_grabber.py
+    $shed.toolshedurl
+
+    #if str($shed.toolshedurl) == "http://toolshed.g2.bx.psu.edu/"
+    > $__root_dir__/tool-data/toolshedinfo.txt
+    #end if
+
+    #if str($shed.toolshedurl) == "http://testtoolshed.g2.bx.psu.edu/"
+    > $__root_dir__/tool-data/testtoolshedinfo.txt
+    #end if
+
+    #if str($shed.toolshedurl) == "other"
+    > $__root_dir__/tool-data/privatetoolshedinfo.txt
+    #end if
+
+  </command>
+  <inputs>
+    <conditional name='shed'>
+      <param name="toolshedurl" type="select" label="Tool Shed" help="Select the tool shed to create or update info file for.">
+        <option value="http://toolshed.g2.bx.psu.edu/" selected="true">Galaxy tool shed</option>
+        <option value="http://testtoolshed.g2.bx.psu.edu/">Galaxy test tool shed</option>
+        <option value="other">Other tool shed...</option>
+      </param>
+        <when value="other">
+          <param name='othershed' type="text" label="Tool shed URL" help="Must provide a valid private tool shed URL."/>
+        </when>
+    </conditional>
+  </inputs>
+  <outputs>
+    <data format="txt" name="output" label= "Grabber Results" from_work_dir="output.txt"/>
+  </outputs>
+
+  <help>
+Needed in repo_installer in order to use dynamic lists. Generates a list of tool info from the tool shed provided by the user and stores it in a text file in the tool-data folder in galaxy-dist.
+
+Galaxy tool shed >> toolshedinfo.txt
+Galaxy test tool shed >> testtoolshedinfo.txt
+Private/Other tool shed >> privatetoolshedinfo.txt
+
+Location: galaxy-dist/tool-data/FILE.txt
+  </help>
+</tool>

@@ -1,0 +1,81 @@
+<tool id="copasi" name="COPASI">
+  <description>for simulation of an SBML model</description>
+  <command interpreter="python">copasi.py $sbml_input $out_file $num_steps $duration $options.algorithm $options.rel_tol $options.abs_tol $options.max_steps $options.use_rand_seed $options.seed_value</command>
+  <inputs>
+    <param format="xml" name="sbml_input" type="data" label="SBML File" help="Use Get Data -> Upload File to upload model file (must be an xml datatype)" />
+    <param name="num_steps" type="integer" label="Number of Output Steps" value="100"/>
+    <param name="duration" type="float" label="Duration (model time units)" value="10"/>
+
+    <conditional name="options">
+      <param name="algorithm" type="select" label="Type">
+        <option value="deterministic" selected="true">Deterministic (LSODA)</option>
+        <option value="stochastic">Stochastic (Next Reaction Method)</option>
+      </param>
+       <when value="deterministic">
+
+        <param name="rel_tol" type="float" label="Relative Tolerance" value="1e-6"/>
+        <param name="abs_tol" type="float" label="Absolute Tolerance" value="1e-12"/>
+        <param name="max_steps" type="integer" label="Max Number of Internal Steps" value="10000" />
+        <param name="use_rand_seed" type="hidden" value="0" min="0" max="1" label="Use Custom Seed?" help="Use 1 for true and 0 to use a randomized seed" hidden="True"/>
+        <param name="seed_value" type="hidden" label="Custom Seed" value="0" hidden="True"/>
+
+       </when>
+       <when value="stochastic">
+
+        <param name="rel_tol" type="hidden" label="Relative Tolerance" hidden="True" value="1e-6"/>
+        <param name="abs_tol" type="hidden" label="Absolute Tolerance" value="0" hidden="True"/>
+        <param name="max_steps" type="integer" label="Max Number of Internal Steps" value="1000000"/>
+        <param name="use_rand_seed" type="integer" value="0" min="0" max="1" label="Use Custom Seed?" help="Use 1 for true and 0 to use a randomized seed"/>
+        <param name="seed_value" type="integer" label="Custom Seed" value="0"/>
+
+       </when>
+     </conditional> 
+
+  </inputs>
+  <outputs>
+    <data format="tabular" name="out_file" />
+  </outputs>
+  <help>
+
+.. class:: warningmark
+
+**IMPORTANT**: The model must be a valid SBML file (core versions 1, 2, or 3).
+
+--------
+
+**Syntax**
+
+This tool converts an AXT formatted file to the FASTA format, and concatenates the results in the same build.
+
+- **AXT format** The alignments are produced from Blastz, an alignment tool available from Webb Miller's lab at Penn State University. The lav format Blastz output, which does not include the sequence, was converted to AXT format with lavToAxt. Each alignment block in an AXT file contains three lines: a summary line and 2 sequence lines. Blocks are separated from one another by blank lines. 
+
+- **FASTA format** a text-based format for representing both nucleic and protein sequences, in which base pairs or proteins are represented using a single-letter code.
+
+  - This format contains an one line header. It starts with a " >" symbol. The first word on this line is the name of the sequence. The rest of the line is a description of the sequence.
+  - The remaining lines contain the sequence itself.
+  - Blank lines in a FASTA file are ignored, and so are spaces or other gap symbols (dashes, underscores, periods) in a sequence.
+  - Fasta files containing multiple sequences are just the same, with one sequence listed right after another. This format is accepted for many multiple sequence alignment programs.
+
+-----
+
+**Example**
+
+- AXT format::
+
+    0 chr19 3001012 3001075 chr11 70568380 70568443 - 3500
+    TCAGCTCATAAATCACCTCCTGCCACAAGCCTGGCCTGGTCCCAGGAGAGTGTCCAGGCTCAGA
+    TCTGTTCATAAACCACCTGCCATGACAAGCCTGGCCTGTTCCCAAGACAATGTCCAGGCTCAGA
+
+    1 chr19 3008279 3008357 chr11 70573976 70574054 - 3900
+    CACAATCTTCACATTGAGATCCTGAGTTGCTGATCAGAATGGAAGGCTGAGCTAAGATGAGCGACGAGGCAATGTCACA
+    CACAGTCTTCACATTGAGGTACCAAGTTGTGGATCAGAATGGAAAGCTAGGCTATGATGAGGGACAGTGCGCTGTCACA
+
+- Convert the above file to concatenated FASTA format::
+
+    &gt;hg16
+    TCAGCTCATAAATCACCTCCTGCCACAAGCCTGGCCTGGTCCCAGGAGAGTGTCCAGGCTCAGACACAATCTTCACATTGAGATCCTGAGTTGCTGATCAGAATGGAAGGCTGAGCTAAGATGAGCGACGAGGCAATGTCACA
+    &gt;mm5
+    TCTGTTCATAAACCACCTGCCATGACAAGCCTGGCCTGTTCCCAAGACAATGTCCAGGCTCAGACACAGTCTTCACATTGAGGTACCAAGTTGTGGATCAGAATGGAAAGCTAGGCTATGATGAGGGACAGTGCGCTGTCACA
+
+  </help>
+</tool>

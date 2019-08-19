@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+
+<tool name="Compare Samples" id="compare_samples_id">
+  <description>
+  </description>
+
+  <requirements>
+        <requirement type="package">pymodules</requirement>
+  </requirements>
+
+  <command interpreter="python">
+     miso_compare_samples.py
+   $input_gene1
+   $input_gene2
+   $htmlfile
+  </command>
+
+  <inputs>
+    <param name="input_gene1" type="data" label="Select the first sample" help="This should be the output of 'Compute Psi values for genes'"/>
+    <param name="input_gene2" type="data" label="Select the second sample" help="This should be the output of 'Compute Psi values for genes'"/>
+  </inputs>
+
+  <outputs>
+    <data format="html" name="htmlfile" label="Output of Compare Samples.html" />
+  </outputs>
+
+  <help>
+Compute comparison statistics between the two given samples.
+
+run_miso.py
+
+  --compare-samples=SAMPLES_TO_COMPARE
+
+  Expects three directories: the first is sample1's MISO output, the second is sample2's MISO output, and the third is the directory where results of the sample comparison will be outputted.
+
+
+  </help>
+
+</tool>

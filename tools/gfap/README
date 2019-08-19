@@ -1,0 +1,12 @@
+## What is gfap ?
+The Genomic and Functional Annotation Pipeline (gfap) consists in a set of perl and R tools that
+aim at annotating human genetic SNVs/InDels identified by 2nd-generation sequencing technologies.
+
+## How does it work ?
+gfap starts with a samtools-formatted VCF-file i.e. the DP4-tag from the INFO field is mandatory.
+gfap performs its annotation in a 4-steps linear procedure i.e.:
+1> SAMVCF.data.parser 2> Known.variants.finder 3> Map.to.genomic.features 4> Map.to.dbNSFP.features
+
+## Pre-requisites
+In gfap_r1.0_samvcf_data_parser.pl LINE 13 the $rbin assumes that your R binary is set to /usr/bin/R
+So, you will have to properly edit and reset this $rbin if R is installed elsewhere on your system.  

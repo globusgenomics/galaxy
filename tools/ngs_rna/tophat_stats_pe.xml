@@ -1,0 +1,41 @@
+<tool id="tophatstatsPE" name="Tophat Stats PE" version="SAMTOOLS: 1.2">
+  <description>Calculate mapping statistics from Tophat BAM files.</description>
+  <requirements>
+    <requirement type="package">samtools</requirement>
+  </requirements>
+  <command interpreter="perl">tophatstatsPE.pl $hits $fastq &gt; $output</command>
+  <inputs>
+    <param format="bam" label="BAM file produced by Tophat" name="hits" type="data"/>
+    <param format="fastq" label="Fastq file used to produce the BAM file" name="fastq" type="data"/>
+  </inputs>
+  <outputs>
+    <data format="txt" name="output"/>
+  </outputs>
+  <tests>
+  </tests>
+  <help>
+**Tophat Stats PE**
+
+This tool generates mapping statics from BAM files produced by
+Tophat. For paired-end experiments only one of the read files (R1
+or R2) needs to be provided.
+
+**Example output:**
+
+::
+
+  Input files: /galaxy/database/files/001/dataset_1682.dat         /galaxy/database/files/001/dataset_1680.dat
+  73538 total read pairs in fastq file
+  14429 (19.62%) read pairs with only one read in the pair mapped (14262 with unique alignments)
+  36461 (49.58%) read pairs mapped with correct orientation and insert size (36366 with unique alignments)
+  12169 (16.55%) read pairs mapped with correct orientation but wrong insert size (12063 with unique alignments)
+  0.458333333333333 (0.00%) read pairs mapped with wrong orientation but correct insert size (0 with unique alignments)
+  10478.5416666667 (14.25%) read pairs with no mapping
+
+
+**Credit**
+
+John Garbe,  University of Minnesota
+
+  </help>
+</tool>

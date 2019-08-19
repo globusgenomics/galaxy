@@ -1,0 +1,97 @@
+<tool id="globus_get_data_pemapper" name="PEmapper with Transfer" version="PEMAPPER: 2016-3-3">
+  <description> is a reference-based NGS short-read mapping program with transfer from the user endpoint </description>
+  <action module="galaxy_ext.globus.tools.actions.globus" class="GlobusTransfer"/>
+  <requirements>
+    <requirement type="package">pecaller</requirement>
+    <requirement type="package">pymodules</requirement>
+  </requirements>
+  <command interpreter="python">
+   pemapper_wrapper.py
+    -u $username
+    -k $userkey
+    -c $usercert
+    --goauth-token "$goauth"
+    --source-ep="$from_endpoint"
+    --source-path="$from_path"
+    --destination-ep=$to_endpoint
+    --destination-path="$to_path"
+    --type $path_type
+
+   --pemapper-ref $index 
+   -p "$maxDist $minDist $bisul $minMatchPercent $maxThread $maxReads"
+   --out-summary $out_summary
+   --out-pileup $out_pileup
+   --out-indel $indel
+   --out-transfer-log $out_file1
+   --out-mfiles $out_mfiles
+   --out-config1 $out_config1
+   --out-config2 $out_config2
+  </command>
+
+  <stdio>
+    <exit_code range="1:" level="fatal" description="Error" />
+  </stdio>
+
+   <inputs>
+     <param name="goauth" type="hidden" size="100" label="Globus Auth Token">
+      <sanitizer>
+        <valid>
+          <add value="|"/>
+        </valid>
+      </sanitizer>
+    </param>
+    <param name="username" type="hidden" size="100" label="Globus Username"/>
+    <param name="userkey" type="hidden" size="100" label="Globus User Key"/>
+    <param name="usercert" type="hidden" size="100" label="Globus User Certificate"/>
+    <param name="globuscert" type="hidden" size="100" label="Globus Certificate"/>
+    <param name="get_data_flag" type="hidden" size="100" label="Send or Receive data"/>
+    <param name="path_type" type="hidden" value="receive" size="100" label="Is this a directory or a file path"/>
+    <param name="from_endpoint" type="gsrc_endpoint" label="Source Endpoint">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="from_path" type="gsrc_path" size="100" label="Source Path">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="to_endpoint" type="hidden" size="100" label="Destination Endpoint">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="to_path" type="hidden" size="100" label="Destination Path">
+      <sanitizer sanitize="False"/>
+    </param>
+
+    <param name="index" type="select" label="Select a reference genome" help="If your genome of interest is not listed, please contact globus genomics admin">
+       <options from_data_table="pemapper_indexes"></options>
+    </param>
+    <param label="Maximum distance" name="maxDist" type="integer" value="500"/>
+    <param label="Minimum distance" name="minDist" type="integer" value="0"/>
+    <param label="Is bisulfite? [Y, N]" name="bisul" type="text" value="N"/>
+    <param label="Minimum match percentage (i.e. 50-75bp:0.85, 100bp:0.9, 150bp:0.95)" name="minMatchPercent" type="float" value="0.85"/>
+    <param label="Maximum threads" name="maxThread" type="integer" value="32"/>
+    <param label="Maximum reads" name="maxReads" type="integer" value="2000000000"/>
+  </inputs>
+
+  <outputs>
+      <data format="txt" label="${tool.name} on GlobusTransfer (transfer log)" name="out_file1" />
+      <data format="txt" label="${tool.name} on GlobusTransfer (config1)" name="out_config1" />
+      <data format="txt" label="${tool.name} on GlobusTransfer (config2)" name="out_config2" />
+      <data format="tabular" label="${tool.name} on GlobusTransfer (summary)" name="out_summary" /> 
+      <data format="pileup" label="${tool.name} on GlobusTransfer (call genotype)" name="out_pileup"/>
+      <data format="tabular" label="${tool.name} on GlobusTransfer (final output)" name="indel"/>  
+      <data format="pileup" label="${tool.name} on GlobusTransfer (tar mfiles)" name="out_mfiles" />
+   </outputs>
+   <tests>
+     <test>
+     </test>
+   </tests>
+   <help>
+**PEmapper and PEcaller**
+
+PEmapper_ and PEcaller_ are reference-based NGS short-read mapping and variant calling programs written by Dr.David J. Cutler at Emory University.
+ 
+.. _PEmapper: https://sourceforge.net/projects/pemapper/
+.. _PEcaller: https://github.com/wingolab-org/pecaller
+   </help>
+</tool>
+
+
+

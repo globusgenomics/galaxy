@@ -1,0 +1,57 @@
+<?xml version="1.0" ?>
+<tool id="qiime_gneiss_assign-ids" name="qiime gneiss assign-ids" version="022019">
+	<description> - Assigns ids on internal nodes in the tree, and makes sure that they are consistent with the table columns.</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command>
+	<![CDATA[
+	qiime gneiss assign-ids --i-input-table=$iinputtable --i-input-tree=$iinputtree
+
+	#if str($cmdconfig) != 'None':
+	 --cmd-config=$cmdconfig
+	#end if
+	 --o-output-tree=ooutputtree --o-output-table=ooutputtable;
+
+	cp ooutputtree.qza $ooutputtree;
+	cp ooutputtable.qza $ooutputtable;
+	]]>
+	</command>
+	<inputs>
+		<param format="qza,no_unzip.zip" label="--i-input-table: FeatureTable[Frequency] The input table of counts.  [required]" name="iinputtable" optional="False" type="data"/>
+		<param format="qza,no_unzip.zip" label="--i-input-tree: Phylogeny[Rooted] The input tree with potential missing ids. [required]" name="iinputtree" optional="False" type="data"/>
+		<param label="--cmd-config: Use config file for command options" name="cmdconfig" optional="True" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="qza" label="${tool.name} on ${on_string}: output-tree.qza" name="ooutputtree"/>
+		<data format="qza" label="${tool.name} on ${on_string}: output-table.qza" name="ooutputtable"/>
+	</outputs>
+	<help>
+			<![CDATA[
+Assigns ids on internal nodes in the tree, and makes sure that they are consistent with the table columns.
+-----------------------------------------------------------------------------------------------------------
+
+Assigns UUIDs to uniquely identify internal nodes in the tree.  Also
+corrects for polytomies to create strictly bifurcating trees and aligns the
+table columns with the tree tip names
+
+Parameters
+----------
+input_table : FeatureTable[Frequency]
+    The input table of counts.
+input_tree : Phylogeny[Rooted]
+    The input tree with potential missing ids.
+
+Returns
+-------
+output_table : FeatureTable[Frequency]
+    A table with features matching the tree tips.
+output_tree : Hierarchy
+    A tree with uniquely identifying ids.
+    ]]>
+	</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

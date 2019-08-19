@@ -1,0 +1,43 @@
+g++ -O4 -D__ZLIB_AVAILABLE__ -D_FILE_OFFSET_BITS=64 -D__STDC_LIMIT_MACROS -o polymutt FamilyLikelihoodES.o FamilyLikelihoodSeq.o main.o MutationModel.o NucFamGenotypeLikelihood.o PedigreeGLF.o ../core/libcore.a -lm -lz -lgomp
+mv ./polymutt ../bin
+(cd ../example; ./run.sh)
+
+The following parameters are in effect:
+                       pedfile :        test.ped (-pname)
+                       datfile :        test.dat (-dname)
+                  glfIndexFile :        test.gif (-gname)
+                        cutoff :           0.900 (-c99.999)
+
+Additional Options
+       Map Quality Filter : --minMapQuality
+             Depth Filter : --minDepth [150], --maxDepth [200],
+                            --minPercSampleWithData [0.00]
+     Scaled mutation rate : --theta [1.0e-03]
+   Optimization precision : --prec [1.0e-04]
+         de novo mutation : --denovo, --rate_denovo [0.00],
+                            --tstv_denovo [0.50], --min_denovo_LLR [0.00]
+                   Output : --vcf [test.vcf], --gl_off
+       Multiple threading : --nthreads [4]
+
+Analysis started on Sat Jun 18 14:57:10 2011
+
+Summary of reference -- 1
+Total Entry Count:     81016
+Total Base Cout:     81016
+Total '0' Base Count:         0
+Non-Polymorphic Count:     66019
+Transition Count:      5682
+Transversion Count:      2860
+Other Polymorphism Count:         0
+Filter counts:
+	minMapQual 0
+	minTotalDepth 826
+	maxTotalDepth 5581
+Hard to call:        48
+Skipped bases: 6455
+Analysis ended on Sat Jun 18 14:57:14 2011
+
+Running time is 4 seconds
+
+Aborted
+make: *** [polymutt] Error 134

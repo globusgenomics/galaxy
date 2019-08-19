@@ -1,0 +1,43 @@
+<tool id="snpeff_index" name="SNPEFF Create Index" version="SNPEFF: 1">
+  <requirements>
+    <requirement type="package">snpeff</requirement>
+    <requirement type="package">java</requirement>
+  </requirements>
+	<description>for specified fasta file</description>
+        <command>
+mkdir -p $build_dir;
+mkdir $build_dir/seq;
+mkdir $build_dir/annotation;
+mkdir -p /mnt/galaxyIndices2/genomes/snpeff/data/$ref_id;
+cp $fasta_input $build_dir/seq/.;
+cp $gff_input $build_dir/annotation/.;
+ln -s $build_dir/seq/*.fasta /mnt/galaxyIndices2/genomes/snpeff/data/$ref_id/sequences.fa;
+ln -s $build_dir/annotation/*.gff /mnt/galaxyIndices2/genomes/snpeff/data/$ref_id/genes.gff; 
+echo "" >> /mnt/galaxyIndices2/genomes/snpeff/snpEff.config;
+echo "# $ref_id, version $ref_id" >> /mnt/galaxyIndices2/genomes/snpeff/snpEff.config;
+#set genome_loc = str($ref_id) + ".genome"
+echo "$genome_loc : $ref_id" >> /mnt/galaxyIndices2/genomes/snpeff/snpEff.config;
+java -jar /mnt/galaxyTools/tools/snpeff/snpEff_4.1/snpEff.jar build -gff3 -v $ref_id -c /mnt/galaxyIndices2/genomes/snpeff/snpEff.config;
+echo "$ref_id\t$ref_id"  &gt;&gt; $loc_databases_file;
+echo "$ref_id\t$ref_id\t/mnt/galaxyIndices2/genomes/snpeff/data/$ref_id"  &gt;&gt; $loc_genomes_file;
+echo $build_dir > $output_file
+        </command>
+  <stdio>
+    <exit_code range="1:"  level="fatal"   description="Bad input dataset" />
+  </stdio>
+	<inputs>
+	  <param label="Path to fasta file" name="fasta_input" optional="false" type="text"/>
+          <param label="Path to gff file" name="gff_input" optional="false" type="text"/>
+          <param label="Path to build directory" name="build_dir" optional="false" type="text"/>
+          <param label="Path to databases Location File" name="loc_databases_file" optional="false" type="text"/>
+          <param label="Path to genomes Location File" name="loc_genomes_file" optional="false" type="text"/>
+          <param help="will be placed in location file" label="Reference name value" name="ref_name" optional="false" type="text"/>
+          <param help="will be placed in location file" label="Reference id value" name="ref_id" optional="false" type="text"/>
+	</inputs>
+	<outputs>
+	  <data format="txt" label="Index of ${fasta_input}" name="output_file" />
+	</outputs>
+        <help>
+        </help>
+
+</tool>

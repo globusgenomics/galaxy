@@ -1,0 +1,40 @@
+<tool id="rs_count" name="rs_count" version="RNA-SKIM: default">
+  <requirements>
+    <requirement type="package">rna-skim</requirement>
+  </requirements>
+  <description>counts the occurrences of the sig-mers for a given RNA-Seq dataset</description>
+  <command>
+    rs_count -read_files1=$read1 -read_files2=$read2 -num_threads=8 -count_file=$outfile -selected_keys_file=$ref.fields.keys_file_path
+  </command>
+  <inputs>
+    <param format="fastqsanger" help="" label="Input paired-end forward reads" name="read1" type="data"/>
+    <param format="fastqsanger" help="" label="Input paired-end forward reads" name="read2" type="data"/>
+    <param label="Selected keys reference file" name="ref" type="select">
+      <options from_data_table="rna_skim_counts_indexes"/>
+    </param>
+  </inputs>
+  <outputs>
+    <data format="tabular" label="${tool.name} on ${on_string}" name="outfile"/>
+  </outputs>
+  <tests>
+    <test>
+    </test>
+  </tests>
+  <help>
+
+.. class:: infomark
+
+**Purpose**
+
+rs_count counts the occurrences of the sig-mers for a given RNA-Seq dataset
+
+------
+
+.. class:: infomark
+
+**Inputs, outputs, and parameters**
+
+This generates clustered_gene.fa.cf file, which is almost identical with the clustered_gene.fa.sk file, but the count fields in the SelectedKey object in the clustered_gene.fa.cf file is the real occurrences of their corresponding sig-mers.
+
+  </help>
+</tool>

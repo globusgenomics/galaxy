@@ -1,0 +1,54 @@
+<?xml version="1.0" ?>
+<tool id="qiime_gneiss_correlation-clustering" name="qiime gneiss correlation-clustering" version="022019">
+	<description> - Hierarchical clustering using feature correlation.</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command>
+	<![CDATA[
+	qiime gneiss correlation-clustering --i-table=$itable
+
+	#if str($cmdconfig) != 'None':
+	 --cmd-config=$cmdconfig
+	#end if
+	 --o-clustering=oclustering;
+
+	 cp oclustering.qza $oclustering;
+	]]>
+	</command>
+	<inputs>
+		<param format="qza,no_unzip.zip" label="--i-table: FeatureTable[Composition] The feature table containing the samples in which the columns will be clustered. [required]" name="itable" optional="False" type="data"/>
+		<param label="--cmd-config: Use config file for command options" name="cmdconfig" optional="True" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="qza" label="${tool.name} on ${on_string}: clustering.qza" name="oclustering"/>
+	</outputs>
+	<help>
+			<![CDATA[
+Hierarchical clustering using feature correlation.
+---------------------------------------------------
+
+Build a bifurcating tree that represents a hierarchical clustering of
+features.  The hiearchical clustering uses Ward hierarchical clustering
+based on the degree of proportionality between features.
+
+Parameters
+----------
+table : FeatureTable[Composition]
+    The feature table containing the samples in which the columns will be
+    clustered.
+
+Returns
+-------
+clustering : Hierarchy
+    A hierarchy of feature identifiers where each tipcorresponds to the
+    feature identifiers in the table. This tree can contain tip ids that
+    are not present in the table, but all feature ids in the table must be
+    present in this tree.
+    ]]>
+	</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

@@ -1,0 +1,34 @@
+workers = 1
+worker_class = "sync"
+graceful_timeout = 30
+
+def on_starting(server):
+	pass #print "on_starting"
+
+def on_reload(server):
+	pass #print "on_reload"
+
+def when_ready(server):
+	pass #print "when_ready" # Initialize wok engine
+
+def pre_fork(server, worker):
+	pass #print "pre_fork"
+
+def post_fork(server, worker):
+	pass # print "post_fork" # Inject wok engine
+
+def post_worker_init(worker):
+	pass # print "post_worker_init"
+
+def pre_exec(server):
+	pass # print "pre_exec"
+
+def worker_exit(server, worker):
+	try:
+		import sys
+		m = sys.modules['web.app']
+	except KeyError:
+		print sys.modules.keys()
+		return
+	worker.log.info('Cleaning up ...')
+	m.cleanup()

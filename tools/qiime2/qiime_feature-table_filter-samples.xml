@@ -1,0 +1,125 @@
+<?xml version="1.0" ?>
+<tool id="qiime_feature-table_filter-samples" name="qiime feature-table filter-samples" version="022019">
+	<description> - Filter samples from table</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command>
+	<![CDATA[
+	qiime feature-table filter-samples --i-table=$itable
+	#if '__sq__' in str($pwhere):
+		#set $pwhere_temp = $pwhere.replace('__sq__', "'")
+		#set $pwhere = $pwhere_temp
+	#end if
+
+	#if str($pwhere):
+	 --p-where="$pwhere"
+	#end if
+
+
+	#if $input_files_mmetadatafile:
+
+	#def list_dict_to_string(list_dict):
+		#set $file_list = list_dict[0]['additional_input'].__getattr__('file_name')
+		#for d in list_dict[1:]:
+			#set $file_list = $file_list + ',' + d['additional_input'].__getattr__('file_name')
+		#end for
+		#return $file_list
+	#end def
+	 --m-metadata-file=$list_dict_to_string($input_files_mmetadatafile)
+	#end if
+
+	#if str($cmdconfig) != 'None':
+	 --cmd-config=$cmdconfig
+	#end if
+
+	#if $pexcludeids:
+	 --p-exclude-ids
+	#else
+		--p-no-exclude-ids
+	#end if
+
+	#if $pminfeatures:
+	 --p-min-features=$pminfeatures
+	#end if
+
+	#if str($pmaxfrequency):
+	 --p-max-frequency="$pmaxfrequency"
+	#end if
+
+	#if str($pmaxfeatures):
+	 --p-max-features="$pmaxfeatures"
+	#end if
+
+	#if $pminfrequency:
+	 --p-min-frequency=$pminfrequency
+	#end if
+	 --o-filtered-table=ofilteredtable;
+
+	cp ofilteredtable.qza $ofilteredtable;
+		]]>
+	</command>
+	<inputs>
+		<param format="qza,no_unzip.zip" label="--i-table: FeatureTable[Frequency] The feature table from which samples should be filtered.  [required]" name="itable" optional="False" type="data"/>
+		<param label="--p-min-frequency: The minimum total frequency that a sample must have to be retained.  [default: 0]" name="pminfrequency" optional="True" type="integer" value="0"/>
+		<param label="--p-max-features: The maximum number of features that a sample can have to be retained. If no value is provided this will default to infinity (i.e., no maximum feature filter will be applied).  [optional]" name="pmaxfeatures" optional="True" type="text"/>
+		<param label="--p-min-features: The minimum number of features that a sample must have to be retained.  [default: 0]" name="pminfeatures" optional="True" type="integer" value="0"/>
+		<param label="--p-max-frequency: The maximum total frequency that a sample can have to be retained. If no value is provided this will default to infinity (i.e., no maximum frequency filter will be applied).  [optional]" name="pmaxfrequency" optional="True" type="text"/>
+		<repeat name="input_files_mmetadatafile" optional="True" title="--m-metadata-file">
+			<param label="--m-metadata-file: Metadata file or artifact viewable as metadata. This option may be supplied multiple times to merge metadata. Sample metadata used with `where` parameter when selecting samples to retain, or with `exclude_ids` when selecting samples to discard.  [optional]" name="additional_input" type="data" format="tabular,qza,no_unzip.zip" />
+		</repeat>
+		<param label="--p-where: SQLite WHERE clause specifying sample metadata criteria that must be met to be included in the filtered feature table. If not provided, all samples in `metadata` that are also in the feature table will be retained.  [optional]" name="pwhere" optional="True" type="text"/>
+		<param label="--p-exclude-ids: --p-no-exclude-ids If true, the samples selected by `metadata` or `where` parameters will be excluded from the filtered table instead of being retained.  [default: False]" name="pexcludeids" checked="False" type="boolean"/>
+		<param label="--cmd-config: Use config file for command options" name="cmdconfig" optional="True" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="qza" label="${tool.name} on ${on_string}: filtered-table.qza" name="ofilteredtable"/>
+	</outputs>
+	<help>
+		<![CDATA[
+Filter samples from table
+-------------------------
+
+Filter samples from table based on frequency and/or metadata. Any features
+with a frequency of zero after sample filtering will also be removed. See
+the filtering tutorial on https://docs.qiime2.org for additional details.
+
+Parameters
+----------
+table : FeatureTable[Frequency]
+    The feature table from which samples should be filtered.
+min_frequency : Int, optional
+    The minimum total frequency that a sample must have to be retained.
+max_frequency : Int, optional
+    The maximum total frequency that a sample can have to be retained. If
+    no value is provided this will default to infinity (i.e., no maximum
+    frequency filter will be applied).
+min_features : Int, optional
+    The minimum number of features that a sample must have to be retained.
+max_features : Int, optional
+    The maximum number of features that a sample can have to be retained.
+    If no value is provided this will default to infinity (i.e., no maximum
+    feature filter will be applied).
+metadata : Metadata, optional
+    Sample metadata used with `where` parameter when selecting samples to
+    retain, or with `exclude_ids` when selecting samples to discard.
+where : Str, optional
+    SQLite WHERE clause specifying sample metadata criteria that must be
+    met to be included in the filtered feature table. If not provided, all
+    samples in `metadata` that are also in the feature table will be
+    retained.
+exclude_ids : Bool, optional
+    If true, the samples selected by `metadata` or `where` parameters will
+    be excluded from the filtered table instead of being retained.
+
+Returns
+-------
+filtered_table : FeatureTable[Frequency]
+    The resulting feature table filtered by sample.
+    ]]>
+	</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

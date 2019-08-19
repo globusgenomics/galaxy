@@ -1,0 +1,275 @@
+<tool id="condor_blastp_wrapper" name="NCBI BLAST+ blastp (via Condor)" version="BLASTP: default">
+    <description>Search protein database with protein query sequence(s)</description>
+    <command interpreter="python">condor_run.py
+## The command is a Cheetah template which allows some Python based syntax.
+## Lines starting hash hash are comments. Galaxy will turn newlines into spaces
+/nfs/software/blast/bin/blastp
+-query &quot;$query&quot;
+#if $db_opts.db_opts_selector == &quot;db&quot;:
+  -db &quot;${db_opts.database.fields.path}&quot;
+#else:
+  -subject &quot;$db_opts.subject&quot;
+#end if
+-task $blast_type
+-evalue $evalue_cutoff
+-out $output1
+##Set the extended list here so if/when we add things, saved workflows are not affected
+#if str($out_format)==&quot;ext&quot;:
+    -outfmt &quot;6 std sallseqid score nident positive gaps ppos qframe sframe qseq sseq qlen slen&quot;
+#else:
+    -outfmt &quot;$out_format&quot;
+#end if
+-num_threads 8
+#if $adv_opts.adv_opts_selector==&quot;advanced&quot;:
+$adv_opts.filter_query
+-matrix $adv_opts.matrix
+## Need int(str(...)) because $adv_opts.max_hits is an InputValueWrapper object not a string
+## Note -max_target_seqs overrides -num_descriptions and -num_alignments
+#if (str($adv_opts.max_hits) and int(str($adv_opts.max_hits)) &gt; 0):
+-max_target_seqs $adv_opts.max_hits
+#end if
+#if (str($adv_opts.word_size) and int(str($adv_opts.word_size)) &gt; 0):
+-word_size $adv_opts.word_size
+#end if
+##Ungapped disabled for now - see comments below
+##$adv_opts.ungapped
+$adv_opts.parse_deflines
+## End of advanced options:
+#end if
+    </command>
+    <inputs>
+        <param format="fasta" label="Protein query sequence(s)" name="query" type="data"/>
+        <conditional name="db_opts">
+            <param label="Subject database/sequences" name="db_opts_selector" type="select">
+              <option selected="True" value="db">BLAST Database</option>
+              <option value="file">FASTA file</option>
+            </param>
+            <when value="db">
+                <param label="Protein BLAST database" name="database" type="select">
+                    <options from_file="blastdb_p.loc">
+                      <column index="0" name="value"/>
+                      <column index="1" name="name"/>
+                      <column index="2" name="path"/>
+                    </options>
+                </param>
+                <param name="subject" type="hidden" value=""/> 
+            </when>
+            <when value="file">
+                <param name="database" type="hidden" value=""/> 
+                <param format="fasta" label="Protein FASTA file to use as database" name="subject" type="data"/> 
+            </when>
+        </conditional>
+        <param display="radio" label="Type of BLAST" name="blast_type" type="select">
+            <option value="blastp">blastp</option>
+            <option value="blastp-short">blastp-short</option>
+        </param>
+        <param label="Set expectation value cutoff" name="evalue_cutoff" size="15" type="float" value="0.001"/>
+        <param label="Output format" name="out_format" type="select">
+            <option selected="True" value="6">Tabular (standard 12 columns)</option>
+            <option value="ext">Tabular (extended 24 columns)</option>
+            <option value="5">BLAST XML</option>
+            <option value="0">Pairwise text</option>
+            <option value="0 -html">Pairwise HTML</option>
+            <option value="2">Query-anchored text</option>
+            <option value="2 -html">Query-anchored HTML</option>
+            <option value="4">Flat query-anchored text</option>
+            <option value="4 -html">Flat query-anchored HTML</option>
+            <!--
+            <option value="-outfmt 11">BLAST archive format (ASN.1)</option>
+            -->
+        </param>
+        <conditional name="adv_opts">
+            <param label="Advanced Options" name="adv_opts_selector" type="select">
+              <option selected="True" value="basic">Hide Advanced Options</option>
+              <option value="advanced">Show Advanced Options</option>
+            </param>
+            <when value="basic"/>
+            <when value="advanced">
+                <!-- Could use a select (yes, no, other) where other allows setting 'window locut hicut' -->
+                <param checked="false" falsevalue="-seg no" label="Filter out low complexity regions (with SEG)" name="filter_query" truevalue="-seg yes" type="boolean"/>
+                <param label="Scoring matrix" name="matrix" type="select">
+                    <option value="BLOSUM90">BLOSUM90</option>
+                    <option value="BLOSUM80">BLOSUM80</option>
+                    <option selected="true" value="BLOSUM62">BLOSUM62 (default)</option>
+                    <option value="BLOSUM50">BLOSUM50</option> 
+                    <option value="BLOSUM45">BLOSUM45</option>
+                    <option value="PAM250">PAM250</option>
+                    <option value="PAM70">PAM70</option>
+                    <option value="PAM30">PAM30</option>
+                </param>
+                <!-- Why doesn't optional override a validator? I want to accept an empty string OR a non-negative integer -->
+                <param help="Use zero for default limits" label="Maximum hits to show" name="max_hits" type="integer" value="0">
+                    <validator min="0" type="in_range"/>
+                </param>
+                <!-- I'd like word_size to be optional, with minimum 2 for blastp -->
+                <param help="Use zero for default, otherwise minimum 2." label="Word size for wordfinder algorithm" name="word_size" type="integer" value="0">
+                    <validator min="0" type="in_range"/>
+                </param>
+                <!--
+                Can't use '-ungapped' on its own, error back is:
+                Composition-adjusted searched are not supported with an ungapped search, please add -comp_based_stats F or do a gapped search
+                Tried using '-ungapped -comp_based_stats F' and blastp crashed with 'Attempt to access NULL pointer.'
+                <param name="ungapped" type="boolean" label="Perform ungapped alignment only?" truevalue="-ungapped -comp_based_stats F" falsevalue="" checked="false" />
+                -->
+                <param checked="false" falsevalue="" help="This affects the formatting of the query/subject ID strings" label="Should the query and subject defline(s) be parsed?" name="parse_deflines" truevalue="-parse_deflines" type="boolean"/>
+            </when>
+        </conditional>
+    </inputs>
+    <outputs>
+        <data format="tabular" label="${blast_type.value_label} on ${db_opts.db_opts_selector}" name="output1">
+            <change_format>
+                <when format="txt" input="out_format" value="0"/>
+                <when format="html" input="out_format" value="0 -html"/>
+                <when format="txt" input="out_format" value="2"/>
+                <when format="html" input="out_format" value="2 -html"/>
+                <when format="txt" input="out_format" value="4"/>
+                <when format="html" input="out_format" value="4 -html"/>
+                <when format="blastxml" input="out_format" value="5"/>
+            </change_format>
+        </data>
+    </outputs>
+    <requirements>
+        <requirement type="binary">blastp</requirement>
+    </requirements>
+    <tests>
+        <test>
+            <param ftype="fasta" name="query" value="four_human_proteins.fasta"/>
+            <param name="db_opts_selector" value="file"/>
+            <param ftype="fasta" name="subject" value="rhodopsin_proteins.fasta"/>
+            <param name="database" value=""/>
+            <param name="evalue_cutoff" value="1e-8"/>
+            <param name="blast_type" value="blastp"/>
+            <param name="out_format" value="5"/>
+            <param name="adv_opts_selector" value="advanced"/>
+            <param name="filter_query" value="False"/>
+            <param name="matrix" value="BLOSUM62"/>
+            <param name="max_hits" value="0"/>
+            <param name="word_size" value="0"/>
+            <param name="parse_deflines" value="True"/>
+            <output file="blastp_four_human_vs_rhodopsin.xml" ftype="blastxml" name="output1"/>
+        </test>
+        <test>
+            <param ftype="fasta" name="query" value="four_human_proteins.fasta"/>
+            <param name="db_opts_selector" value="file"/>
+            <param ftype="fasta" name="subject" value="rhodopsin_proteins.fasta"/>
+            <param name="database" value=""/>
+            <param name="evalue_cutoff" value="1e-8"/>
+            <param name="blast_type" value="blastp"/>
+            <param name="out_format" value="6"/>
+            <param name="adv_opts_selector" value="advanced"/>
+            <param name="filter_query" value="False"/>
+            <param name="matrix" value="BLOSUM62"/>
+            <param name="max_hits" value="0"/>
+            <param name="word_size" value="0"/>
+            <param name="parse_deflines" value="True"/>
+            <output file="blastp_four_human_vs_rhodopsin.tabular" ftype="tabular" name="output1"/>
+        </test>
+        <test>
+            <param ftype="fasta" name="query" value="four_human_proteins.fasta"/>
+            <param name="db_opts_selector" value="file"/>
+            <param ftype="fasta" name="subject" value="rhodopsin_proteins.fasta"/>
+            <param name="database" value=""/>
+            <param name="evalue_cutoff" value="1e-8"/>
+            <param name="blast_type" value="blastp"/>
+            <param name="out_format" value="ext"/>
+            <param name="adv_opts_selector" value="advanced"/>
+            <param name="filter_query" value="False"/>
+            <param name="matrix" value="BLOSUM62"/>
+            <param name="max_hits" value="0"/>
+            <param name="word_size" value="0"/>
+            <param name="parse_deflines" value="True"/>
+            <output file="blastp_four_human_vs_rhodopsin_ext.tabular" ftype="tabular" name="output1"/>
+        </test>
+        <test>
+            <param ftype="fasta" name="query" value="rhodopsin_proteins.fasta"/>
+            <param name="db_opts_selector" value="file"/>
+            <param ftype="fasta" name="subject" value="four_human_proteins.fasta"/>
+            <param name="database" value=""/>
+            <param name="evalue_cutoff" value="1e-8"/>
+            <param name="blast_type" value="blastp"/>
+            <param name="out_format" value="6"/>
+            <param name="adv_opts_selector" value="basic"/>
+            <output file="blastp_rhodopsin_vs_four_human.tabular" ftype="tabular" name="output1"/>
+        </test>
+    </tests>
+    <help>
+    
+.. class:: warningmark
+
+**Note**. Database searches may take a substantial amount of time.
+For large input datasets it is advisable to allow overnight processing.  
+
+-----
+
+**What it does**
+
+Search a *protein database* using a *protein query*,
+using the NCBI BLAST+ blastp command line tool.
+
+-----
+
+**Output format**
+
+Because Galaxy focuses on processing tabular data, the default output of this
+tool is tabular. The standard BLAST+ tabular output contains 12 columns:
+
+====== ========= ============================================
+Column NCBI name Description
+------ --------- --------------------------------------------
+     1 qseqid    Query Seq-id (ID of your sequence)
+     2 sseqid    Subject Seq-id (ID of the database hit)
+     3 pident    Percentage of identical matches
+     4 length    Alignment length
+     5 mismatch  Number of mismatches
+     6 gapopen   Number of gap openings
+     7 qstart    Start of alignment in query
+     8 qend      End of alignment in query
+     9 sstart    Start of alignment in subject (database hit)
+    10 send      End of alignment in subject (database hit)
+    11 evalue    Expectation value (E-value)
+    12 bitscore  Bit score
+====== ========= ============================================
+
+The BLAST+ tools can optionally output additional columns of information,
+but this takes longer to calculate. Most (but not all) of these columns are
+included by selecting the extended tabular output. The extra columns are
+included *after* the standard 12 columns. This is so that you can write
+workflow filtering steps that accept either the 12 or 24 column tabular
+BLAST output.
+
+====== ============= ===========================================
+Column NCBI name     Description
+------ ------------- -------------------------------------------
+    13 sallseqid     All subject Seq-id(s), separated by a ';'
+    14 score         Raw score
+    15 nident        Number of identical matches
+    16 positive      Number of positive-scoring matches
+    17 gaps          Total number of gaps
+    18 ppos          Percentage of positive-scoring matches
+    19 qframe        Query frame
+    20 sframe        Subject frame
+    21 qseq          Aligned part of query sequence
+    22 sseq          Aligned part of subject sequence
+    23 qlen          Query sequence length
+    24 slen          Subject sequence length
+====== ============= ===========================================
+
+The third option is BLAST XML output, which is designed to be parsed by
+another program, and is understood by some Galaxy tools.
+
+You can also choose several plain text or HTML output formats which are designed to be read by a person (not by another program).
+The HTML versions use basic webpage formatting and can include links to the hits on the NCBI website.
+The pairwise output (the default on the NCBI BLAST website) shows each match as a pairwise alignment with the query.
+The two query anchored outputs show a multiple sequence alignment between the query and all the matches,
+and differ in how insertions are shown (marked as insertions or with gap characters added to the other sequences).
+
+-------
+
+**References**
+
+Altschul et al. Gapped BLAST and PSI-BLAST: a new generation of protein database search programs. 1997. Nucleic Acids Res. 25:3389-3402.
+
+Schaffer et al. Improving the accuracy of PSI-BLAST protein database searches with composition-based statistics and other refinements. 2001. Nucleic Acids Res. 29:2994-3005.
+
+    </help>
+</tool>

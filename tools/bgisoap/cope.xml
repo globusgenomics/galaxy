@@ -1,0 +1,101 @@
+<tool id="cope" name="COPE" version="COPE: default">
+    <description>- connecting overlapped pair-end reads</description>
+    <requirements>
+        <requirement type="binary">cope</requirement>
+    </requirements>
+    <command interpreter="perl">
+    	cope.pl	-o $out0 -a $fq1 -b $fq2 -s $phred -m $mode.mode_select -u $uover -l $lover -Z $log
+    	#if $mode.mode_select == '3':
+    	  -k ${mode.kmer} -t ${mode.cz} -f ${mode.len} -L ${mode.freqlow} -M ${mode.freqnor} -H ${mode.freqhigh} -O $out1
+    	#end if
+    	#if $adpara.adpara_select == '1':
+    	  -x &quot;${adpara.other}&quot;
+    	#end if
+    </command>
+    <inputs>
+    	  <param label="higher bound overlap length, 70 is preferred for 100 bp reads" name="uover" type="integer" value="70"/>
+        <param label="lower bound overlap length, 8 or 10 is preferred for 100bp" name="lover" type="integer" value="8"/>
+        <param label="phred score type" name="phred" type="select">
+        	<option value="33">phred 33</option>
+        	<option value="64">phred 64</option>
+        </param>
+        <param label="fq or fa files for read 1" name="fq1" type="data"/>
+        <param label="fq or fa files for read 2" name="fq2" type="data"/>
+        <conditional name="mode">
+          <param label="connecting mode" name="mode_select" type="select">
+            <option value="0">simple overlap connection</option>
+            <option value="3">k-mer frequency assisted connection and read cross connection</option>
+          </param>
+        <when value="0">
+        	<!-- do nothing -->
+        </when>
+        <when value="3">
+          <param label="kmer size (must consistent to k in KmerFreq)" name="kmer" type="integer" value="15"/>
+          <param label="k-mer_frequence_table.cz" name="cz" type="data"/>
+          <param label="cz_block_length.txt" name="len" type="data"/>
+          <param label="Kmer with frequency lower than this threshold will not be considered for base selection" name="freqlow" type="integer" value="3"/>
+          <param label="Kmer whith frequency lower than this threshold will not be considered for spanning Kmer selection" name="freqnor" type="integer" value="10"/>
+          <param label="Kmer whith frequency higher than this threshold will not be considered for spanning Kmer selection, 2 times the average kmer frequency is preferred" name="freqhigh" type="integer" value="60"/>
+        </when>
+        </conditional>
+        <conditional name="adpara">
+        	<param label="add advanced parameters?" name="adpara_select" type="select">
+        	  <option value="0">no</option>
+        	  <option value="1">yes</option>
+        	</param>
+        	<when value="0">
+        		<!-- do nothing -->
+        	</when>
+        	<when value="1">
+        		<param label="add advanced parameters as a command line here (eg: -c 0.7 -d 0.6)" name="other" type="text"/>
+        	</when>
+        </conditional>
+    </inputs>
+    <outputs>
+       <data format="fq" label="connected_read.fq" name="out0"/>
+		   <data format="fq" label="cross_connection_read.fq" name="out1">
+		      <filter> mode['mode_select'] == &quot;3&quot;</filter>
+		   </data>
+		   <data format="text" label="output.log" name="log"/>
+    </outputs>
+    <help>
+    	
+**Usuage**
+
+COPE is a  fast tool for connecting the pair end reads with insert size shorter than the sum of their read length.
+For simple overlap connection the memory will be near 1M.
+For k-mer frequency assisted connection and read cross connection the memory will be near 4G but also related to the unconnected read pair number and the genome size.
+
+
+**Outputs**
+
+3 files will be generated:
+
+  1. connected_read.fq: connected read file in fq format.
+  2. cross_connection_read.fq: if insert size is larger than sum of read length, read will be conected by other reads that cross the gap.
+  3. output.log: a text file that gives some information of the connection result.
+
+**System requirements**
+
+64-bit Linux systems
+
+**Other parameters**
+
+  -c  [float]   match ratio cutoff, default=0.75
+  -d  [float]   match max2_ratio/max_ratio, important for mode 0, default=0.7
+  -B  [float]   ratio cut off value of Base-quality=2, default=0.9
+  -N  [int]     N filter( 1 filte 0 not filter), default=1
+  -T  [int]     read pair number threshold for parameter training or testing: 0 
+  
+For k-mer frequency assisted connection:
+
+  -R  [int]     set the threshold of spanning k-mers number of extremely high frequency, threshold=3 is preferred for high repeat genome, set -1 for disable this threshold, default=-1
+  -r  [int]     use connected reads(1) or raw reads(0) to find cross reads, default=1
+
+
+.. class:: infomark
+
+**To cite COPE:**
+COPE: An accurate k-mer based pair-end reads connection tool to facilitate genome assembly Bioinformatics (2012). doi: 10.1093/bioinformatics/bts563. Binghang Liu, Jianying Yuan, Siu-Ming Yiu.
+    </help>
+</tool>

@@ -1,0 +1,107 @@
+<tool id="fastq_validator_wrapper" name="FastQ Validator" version="FASTQ_VALIDATOR: 1.0.0">
+  <description>for each sequence in a file</description>
+  <requirements>
+    <requirement type="package" version="1.0.0">fastq_validator</requirement>
+  </requirements>
+  <command> fastQValidator --file $input --minReadLen $minReadLen --maxErrors $maxErrors --printableErrors $printableErrors $baseComposition $disableSeqIDCheck $quiet $avgQual $spacetype $params &gt; $output</command>
+  <inputs>
+    <param format="fastq,txt" label="FASTQ file" name="input" type="data"/>
+    <param label="Minimum allowed read length (Default=10)" min="1" name="minReadLen" type="integer" value="10"/>
+    <param label="Number of errors to allow (Default=-1)" min="-1" name="maxErrors" type="integer" value="-1"/>
+    <param label="Max errors to print before suppressing (Default=20)" min="0" name="printableErrors" optional="true" type="integer" value="20"/>
+    <param falsevalue="" label="Print Base Composition Statistics" name="baseComposition" optional="true" truevalue="--baseComposition" type="boolean"/>
+    <param falsevalue="" label="Print Avg Phred Quality/Cycle and Overall Avg Quality" name="avgQual" optional="true" truevalue="--avgQual" type="boolean"/>
+    <param falsevalue="" label="Disable unique sequence identifier check (check to save memory)" name="disableSeqIDCheck" optional="true" truevalue="--disableSeqIDCheck" type="boolean"/>
+    <param falsevalue="" label="Suppress error/summary statistics display" name="quiet" optional="false" truevalue="--quiet" type="boolean"/>
+    <param falsevalue="" label="Print parameter settings" name="params" optional="false" truevalue="--params" type="boolean"/>
+    <param display="radio" label="Space Options for Raw Sequence (Default=Auto)" name="spacetype" type="select">
+      <option selected="true" value="--auto">Auto</option>
+      <option value="--baseSpace">BaseSpace</option>
+      <option value="--colorSpace">ColorSpace</option>
+    </param>
+  </inputs>
+  <outputs>
+    <data format="txt" name="output"/>
+  </outputs>
+  <help>
+
+About
++++++
+
+The fastQValidator validates the format of fastq files.
+The initial version of a FASTQ Validator is complete. It was built using LibStatGen: FASTQ which is part of the libStatGen library.
+
+
+Info on Errors
+++++++++++++++
+
+Number of Errors to allow (default+-1):
+  Number of errors to allow before quitting reading/validating the file. -1 (default) indicates to not quit until the entire file is read. 0 indicates not to read/validate anything.
+
+Max errors to print before suppressing (defualt+20):
+  Maximum number of errors to print before suppressing them (Defaults to 20). Different than maxErrors since printableErrors will continue reading and validating the file until the end, but just doesn't print the errors.
+
+**Info on Space Options for Raw Sequence**
+  auto: Determine baseSpace/colorSpace from the Raw Sequence in the file (Default)
+  baseSpace: ACTGN only 
+  colorSpace: 0123. only (with 1 character primer base)
+
+
+Output
+++++++
+
+When running the fastQValidator Executable, if the --params option is specified, the output starts with a summary of the parameters::
+
+      =============================================================================
+      The following parameters are available.  Ones with &quot;[]&quot; are in effect::
+
+      Input Parameters
+      --file [../fastqValidator/test/testFile.txt], --baseComposition, 
+                    --disableSeqIDCheck, --quiet, --params [ON], --minReadLen [10], 
+                    --maxErrors [-1]
+      Space Type : --baseSpace, --colorSpace, --auto [ON]
+          Errors : --ignoreErrors, --printableErrors [20]
+      =============================================================================
+
+The Validator Executable outputs error messages for invalid sequences based on Validation Criteria. For Example: ::
+    
+    ======================================================================
+    ERROR on Line 25: The sequence identifier line was too short.
+    ERROR on Line 29: First line of a sequence does not begin wtih @
+    ERROR on Line 33: No Sequence Identifier specified before the comment.
+    ======================================================================
+
+Base Composition Percentages by Index are printed if --printBaseComp is set to ON. For Example: ::
+    
+    ========================================================================
+    Base Composition Statistics:
+    Read Index      %A      %C      %G      %T      %N  Total Reads At Index
+            0   100.00    0.00    0.00    0.00    0.00  20
+            1     5.00   95.00    0.00    0.00    0.00  20
+            2     5.00    0.00    5.00   90.00    0.00  20
+    ========================================================================
+
+Phred Quality by Index are printed if --avgQual is set to ON in a version after May 29, 2012. Only valid qualities are included in these averages. For Example::
+
+    ==================================================
+    Average Phred Quality by Read Index (starts at 0):
+    Read Index  Average Quality
+    0 44.10
+    1 45.55
+    2 51.11
+    3 47.68
+    4 47.37
+
+    Overall Average Phred Quality = 50.40
+    ==================================================
+
+Summary of the number of lines, sequences, and errors: ::
+    
+    =======================================================================
+    Finished processing testFile.txt with 92 lines containing 20 sequences.
+    There were a total of 17 errors.
+    =======================================================================
+
+  </help>
+
+</tool>

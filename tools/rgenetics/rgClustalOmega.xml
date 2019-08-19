@@ -1,0 +1,223 @@
+<tool id="clustalomega" name="Clustal Omega" version="1.0.2">
+<description>
+multiple sequence alignment program for proteins
+</description>
+<command interpreter="python">
+hide_stderr.py clustalo --force --threads=1 --maxnumseq=300000 --maxseqlen=15000 -o $output -l $outlog -v 
+#if ($basicmode.mode=="mode1")
+ -i $input
+#elif ($basicmode.mode=="mode2")
+ --profile1 $profile1 --profile2 $profile2
+#elif ($basicmode.mode=="mode3")
+ -i $input --profile1 $profile
+#elif ($basicmode.mode=="mode4")
+ -i $input --hmm-in=$hmm
+#end if
+#if($advanced.options=="true")
+    #if ($advanced.dealign.value=="Yes")
+     --dealign
+    #end if
+    #if ($advanced.mbed.value=="Yes")
+     --full
+    #end if
+    #if ($advanced.iteration.iteroptions =="true")
+        --iter $advanced.iteration.iters
+        #if ($advanced.iteration.mbediter.value=="Yes")
+         --full-iter
+        #end if
+        #if ($advanced.iteration.separateiters.separateiteroptions =="true")
+         --max-guidetree-iterations=$advanced.iteration.separateiters.gtiters
+         --max-hmm-iterations=$advanced.iteration.separateiters.hmmiters
+        #end if
+    #end if
+#end if
+#if ($dotree.value=="Yes")
+ --guidetree-out=$outtree
+#end if
+
+</command>
+
+<inputs>
+
+<conditional name="basicmode">
+    <param name="mode" type="select">
+    <label>Alignment mode</label>
+    <option value="mode1" selected="true">align sequences</option>
+    <option value="mode2">align two profiles</option>
+    <option value="mode3">align sequences to a profile</option>
+    <option value="mode4">align sequences with a HMM background</option>
+    </param>
+
+    <when value="mode1">
+        <param name="input" format="fasta" type="data">
+        <label>Input sequences</label>
+        <help>A fasta file containing the proteins to be aligned</help>
+        </param>
+    </when>
+
+    <when value="mode2">
+        <param name="profile1" format="fasta" type="data">
+        <label>Profile 1</label>
+        <help>A fasta file containing aligned sequences</help>
+    </param>
+
+    <param name="profile2" format="fasta" type="data">
+        <label>Profile 2 (Fasta File)</label>
+        <help>A fasta file containing aligned sequences</help>
+        </param>
+    </when>
+
+    <when value="mode3">
+        <param name="input" format="fasta" type="data">
+        <label>Input sequences</label>
+        <help>A fasta file containing the proteins to be aligned</help>
+        </param>
+
+        <param name="profile" format="fasta" type="data">
+        <label>Profile</label>
+        <help>A fasta file containing aligned sequences</help>
+        </param>
+    </when>
+
+    <when value="mode4">
+        <param name="input" format="fasta" type="data">
+        <label>Input sequences</label>
+        <help>A fasta file containing the proteins to be aligned</help>
+        </param>
+        
+        <param name="hmm" format="other" type="data">
+        <label>HMM</label>
+        <help>A HMM in HMMER2 or HMMER3 format</help>
+        </param>
+    </when>
+</conditional>
+    <param name="outname" label="Name for output files" type="text" size="50" value="co_alignment" />
+    
+    <conditional name="advanced">
+      <param name="options" type="select" label="Advanced Options">
+        <option value="false" selected="true">Hide advanced options</option>
+        <option value="true">Show advanced options</option>
+      </param>
+      <when value="false">
+        <!-- no options -->
+      </when>
+      <when value="true">
+
+        <param name="dealign" type="select" display="checkboxes" multiple="True">
+        <label>Dealign input sequences (if aligned)</label>
+        <option value="Yes">Yes</option>
+        <help>If given already aligned sequences, by default Clustal Omega use the existing alignment to guide creation of the new alignment, by constructing a HMM from the existing alignment. Check this box to realign aligned sequences from scratch.</help>
+        </param>
+
+        <param name="mbed" type="select" display="checkboxes" multiple="True" label="Calculate full distance matrix">
+        <option value="Yes">Yes</option>
+            <help>By default, only a fraction of the distance matrix is calculated, for speed. Check this box to calculate a full distance matrix (slower and needs more memory, may be more accurate under some circumstances).</help>
+        </param>
+        
+        <conditional name="iteration">
+          <param name="iteroptions" type="select" label="Use iteration">
+            <option value="false" selected="true">Do not use iteration</option>
+            <option value="true">Use iteration</option>
+            <help>Redo the alignment multiple times to improve accuracy. Both the HMM and the guide tree
+            will be recalculated each time.</help>
+          </param>
+          <when value="false">
+            <!-- no options -->
+          </when>
+          <when value="true">
+            <param name="iters" type="integer" value="1" label="Number of iterations"></param>
+
+            <param name="mbediter" type="select" display="checkboxes" multiple="True" label="Calculate full distance matrix during iteration">
+                <option value="Yes">Yes</option>
+            </param>
+                <conditional name="separateiters">
+                  <param name="separateiteroptions" type="select">
+                    <label>Have a different number of guide tree, HMM iterations</label>
+                    <option value="false" selected="true">No</option>
+                    <option value="true">Yes</option>
+                    <help>Normally, if iteration is specified, a new guide tree and HMM will be calculated for each iteration. Use this option to restrict the number of iterations for either.</help>
+                  </param>
+                  <when value="false">
+                    <!-- no options -->
+                  </when>
+                  <when value="true">
+                    <param name="gtiters" type="integer" value="1" label="Guidetree iterations"></param>
+                    <param name="hmmiters" type="integer" value="1" label="HMM iterations"></param>
+                  
+                  </when>
+                </conditional>
+          </when>
+          </conditional>
+      </when>
+      </conditional>
+        <param name="dotree" type="select" display="checkboxes" multiple="True" label="Output guide tree">
+        <help>Outputs a guide tree in Newick format</help>
+            <option value="Yes">Yes</option>
+        </param>
+</inputs>
+
+<outputs>
+    <data format="fasta" name="output" label="${outname}.fasta" />
+    <data format="txt" name="outlog" label="${outname}_log.txt" />
+    <data format="txt" name="outtree" label="${outname}_guidetree.txt">
+        <filter>dotree=="Yes"</filter>
+    </data>
+</outputs>
+
+<tests>
+    <test>
+        <param name="mode" value="mode1" />
+        <param name="input" value="clustalo_unaligned_all.fasta" ftype="fasta" />
+        <param name="outname" value="test_output" />
+        <param name="options" value="false" />
+        <output name="output" file="clustalo_test1_out.fasta" ftype="fasta" lines_diff="200" />
+    </test>
+    <test>
+        <param name="mode" value="mode2" />
+        <param name="profile1" value="clustalo_aligned1.fasta" />
+        <param name="profile2" value="clustalo_aligned2.fasta" />
+        <param name="outname" value="test_output" />
+        <param name="options" value="false" />
+        <output name="output" file="clustalo_profileprofile.fasta"  lines_diff="200" />
+    </test>
+</tests>
+
+<help>
+
+Clustal-Omega is a general purpose multiple sequence alignment (MSA)
+program for proteins. It produces high quality MSAs and is capable of
+handling data-sets of hundreds of thousands of sequences in reasonable
+time.
+
+In default mode, users give a file of sequences to be aligned and
+these are clustered to produce a guide tree and this is used to guide
+a "progressive alignment" of the sequences.  There are also facilities
+for aligning existing alignments to each other, aligning a sequence to
+an alignment and for using a hidden Markov model (HMM) to help guide
+an alignment of new sequences that are homologous to the sequences
+used to make the HMM.  This latter procedure is referred to as
+"external profile alignment" or EPA.
+
+Clustal-Omega uses HMMs for the alignment engine, based on the HHalign
+package from Johannes Soeding [1].  Guide trees are made by default
+using mBed [2] which can cluster very large numbers of sequences in
+O(N*log(N)) time.  Multiple alignment then proceeds by aligning larger
+and larger alignments using HHalign, following the clustering given by
+the guide tree.
+
+In its current form Clustal-Omega can only align protein sequences but
+not DNA/RNA sequences. It is envisioned that DNA/RNA will become
+available in a future version.
+
+A full version of these instructions is available at http://www.clustal.org/
+
+This is a beta version of Clustal Omega. Bugs should be reported to clustalw@ucd.ie
+
+A standalone version of Clustal Omega for Linux/Windows/Mac is available from http://www.clustal.org/
+
+[1] Johannes Soding (2005) Protein homology detection by HMM-HMM comparison. Bioinformatics 21 (7): 951–960.
+
+[2] Blackshields G, Sievers F, Shi W, Wilm A, Higgins DG.  Sequence embedding for fast construction of guide trees for multiple sequence alignment.  Algorithms Mol Biol. 2010 May 14;5:21.
+
+</help>
+</tool> 

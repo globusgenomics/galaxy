@@ -1,0 +1,40 @@
+<tool id="orthomclMapProteomeToGroups" name="OrthoMCL Map Proteome to Groups" version="1.0.0">
+  <description>Use BLAST results to map a proteome to OrthoMCL groups.</description>
+  <command interpreter="perl" detect_errors="aggressive">
+    ../../bin/orthomclMapProteomeToGroupsGalaxy "$self_similarity_file" "$orthomcl_similarity_file" "${orthomcl_groups_file.fields.path}" TAXON "$outputGroupsFile" "$outputParalogsFile"
+
+  </command>
+  <inputs>
+    <param name="self_similarity_file" type="data" format="tabular"
+           label="Self-self BLAST result (OrthoMCL format):"
+           help="">
+    </param>
+
+    <param name="orthomcl_similarity_file" type="data" format="tabular"
+           label="OrthoMCL BLAST result (OrthoMCL format):"
+           help="">
+    </param>
+
+    <param label="OrthoMCL Groups file" name="orthomcl_groups_file" type="select">
+      <options from_data_table="ortho_mcl"></options>
+    </param>
+
+    <!--<param name="orthomcl_groups_file" type="data" format="text"
+           label="OrthoMCL Groups file:"
+           help="">
+    </param>-->
+
+  </inputs>
+  <outputs>
+      <data format="text" name="outputGroupsFile" label="proteinsMappedToGroups.txt" />
+      <data format="tabular" name="outputParalogsFile" label="paralogPairs.txt" />
+  </outputs>
+
+  <help>
+
+**What it does**
+
+Using self-similarity and similarity to OrthoMCL protiens, maps the input proteome to OrthoMCL groups.  Input proteins are mapped to the group containing the protein with highest similarity.  Proteins that have no significant similarity to OrthoMCL proteins are grouped as paralogs, using the OrthoMCL algorithm.
+
+  </help>
+</tool>

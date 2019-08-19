@@ -1,0 +1,33 @@
+qualimap - 1.0.1
+=====================================================================
+<joachim.jacob@vib.be>
+
+SUMMARY
+-------
+Qualimap examines sequencing alignment data in SAM/BAM files and provides an overall view of the data that helps to the detect biases in the sequencing and/or mapping of the data and eases decision-making for further analysis. 
+
+http://qualimap.bioinfo.cipf.es/
+
+Garcia-Alcalde et.al, (2012) Qualimap: evaluating next generation sequencing aligmnent data,
+Bioinformatics. doi: 10.1093/bioinformatics/bts503 
+	  
+REQUIREMENTS AND INSTALLATION
+-----------------------------
+Install this tool in your Galaxy via the Toolshed
+
+   ) Required dependencies:
+	- Qualimap 0.6 available in the PATH
+	- Perl >= 5.10
+	- Perl core module File::Temp and File::Basename
+	- Perl module Log::Log4perl	
+
+   ) Integration into Galaxy
+	Please use the toolshed
+
+DETAILS AND ISSUES
+------------------
+   ) Qualimap suite provide various quality control tools to apply 
+     after mapping. Only bamqc is provided in this first version
+   ) bamqc reports various statistics of an alignment.
+
+=====================================================================

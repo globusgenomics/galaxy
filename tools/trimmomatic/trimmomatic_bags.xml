@@ -1,0 +1,225 @@
+<tool id="trimmomatic_bags" name="Trimmomatic - bag inpput" version="TRIMMOMATIC: Trimmomatic-0.32">
+  <description>flexible read trimming tool for Illumina NGS data</description>
+  <command interpreter="bash">trimmomatic.sh
+  -mx8G
+  -jar \$TRIMMOMATIC_DIR/trimmomatic-0.32.jar
+
+  ## get the file names
+  #import os, glob
+  #set $path = ""
+  #if os.path.exists(str($input_file.extra_files_path)):
+    #set $path = "%s/%s" % ($input_file.extra_files_path, $sample_name)
+  #else:
+    #set $fh = open(str($input_file), "r")
+    #set $path = "%s/data/%s" % ($fh.readline().rstrip("\n"), $sample_name)
+  #end if
+  #set $files = glob.glob("%s*" % $path)
+  #if str($single_or_paired) == "se":
+    #set $forward = $files[0]
+  #else:
+    #set $file1 = $files[0]
+    #set $file2 = $files[1]
+    #set $length1 = len($file1)
+    #set $length2 = len($file2)
+    #if $length1 == $length2:
+      ## figure out which is read1 and which is read2
+      #set $split_file1 = list($file1)
+      #set $split_file2 = list($file2)
+      #for $i, $j in enumerate($split_file1):
+        #if $split_file1[$i] != $split_file2[$i]:
+          ## assume the difference in fastq files is the 1 and 2 in their name
+          #if $split_file1[$i] == "1":
+            #set $forward = $file1
+            #set $reverse = $file2
+          #else:
+            #set $forward = $file2
+            #set $reverse = $file1
+          #end if
+        #end if
+      #end for
+    #end if
+  #end if
+
+
+  #if str($single_or_paired) == "pe":
+    PE -threads 6 -phred33 $forward $reverse $fastq_out_r1_paired $fastq_out_r1_unpaired $fastq_out_r2_paired $fastq_out_r2_unpaired 
+  #else
+    SE -threads 6 -phred33 $forward $fastq_out
+  #end if
+  ## ILLUMINACLIP option
+  #if $illuminaclip.do_illuminaclip
+    ILLUMINACLIP:\$TRIMMOMATIC_ADAPTERS_DIR/$illuminaclip.adapter_fasta:$illuminaclip.seed_mismatches:$illuminaclip.palindrome_clip_threshold:$illuminaclip.simple_clip_threshold
+  #end if
+  ## Other operations
+  #for $op in $operations
+    ## SLIDINGWINDOW
+    #if str( $op.operation.name ) == &quot;SLIDINGWINDOW&quot;
+      SLIDINGWINDOW:$op.operation.window_size:$op.operation.required_quality
+    #end if
+    ## MINLEN:36
+    #if str( $op.operation.name ) == &quot;MINLEN&quot;
+      MINLEN:$op.operation.minlen
+    #end if
+    #if str( $op.operation.name ) == &quot;LEADING&quot;
+      LEADING:$op.operation.leading
+    #end if
+    #if str( $op.operation.name ) == &quot;TRAILING&quot;
+      TRAILING:$op.operation.trailing
+    #end if
+    #if str( $op.operation.name ) == &quot;CROP&quot;
+      CROP:$op.operation.crop
+    #end if
+    #if str( $op.operation.name ) == &quot;HEADCROP&quot;
+      HEADCROP:$op.operation.headcrop
+    #end if
+  #end for
+  </command>
+  <requirements>
+    <requirement type="package">trimmomatic</requirement>
+  </requirements>
+  <inputs>
+    <param format="txt" label="Input directory of samples" name="input_file" type="data"/>
+    <param label="Sample Name inside the Fastq directory" name="sample_name" type="text"/>
+    <param label="Single-End or Paired-End reads?" name="single_or_paired" optional="false" type="select">
+      <option selected="true" value="se">Single-End</option>
+      <option value="pe">Paired-End</option>
+    </param>
+
+    <conditional name="illuminaclip">
+    <param checked="off" falsevalue="no" help="Cut adapter and other illumina-specific sequences from the read" label="Perform initial ILLUMINACLIP step?" name="do_illuminaclip" truevalue="yes" type="boolean"/>
+    <when value="yes">
+      <param label="Adapter sequences to use" name="adapter_fasta" type="select">
+	<option value="TruSeq2-SE.fa">TruSeq2 (single-ended, for Illumina GAII)</option>
+	<option value="TruSeq3-SE.fa">TruSeq3 (single-ended, for MiSeq and HiSeq)</option>
+	<option value="TruSeq2-PE.fa">TruSeq2 (paired-ended, for Illumina GAII)</option>
+	<option value="TruSeq3-PE.fa">TruSeq3 (paired-ended, for MiSeq and HiSeq)</option>
+	<option value="TruSeq3-PE-2.fa">TruSeq3 (additional seqs) (paired-ended, for MiSeq and HiSeq)</option>
+	<option value="NexteraPE-PE.fa">Nextera (paired-ended)</option>
+      </param>
+      <param label="Maximum mismatch count which will still allow a full match to be performed" name="seed_mismatches" type="integer" value="2"/>
+      <param label="How accurate the match between the two 'adapter ligated' reads must be for PE palindrome read alignment" name="palindrome_clip_threshold" type="integer" value="30"/>
+      <param label="How accurate the match between any adapter etc. sequence must be against a read" name="simple_clip_threshold" type="integer" value="10"/>
+    </when>
+    </conditional>
+    <repeat min="1" name="operations" title="Trimmomatic Operation">
+      <conditional name="operation">
+	<param label="Select Trimmomatic operation to perform" name="name" type="select">
+	  <option value="SLIDINGWINDOW">Sliding window trimming (SLIDINGWINDOW)</option>
+	  <option value="MINLEN">Drop reads below a specified length (MINLEN)</option>
+	  <option value="LEADING">Cut bases off the start of a read, if below a threshold quality (LEADING)</option>
+	  <option value="TRAILING">Cut bases off the end of a read, if below a threshold quality (TRAILING)</option>
+	  <option value="CROP">Cut the read to a specified length (CROP)</option>
+	  <option value="HEADCROP">Cut the specified number of bases from the start of the read (HEADCROP)</option>
+	</param>
+	<when value="SLIDINGWINDOW">
+	  <param label="Number of bases to average across" name="window_size" type="integer" value="4"/>
+	  <param label="Average quality required" name="required_quality" type="integer" value="20"/>
+	</when>
+	<when value="MINLEN">
+	  <param label="Minimum length of reads to be kept" name="minlen" type="integer" value="20"/>
+	</when>
+	<when value="LEADING">
+	  <param help="Bases at the start of the read with quality below the threshold will be removed" label="Minimum quality required to keep a base" name="leading" type="integer" value="3"/>
+	</when>
+	<when value="TRAILING">
+	  <param help="Bases at the end of the read with quality below the threshold will be removed" label="Minimum quality required to keep a base" name="trailing" type="integer" value="3"/>
+	</when>
+	<when value="CROP">
+	  <param label="Number of bases to keep from the start of the read" name="crop" type="integer" value=""/>
+	</when>
+	<when value="HEADCROP">
+	  <param label="Number of bases to remove from the start of the read" name="headcrop" type="integer" value=""/>
+	</when>
+      </conditional>
+    </repeat>
+  </inputs>
+  <outputs>
+    <data format="fastqsanger" label="${tool.name} on ${on_string} (R1 paired)" name="fastq_out_r1_paired">
+      <filter>paired_end['is_paired_end']</filter>
+    </data>
+    <data format="fastqsanger" label="${tool.name} on ${on_string} (R1 unpaired)" name="fastq_out_r1_unpaired">
+      <filter>paired_end['is_paired_end']</filter>
+    </data>
+    <data format="fastqsanger" label="${tool.name} on ${on_string} (R2 paired)" name="fastq_out_r2_paired">
+      <filter>paired_end['is_paired_end']</filter>
+    </data>
+    <data format="fastqsanger" label="${tool.name} on ${on_string} (R2 unpaired)" name="fastq_out_r2_unpaired">
+      <filter>paired_end['is_paired_end']</filter>
+    </data>
+    <data format="fastqsanger" label="${tool.name} on ${on_string}" name="fastq_out">
+      <filter>not paired_end['is_paired_end']</filter>
+    </data>
+  </outputs>
+  <tests>
+  </tests>
+  <help>
+.. class:: infomark
+
+**What it does**
+
+Trimmomatic performs a variety of useful trimming tasks for illumina paired-end and
+single ended data.
+
+This tool allows the following trimming steps to be performed:
+
+ * **ILLUMINACLIP:** Cut adapter and other illumina-specific sequences from the read
+ * **SLIDINGWINDOW:** Perform a sliding window trimming, cutting once the average
+   quality within the window falls below a threshold
+ * **MINLEN:** Drop the read if it is below a specified length
+ * **LEADING:** Cut bases off the start of a read, if below a threshold quality
+ * **TRAILING:** Cut bases off the end of a read, if below a threshold quality
+ * **CROP:** Cut the read to a specified length
+ * **HEADCROP:** Cut the specified number of bases from the start of the read
+
+If ILLUMINACLIP is requested then it is always performed first; subsequent options
+can be mixed and matched and will be performed in the order that they have been
+specified.
+
+.. class:: warningmark
+
+Note that trimming operation order is important.
+
+-------------
+
+.. class:: infomark
+
+**Outputs**
+
+For paired-end data a particular strength of Trimmomatic is that it retains the
+pairing of reads (from R1 and R2) in the filtered output files:
+
+ * Two FASTQ files (R1-paired and R2-paired) contain one read from each pair where
+   both have survived filtering.
+ * Additionally two FASTQ files (R1-unpaired and R2-unpaired) contain reads where
+   one of the pair failed the filtering steps.
+
+Retaining the same order and number of reads in the filtered output fastq files is
+essential for many downstream analysis tools.
+
+For single-end data the output is a single FASTQ file containing just the filtered
+reads.
+
+-------------
+
+.. class:: infomark
+
+**Credits**
+
+This Galaxy tool has been developed within the Bioinformatics Core Facility at the
+University of Manchester. It runs the Trimmomatic program which has been developed
+within Bjorn Usadel's group at RWTH Aachen university.
+
+Trimmomatic website (including documentation):
+
+ * http://www.usadellab.org/cms/index.php?page=trimmomatic 
+
+The reference for Trimmomatic is:
+
+ * Lohse M, Bolger AM, Nagel A, Fernie AR, Lunn JE, Stitt M, Usadel B. RobiNA: a
+   user-friendly, integrated software solution for RNA-Seq-based transcriptomics.
+   Nucleic Acids Res. 2012 Jul;40(Web Server issue):W622-7)
+
+Please kindly acknowledge both this Galaxy tool and the Trimmomatic program if you
+use it.
+  </help>
+</tool>

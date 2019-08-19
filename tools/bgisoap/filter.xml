@@ -1,0 +1,123 @@
+<tool force_history_refresh="True" id="filter" name="filter" version="r240">
+    <description>- removes problematic short reads</description>
+    <requirements>
+        <requirement type="package">bgisoap</requirement>
+    </requirements>
+    <command interpreter="python">
+        filter.py
+
+        ## Inputs
+        --read1=$read1
+        --read2=$read2
+
+        ## Check if using default or custom parameters
+        --default_full_settings_type=$default_full_settings.settings_type
+        #if $default_full_settings.settings_type == &quot;full&quot;:
+            --read1_5prime_trim_length=$default_full_settings.read1_5prime_trim_length
+            --read1_3prime_trim_length=$default_full_settings.read1_3prime_trim_length
+            --read2_5prime_trim_length=$default_full_settings.read2_5prime_trim_length
+            --read2_3prime_trim_length=$default_full_settings.read2_3prime_trim_length
+            --trim_flag=$default_full_settings.trim_flag
+            --quality_shift=$default_full_settings.quality_shift
+            --reads_pair_number=$default_full_settings.reads_pair_number
+            --num_threads=$default_full_settings.num_threads
+            --filter_low_quality_bases=$default_full_settings.filter_low_quality_bases
+            --library_insert_size=$default_full_settings.library_insert_size
+            --filter_percent_N_bases=$default_full_settings.filter_percent_N_bases
+            --filter_reads_with_adapter_seq=$default_full_settings.filter_reads_with_adapter_seq
+            --read1_adapter_seq=$default_full_settings.read1_adapter_seq
+            --read2_adapter_seq=$default_full_settings.read2_adapter_seq
+            --filter_small_reads=$default_full_settings.filter_small_reads
+            --filter_PCR_duplications=$default_full_settings.filter_PCR_duplications
+            --compress_output_read_file=$default_full_settings.compress_output_read_file
+        #end if
+
+        ## Outputs
+        --stat=$stat
+        --read1_clean=$read1_clean
+        --read2_clean=$read2_clean
+    </command>
+    <inputs>
+        <param format="fastq" label="Forward set of reads" name="read1" type="data"/>
+        <param format="input" label="Reverse set of reads" name="read2" type="fastq"/>
+        <!--Other parameters -->
+        <conditional name="default_full_settings">
+            <param help="Default settings is suitable for most genome reconstruction needs. If you want full control, use Full parameter list" label="Filter settings to use" name="settings_type" type="select">
+                <option value="default">Default</option>
+                <option value="full">Full parameter list</option>
+            </param>
+            <when value="default"/>
+            <when value="full">
+                <param label="Trim flag" name="trim_flag" type="select" value="0">
+                    <option value="-1">No trimming</option>
+                    <option value="0">Unify trimming</option>
+                    <option value="1">Minimum trim</option>
+                </param>
+                <param label="Length of read to be trimmed at 5 end of read1" name="read1_5prime_trim_length" type="integer" value="0">
+                </param>
+                <param label="Length of read to be trimmed at 3 end of read1" name="read1_3prime_trim_length" type="integer" value="0">
+                </param>
+                <param label="Length of read to be trimmed at 5 end of read2" name="read2_5prime_trim_length" type="integer" value="0">
+                </param>
+                <param label="Length of read to be trimmed at 3 end of read2" name="read2_3prime_trim_length" type="integer" value="0">
+                </param>
+                <param label="Quality shift value" name="quality_shift" type="select" value="64">
+                    <option value="64">64</option>
+                    <option value="33">33</option>
+                </param>
+                <param label="Number of paired reads in buffer" name="reads_pair_number" type="integer" value="2000000">
+                </param>
+                <param label="Number of threads to be used in processing" name="num_threads" type="integer" value="8">
+                </param>
+                <param label="Filter low quality bases (use -1 for no filtering)" name="filter_low_quality_bases" type="integer" value="40">
+                </param>
+                <param label="Library insert size" name="library_insert_size" type="integer" value="500">
+                </param>
+                <param label="Filter low quality bases (use -1 for no filtering)" name="filter_percent_N_bases" type="integer" value="40">
+                </param>
+                <param label="Filter low quality bases (use -1 for no filtering)" name="filter_percent_N_bases" type="integer" value="40">
+                </param>
+                <param label="Filter out adapter sequence from reads" name="filter_reads_with_adapter_seq" type="select" value="yes">
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+                </param>
+                <param label="Adapter sequence for read 1" name="read1_adapter_seq" type="text" value="AGATCGGAAGAGCGGTTCAGCAGGAATGCCGAG">
+                </param>
+                <param label="Adapter sequence for read 2" name="read2_adapter_seq" type="text" value="AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT">
+                </param>
+                <param label="Filter out small-sized reads" name="filter_small_reads" type="select" value="yes">
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+                </param>
+                <param label="Filter out duplications caused by PCR" name="filter_PCR_duplications" type="select" value="yes">
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+                </param>
+                <param label="Compress results?" name="compress_output_read_file" type="select" value="yes">
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+                </param>
+            </when>
+        </conditional>
+    </inputs>
+    <outputs>
+        <data format="tabular" label="Filter stats" name="stat">
+        </data>
+        <data format_source="read1" label="Read1 clean" name="read1_clean">
+        </data>
+        <data format_source="read2" label="Read2 clean" name="read2_clean">
+        </data>
+    </outputs>
+    <!--<tests>-->
+        <!--<test>-->
+        <!--</test>-->
+    <!--</tests>-->
+    <help>
+**What it does**
+
+Filter removes reads from data based on a number of different criteria such as
+the presence of adapter sequences and low quality bases. In addition, short
+reads containing unidentified bases and/or have been affected by PCR duplication
+can be removed using this tool.
+    </help>
+</tool>

@@ -1,0 +1,16 @@
+categories:
+- Tool Dependency Packages
+description: Contains a tool dependency definition that downloads and compiles version
+ 0.4.0
+long_description: |
+  Salmon is a tool for wicked-fast transcript quantification from RNA-seq data. 
+  It requires a set of target transcripts (either from a reference or de-novo assembly) 
+  to quantify. All you need to run Salmon is a FASTA file containing your reference 
+  transcripts and a (set of) FASTA/FASTQ file(s) containing your reads. 
+  Optionally, Salmon can make use of pre-computed alignments
+  (in the form of a SAM/BAM file) to the transcripts rather than the raw reads.
+http://salmon.readthedocs.org/en/latest/salmon.html#lightweight-alignment-based-mode
+name: package_salmon_0_4_0
+owner: neb
+remote_repository_url: https://github.com/nebiolabs/galaxy-tools/packages/package_salmon_0.4.0
+type: tool_dependency_definition

@@ -1,0 +1,173 @@
+#projectname {
+	display: block;
+	position: absolute;
+	top: 36px;
+	bottom: 0;
+	right: 45px;
+	z-index: -1;
+	overflow: hidden;
+	color: #a70c0c;
+}
+
+header{
+background-color:#7774D1;
+}
+body {
+    background-color: #FFFFFF;
+    position: relative;
+    margin-top: 5px;
+    font-family: Arial Unicode MS, Arial, sans-serif;
+    font-size: small;
+}
+
+#menu .btn-warning {
+    background-color: #640000;
+    background-image: none;
+}
+
+p.hangingindent {
+    margin-left: 30px ;
+}
+
+#filters div.row-fluid {
+    min-height: 50px;
+}
+
+.navbar .btn-navbar {
+    float: left;
+}
+
+ul.btn {
+    list-style: none outside none;
+    background: none;
+    margin: 0px;
+}
+
+ul.btn li {
+    display: inline-block;
+    text-shadow: 0 1px 0 #FFFFFF;
+}
+
+ul.breadcrumb {
+    padding: 4px 15px;
+}
+
+.footer {
+    border-top: 1px solid #E5E5E5;
+    margin-top: 20px;
+    padding: 15px 0 36px;
+}
+
+.footer p {
+    color: #555555;
+    margin-bottom: 0;
+}
+
+.minh500 {
+    min-height: 500px;
+}
+
+#filters .btn.active {
+   background-color: #a70c0c;
+}
+
+#filters .btn {
+    background-color:#a70c0c;
+    background-image:none;
+}
+
+#filters .btn-large {
+    margin-right: 5px;
+}
+
+#filters .btn a {
+    color: white;
+}
+
+.navbar .navbar-inner {
+    background-color: #a70c0c;
+    // background-color: #9b2200;
+    background-image: none;
+    color: #FFFFFF;
+    font-size: 16px;
+    min-height: 35px;
+    box-shadow: none;
+    -webkit-border-radius: 0px;
+    -moz-border-radius: 0px;
+    border-radius: 0px;
+}
+
+.navbar .nav>li>a{
+    float:none;
+    padding:6px 10px 6px;
+    text-shadow: none;
+    line-height:19px;
+    color:#FFFFFF;
+    text-decoration:none;
+}
+
+.navbar .nav .active>a,.navbar .nav .active>a:hover{
+    color:#ffffff;
+    text-decoration:none;
+    background-color:#a70c0c;
+    border-bottom: 4px solid #ffffff;
+    font-weight: bold;
+}
+
+.top-row {
+    margin-top: 50px;
+}
+
+.btn-group form {
+    margin: 0px;
+    float: left;
+    padding: 0px;
+}
+
+#tabs ul.nav > li.active > a {
+   background-color: #F2F6F8;
+   font-weight: bold;
+}
+
+#tabs ul.nav > li.open > a {
+   color: black;
+}
+
+#tabs .dropdown-menu .active > a:hover {
+    color: black;
+}
+
+#toolbar div.row-fluid {
+    margin-top: -18px;
+    height: 44px;
+    border-bottom: 1px dotted #cccccc;
+    background-color: #F2F6F8;
+}
+
+#toolbar .nav {
+    margin: -5px 5px 5px 10px;
+    padding: 0px;
+}
+#toolbar .btn-toolbar {
+    margin: 10px 10px 0px 0px;
+    padding: 0px;
+}
+
+#content div.row-fluid {
+    margin-top: 20px;
+}
+
+div. d{
+text-align:justify;
+text-justify:inter-word;
+}
+
+font.myfont{
+      font-style:italic;
+      font-weight:bold;
+      color: black;
+}
+
+.label-intogen, .badge-intogen {
+    background-color: #fe7533;
+}

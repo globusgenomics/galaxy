@@ -1,0 +1,122 @@
+<?xml version="1.0"?>
+
+<tool name="demultiplexer" id="demultiplexer_id">
+  <description>
+  </description>
+
+<command >perl ${__root_dir__}/tools/demultiplexer/demultiplexer.pl
+  -f $fileformat
+  -t $tagfile
+
+  #if $noSkipAdapterDimers == "true"
+    -nd 
+  #end if
+
+  #if $noCompressOutput == "true"
+    -nc 
+  #end if
+
+  #if str( $compressionLevel )
+    -c $compressionLevel 
+  #end if
+
+  #if str( $tagEnd )
+    -e $tagEnd 
+  #end if
+
+  -i $sequenceFile1
+
+  #if $pairedOrSingle.pairedEnd == "true"
+    -i $pairedOrSingle.sequenceFile2
+    -r $pairedOrSingle.tagRead
+  #end if
+
+  #if str( $mismatches )
+    -m $mismatches
+  #end if
+
+  #if $allowNs == "true"
+    -N 
+  #end if
+
+  #if str( $extraTagBases )
+    -x $extraTagBases 
+  #end if
+
+  #if str( $adapterSeq )
+    -a $adapterSeq 
+  #end if
+
+  #if $trimBases == "true"
+    -tb 
+  #end if
+
+  #if str( $trimRead )
+    -tr $trimRead 
+  #end if
+
+
+-g $output1 -oid $output1.id -o $__new_file_path__
+
+	</command>
+	<inputs>
+	    <param name="fileformat" type="select" label="-f/--file-format" help="Specifies the format of the input sequence file(s). Current supported formats are scarf and fastq.">
+		  <option value="scarf" selected="true">scarf</option>
+		  <option value="fastq">fastq</option>
+	    </param>
+
+	    <param name="tagfile" type="data" label="-t/--tag-file" help="Specifies the file containing the sequence tags (barcodes/indexes) to use to bin the sequences from the input file(s). Assumed to be tab delimited (to support chip_seq), with the tag in the 1st (or only) column. Columns other than the 1st/only are presently ignored."/>
+
+	    <param name="noSkipAdapterDimers" type="boolean" checked="false" label="-nd/--no-skip-adapter-dimers" help="If checked, disables skipping of sequences that appear to be adapter dimers (default behavior is to drop them on the floor)."/>
+	    <param name="noCompressOutput" type="boolean" checked="false" label="-nc/--no-compress-output" help="If checked, disables gzip compression of the output files."/>
+
+	    <param name="compressionLevel" value="" type="text" label="-c/--compression-level" help="Compression level to pass to gzip (legal values are 1-9 for minimal to maximal respectively). If this is not specified, no argument is passed to gzip, resulting in the gzip default compression level." />
+
+	    <param name="tagEnd" value="" type="text" label="-e/--barcode-end/--tag-end" help="Specifies which end of the input sequences/reads the sequence tag (barcode/index) is at. Legal values are 5 (5') or 3 (3')."/>                        
+
+	    <param name="sequenceFile1" type="data" label="-i/--sequence-file" help="Specifies the sequence file(s) to use as input."/>
+
+	    <conditional name="pairedOrSingle">
+		<param name="pairedEnd" type="select" label="Paired-End Reads?" >
+                	<option value="true">True</option>
+                	<option value="false" selected="true">False</option>
+                </param> 
+		<when value="true">
+	                <param name="sequenceFile2" type="data" label="-i/--sequence-file (second)" help="Specifies the sequence file(s) to use as input."/>
+
+	                <param name="tagRead" type="select" label="-r/--tag-read" help="Specifies which read has the tag (barcode/index). Legal values are 1, 2 or both. Only meaningful in paired end mode (two -i/-sequence-file args).">
+		  		<option value="1" selected="true">1</option>
+		  		<option value="2">2</option>
+		 		<option value="both">both</option>
+	                </param>
+		</when>
+		<when value="false"/>
+	    </conditional>
+             
+	    <param name="mismatches" type="text" label="-m/--mismatches" help="Perform fuzzy lookup on the sequence tags. If the barcode/index for a read isn't an exact match for a sequence in the file specified by -tag-file, perform a fuzzy match allowing up to the specified number of mismatches. Note that the match must be unique. That is, after allowing for N mismatches, there must be only one possible candidate barcode/index."/>
+
+	    <param name="allowNs" type="boolean" checked="false" label="-N/--allow-Ns" help="By default, Ns are treated as mismatches. By specifying the -N flag, Ns in the index/barcode will not be counted towards the mismatch total."/>
+
+	    <param name="extraTagBases" value="" type="text" label="-x/--extra-tag-bases" help="Specifies the number of extra bases following the sequence tag (barcode/index) that are not part of the tag, but shouldn't end up in the output sequences, either. For example, the T overhang on 5' barcodes." />
+
+	    <param name="adapterSeq" value="" type="text" label="-a/--adapter-seq" help="Specifies the 3' adapter sequence used when filtering adapter-dimers. Default is 'AGATCGGAAGAGCG'."/>                
+
+	    <param name="trimBases" type="boolean" checked="false" label="-tb/--trim-bases" help="Trim N bases from the 3' end of the read(s) specified by -trim-read. This is useful when you need to trim off cycles due to bad data quality. Note: this trimming is performed *after* barcode trimming (if applicable)."/>
+
+	    <param name="trimRead" type="select" label="-tr/--trim-read" help="Legal values are 1, 2 and both. Trims the number of bases specified by -trim bases from read 1, read 2, or both read 1 and read 2.">
+		  <option value="1" selected="true">1</option>
+		  <option value="2">2</option>
+		  <option value="both">both</option>
+	     </param>
+
+
+	</inputs>
+	<outputs>
+		<data format="tabular" name="output1" label="${tool.name} on ${on_string}"/>
+	</outputs>
+	<help>
+Example command line
+$ demultiplexer.pl --tag-read 1 --tag-end 3 --extra-tag-bases 1 --file-format scarf --tag-file indexes.txt --sequence-file s_7_1_withindex_sequence.txt --sequence-file s_7_3_withindex_sequence.txt
+
+	</help>
+</tool>

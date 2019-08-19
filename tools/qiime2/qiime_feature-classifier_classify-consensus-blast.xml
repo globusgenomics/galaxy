@@ -1,0 +1,127 @@
+<?xml version="1.0" ?>
+<tool id="qiime_feature-classifier_classify-consensus-blast" name="qiime feature-classifier classify-consensus-blast" version="022019">
+	<description>- BLAST+ consensus taxonomy classifier</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command><![CDATA[
+  qiime feature-classifier classify-consensus-blast --i-query=$iquery
+
+  #if str( $id_to_taxonomy_fp.selector ) == 'history'
+  	#set $tax = $id_to_taxonomy_fp.taxonomy_fp
+  	--i-reference-taxonomy '$tax'
+  #else:
+  	#set $tax = $id_to_taxonomy_fp.taxonomy_fp.fields.path
+  	--i-reference-taxonomy '$tax'
+  #end if
+  
+  	 --i-reference-reads=$ireferencereads
+  #if $ppercidentity:
+   --p-perc-identity=$ppercidentity
+  #end if
+  
+  #if str($cmdconfig) != 'None':
+   --cmd-config=$cmdconfig
+  #end if
+  
+  #if $pminconsensus:
+   --p-min-consensus=$pminconsensus
+  #end if
+  
+  #if str($pstrand) != 'None':
+   --p-strand=$pstrand
+  #end if
+  
+  #if str($punassignablelabel):
+   --p-unassignable-label="$punassignablelabel"
+  #end if
+  
+  #if $pevalue:
+   --p-evalue=$pevalue
+  #end if
+   --o-classification=oclassification
+  #if $pmaxaccepts:
+   --p-maxaccepts=$pmaxaccepts
+  #end if
+  ;
+  cp oclassification.qza $oclassification;
+  ]]></command>
+	<inputs>
+		<param format="qza,no_unzip.zip" label="--i-query: FeatureData[Sequence] Sequences to classify taxonomically. [required]" name="iquery" optional="False" type="data"/>
+		<param format="qza,no_unzip.zip" label="--i-reference-reads: FeatureData[Sequence] reference sequences.  [required]" name="ireferencereads" optional="False" type="data"/>
+
+		<conditional name="id_to_taxonomy_fp" optional="True">
+		   <param name="selector" type="select" label="Reference taxonomy to query">
+			  <option value="cached">Public databases</option>
+			  <option value="history">Databases from your history</option>
+		   </param>
+		   <when value="cached">
+			  <param argument="--taxonomy_fp" label="Reference taxonomy" type="select" optional="True">
+				 <options from_data_table="qiime_taxonomy" />
+			  </param>
+		   </when>
+		   <when value="history">
+			  <param argument="--taxonomy_fp" type="data" format="qza,no_unzip.zip" label="Reference databases" optional="True" />
+		   </when>
+		</conditional>
+
+		<param label="--p-maxaccepts: Maximum number of hits to keep for each query. Must be in range [0, infinity]. [default: 10]" name="pmaxaccepts" optional="True" type="integer" value="10"/>
+		<param label="--p-perc-identity: Reject match if percent identity to query is lower. Must be in range [0.0, 1.0]. [default: 0.8]" name="ppercidentity" optional="True" type="float" value="0.8"/>
+		<param label="--p-strand: [both|plus|minus]    Align against reference sequences in forward ('plus'), reverse ('minus'), or both directions ('both').  [default: both]" name="pstrand" optional="True" type="select">			
+			<option selected="True" value="both">both</option>
+			<option value="plus">plus</option>
+			<option value="minus">minus</option>
+		</param>
+		<param label="--p-evalue: BLAST expectation value (E) threshold for saving hits.  [default: 0.001]" name="pevalue" optional="True" type="float" value="0.001"/>
+		<param label="--p-min-consensus: Minimum fraction of assignments must match top hit to be accepted as consensus assignment. Must be in range (0.5, 1.0]. [default: 0.51]" name="pminconsensus" optional="True" type="float" value="0.51"/>
+		<param label="--p-unassignable-label: [default: Unassigned]" name="punassignablelabel" optional="True" type="text" value="Unassigned"/>
+		<param label="--cmd-config: Use config file for command options" name="cmdconfig" optional="True" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="qza" label="${tool.name} on ${on_string}: classification.qza" name="oclassification"/>
+	</outputs>
+	<help><![CDATA[
+BLAST+ consensus taxonomy classifier
+------------------------------------
+
+Assign taxonomy to query sequences using BLAST+. Performs BLAST+ local
+alignment between query and reference_reads, then assigns consensus
+taxonomy to each query sequence from among maxaccepts top hits,
+min_consensus of which share that taxonomic assignment.
+
+Parameters
+----------
+query : FeatureData[Sequence]
+    Sequences to classify taxonomically.
+reference_reads : FeatureData[Sequence]
+    reference sequences.
+reference_taxonomy : FeatureData[Taxonomy]
+    reference taxonomy labels.
+maxaccepts : Int % Range(1, None), optional
+    Maximum number of hits to keep for each query. Must be in range [0,
+    infinity].
+perc_identity : Float % Range(0.0, 1.0, inclusive_end=True), optional
+    Reject match if percent identity to query is lower. Must be in range
+    [0.0, 1.0].
+strand : Str % Choices({'both', 'minus', 'plus'}), optional
+    Align against reference sequences in forward ("plus"), reverse
+    ("minus"), or both directions ("both").
+evalue : Float, optional
+    BLAST expectation value (E) threshold for saving hits.
+min_consensus : Float % Range(0.5, 1.0, inclusive_start=False, inclusive_end=True), optional
+    Minimum fraction of assignments must match top hit to be accepted as
+    consensus assignment. Must be in range (0.5, 1.0].
+unassignable_label : Str, optional
+		\
+
+Returns
+-------
+classification : FeatureData[Taxonomy]
+    Taxonomy classifications of query sequences.
+    ]]>
+	</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

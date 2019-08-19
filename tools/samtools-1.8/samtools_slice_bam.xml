@@ -1,0 +1,40 @@
+<tool id="samtools1.8_slice_bam" name="Slice BAM" version="SAMTOOLS: 1.8">
+  <description>by provided regions</description>
+  <requirements>
+      <requirement type="package" version="1.8">samtools</requirement>
+  </requirements>
+  <command interpreter="python">samtools_slice_bam.py
+    &quot;${input_bam}&quot;
+    &quot;${input_bam.metadata.bam_index}&quot;
+    &quot;${input_interval}&quot;
+    &quot;${output_bam}&quot;
+  </command>
+  <inputs>
+    <param format="bam" label="BAM file" name="input_bam" type="data"/>
+    <param format="bed" label="BED file" name="input_interval" type="data"/>
+  </inputs>
+  <outputs>
+    <data format="bam" name="output_bam"/>
+  </outputs>
+  <tests>
+      <test>
+          <param ftype="bam" name="input_bam" value="gatk/fake_phiX_reads_1.bam"/>
+          <param ftype="bed" name="input_interval" value="gatk/fake_phiX_variant_locations.bed"/>
+          <output file="gatk/fake_phiX_reads_1.bam" ftype="bam" name="output_bam"/>
+      </test>
+  </tests>
+  <help>
+**What it does**
+
+ Accepts an input BAM file and an input BED file and creates an output BAM file containing only those alignments that overlap the provided BED intervals.
+
+------
+
+**Citation**
+
+For the underlying tool, please cite `Li H, Handsaker B, Wysoker A, Fennell T, Ruan J, Homer N, Marth G, Abecasis G, Durbin R; 1000 Genome Project Data Processing Subgroup. The Sequence Alignment/Map format and SAMtools. Bioinformatics. 2009 Aug 15;25(16):2078-9. &lt;http://www.ncbi.nlm.nih.gov/pubmed/19505943&gt;`_
+
+If you use this tool in Galaxy, please cite Blankenberg D, et al. *In preparation.*
+
+  </help>
+</tool>

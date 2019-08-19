@@ -1,0 +1,19 @@
+<tool id="bedItemOverlapCount" name="Bed Item Overlap Count" version="KENT: 20121024">
+	<description>Counts number of times a base is overlapped by the items in a bed file.</description>
+        <requirements>
+                <requirement type="package">kent</requirement>
+        </requirements>
+
+	<command>cat $input_bed | bedItemOverlapCount -zero -chromSize=$ref_length null stdin &gt; $output</command>
+	
+	<inputs>
+		<param format="bed" help="Bed file of alignments" label="Bed file" name="input_bed" optional="false" type="data"/>
+		<param format="tabular" help="contains two white space separated fields per line: 'chrom_name chrom_length'" label="Chromosome lengths" name="ref_length" optional="false" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="bed" label="Overlap counts on ${on_string}" name="output" type="data"/>
+	</outputs>
+        <help>
+        </help>
+
+</tool>

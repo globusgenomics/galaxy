@@ -1,0 +1,185 @@
+<tool id="gatk4_CollectAlignmentSummaryMetrics" name="CollectAlignmentSummaryMetrics" version="JAVA: 1.8.0; GATK4: gatk-4.0.5.0">
+  <description>Produces from a SAM/BAM/CRAM file containing summary alignment metrics</description>
+  <requirements>
+      <requirement type="package" version="1.8.0">java</requirement>
+      <requirement type="package" version="gatk-4.0.5.0">gatk4</requirement>
+  </requirements>
+  <macros>
+    <import>gatk_macros.xml</import>
+  </macros>
+  <command interpreter="python">gatk_wrapper.py
+   --max_jvm_heap_fraction "1"
+   -d "-I" "${reference_source.input_bam}" "${reference_source.input_bam.ext}" "gatk_input"
+   #if str( $reference_source.input_bam.metadata.bam_index ) != "None"
+       -d "" "${reference_source.input_bam.metadata.bam_index}" "bam_index" "gatk_input" ##hardcode galaxy ext type as bam_index
+   #end if
+   -t "CollectAlignmentSummaryMetrics"
+   -p '
+    -O "${output_stats}"
+    --ASSUME_SORTED "$sorted"
+    #if $reference_source.reference_source_selector != "history":
+        -R "${reference_source.ref_file.fields.path}"
+    #end if
+   '
+    #if str( $reference_source.reference_source_selector ) == "history":
+        -d "-R" "${reference_source.ref_file}" "${reference_source.ref_file.ext}" "gatk_input_reference_fasta"
+        --picard_jar "/mnt/galaxyTools/tools/picard/1.121/CreateSequenceDictionary.jar"
+    #end if
+    ##end standard gatk options
+    
+    ##start analysis specific options
+    #if $analysis_param_type.analysis_param_type_selector == "advanced":
+    -p '
+      --IS_BISULFITE_SEQUENCED $analysis_param_type.bisulphite
+      --MAX_INSERT_SIZE $analysis_param_type.maxinsert
+      --VALIDATION_STRINGENCY $analysis_param_type.validation_stringency 
+    '
+    #end if
+  </command>
+  <inputs>
+    <conditional name="reference_source">
+      <param label="Choose the source for the reference list" name="reference_source_selector" type="select">
+        <option value="cached">Locally cached</option>
+        <option value="history">History</option>
+      </param>
+      <when value="cached">
+        <param format="bam" help="-I,--input_file &amp;lt;input_file&amp;gt;" label="BAM file" name="input_bam" type="data">
+        </param>
+        <param help="-R,--reference_sequence &amp;lt;reference_sequence&amp;gt;" label="Using reference genome" name="ref_file" type="select">
+          <options from_data_table="gatk3_picard_indexes">
+                <filter column="3" type="sort_by"/>
+
+          </options>
+        </param>
+      </when>
+      <when value="history">
+        <param format="bam" help="-I,--input_file &amp;lt;input_file&amp;gt;" label="BAM file" name="input_bam" type="data"/>
+        <param format="fasta" help="-R,--reference_sequence &amp;lt;reference_sequence&amp;gt;" label="Using reference file" name="ref_file" type="data">
+        </param>
+      </when>
+    </conditional>
+    <param checked="true" falsevalue="false" label="Assume the input file is already sorted" name="sorted" truevalue="true" type="boolean"/>
+    
+    <conditional name="analysis_param_type">
+      <param name="analysis_param_type_selector" type="select" label="Basic or Advanced Analysis options">
+        <option value="basic" selected="True">Basic</option>
+        <option value="advanced">Advanced</option>
+      </param>
+      <when value="basic">
+      </when>
+      <when value="advanced">
+        <param area="true" label="Adapter sequences" name="adaptors" size="5x120" type="text" value="" help="One per line if multiple. Default values are  AATGATACGGCGACCACCGAGATCTACACTCTTTCCCTACACGACGCTCTTCCGATCT, AGATCGGAAGAGCTCGTATGCCGTCTTCTGCTTG, AATGATACGGCGACCACCGAGATCTACACTCTTTCCCTACACGACGCTCTTCCGATCT, AGATCGGAAGAGCGGTTCAGCAGGAATGCCGAGACCGATCTCGTATGCCGTCTTCTGCTTG, AATGATACGGCGACCACCGAGATCTACACTCTTTCCCTACACGACGCTCTTCCGATCT, AGATCGGAAGAGCACACGTCTGAACTCCAGTCACNNNNNNNNATCTCGTATGCCGTCTTCTGCTTG "/>
+        <param checked="false" falsevalue="false" label="Input file contains Bisulphite sequenced reads" name="bisulphite" truevalue="true" type="boolean"/>
+        <param label="Larger paired end reads and inter-chromosomal pairs considered chimeric " name="maxinsert" size="20" type="integer" value="100000"/>
+        <param label="Metric accumulation level" name="metric_accumulation_level" type="select" help="The level(s) at which to accumulate metrics" multiple="true">
+          <option value="ALL_READS">ALL_READS</option>
+          <option value="SAMPLE">SAMPLE</option>
+          <option value="LIBRARY">LIBRARY</option>
+          <option value="READ_GROUP">READ_GROUP</option>
+        </param>
+        <param label="Validation stringency" name="validation_stringency" type="select" help="Validation stringency for all SAM files read by this program">
+          <option value="STRICT" selected="true">STRICT</option>
+          <option value="LENIENT">LENIENT</option>
+          <option value="SILENT">SILENT</option>
+        </param>
+      </when>
+    </conditional>  
+  </inputs>
+  <outputs>
+    <data format="txt" label="${tool.name} on ${on_string} (Metrics)" name="output_stats"/>
+  </outputs>
+  <tests>
+      <test>
+          <param name="reference_source_selector" value="history"/>
+          <param ftype="fasta" name="ref_file" value="phiX.fasta"/>
+          <param ftype="bam" name="input_bam" value="gatk/gatk_indel_realigner/gatk_indel_realigner_out_1.bam"/>
+          <param name="gatk_param_type_selector" value="basic"/>
+          <param name="analysis_param_type_selector" value="basic"/>
+          <output file="gatk/gatk_table_recalibration/gatk_table_recalibration_out_1.txt" ftype="txt" lines_diff="4" name="output_stats"/>
+      </test>
+  </tests>
+  <help>
+**What it does**
+
+
+FlagStat
+A reimplementation of the 'samtools flagstat' subcommand in the GATK
+
+
+This tool walks over all input data, accumulating statistics such as total number of reads, reads with QC failure flag set, number of duplicates, percentage mapped, etc.
+
+If you encounter errors, please view the `GATK FAQ &lt;http://www.broadinstitute.org/gatk/guide/topic?name=faqs&gt;`_.
+
+------
+
+**Inputs**
+
+GenomeAnalysisTK: FlagStat accepts an aligned BAM.
+
+
+**Outputs**
+
+The output is a report file.
+
+
+Go `here &lt;http://www.broadinstitute.org/gatk/guide/topic?name=intro&gt;`_ for details on GATK file formats.
+
+-------
+
+**Settings**::
+
+
+ --allow_polyploid_reduction / -polyploid ( boolean with default value false )
+ Allow the experimental polyploid-based reduction capabilities of this tool
+
+ --context_size / -cs ( int with default value 10 )
+ The number of bases to keep around mismatches (potential variation)
+
+ --dont_compress_read_names / -nocmp_names ( boolean with default value false )
+ Do not compress read names. By default, ReduceReads will compress read names to numbers and guarantee uniqueness and reads with similar name will still have similar compressed names. Note: If you scatter/gather there is no guarantee that read name uniqueness will be maintained -- in this case we recommend not compressing.
+
+ --dont_hardclip_low_qual_tails / -noclip_tail ( boolean with default value false )
+ Do not hard clip the low quality tails of the reads. This option overrides the argument of minimum tail quality.
+
+ --dont_simplify_reads / -nosimplify ( boolean with default value false )
+ Do not simplify read (strip away all extra information of the read -- anything other than bases, quals and read group).
+
+ --dont_use_softclipped_bases / -no_soft ( boolean with default value false )
+ Do not use high quality soft-clipped bases. By default, ReduceReads will hard clip away any low quality soft clipped base left by the aligner and use the high quality soft clipped bases in it's traversal algorithm to identify variant regions. The minimum quality for soft clipped bases is the same as the minimum base quality to consider (minqual)
+
+ --downsample_coverage / -ds ( int with default value 250 )
+ Downsamples the coverage of a variable region approximately (guarantees the minimum to be equal to this). A value of 0 turns downsampling off.
+
+ --hard_clip_to_interval / -clip_int ( boolean with default value false )
+ Optionally hard clip all incoming reads to the desired intervals. The hard clips will happen exactly at the interval border.
+
+ -mindel / --minimum_del_proportion_to_trigger_variant ( double with default value 0.05 )
+ Minimum proportion of indels in a site to trigger a variant region. Anything below this will be considered consensus.
+
+ --minimum_mapping_quality / -minmap ( int with default value 20 )
+ The minimum mapping quality to be considered for the consensus synthetic read. Reads that have mapping quality below this threshold will not be counted towards consensus, but are still counted towards variable regions.
+
+ --minimum_tail_qualities / -mintail ( byte with default value 2 )
+ Reads have notoriously low quality bases on the tails (left and right). Consecutive bases with quality lower than this threshold will be hard clipped off before entering the reduce reads algorithm.
+
+ -minqual / --minimum_base_quality_to_consider ( byte with default value 20 )
+ The minimum base quality to be considered for the consensus synthetic read. Reads that have base quality below this threshold will not be counted towards consensus, but are still counted towards variable regions.
+
+ -minvar / --minimum_alt_proportion_to_trigger_variant ( double with default value 0.05 )
+ Minimum proportion of mismatches in a site to trigger a variant region. Anything below this will be considered consensus.
+
+ -noclip_ad / --dont_hardclip_adaptor_sequences ( boolean with default value false )
+ Do not hard clip adaptor sequences. Note: You don't have to turn this on for reads that are not mate paired. The program will behave correctly in those cases.
+
+------
+
+**Citation**
+
+For the underlying tool, please cite `DePristo MA, Banks E, Poplin R, Garimella KV, Maguire JR, Hartl C, Philippakis AA, del Angel G, Rivas MA, Hanna M, McKenna A, Fennell TJ, Kernytsky AM, Sivachenko AY, Cibulskis K, Gabriel SB, Altshuler D, Daly MJ. A framework for variation discovery and genotyping using next-generation DNA sequencing data. Nat Genet. 2011 May;43(5):491-8. &lt;http://www.ncbi.nlm.nih.gov/pubmed/21478889&gt;`_
+
+Please also site `McKenna A, Hanna M, Banks E, Sivachenko A, Cibulskis K, Kernytsky A, Garimella K, Altshuler D, Gabriel S, Daly M, DePristo MA (2010). The Genome Analysis Toolkit: a MapReduce framework for analyzing next-generation DNA sequencing data. Genome Res. 20:1297-303. Epub 2010 Jul 19. &lt;http://www.ncbi.nlm.nih.gov/pubmed/20644199&gt;`_
+
+If you use this tool in Galaxy, please cite `Blankenberg D, Von Kuster G, Coraor N, Ananda G, Lazarus R, Mangan M, Nekrutenko A, Taylor J. Galaxy: a web-based genome analysis tool for experimentalists. Curr Protoc Mol Biol. 2010 Jan;Chapter 19:Unit 19.10.1-21. &lt;http://www.ncbi.nlm.nih.gov/pubmed/20069535&gt;`_
+
+  </help>
+</tool>

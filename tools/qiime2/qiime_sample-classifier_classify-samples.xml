@@ -1,0 +1,205 @@
+<?xml version="1.0" ?>
+<tool id="qiime_sample-classifier_classify-samples" name="qiime sample-classifier classify-samples" version="022019">
+	<description> - Supervised learning classifier.</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command>
+	<![CDATA[
+	qiime sample-classifier classify-samples --i-table=$itable
+
+	#def list_dict_to_string(list_dict):
+		#set $file_list = list_dict[0]['additional_input'].__getattr__('file_name')
+		#for d in list_dict[1:]:
+			#set $file_list = $file_list + ' --m-metadata-file=' + d['additional_input'].__getattr__('file_name')
+		#end for
+		#return $file_list
+	#end def
+
+	 --m-metadata-file=$list_dict_to_string($input_files_mmetadatafile) --m-metadata-column="$mmetadatacolumn"
+	#if $pstep:
+	 --p-step=$pstep
+	#end if
+
+	#if $poptimizefeatureselection:
+	  --p-optimize-feature-selection
+	#else
+		--p-no-optimize-feature-selection
+	#end if
+
+	#if $ptestsize:
+	 --p-test-size=$ptestsize
+	#end if
+
+	#if str($cmdconfig) != 'None':
+	 --cmd-config=$cmdconfig
+	#end if
+	 --o-visualization=ovisualization
+	#if str($pestimator) != 'None':
+	 --p-estimator=$pestimator
+	#end if
+
+	#if $pnestimators:
+	 --p-n-estimators=$pnestimators
+	#end if
+
+	#set $pnjobs = '${GALAXY_SLOTS:-4}'
+
+	#if str($pnjobs):
+	 --p-n-jobs="$pnjobs"
+	#end if
+
+
+	#if $pcv:
+	 --p-cv=$pcv
+	#end if
+
+	#if str($ppalette) != 'None':
+	 --p-palette=$ppalette
+	#end if
+
+	#if $pparametertuning:
+	  --p-parameter-tuning
+	#else
+		--p-no-parameter-tuning
+	#end if
+
+	#if str($prandomstate):
+	 --p-random-state="$prandomstate"
+	#end if
+	;
+	qiime tools export --input-path ovisualization.qzv --output-path out   && mkdir -p '$ovisualization.files_path'
+	&& cp -r out/* '$ovisualization.files_path'
+	&& mv '$ovisualization.files_path/index.html' '$ovisualization'
+	]]>
+	</command>
+	<inputs>
+		<param format="qza,no_unzip.zip" label="--i-table: FeatureTable[Frequency] Feature table containing all features that should be used for target prediction. [required]" name="itable" optional="False" type="data"/>
+
+		<repeat name="input_files_mmetadatafile" optional="False" title="--m-metadata-file">
+			<param label="--m-metadata-file: Metadata file or artifact viewable as metadata. This option may be supplied multiple times to merge metadata. [required]" name="additional_input" type="data" format="tabular,qza,no_unzip.zip" />
+		</repeat>
+		<param label="--m-metadata-column: MetadataColumn[Categorical] Column from metadata file or artifact viewable as metadata. Categorical metadata column to use as prediction target. [required]" name="mmetadatacolumn" optional="False" type="text"/>
+
+		<param label="--p-test-size: Fraction of input samples to exclude from training set and use for classifier testing. [default: 0.2]" name="ptestsize" optional="True" type="float" value="0.2"/>
+		<param label="--p-step: If optimize_feature_selection is True, step is the percentage of features to remove at each iteration.  [default: 0.05]" name="pstep" optional="True" type="float" value="0.05"/>
+		<param label="--p-cv: Number of k-fold cross-validations to perform.  [default: 5]" name="pcv" optional="True" type="integer" value="5"/>
+
+		<param label="--p-random-state: Seed used by random number generator. [optional]" name="prandomstate" optional="True" type="text"/>
+
+		<param label="--p-n-estimators: Number of trees to grow for estimation. More trees will improve predictive accuracy up to a threshold level, but will also increase time and memory requirements. This parameter only affects ensemble estimators, such as Random Forest, AdaBoost, ExtraTrees, and GradientBoosting.  [default: 100]" name="pnestimators" optional="True" type="integer" value="100"/>
+		<param label="--p-estimator: Estimator method to use for sample
+                                  prediction.  [default:
+                                  RandomForestClassifier]" name="pestimator" optional="True" type="select">
+			<option selected="True" value="None">Selection is Optional</option>
+			<option value="LinearSVC">LinearSVC</option>
+			<option value="RandomForestClassifier">RandomForestClassifier</option>
+			<option value="SVC">SVC</option>
+			<option value="AdaBoostClassifier">AdaBoostClassifier</option>
+			<option value="GradientBoostingClassifier">GradientBoostingClassifier</option>
+			<option value="ExtraTreesClassifier">ExtraTreesClassifier</option>
+			<option value="KNeighborsClassifier">KNeighborsClassifier</option>
+		</param>
+
+		<param label="--p-optimize-feature-selection: --p-no-optimize-feature-selection Automatically optimize input feature selection using recursive feature elimination.  [default: False]" name="poptimizefeatureselection" checked="False" type="boolean"/>
+
+		<param label="--p-parameter-tuning: --p-no-parameter-tuning Automatically tune hyperparameters using random grid search.  [default: False]" name="pparametertuning" checked="False" type="boolean"/>
+
+		<param label="--p-palette: The color palette to use for plotting.
+                                  [default: sirocco]" name="ppalette" optional="True" type="select">
+			<option selected="True" value="None">Selection is Optional</option>
+			<option value="plasma">plasma</option>
+			<option value="inferno">inferno</option>
+			<option value="BluePurple">BluePurple</option>
+			<option value="summer">summer</option>
+			<option value="magma">magma</option>
+			<option value="drifting">drifting</option>
+			<option value="sirocco">sirocco</option>
+			<option value="enigma">enigma</option>
+			<option value="YellowOrangeRed">YellowOrangeRed</option>
+			<option value="GreenBlue">GreenBlue</option>
+			<option value="deepblue">deepblue</option>
+			<option value="ambition">ambition</option>
+			<option value="melancholy">melancholy</option>
+			<option value="PurpleRed">PurpleRed</option>
+			<option value="greyscale">greyscale</option>
+			<option value="dandelions">dandelions</option>
+			<option value="YellowOrangeBrown">YellowOrangeBrown</option>
+			<option value="verve">verve</option>
+			<option value="viridis">viridis</option>
+			<option value="OrangeRed">OrangeRed</option>
+			<option value="mysteriousstains">mysteriousstains</option>
+			<option value="spectre">spectre</option>
+			<option value="solano">solano</option>
+			<option value="daydream">daydream</option>
+			<option value="eros">eros</option>
+			<option value="RedPurple">RedPurple</option>
+			<option value="PurpleBlue">PurpleBlue</option>
+			<option value="YellowGreen">YellowGreen</option>
+			<option value="copper">copper</option>
+			<option value="navarro">navarro</option>
+		</param>
+
+		<param label="--cmd-config: Use config file for command options" name="cmdconfig" optional="True" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="html" label="${tool.name} on ${on_string}: visualization.qzv" name="ovisualization"/>
+	</outputs>
+	<help>
+		<![CDATA[
+Supervised learning classifier.
+--------------------------------
+
+Predicts a categorical sample metadata column using a supervised learning
+classifier. Splits input data into training and test sets. The training set
+is used to train and test the estimator using a stratified k-fold cross-
+validation scheme. This includes optional steps for automated feature
+extraction and hyperparameter optimization. The test set validates
+classification accuracy of the optimized estimator. Outputs classification
+results for test set. For more details on the learning  algorithm, see
+http://scikit-learn.org/stable/supervised_learning.html
+
+Parameters
+----------
+table : FeatureTable[Frequency]
+    Feature table containing all features that should be used for target
+    prediction.
+metadata : MetadataColumn[Categorical]
+    Categorical metadata column to use as prediction target.
+test_size : Float % Range(0.0, 1.0, inclusive_start=False), optional
+    Fraction of input samples to exclude from training set and use for
+    classifier testing.
+step : Float % Range(0.0, 1.0, inclusive_start=False), optional
+    If optimize_feature_selection is True, step is the percentage of
+    features to remove at each iteration.
+cv : Int % Range(1, None), optional
+    Number of k-fold cross-validations to perform.
+random_state : Int, optional
+    Seed used by random number generator.
+n_estimators : Int % Range(1, None), optional
+    Number of trees to grow for estimation. More trees will improve
+    predictive accuracy up to a threshold level, but will also increase
+    time and memory requirements. This parameter only affects ensemble
+    estimators, such as Random Forest, AdaBoost, ExtraTrees, and
+    GradientBoosting.
+estimator : Str % Choices({'AdaBoostClassifier', 'ExtraTreesClassifier', 'GradientBoostingClassifier', 'KNeighborsClassifier', 'LinearSVC', 'RandomForestClassifier', 'SVC'}), optional
+    Estimator method to use for sample prediction.
+optimize_feature_selection : Bool, optional
+    Automatically optimize input feature selection using recursive feature
+    elimination.
+parameter_tuning : Bool, optional
+    Automatically tune hyperparameters using random grid search.
+palette : Str % Choices({'BluePurple', 'GreenBlue', 'OrangeRed', 'PurpleBlue', 'PurpleRed', 'RedPurple', 'YellowGreen', 'YellowOrangeBrown', 'YellowOrangeRed', 'ambition', 'copper', 'dandelions', 'daydream', 'deepblue', 'drifting', 'enigma', 'eros', 'greyscale', 'inferno', 'magma', 'melancholy', 'mysteriousstains', 'navarro', 'plasma', 'sirocco', 'solano', 'spectre', 'summer', 'verve', 'viridis'}), optional
+    The color palette to use for plotting.
+
+Returns
+-------
+visualization : Visualization
+		\
+		]]>
+	</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

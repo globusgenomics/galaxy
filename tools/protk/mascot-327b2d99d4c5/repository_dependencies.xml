@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<repositories description="Requires the Proteomics Datatypes package">
+
+     <repository toolshed="http://toolshed.g2.bx.psu.edu" name="proteomics_datatypes" owner="iracooke" changeset_revision="09b89b345de2"/>
+
+</repositories>

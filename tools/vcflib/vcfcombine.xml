@@ -1,0 +1,20 @@
+<tool id="vcfcombine" name="Combine VCFs with vcflib" version="VCFLIB: 07.21.2015">
+	<requirements>
+		<requirement type="package">vcflib</requirement>
+	</requirements>
+	<command interpreter="python">
+	vcfcombine.py --vcf
+	#for $input_variant in $input_variants:
+		 ${input_variant.input_variant.__str__()}
+	#end for
+	--out $out
+	</command>
+	<inputs>
+		<repeat min="1" name="input_variants" title="VCF files to Merge.">
+			<param format="vcf" label="Input variant file" name="input_variant" type="data"/>
+		</repeat>
+	</inputs>
+	<outputs>
+		<data format="vcf" name="out"/>
+	</outputs>
+</tool>

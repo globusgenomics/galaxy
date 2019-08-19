@@ -1,0 +1,137 @@
+<tool id="import_cell_lines_samples_for_batch_submit" name="Import cell line with MINID" version="1.0">
+    <action module="galaxy.tools.actions.globus" class="BatchSubmit"/>
+    <description>to prepare for batch submit</description>
+
+    <requirements>
+        <requirement type="package">pymodules</requirement>
+    </requirements>
+
+    <command interpreter="python">
+        #import os
+        get_tissue_sample_minids.py
+            --workflow-name "$workflow_name"
+            #if str($data_source_cond.data_source) == "history":
+              #if os.path.exists(str($data_source_cond.input_file.extra_files_path)):
+                #if str($data_group_cond.data_group) == "yes":
+                  -I "history" "$history_id" "$data_source_cond.input_file.name" "$data_source_cond.input_label" "$data_source_cond.input_file.extra_files_path/$str($data_group_cond.group_name)"
+                #else:
+                  -I "history" "$history_id" "$data_source_cond.input_file.name" "$data_source_cond.input_label" "$data_source_cond.input_file.extra_files_path"
+                #end if
+              #else:
+                #set $fh = open(str($data_source_cond.input_file), "r")
+                #set $path = "%s/data" % ($fh.readline().rstrip("\n"))
+                #if str($data_group_cond.data_group) == "yes":
+                  #set $path += "/%s" % str($data_group_cond.group_name)
+                #end if
+
+                -I "history" "$history_id" "$data_source_cond.input_file.name" "$data_source_cond.input_label" "$path"
+              #end if
+            #elif str($data_source_cond.data_source) == "library":
+              -I "library" "$data_source_cond.input_library_name" "$data_source_cond.input_file" "$data_source_cond.input_label" ""
+            #else:
+              ##-I "minid" "$data_source_cond.minid" "" "" ""
+              --minid "$data_source_cond.minid" 
+              --output-metadata $output_metadata
+            #end if
+
+            ## add any additional input datasets
+            #for $extra_input_datasets in $input_bags:
+              #if str($extra_input_datasets.extra_data_source_cond.data_source) == "history":
+                #if os.path.exists(str($extra_input_datasets.extra_data_source_cond.additional_input_file.extra_files_path)):
+                  -I "history" "$history_id" "$extra_input_datasets.extra_data_source_cond.additional_input_file.name" "$extra_input_datasets.extra_data_source_cond.additional_input_label" "$extra_input_datasets.extra_data_source_cond.additional_input_file.extra_files_path" 
+                #else:
+                  #set $fh = open(str($extra_input_datasets.extra_data_source_cond.additional_input_file), "r")
+                  #set $path = $fh.readline().rstrip("\n")
+                  #if str($data_group_cond.data_group) == "yes":
+                    #set $path += "/%s" % str($data_group_cond.group_name)
+                  #end if
+
+                  -I "history" "$history_id" "$extra_input_datasets.extra_data_source_cond.additional_input_file.name" "$extra_input_datasets.extra_data_source_cond.additional_input_label" "$path"
+                #end if
+              #else:
+                -I "library" "$extra_input_datasets.extra_data_source_cond.additional_input_library_name" "$extra_input_datasets.extra_data_source_cond.additional_input_file" "$extra_input_datasets.extra_data_source_cond.additional_input_label" ""
+              #end if
+            #end for
+            #for $input_param in $input_params:
+              -P "$input_param.param_id" "$input_param.param_toolname" "$input_param.param_name" "$input_param.param_value"
+            #end for
+            --output $batch_file
+            --key $userapi
+            --url "$url"
+            --username $username
+            --group $data_group_cond.group_name
+    </command>
+    <inputs>
+      <param name="workflow_name" type="text" label="User Workflow Name to create batch for" help="" value="Optimized-Isaac-align-per-sample-Fastq"/>
+      <conditional name="data_group_cond">
+        <param name="data_group" type="select" label="Does data bag have partitions" help="i.e. normal, tumor, brain, " >
+          <option value="yes">Yes</option>
+          <option value="no" selected="True">No</option>
+        </param>
+        <when value="no">
+          <param name="group_name" type="hidden" value="None" label="Enter group partition" />
+        </when>
+        <when value="yes">
+          <param name="group_name" type="text" label="Enter group partition" />
+        </when>
+      </conditional>
+      <conditional name="data_source_cond">
+        <param name="data_source"  type="select" label="Source of Workflow Input Dataset" >
+          <option value="minid" selected="True">MINID</option>
+          <option value="history">History</option>
+          <option value="library">Library</option>
+        </param>
+        <when value="minid">
+          <param name="minid" type="text" label="MINID to retrieve sample metadata file" />
+        </when>
+        <when value="history">
+          <param name="input_label" type="text" label="Label in Workflow for Input Dataset Box" />
+          <param name="input_file" type="data" format="tabular,txt" label="Bag location" help="This should be the item with BAG like structure."/>
+        </when>
+        <when value="library">
+          <param name="input_label" type="text" label="Label in Workflow for Input Dataset Box" />
+          <param name="input_library_name" type="text" label="Library name" help="Make sure spelling and case is exactly matching." />
+          <param name="input_file" type="text" label="File in library" help="Make sure spelling and case is exactly matching." />
+        </when>
+      </conditional>
+      <repeat name="input_bags" title="Additional Input Bags">
+        <conditional name="extra_data_source_cond">
+          <param name="data_source"  type="select" label="Source of Workflow Input Dataset" >
+            <option value="minid" selected="True">MINID</option>
+            <option value="history">History</option>
+            <option value="library">Library</option>
+          </param>
+          <when value="minid">
+            <param name="additional_minid" type="text" label="MINID to retrieve sample metadata file" />
+          </when>
+          <when value="history">
+            <param name="additional_input_label" type="text" label="Label in Workflow for Input Dataset Box" />
+            <param format="txt" name="additional_input_file" type="data" label="This should be the item with BAG like structure." />
+          </when>
+          <when value="library">
+            <param name="additional_input_label" type="text" label="Label in Workflow for Input Dataset Box" />
+            <param name="additional_input_library_name" type="text" label="Library name" help="Make sure spelling and case is exactly matching." />
+            <param name="additional_input_file" type="text" label="File in library" help="Make sure spelling and case is exactly matching." />
+          </when>
+        </conditional>
+      </repeat>
+      <repeat name="input_params" title="Add Non-SampleName parameters" help="If there is a parameter that needs to be static for all samples, include the name of the parameter according to the sample batch submit file and it's value" >
+        <param name="param_id" type="text" label="Parameter ID value" help="Should be an integer. Use value from the batch submit file header. For example, Param::param_ID::tool_name::XXXX::XXXX::parameter_name, where XXXX can be 0 or more tool parameter names. You do not need to enter these."/>
+        <param name="param_toolname" type="text" label="Parameter tool name" help="Make sure spelling and case is exactly matching." />
+        <param name="param_name" type="text" label="Parameter name" help="Make sure spelling and case is exactly matching." />
+        <param name="param_value" type="text" label="Parameter value" help="Enter a proper value." />
+      </repeat>
+        
+      <param name="url" type="hidden" label="URL"/>
+      <param name="userapi" type="hidden" size="100" label="Key"/>
+      <param name="history_id" type="hidden" size="100" label="History id"/>
+      <param name="username" type="hidden" size="100" label="Globus Username"/>
+    </inputs>
+    <outputs>
+      <data name="output_metadata" format="txt" label="MINID metadata file on ${on_string}" />
+      <data name="batch_file" format="txt" label="Batch submit file on ${on_string}" />
+    </outputs>
+
+    <help>
+    </help>
+</tool>

@@ -1,0 +1,77 @@
+<tool id="filter_homopolymer_nucleotides" name="SNPiR Filter homopolymer nucleotides" version="SNPIR: 12-May-2014; SAMTOOLS: 1.2; UCSC_TOOLS: 20140801; BEDTOOLS: 2.17.0">
+  <requirements>
+    <requirement type="package">snpir</requirement>
+    <requirement type="package">samtools</requirement>
+    <requirement type="package">ucsc_tools</requirement>
+    <requirement type="package">bedtools</requirement>
+  </requirements>
+  <description>
+   removes variants that are located within homopolymers
+  </description>
+
+  <command>
+    filter_homopolymer_nucleotides.pl 
+    -infile $inputVCF -outfile $outputVCF 
+    #if $genomeSource.refGenomeSource == &quot;history&quot;:
+        -refgenome $genomeSource.ownFile
+    #else
+        -refgenome ${genomeSource.index.fields.path}
+    #end if
+
+  </command>
+
+  <inputs>
+    <param format="vcf" label="Select an input VCF file" name="inputVCF" type="data"/>
+    <conditional name="genomeSource">
+      <param label="Select Reference Genome" name="refGenomeSource" type="select">
+        <option value="indexed">Select built-in genome</option>
+        <option value="history">Use a genome (fasta format) from my history</option>
+      </param>
+      <when value="indexed">
+        <param help="This list contains genomes cached at this Galaxy instance. If your genome of interest is not present here request it by using 'Help' link at the top of Galaxy interface or use the 'Use a genome (fasta format) from my history' option of the 'Select Reference Genome' dropdown." label="Select a built-in reference genome" name="index" type="select">
+          <options from_data_table="all_fasta">
+            <filter column="3" type="sort_by"/>
+          </options>
+        </param>
+      </when>
+      <when value="history">
+        <param format="fasta" help="This option works best for relatively small genomes. If you are working with large human-sized genomes, send request to Galaxy team for adding your reference to this Galaxy instance by using 'Help' link at the top of Galaxy interface." label="Select a reference genome from history" name="ownFile" type="data"/>
+      </when>
+    </conditional>
+
+
+  </inputs>
+
+  <outputs>
+    <data format="vcf" label="${tool.name} on ${on_string}" name="outputVCF"/>
+  </outputs>
+
+  <help>
+
+.. class:: infomark
+
+**Purpose**
+
+Homopolymer filter, by Robert Piskol (piskol@stanford.edu)  Gokul Ramaswami (gokulr@stanford.edu) 07/25/2013
+
+This program takes a variant file, and a reference genome and removes variants that are located
+whtin homopolymers. 
+
+
+Arguments:
+infile FILE	- File containing a list of variants to be filtered
+outfile FILE	- Output file for filtered variants
+refgenome FILE	- File in FASTA format containing the reference genome of the species
+help		- Show this help screen                 
+
+------
+
+.. class:: infomark
+
+**Inputs, outputs, and parameters**
+
+
+
+  </help>
+
+</tool>

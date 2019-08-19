@@ -1,0 +1,64 @@
+<tool id="xpress" name="XPRESS" version="0.1.0">
+  <requirements>
+    <requirement type="package">protkgem</requirement>
+    <requirement type="package">ruby</requirement>
+    <requirement type="package">tpp</requirement>
+  </requirements>
+  <description>Run XPRESS on ProteinProphet on results</description>
+  <command>
+    xpress.rb --galaxy $protxml 
+    #if str($massTolerance) != "":
+       -m$massTolerance
+    #end if
+    #if str($residueTolerance) != "":
+       -r$residueTolerance
+    #end if
+    #if str($residues) != "":
+       -l$residues
+    #end if
+    #if str($isotopes) != "None":
+       -n$isotopes
+    #end if
+    $elute
+    #if str($ratioType.ratio) == "light":
+       -L
+    #elif str($ratioType.ratio) == "heavy":
+       -H
+    #end if
+
+  </command>
+  <inputs>
+    <param name="protxml" type="data" format="protxml" label="ProteinProphet Results" help=""/>
+    <param name="massTolerance" type="integer" value="1" label="XPress Mass Tolerance" />
+    <param name="residueTolerance" type="integer" value="9" label="Residue Mass Tolerance" />
+    <param name="residues" type="text" value="C" label="Label Residues" />
+    <param name="isotopes" type="text" label="Specify isotopic labels" help="when specifying multiple isotopic labels, use this option e.g. -nK,3.0 -nL,3.0" />
+    <param name="elute" type="boolean" checked="false" falsevalue="" truevalue="-b" label="Heavy labeled peptide elutes before light labeled partner" />
+    <conditional name="ratioType">
+      <param name="ratio" type="select" label="For ratio set to light, heavy or none" help="">
+	<option value="none">None</option>
+        <option value="light">Light</option>
+        <option value="heavy">Heavy</option>
+      </param>
+    </conditional>
+  </inputs>
+  <outputs>
+    <data format="protxml" name="output_protxml" label="XPRESS Protein Level Analysis of ${on_string}" from_work_dir="interact.prot.xml"/>
+    <data format="pepxml" name="output_pepxml" label="XPRESS Peptide Level Analysis of ${on_string}" from_work_dir="interact.xml"/>
+  </outputs>
+
+  <help>
+**What it does**
+
+The XPRESS software calculates the relative abundance of proteins, such as those obtained from an ICAT-reagent labeled experiment, by reconstructing the light and heavy elution profiles of the precursor ions and determining the elution areas of each peak. The software allows the specification of which residue(s) are labeled (such as cysteines for ICAT) and what the mass difference of the two isotope labels are (such as 8 Da for ICAT). There's a built in interface to the INTERACT program that allows for querying/sorting based on the expression values. Averages plus standard deviations are calculated for each protein expression value when multiple peptide measurements are available.
+
+----
+
+**Citation**
+
+If you use this tool please read and cite the paper describing XPRESS.
+
+Han DK, Eng J, Zhou H, and Aebersold R. (2001) "Quantitative profiling of differentiation-induced microsomal proteins using isotope- coded affinity tags and mass spectrometry." Nature Biotechnology 19:946-51.
+  </help>
+
+</tool>

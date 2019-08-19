@@ -1,0 +1,62 @@
+<tool id="s3_get_data" name="S3 Get Data">
+  <description>Get data from S3</description>
+  <action module="galaxy_ext.globus.tools.actions.globus" class="S3Transfer"/>
+  <command interpreter="python"> 
+    s3_transfer.py
+    --transfer-info "$transfer_info"
+    --out-file "$out_file1"
+  </command>
+  <inputs>
+    <param name="bucket" type="text" label="S3 Bucket">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="from_path" type="text" label="Source Path">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="aws_access_key_id" type="text" label="AWS Access Key ID">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="aws_secret_access_key" type="text" label="AWS Secret Access Key">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="transfer_info" type="hidden" value="**" label="Transfer Info">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="include_subdir" type="boolean" checked="false" truevalue="yes" falsevalue="no" label="Include Sub Directory for Dir or Bucket Transfer (by default, only immediate files are inluced)"/>
+    <repeat name="tags" title="Tags" min="0">
+      <param name="key" type="text" label="Key">
+        <sanitizer sanitize="False"/>
+      </param>
+      <param name="value" type="text" label="Value">
+        <sanitizer sanitize="False"/>
+      </param>
+    </repeat>
+  </inputs>
+  <outputs>
+    <data name="out_file1" type="data" format="txt"/>
+  </outputs>
+  <help>
+
+**What it does**
+
+Transfer a file, a directory or a bucket from S3 and create a dataset.
+
+It requires four inputs:
+
+S3 Bucket: the name of the bucket to download from.
+
+Source Path: path to the file or "directory" in the bucket, such as “dir/file” or "dir/dir". Leave empty to transfer a Bucket.
+For example: if you have a file on S3 https://s3.amazonaws.com/gg-test-1/test/test_file, gg-test-1 is the bucket name, test/test_file is the file path.
+
+AWS Access Key ID and AWS Secrect Access Key: credentials to access the bucket, they can be created in IAM user, the tool won’t record the keys, but make sure to limit the IAM user’s access privilege, the tool requires s3:ListBucket for the bucket and s3:GetObject for the object.
+
+Other inputs:
+
+Include Sub Directory for Dir or Bucket Transfer: include all contents under a directory or bucket object.
+
+Tags: key value pairs, help to add another dimension to search for the objects according to their tags on S3, you may add multiple tags, so that only objects having all the tags will be transferred. This option requires s3:GetObjectTagging permission on the objects.
+
+The overall size of the object (file, dir or bucket) to be transferred should not exceed 100GB. Please contact the Administrator if you intend to transfer a larger object.
+
+  </help>
+</tool>

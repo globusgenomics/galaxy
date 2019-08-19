@@ -1,0 +1,207 @@
+#!/usr/bin/env python
+"""
+Submits retroSeq call or discover stage
+"""
+
+import fnmatch, time, re, optparse, os, sys, tempfile, shutil
+from subprocess import *
+
+galhtmlprefix = """<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Galaxy tool output - see http://getgalaxy.org/" />
+<title></title>
+<link rel="stylesheet" href="/static/style/base.css" type="text/css" />
+</head>
+<body>
+<div class="document">
+"""
+galhtmlpostfix = """</div></body></html>\n"""
+
+def stop_err( msg ):
+    sys.stderr.write( '%s\n' % msg )
+    sys.exit()
+
+def cleanup_before_exit( tmp_dir ):
+    if tmp_dir and os.path.exists( tmp_dir ):
+        shutil.rmtree( tmp_dir )
+
+def create_bam_idx(bamFile, target_dir = None):
+    if target_dir is None:
+        target_dir = os.getcwd()
+
+    index_name = "%s/%s.bai" % (target_dir, os.path.basename(bamFile))
+    stderr_name = tempfile.NamedTemporaryFile( prefix = "bam_stderr" ).name
+    command = 'samtools index %s %s' % ( bamFile, index_name )
+    print command
+    proc = subprocess.Popen( args=command, shell=True, stderr=open( stderr_name, 'wb' ) )
+    exit_code = proc.wait()
+    if exit_code:
+        for line in open( stderr_name ):
+            print >> sys.stderr, line
+        os.unlink( stderr_name ) #clean up
+        #cleanup_before_exit( tmp_dir )
+        raise Exception( "Error indexing BAM file" )
+    os.unlink( stderr_name ) #clean up
+
+def __main__():
+    print "\n\nStart time:"
+    print time.strftime('%d/%m/%Y %H:%M:%S', time.localtime(time.time()))
+
+    #Parse Command Line
+    parser = optparse.OptionParser()
+    parser.add_option( '', '--discover', dest='discover', action="store_true", help='Run the retroSeq discover tool' )
+    parser.add_option( '', '--call', dest='call', action="store_true", help='Run the retroSeq call tool' )
+    parser.add_option( '', '--swift', dest='swift', action="store_true", help='Run the retroSeq call tool using Swift' )
+    parser.add_option( '', '--bam', dest='inputBam', help='The input BAM whole genome file.' )
+    parser.add_option( '', '--indexBam', dest='bamFileIndex', help='The BAM index file' )
+    parser.add_option( '', '--output-bed', dest='outputFile', help='Output file for a single BAM input.' )
+    parser.add_option( '', '--output-vcf', dest='outputFileVcf', help='Output file for a single BAM input.' )
+    parser.add_option( '', '--output-candidates', dest='outputFileCandidates', help='Output file for a single BAM input.' )
+    parser.add_option( '', '--align', action="store_true", dest='align', help="Do the computational expensive exonerate PE discordant mate alignment step" )
+    parser.add_option( '', '--refTEsName', dest='refTEsName', help='TE type of reference elements' )
+    parser.add_option( '', '--refTEs', dest='refTEs', help='BED file of reference elements' )
+    parser.add_option( '', '--eref', dest='eref', help='Tab file with list of transposon types and the corresponding fasta file of reference sequences' )
+    parser.add_option( '', '--extra-files-path', dest='extra_files_path', help="Directory which will contain output data." )
+    parser.add_option( '-q', '--quality', dest='quality', help="Minimum mapping quality for a read mate that anchors the insertion call" )
+    parser.add_option( '', '--id', dest='id_perc', help="Minimum percent ID for a match of a read to the transposon references" )
+    parser.add_option( '', '--length', dest='length', help="Minimum length of a hit to the transposon references" )
+    parser.add_option( '', '--rgs', dest='rgs', help="Comma separated list of readgroups to operate on" )
+    parser.add_option( '', '--exd', dest='exd', help="Fofn of BED files of regions where discordant mates falling into will be excluded" )
+    parser.add_option( '', '--input', dest='discover_file', help="A single output file from the PE discover stage" )
+    parser.add_option( '', '--ref', dest='ref', help="Fasta of reference genome" )
+    parser.add_option( '', '--hets', dest='hets', action="store_true", help='Call heterozygous insertions. Default is homozygous' )
+    parser.add_option( '', '--filter', dest='filter_file', help="Tab file with TE type and BED file of reference elements. These will be filtered out from the calling" )
+    parser.add_option( '', '--region', dest='region', help="Call a particular chromosome only OR region" )
+    parser.add_option( '', '--reads', dest='reads', help="Minimum number of reads required to make a call" )
+    parser.add_option( '', '--depth', dest='depth', help="Max average depth of a region to be considered for calling" )
+    parser.add_option( '', '--ignoreRGs', dest='ignoreRGs', help="Read group names that should be ignored" )
+    ( options, args ) = parser.parse_args()
+
+    # exit if input file empty
+    if os.path.getsize( options.inputBam ) == 0:
+        raise Exception, 'Initial BAM file empty'
+
+    #print "Creating directory: " + args.files_path
+    if not os.path.exists(options.extra_files_path):
+        os.makedirs(options.extra_files_path)
+
+    tmp_dir = tempfile.mkdtemp(prefix="bamIndex", dir=options.extra_files_path)
+
+    # create link of input BAM file to the output directory
+    basename = os.path.basename(options.inputBam)
+    link_filename = os.path.join( tmp_dir, "%s.bam" % ( basename ) )
+    os.symlink( options.inputBam, link_filename )
+
+    # create a BAM index file for calling stage (not needed for discover stage)
+    if options.call:
+        if options.bamFileIndex:
+            # create a link to the index file in the same directory as the bam file
+            bai_link_filename = os.path.join(tmp_dir, "%s.bam.bai" % ( basename ) )
+            os.symlink( options.bamFileIndex, bai_link_filename)
+        else:
+            create_bam_idx(link_filename, target_dir = tmp_dir)
+
+    ## create tmp directory to be deleted at end of run
+    tool_type = None
+    if options.discover:
+        tool_type = "discover"
+    else:
+        tool_type = "call"
+
+    wd_tmpdir = tempfile.mkdtemp(prefix='retroseq_%s_' % (tool_type), dir=options.extra_files_path)  ## make tmpdir
+    os.chdir(wd_tmpdir)
+   
+    # create the temp input file containing the path to the bam file
+    te_path = '%s/TE_input.txt' % wd_tmpdir
+    fh_te = open(te_path, 'w')
+    if options.refTEs:
+        fh_te.write("%s\t%s\n" % (options.refTEsName, options.refTEs))
+    else:
+        fh_te.write("%s\t%s\n" % (options.refTEsName, options.filter_file))
+    fh_te.close()
+ 
+    ## create the command
+    retroseq_params = list()
+
+    align_param = None
+    if options.align:
+        retroseq_params.append("-align")
+    if options.refTEs:
+        retroseq_params.append("-refTEs " + te_path)
+    if options.eref:
+        retroseq_params.append("-eref " + options.eref)
+    if options.quality:
+        retroseq_params.append("-q " + options.quality)
+    if options.id_perc:
+        retroseq_params.append("-id " + options.id_perc)
+    if options.length:
+        retroseq_params.append("-length " + options.length)
+    if options.rgs and len(options.rgs)>0:
+        retroseq_params.append("-rgs \"" + options.rgs + "\"")
+    if options.exd and len(options.exd)>0:
+        retroseq_params.append("-exd \"" + options.exd + "\"")
+    if options.discover_file:
+        retroseq_params.append("-input " + options.discover_file)
+    if options.ref:
+        retroseq_params.append("-ref " + options.ref)
+    if options.hets:
+        retroseq_params.append("-hets")
+    if options.filter_file:
+        retroseq_params.append("-filter " + te_path)
+    if options.region:
+        retroseq_params.append("-region " + options.region)
+    if options.reads:
+        retroseq_params.append("-reads " + options.reads)
+    if options.depth:
+        retroseq_params.append("-depth " + options.depth)
+    if options.ignoreRGs:
+        retroseq_params.append("-ignoreRGs " + options.ignoreRGs)
+
+    cmd = 'retroseq.pl -%s -bam %s -output %s %s ' % (tool_type, link_filename, options.outputFile, ' '.join(retroseq_params) )
+    print cmd
+
+
+    try:
+        ## run the command
+        os.chdir(wd_tmpdir)
+        print os.getcwd()
+
+        tmp = tempfile.NamedTemporaryFile( dir=wd_tmpdir ).name
+        stderr_name = open( tmp, 'wb' )
+        proc = Popen( args=cmd, shell=True, stderr=stderr_name.fileno())
+        exit_code = proc.wait()
+        stderr_name.close()
+
+        stderr_name = open( tmp, 'rb' )
+        stderr = ''
+        buffsize = 1048576
+        try:
+            while True:
+                stderr += stderr_name.read( buffsize )
+                if not stderr or len( stderr ) % buffsize != 0:
+                    break
+        except OverflowError:
+            pass
+        stderr_name.close()
+        if exit_code != 0:
+            raise Exception, stderr
+    except Exception, e:
+        stop_err( 'Error running retroseq. ' + str( e ) )
+
+    ## rename output files to what it should be:
+    if options.call:
+        shutil.move('%s.PE.vcf' % options.outputFile, options.outputFileVcf)
+        shutil.move('%s.PE.vcf.bed' % options.outputFile, options.outputFile)
+        shutil.move('%s.PE.vcf.candidates' % options.outputFile, options.outputFileCandidates)
+
+    ## clean up temporary directory
+    #shutil.rmtree(options.extra_files_path)
+
+    print "\n\nEnd time:"
+    print time.strftime('%d/%m/%Y %H:%M:%S', time.localtime(time.time()))
+
+if __name__=="__main__": __main__()
+

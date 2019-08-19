@@ -1,0 +1,139 @@
+<tool description="SV regions from scanned output" id="tangram_detect_with_swift" name="Tangram detect (Swift)" version="TANGRAM: default; BEDTOOLS: 2.17.0; VCFTOOLS: vcftools_0.1.11; TABIX: 0.2.6">
+  <requirements>
+    <requirement type="package">tangram</requirement>
+    <requirement type="package">bedtools</requirement>
+    <requirement type="package">swift</requirement>
+    <requirement type="package">vcftools</requirement>
+    <requirement type="package">tabix</requirement>
+  </requirements>
+  <description>Calculate the fragment length distribution</description>
+  <command interpreter="python">
+    tangram_detect.py
+      --dataset
+      --lb $lib_file
+      --ht $hist_file
+      --in $input_bam
+      --ref $ref
+      --proc 32
+      --outpath $output.extra_files_path
+      --output $output
+      #if $advanced.advanced_select == &quot;yes&quot;:
+          #if str ( $advanced.rg ) != &quot;all&quot; :
+              --rg $advanced.rg
+          #end if
+          #if $advanced.cl == 1:
+              --cl
+          #end if
+          #if $advanced.mcs != 2:
+              --mcs $advanced.mcs
+          #end if
+          #if $advanced.mel != 100:
+              --mel $advanced.mel
+          #end if
+          #if $advanced.mq != 20:
+              --mq $advanced.mq
+          #end if
+          #if $advanced.smq != 20:
+              --smq $advanced.smq
+          #end if
+          #if str ( $advanced.dt ) != &quot;0xffffffff&quot;:
+              --dt $advanced.dt
+          #end if
+          #if $advanced.mss != 15:
+              --mss $advanced.mss
+          #end if
+          #if $advanced.mcr != 0.85:
+              --mcr $advanced.mcr
+          #end if
+          #if $advanced.msr != 0.8:
+              --msr $advanced.msr
+          #end if
+          #if $advanced.gt == 1:
+              --gt
+          #end if
+          #if $advanced.rpf != 2:
+              --rpf $advanced.rpf
+          #end if
+          #if $advanced.srf != 5:
+              --srf $advanced.srf
+          #end if
+          #if $advanced.mjl != 50000000:
+              --mjl $advanced.mjl
+          #end if
+      #end if
+  </command>
+
+  <inputs>
+     <!--
+      <param name="lib_file" type="data" format="html" label="Library information dataset" />
+      <param name="hist_file" type="data" format="html" label="Fragment length histogram dataset" />
+      <param name="input_bam" type="data" format="html" label="Input a Mosaik BAM dataset" />
+     -->
+      <param format="tabular" label="Library information file" name="lib_file" type="data"/>
+      <param format="tabular" label="Fragment length histogram file" name="hist_file" type="data"/>
+      <param format="bam" label="Input a Mosaik BAM File" name="input_bam" type="data"/>
+
+      <param format="fasta" label="Reference fasta file" name="ref" type="data"/>
+
+      <conditional name="advanced">
+          <param label="Advanced options" name="advanced_select" type="select">
+              <option value="yes">Advanced options</option>
+              <option selected="true" value="no">No</option>
+          </param>
+          <when value="yes">
+              <param help="A region should be presented in one of the following formats: `1', `2:1000' and `X:1000-2000' (1-based). When a region is specified, the input alignment file must be an indexed BAM file" label="Chromosome region" name="rg" type="text" value="all"/>
+              <param falsevalue="0" label="Check for invalid libraries" name="cl" truevalue="1" type="boolean"/>
+              <param help="" label="Minimum cluster size" name="mcs" type="integer" value="2"/>
+              <param help="" label="Minimum event lenth" name="mel" type="integer" value="100"/>
+              <param help="" label="Minimum mapping quality for pairs other than special pairs" name="mq" type="integer" value="20"/>
+              <param help="" label="Minimum mapping quality for special pairs" name="smq" type="integer" value="20"/>
+              <param help="0xffffffff: report all types of SV" label="Detection set" name="dt" type="text" value="0xffffffff"/>
+              <param help="" label="Minimum size of soft clipped reads for split alignment candidate" name="mss" type="integer" value="15"/>
+              <param help="" label="Mnimum cover rate for split alignments" name="mcr" type="float" value="0.85"/>
+              <param help="" label="Mnimum score rate for split alignments" name="msr" type="float" value="0.8"/>
+              <param falsevalue="0" label="Do genotyping for detected SV events" name="gt" truevalue="1" type="boolean"/>
+              <param help="" label="Minimum number of supporting read-pair fragments for genotype" name="rpf" type="integer" value="2"/>
+              <param help="" label="Minimum number of supporting split-read fragments for genotype" name="srf" type="integer" value="5"/>
+              <param help="Set to 0 to turn off the jump" label="Minimum jumping (bam index jump) length for genotyping" name="mjl" type="integer" value="50000000"/>
+          </when>
+          <when value="no"/>
+      </conditional>
+  </inputs>
+  <outputs>
+    <data format="vcf" label="${tool.name} on ${on_string}" name="output"/>
+  </outputs>
+  <help>
+
+**What it does**
+
+Detects SV regions
+
+...
+
+  1. A region should be presented in one of the following formats:
+     `1', `2:1000' and `X:1000-2000' (1-based). When a region is specified,
+     the input alignment file must be an indexed BAM file.
+
+  2. Detection set is a bit set to indicate which types of SV will be detected.
+     Each bit in this bit set corresponding to a type of SV event:
+
+         DELETION        0x1 (hexadecimal) or 1 (decimal)
+         TANDUM DUP      0x2 (hexadecimal) or 2 (decimal)
+         INVERSION       0x4 (hexadecimal) or 4 (decimal)
+         MEI             0x8 (hexadecimal) or 8 (decimal)
+
+     To detect multiple types of SV events, just add all the corresponding numbers up.
+     For example, if you only want to call DELETIONS and MEI, then the input value for
+     `-dt' option will be 0x1(1) + 0x8(8) = 0x9(9). The `-dt' option can take either decimal
+     or hexadecimal (start with `0x') number for input.
+
+  3. The parameters for the binominal distribution are used to calculate the genotype likelihood.
+     This string should contain 3 float numbers (for homozygous reference, heterozygous and homozygous alternatives)
+     and is separated by comma, such &quot;0.001,0.5,0.999&quot;.
+
+  4. Minimum number of supporting read-pair or split-read fragments are the thresholds to trigger genotype module.
+     For a given locus, if the number of both read-pair AND split-read supporting fragments are lower than the
+     thresholds (-rpf -srf) this locus will not be submitted for genotyping.
+
+  </help>
+</tool>

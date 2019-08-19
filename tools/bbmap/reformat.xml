@@ -1,0 +1,37 @@
+<tool id="reformat_bbmap" name="Reformat" version="BBMAP: bbmap_34.94">
+  <requirements>
+    <requirement type="package">bbmap</requirement>
+  </requirements>
+  <description>fastq files and subsample</description>
+  <command>
+    ln $input1 input1.fastq.gz; ln $input2 input2.fastq.gz;
+    reformat.sh in1=input1.fastq.gz in2=input2.fastq.gz out1=output1.fastq.gz out2=output2.fastq.gz samplereadstarget=$quantity; mv output1.fastq.gz $output1; mv output2.fastq.gz $output2
+  </command>
+  <inputs>
+    <param type="data" format="fastqsanger,fasta" name="input1" label="Forward read"/>
+    <param type="data" format="fastqsanger,fasta" name="input2" label="Reverse read"/>
+    <param type="text" name="quantity" label="Subsample read target quantity" help="amount of reads to subsample to" />
+  </inputs>
+  <outputs>
+    <data format="fastqsanger" label="${tool.name} on ${on_string}: Forward" name="output1"/>
+    <data format="fastqsanger" label="${tool.name} on ${on_string}: Reverse" name="output2"/>
+  </outputs>
+  <help>
+**What it does**
+
+Reformats reads to change ASCII quality encoding, interleaving, file format, or compression format.
+Optionally performs additional functions such as quality trimming, subsetting, and subsampling.
+
+------
+
+**Input formats**
+
+Supports sam, fastq, fasta, fasta+qual, scarf, gzip, zip.
+
+------
+
+**License and citation**
+
+
+  </help>
+</tool>

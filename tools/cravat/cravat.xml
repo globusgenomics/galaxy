@@ -1,0 +1,19 @@
+<tool id='cravat' name='CRAVAT'>
+  <description>CRAVAT annotation</description>
+  <command interpreter='python'>cravat.py $input $output</command>
+  <inputs>
+    <param format='tabular' name='input' type='data' label='Input file' />
+  </inputs>
+  <outputs>
+    <data format='tabular' name='output' />
+  </outputs>
+
+  <tests>
+    <test>
+      <param name='input' value='test_input.txt' />
+      <output name='out_file1' file='test_output.txt' />
+    </test>
+  </tests>
+
+  <help>This tool queries CRAVAT for variants</help>
+</tool>

@@ -1,0 +1,5 @@
+[console_scripts]
+oncodrivefm-compute = oncodrivefm.command.compute:main
+oncodrivefm = oncodrivefm.command.full:main
+oncodrivefm-combine = oncodrivefm.command.combine:main
+

@@ -1,0 +1,54 @@
+<tool id="edgeRWrapper" name="Edge R">
+	<description>differential expression analysis</description>
+	<requirements>
+		<requirement type="package" version="3.0.0">R</requirement>
+	</requirements>
+	<command interpreter="python">
+		edger_wrapper.py
+		--group1-name $group1_name
+		--group2-name $group2_name
+
+		#for $c in $group1_gene_counts_repeat
+			--group1-gene-counts "${c.group1_gene_counts}"
+			--group1-sample-name "${c.group1_sample_name}"
+		#end for
+	
+		#for $c in $group2_gene_counts_repeat
+			--group2-gene-counts "${c.group2_gene_counts}"
+			--group2-sample-name "${c.group2_sample_name}"
+		#end for
+
+		## Output files
+		--mds-plot-output $mds_plot_output
+		--tagwise-disp-plot-output $tagwise_disp_plot_output
+		--ma-plot-output $ma_plot_output
+		--diff-expr-output $diff_expr_output
+		--sig-diff-expr-output $sig_diff_expr_output
+	</command>
+  <stdio>
+    <exit_code range="1:" level="fatal" description="Error" />
+  </stdio>
+	<inputs>
+		<param name="group1_name" type="text" label="Name for group #1" optional="false"/>
+		<repeat name="group1_gene_counts_repeat" title="Group #1 info" min="2">
+			<param name="group1_sample_name" type="text" label="Name of sample"/>
+			<param name="group1_gene_counts" type="data" format="tabular" label="Gene counts"/>
+		</repeat>
+		<param name="group2_name" type="text" label="Name for group #2" optional="false"/>
+		<repeat name="group2_gene_counts_repeat" title="Group #2 info" min="2">
+			<param name="group2_sample_name" type="text" label="Name of sample"/>
+			<param name="group2_gene_counts" type="data" format="tabular" label="Gene counts"/>
+		</repeat>
+	</inputs>
+	<outputs>
+		<data name="mds_plot_output" type="data" format="png" label="MDS plot"/>
+		<data name="tagwise_disp_plot_output" type="data" format="png" label="Tagwise dispersion plot"/>
+		<data name="ma_plot_output" type="data" format="png" label="MA plot"/>
+		<data name="diff_expr_output" type="data" format="tabular" label="Differential expression results"/>
+		<data name="sig_diff_expr_output" type="data" format="tabular" label="Significant differential expression results"/>
+	</outputs>
+        <help>
+        </help>
+
+</tool>
+

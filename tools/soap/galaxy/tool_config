@@ -1,0 +1,52 @@
+  <label id="bgi" text="BGI SOAP Package Beta"/>
+  <section id="bgi_ngs_mapping" name="NGS: Mapping">
+    <tool file="bgisoap/soap1.xml"/>
+    <tool file="bgisoap/soap2.xml"/>
+  </section>
+  <section name="NGS: Indel Analysis" id="bgi_indel_analysis">
+    <tool file="bgisoap/msort.xml"/>
+    <tool file="bgisoap/soapsnp.xml"/>
+    <tool file="bgisoap/soappopindel.xml"/>
+  </section>
+  <section name="NGS: De Novo Assembly" id="bgi_de_novo_assembly">
+    <label id="soapdenovo_configuration" text="SOAP De Novo Preparation" />
+    <tool file="bgisoap/soapdenovo_configuration.xml" />>
+    <label id="soapdenovo" text="De novo assembly tools"/>
+    <tool file="bgisoap/soapdenovo1.xml"/>
+    <tool file="bgisoap/soapdenovo2.xml"/>
+    <tool file="bgisoap/soapdenovotrans.xml"/>
+    <label id="soapdenovo2_mods" text="SOAPdenovo2 modules"/>
+    <tool file="bgisoap/soapdenovo2_pregraph.xml"/>
+    <tool file="bgisoap/soapdenovo2_contig.xml"/>
+    <tool file="bgisoap/soapdenovo2_map.xml"/>
+    <tool file="bgisoap/soapdenovo2_scaff.xml"/>
+    <label id="other_tools" text="Other related tools"/>
+    <tool file="bgisoap/soapCoverage.xml"/>
+    <tool file="bgisoap/gapCloser.xml"/> 
+    <tool file="bgisoap/kmerfreq.xml" />
+    <tool file="bgisoap/cope.xml" />
+    <tool file="bgisoap/filter.xml"/>
+    <tool file="bgisoap/prepare.xml"/>
+    <tool file="bgisoap/gapcloser.xml"/>
+    <tool file="bgisoap/kmerfreq-ha-2.0.xml"/>
+    <tool file="bgisoap/corrector-ha-2.0.xml"/>
+    <tool file="bgisoap/mergepairlist.xml"/>
+    <tool file="bgisoap/sam2soap.xml"/>
+  </section>
+  <section id="bgi_splice_detection" name="NGS: Splice Detection">
+    <tool file="bgisoap/soapsplice.xml"/>
+  </section>
+  <section id="bgi_somatic_mut_detection" name="NGS: Somatic Mutation Detection">
+    <tool file="bgisoap/soappileup.xml"/>
+    <tool file="bgisoap/snvtest.xml"/>
+    <tool file="bgisoap/alleleqc.xml"/>
+    <tool file="bgisoap/snvdetect.xml"/>
+  </section>
+  <!--
+  <label id="taverna" text="Import Taverna Workflow into Galaxy"/>
+  <section name="Taverna: Workflow" id="taverna_workflow">
+        <tool file="taverna/uploadtwf.xml" />
+        <tool file="taverna/uploadtwf_rb.xml" />
+        <tool file="taverna/uploadtwf_xml.xml" />
+  </section>
+  -->

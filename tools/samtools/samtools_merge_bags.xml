@@ -1,0 +1,47 @@
+<tool id="samtools_merge_bags" name="SAMtools merge" version="SAMTOOLS: 1.2">
+  <requirements>
+    <requirement type="package">samtools</requirement>
+  </requirements>
+  <description>BAM files from a bag object</description>
+  <command>
+    #import os, glob
+    #if os.path.exists(str($input_file.extra_files_path)):
+        #set $path = $input_file.extra_files_path
+    #else:
+        #set $fh = open(str($input_file), &quot;r&quot;)
+        #set $path = &quot;%s/data&quot; % ($fh.readline().rstrip(&quot;\n&quot;))
+    #end if
+    #set $files = glob.glob("%s/*/*.bam" % $path)
+    #set $inputs = " ".join($files)
+    #if len($files) > 1:
+      python /opt/galaxy/tools/samtools/sam_merge.py
+      $output
+      $inputs
+      $remove_dups
+    #else:
+      cp $inputs $output
+    #end if
+  </command>
+  <inputs>
+    <param format="txt" label="Input directory of BAM samples" name="input_file" type="data"/>
+    <param falsevalue="" help="This will allow the output of the merged BAM to be piped to the samtools rmdup command" label="Remove duplicates after merging file" name="remove_dups" truevalue="--rmdup" type="boolean"/>
+  </inputs>
+  <outputs>
+    <data format="bam" label="${tool.name} on ${on_string}: merged BAM" name="output"/>
+  </outputs>
+  <help>
+
+**What it does**
+
+This tool uses the SAMTools_ toolkit to merge 2+ alignment files (in bam format).
+
+.. _SAMTools: http://samtools.sourceforge.net/samtools.shtml
+
+------
+
+**Citation**
+
+For the underlying tool, please cite `Li H, Handsaker B, Wysoker A, Fennell T, Ruan J, Homer N, Marth G, Abecasis G, Durbin R; 1000 Genome Project Data Processing Subgroup. The Sequence Alignment/Map format and SAMtools. Bioinformatics. 2009 Aug 15;25(16):2078-9. &lt;http://www.ncbi.nlm.nih.gov/pubmed/19505943&gt;`_
+
+  </help>
+</tool>

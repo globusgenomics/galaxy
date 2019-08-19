@@ -1,0 +1,47 @@
+<tool id="pileup2vcf" name="Pileup to VCF converter" version="SAMTOOLS: 1.2">
+  <requirements>
+    <requirement type="package">samtools</requirement>
+  </requirements>
+  <description>Converts pileup format to VCF format.</description>
+  <command interpreter="python">
+    pileup2vcf.py 
+      --input1=$source.input1
+      #if $source.index_source == &quot;history&quot;:
+        --dbkey=${ref_file.metadata.dbkey} 
+        --ref_file=$source.ref_file
+      #else
+        --dbkey=${input1.metadata.dbkey} 
+      #end if
+      --output1=$output1
+      --index_dir=${GALAXY_DATA_INDEX_DIR}
+
+  </command>
+
+  <inputs>
+    <conditional name="source">
+      <param label="Choose the source for the reference genome" name="index_source" type="select">
+        <option value="cached">Locally cached</option>
+        <option value="history">History</option>
+      </param>
+      <when value="cached">
+        <param help="List of variants in pileup format" label="Pileup file" metadata_name="dbkey" name="input1" type="data">
+           <validator type="unspecified_build"/>
+           <validator filename="sam_fa_indices.loc" line_startswith="index" message="Sequences are not currently available for the specified build." metadata_column="1" metadata_name="dbkey" type="dataset_metadata_in_file"/>
+        </param>
+      </when>
+      <when value="history">
+        <param help="List of variants in pileup format" label="Pileup file" name="input1" type="data"/>
+        <param format="fasta" label="Using reference file" metadata_name="dbkey" name="ref_file" type="data"/>
+      </when>
+    </conditional>
+
+  </inputs>
+  <outputs>
+    <data format="vcf" label="${tool.name} on ${on_string}.vcf" name="output1"/>
+  </outputs>
+  <help>
+		
+This tool converts a pileup variant call file to a VCF variant call file.
+
+  </help>
+</tool>

@@ -1,0 +1,40 @@
+<tool id="basespace_download_dataset" name="Get single dataset from BaseSpace" version="JQ: 1.4">
+  <description>Transfer dataset from BaseSpace by file ID</description>
+  <requirements>
+    <requirement type="package">jq</requirement>
+  </requirements>
+  <command interpreter="bash">
+    getFileById.sh $accessToken $dataID $out_file1
+  </command>
+  <stdio>
+    <exit_code description="Error in Transfer" level="fatal" range="1:"/>
+  </stdio>
+  <inputs>
+    <param label="BaseSpace Acces Token" name="accessToken" size="100" type="text">
+      <sanitizer>
+	<valid>
+	  <add value="|"/>
+	</valid>
+      </sanitizer>
+    </param>
+    <param label="Enter the BaseSpace file ID" name="dataID" type="text"/>
+  </inputs>
+  <code file="basespace_filter.py"/>
+  <outputs>
+    <data format="txt" name="out_file1" type="data"/>
+  </outputs>
+  <help>
+
+.. class:: warningmark
+    
+  **WARNING:** Be careful not to exceed disk quotas!
+    
+-----
+    
+**What it does**
+    
+  Transfers data between from BaseSpace to your Galaxy installation
+  and creates a galaxy dataset from transfered file.
+
+  </help>
+</tool>

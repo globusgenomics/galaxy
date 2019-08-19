@@ -1,0 +1,90 @@
+<tool id="homer_findmotifsgenome" name="findMotifsGenome" version="@VERSION@.0">
+<description>find enriched motifs in genomic regions</description>
+  <macros>
+     <import>macros.xml</import>
+  </macros>
+  <expand macro="requirements"/>
+  <expand macro="stdio"/>
+    <command interpreter="python"> 
+        findMotifsGenome.py
+        --input $input
+        --genome $genome.fields.path
+        --size $size
+
+##        --output-log $out_logfile
+##        --output-dir $out_logfile.extra_files_path
+        --known-results-html $known_results_html
+        --homer-results-html $homer_results_html
+        --out-concat-motifs  $out_concat_motifs
+        --known-results-tabular $known_results_tabular
+        -p "$rna "
+        -p "$norevopp "
+        -p "$hypergeometric "
+         #if str($olen) != &quot;None&quot;: 
+            -p "-olen $olen "
+         #end if
+         #if str($nlen) != &quot;None&quot;:
+            -p "-nlen $nlen "
+         #end if 
+         -p "$noweight "
+         -p "$cpg "
+         #if str($number_of_motifs) != &quot;None&quot;:
+            -p "-S $number_of_motifs "
+         #end if  
+         #if str($mismatches) != &quot;None&quot;:
+            -p "-mis $mismatches "
+         #end if        
+         -p "$mask "
+    </command>
+    <inputs>
+        <param format="txt,tabular,bed" name="input" type="data" label="BED file" help="a file containing genomic coordinates"/>
+        <param name="genome" type="select" label="Genome version">
+            <!--option value="hg19" selected="true">hg19</option-->
+            <options from_data_table="homer_fasta"></options>
+        </param>
+        <param name="size" type="integer" value="200" label="The size of the region used for motif finding" help =" If analyzing ChIP-Seq peaks from a transcription factor, Chuck would recommend 50 bp for establishing the primary motif bound by a given transcription factor and 200 bp for finding both primary and 'co-enriched' motifs for a transcription factor.  When looking at histone marked regions, 500-1000 bp is probably a good idea (i.e. H3K4me or H3/H4 acetylated regions).  In theory, HOMER can work with very large regions (i.e. 10kb), but with the larger the regions comes more sequence and longer execution time."/>
+        <param name="rna" type="boolean" truevalue="-rna" falsevalue="" checked="False" label="Search for RNA motifs" help="If looking at RNA data (i.e. Clip-Seq or similar), this option will restrict HOMER to only search the + strand (relative to the peak), and will output RNA motif logos (i.e. U instead of T).  It will also try to compare found motifs to an RNA motif database, which sadly, only contains miRNAs right now... I guess chuck roundhouse kicked all of the splicing and other RNA motifs into hard to find databases."/>
+        <param name="norevopp" type="boolean" truevalue="-norevopp" falsevalue="" checked="False" label="Only search for motifs on + strand" help=""/>
+        <param name="hypergeometric" type="boolean" truevalue="-h" falsevalue="" checked="False" label="Hypergeometric enrichment scoring" help="By default, findMotifsGenome.pl uses the binomial distribution to score motifs.  This works well when the number of background sequences greatly out number the target sequences - however, if you are using '-bg' option above, and the number of background sequences is smaller than target sequences, it is a good idea to use the hypergeometric distribution instead.  FYI - The binomial is faster to compute, hence it's use for motif finding in large numbers of regions."/>
+        <param name="olen" type="integer" value="0" label="Motif level autonormalization" help ="0 means disabled" optional="True"/>
+        <param name="nlen" type="integer" value="3" label="Region level autonormalization" help ="0 to disable" optional="True"/>
+        <param name="noweight" type="boolean" truevalue="-noweight" falsevalue="" checked="False" label="disabling GC/CpG normalization" help=""/>
+        <param name="cpg" type="boolean" truevalue="-cpg" falsevalue="" checked="False" label="normalize CpG% content instead of GC% content" help=""/>
+        <param name="number_of_motifs" type="integer" value="25" label="Number of motifs to find" help ="The more mismatches you allow, the more sensitive the algorithm, particularly for longer motifs.  However, this also slows down the algorithm a bit.  If searching for motifs longer than 12-15 bp, it's best to increase this value to at least 3 or even 4." optional="True"/>
+        <param name="mismatches" type="integer" value="2" label="Mismatches allowed in global optimization phase" help ="The more mismatches you allow, the more sensitive the algorithm, particularly for longer motifs.  However, this also slows down the algorithm a bit.  If searching for motifs longer than 12-15 bp, it's best to increase this value to at least 3 or even 4." optional="True"/>
+        <param name="mask" type="boolean" truevalue="-mask" falsevalue="" checked="True" label="Use masked version of the genome" help=""/>
+    </inputs>
+    <outputs>
+        <data format="tabular" name="known_results_tabular" label="HOMER known motifs" />
+        <data format="html" name="homer_results_html" label="HOMER de novo motifs"/>
+        <data format="html" name="known_results_html" label="HOMER known motifs"/>
+        <data format="tabular" name="out_concat_motifs" label="HOMER concatenated motif files"/>
+        <!--data name="out_logfile" type="data" format="tabular" label="HOMER logfile: motifs from  ${on_string}"/-->
+    </outputs>
+    <tests>
+        <test>
+            <!--<param name="input_file" value="extract_genomic_dna.fa" />-->
+            <!--<output name="html_file" file="sample_output.html" ftype="html" />-->
+        </test>
+    </tests>
+
+    <help>
+
+        .. class:: infomark
+
+        **Homer Finding Enriched Motifs in Genomic Regions**
+
+        More information on accepted formats and options
+
+        http://homer.ucsd.edu/homer/ngs/peakMotifs.html
+
+
+**Parameter list**
+
+Command line options (not all of them are supported)::
+
+	Usage: findMotifsGenome.pl &lt;peak/BED file&gt; &lt;genome&gt; &lt;output directory&gt; -size # [additional options...]
+
+    </help>
+</tool>
+

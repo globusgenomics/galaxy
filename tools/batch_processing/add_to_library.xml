@@ -1,0 +1,48 @@
+<tool id="add_to_library" name="Add dataset to library">
+  <action module="galaxy_ext.globus.tools.actions.globus" class="HistoryManagement"/>
+  <description>created automatically by the tool</description>
+  <requirements>
+    <requirement type="package">pymodules</requirement>
+  </requirements>
+  <command interpreter="python">
+    add_to_library.py 
+    --email "$__user_email__"
+    --userkey $userkey
+    --history_id $historyid
+    ##--input $input
+    #for $i, $s in enumerate( $inputs )
+      --input $s.input
+    #end for
+
+    --url "$url" > $log
+  </command>
+
+  <inputs>
+    <param name="url" type="hidden" label="URL"/>
+    <param name="userkey" type="hidden" size="100" label="Key"/>
+    <param name="historyid" type="hidden" size="100" label="History id"/>
+    <!--<param format="data" name="input" type="data" label="History item that only exists in current history"/>-->
+    <repeat name="inputs" min="1" defaul="1" title="Files to add to library">
+      <param format="data" name="input" type="data" label="History item that only exists in current history"/>
+    </repeat>
+   </inputs>
+
+   <outputs>
+     <data format="txt" name="log" label="Log for adding dataset to shared library: ${on_string}"/>
+   </outputs>
+
+   <help>
+
+.. class:: infomark
+
+**Add Dataset to Library**
+
+This tool will create a shared library for the current user. Only access to the current user. Then will add the selected dataset to the library.
+
+The name of the library will be automatically generated from the history. It assumes that you are running this tool within a batch submitted workflow.
+It could fail otherwise.
+
+   </help>
+
+</tool>
+

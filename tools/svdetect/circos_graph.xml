@@ -1,0 +1,290 @@
+<tool id="circos_graph" name="Circos" version="1.1.0">
+
+<description>plots</description>
+
+<command interpreter="perl">circos/bin/circos
+
+-conf '$circos_config_file'
+-outputfile '${outputfile}.dat'
+-png 
+
+> '$log_file'
+
+;
+
+rm '$outputfile'; ln -s '${outputfile}.png' '$outputfile' 
+
+</command>
+
+
+<inputs>
+	<param name="graph_name" type="text" size="20" value="graph1" label="Graph name"/>
+	
+	<param name="karyotype" type="select" format="txt" label="Type of model organism">
+		<option value="data/karyotype.human_hg19.txt">Human (homo sapiens, hs) -hg19-</option>
+		<option value="data/karyotype.human.txt">Human (homo sapiens, hs) -hg18-</option>
+		<option value="data/2/karyotype.mouse.txt">Mouse (Mus Musculus, mm)</option>
+		<option value="data/2/karyotype.dog.txt">Dog (Canis familiaris, cf)</option>
+		<option value="data/2/karyotype.rt.txt">Rat (Rattus norvegicus, rn)</option>
+		<option value="data/karyotype.yeast.txt">Yeast (Saccharomyces Cerevisiae, sc) -SGD-</option>
+
+  	</param>
+	<param name="chromosomes_units" type="integer" size="50" value="1000000" label="Chromosomes units"/>
+	<param name="chromosomes" type="text" size="100" value="" label="List of chromosome names to keep or exclude" help="ex: hs2;hs3 or -hsX;-hsY">
+		<sanitizer>
+			<valid initial="string.printable">
+				<add value=";"/>
+			</valid>
+		</sanitizer>
+	</param>
+	<param name="link_file" format="segdup" type="data" label="Input link file (.segdup)"/>
+</inputs>
+
+<outputs>
+	<data format="txt" name="log_file" label="${graph_name}.circos.log"/>
+	<data format="png" name="outputfile" label="${graph_name}.png"/>
+</outputs>
+
+
+
+<configfiles>
+	<configfile name="ideogram_config_file">
+		
+&lt;ideogram&gt;
+
+&lt;spacing&gt;
+
+default = 5u
+break   = 1u
+
+axis_break_at_edge = yes
+axis_break         = yes
+axis_break_style   = 2
+
+&lt;break_style 1&gt;
+stroke_color = black
+fill_color   = blue
+thickness    = 0.25r
+stroke_thickness = 2
+&lt;/break&gt;
+
+&lt;break_style 2&gt;
+stroke_color     = black
+stroke_thickness = 3p
+thickness        = 1.5r
+&lt;/break&gt;
+
+&lt;/spacing&gt;
+
+## thickness (px) of chromosome ideogram
+thickness        = 100p
+stroke_thickness = 2
+## ideogram border color
+stroke_color     = black
+fill             = yes
+## the default chromosome color is set here and any value
+## defined in the karyotype file overrides it
+fill_color       = black
+
+## fractional radius position of chromosome ideogram within image
+radius         = 0.85r
+show_label     = yes
+label_with_tag = yes
+label_font     = condensedbold
+label_radius   = dims(ideogram,radius) + 0.075r
+label_size     = 60p
+
+## cytogenetic bands
+band_stroke_thickness = 2
+
+## show_bands determines whether the outline of cytogenetic bands
+## will be seen
+show_bands            = yes
+## in order to fill the bands with the color defined in the karyotype
+## file you must set fill_bands
+fill_bands            = yes
+
+&lt;/ideogram&gt;
+
+	</configfile>
+
+	<configfile name="ticks_config_file">
+	
+show_ticks          = yes
+show_tick_labels    = yes
+
+&lt;ticks&gt;
+radius               = dims(ideogram,radius_outer)
+multiplier           = 1e-6
+
+&lt;tick&gt;
+spacing        = 0.5u
+size           = 2p
+thickness      = 2p
+color          = grey
+show_label     = no
+label_size     = 12p
+label_offset   = 0p
+format         = %.2f
+&lt;/tick&gt;
+	
+&lt;tick&gt;
+spacing        = 1u
+size           = 3p
+thickness      = 2p
+color          = dgrey
+show_label     = no
+label_size     = 12p
+label_offset   = 0p
+format         = %.2f
+&lt;/tick&gt;
+
+&lt;tick&gt;
+spacing        = 5u
+size           = 5p
+thickness      = 2p
+color          = black
+show_label     = yes
+label_size     = 16p
+label_offset   = 0p
+format         = %d
+&lt;/tick&gt;
+
+&lt;tick&gt;
+spacing        = 10u
+size           = 8p
+thickness      = 2p
+color          = black
+show_label     = yes
+label_size     = 20p
+label_offset   = 5p
+format         = %d
+&lt;/tick&gt;
+&lt;/ticks&gt;
+	</configfile>	
+	
+	
+	<configfile name="circos_config_file">
+&lt;colors&gt;
+&lt;&lt;include etc/colors.conf&gt;&gt;
+&lt;/colors&gt;
+
+&lt;fonts&gt;
+&lt;&lt;include etc/fonts.conf&gt;&gt;
+&lt;/fonts&gt;
+
+&lt;&lt;include $ideogram_config_file&gt;&gt;
+&lt;&lt;include $ticks_config_file&gt;&gt;
+
+karyotype = $karyotype
+
+&lt;image&gt;
+24bit = yes
+##png = yes
+##svg = no
+## radius of inscribed circle in image
+radius         = 1500p
+background     = white
+## by default angle=0 is at 3 o'clock position
+angle_offset   = -90
+#angle_orientation = counterclockwise
+
+auto_alpha_colors = yes
+auto_alpha_steps  = 5
+&lt;/image&gt;
+
+chromosomes_units= $chromosomes_units
+
+#if str($chromosomes)==""
+chromosomes_display_default = yes
+#else
+chromosomes_display_default = no
+chromosomes = $chromosomes
+#end if
+
+&lt;links&gt;
+
+z      = 0
+radius = 0.95r
+bezier_radius = 0.2r
+
+&lt;link segdup&gt;
+show         = yes
+color        = dgrey_a5
+thickness    = 2
+file         = $link_file
+record_limit = 1000
+&lt;/link&gt;
+
+&lt;/links&gt;
+
+
+anglestep       = 0.5
+minslicestep    = 10
+beziersamples   = 40
+debug           = no
+warnings        = no
+imagemap        = no
+
+units_ok = bupr
+units_nounit = n
+	</configfile>
+</configfiles>
+
+  <help>
+**What it does**
+
+Circos
+
+Manual documentation available at the http://circos.ca/
+
+
+**Example of link segdup file**
+
+segdup file::
+
+    1	hs1	1077096	1078746	color=red
+    1	hs1	1080923	1082805	color=red
+    2	hs1	1137684	1137961	color=red
+    2	hs3	1138138	1138423	color=red
+    3	hs11	1169417	1170000	color=red
+    3	hs11	1170025	1170975	color=red
+    4	hs11	1222480	1224271	color=green
+    4	hs11	1223328	1225675	color=green
+    5	hs12	1223336	1225812	color=grey
+    5	hs13	1224709	1227633	color=grey
+    6	hs11	1223621	1226460	color=red
+    6	hs11	1224918	1227633	color=red
+    7	hs11	1399510	1401513	color=white
+    7	hs11	1401628	1403697	color=white
+    8	hs15	1652045	1653746	color=red
+    8	hs15	1657167	1658940	color=red
+    9	hs11	165333	165887	color=white
+    9	hs11	165981	168016	color=white
+    10	hs11	1702700	1702841	color=red
+    10	hs11	1702903	1703057	color=red
+    11	hs11	1912272	1915186	color=white
+    11	hs11	1937111	1939824	color=white
+    12	hs11	1983211	1983355	color=red
+    12	hs11	1983591	1983748	color=red
+    13	hs11	2913657	2913898	color=white
+    13	hs11	2914048	2914341	color=white
+    14	hs11	3090593	3090749	color=purple
+    14	hs11	3090709	3090864	color=purple
+    15	hs21	3466365	3466434	color=red
+    15	hs21	3466554	3466620	color=red
+    16	hsX	3603073	3603321	color=white
+    16	hsX	3603295	3603520	color=white
+
+
+    
+-----
+
+.. class:: infomark
+
+Contact Bruno Zeitouni (svdetect@curie.fr) for any questions or concerns about the Galaxy implementation of Circos.
+    
+    
+  </help>
+
+</tool>

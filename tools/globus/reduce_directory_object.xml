@@ -1,0 +1,47 @@
+<tool id="reduce_directory_object" name="Select samples from Directory Object">
+  <description>given a list</description>
+  <command interpreter="python">
+    reduce_directory_object.py -i $input_obj.extra_files_path
+      -d $output.extra_files_path -o $output
+      #if $list_type.format == 'text':
+          -t "$list_type.sample_string"
+      #else:
+          -l $list_type.sample_file
+      #end if
+  </command>
+  <inputs>
+    <param name="input_obj" type="data" label="Input directory object" help="This must be a directory transferred using Globus transfer tool" format="txt"/>
+    <conditional name="list_type">
+      <param name="format" type="select" label="Method to provide list of samples">
+        <option value="file">Provide a file</option>
+        <option value="text">Type list of samples in text box</option>
+      </param>
+      <when value="file">
+        <param name="sample_file" type="data" label="List of samples to keep" help="The samples must be present in your object. Print one sample per line." format="txt,tabular"/>
+      </when>
+      <when value="text">
+        <param name="sample_string" type="text" label="List of samples to keep" help="Type each sample you wish to keep. Separate each sample by a comma."/>
+      </when>
+    </conditional>
+  </inputs>
+  <outputs>
+    <data name="output" type="data" format="txt" label="Reduced directory object from ${on_string}"/>
+  </outputs>
+  <tests>
+    <test>
+      <!-- TODO: UPDATE TEST CASE -->
+    </test>
+  </tests>
+  <help>
+.. class:: warningmark
+    
+  **WARNING:** Be careful not to exceed disk quotas!
+    
+-----
+    
+**What it does**
+    
+   Selects samples from input object to a new object 
+  
+  </help>
+</tool>

@@ -1,0 +1,64 @@
+<tool id="homer_getdifferentialpeaksreplicates" name="getDifferentialPeaksReplicates" version="@VERSION@.0">
+  <description>identify peaks from a series of ChIP-seq (or DNase/ATAC-seq) experiments with input/IgG control experiments</description>
+  <macros>
+     <import>macros.xml</import>
+  </macros> 
+  <expand macro="requirements"/>
+  <expand macro="stdio"/>
+  <command interpreter="python">    
+    getDifferentialPeaksReplicates.py
+    -o $output
+
+    #set $target_dir = &quot;&quot;
+    #for $dir_count, $dir_name in enumerate( $target_tag_dir ):
+          #set $target_dir += str($dir_name.dir.extra_files_path) + &quot; &quot;
+    #end for
+    -t &quot;$target_dir&quot;
+
+    #set $input_dir = &quot;&quot;
+    #for $dir_count, $dir_name in enumerate( $input_tag_dir ):
+          #set $input_dir += str($dir_name.dir.extra_files_path) + &quot; &quot;
+    #end for
+    -i &quot;$input_dir&quot;
+  </command>
+
+  <inputs>
+        <repeat min="1" name="target_tag_dir" title="Target Tag Directory">
+          <param format="txt,tabular" label="Tag Directory" name="dir" type="data"/>
+        </repeat>
+
+        <repeat min="1" name="input_tag_dir" title="Input Tag Directory">
+          <param format="txt,tabular" label="Input Directory" name="dir" type="data"/>
+        </repeat>
+    <!--param checked="false" label="keep all primary alignments, regardless of MAPQ score." name="keepone" type="boolean" help="Alignments with the secondary alignment flag set will be discarded."/>
+    <param checked="false" label="keep all primary alignments in the SAM/BAM file" name="keepall" type="boolean"/-->
+  </inputs>
+
+  <outputs>
+    <data format="txt" label="${tool.name} on ${on_string}: (outputPeaks)" name="output"/>
+  </outputs>
+
+  <help>
+
+
+        .. class:: infomark
+
+        **Homer Identifying Peaks from Replicates using getDifferentialPeaksReplicates.pl**
+
+        More information on accepted formats and options
+
+        http://homer.ucsd.edu/homer/ngs/peaksReplicates.html
+
+**Parameter list**
+
+Command line options (not all of them are supported)::
+
+        Usage: getDifferentialPeaksReplicates.pl -t &lt;target tag directory 1&gt; [target tag directory 2] ... -i &lt;input tag directory 1&gt; [input tag directory 2] [options] &gt; outputPeaks.txt
+  </help>
+
+  <tests>
+    <test>
+    </test>
+  </tests>
+
+</tool>

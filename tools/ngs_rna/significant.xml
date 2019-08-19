@@ -1,0 +1,15 @@
+<tool id="significantDiffExpr" name="Find statistically significant Cuffdiff results">
+        <description></description>
+	<command>awk '/significant|yes/' $input > $significant_output</command>
+	<inputs>
+		<param name="input" type="data" label="Cuffdiff output file" help="E.g, transcript FPKM tracking, gene FPKM tracking" optional="false"/>
+        </inputs>
+        <outputs>
+                <data name="significant_output" type="data" format="tabular" label="Statistically significant results of ${input.name}"/>
+        </outputs>
+        <help>
+
+This tool reports the stastically significant results from a Cuffdiff output file.
+
+        </help>
+</tool>

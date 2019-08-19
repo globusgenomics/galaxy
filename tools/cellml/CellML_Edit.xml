@@ -1,0 +1,34 @@
+<tool id="cellml_edit" name="Edit CellML Model Parameters">
+	<description></description>
+	<command interpreter="python">
+		
+		CellML_Edit.py  $output_file $input_file 
+		#for $i, $s in enumerate( $parameters )
+			${s.component} ${s.name} ${s.value} 
+		#end for
+	
+	</command>	
+	<inputs>
+		<param name="input_file" type="data" format="xml" label="CellML File"/>
+		<repeat name="parameters" title="Parameter">
+			<param name="component" type="text" label="Component"/>
+			<param name="name" type="text" label="Name"/>
+			<param name="value" type="text" label="Value"/>
+		</repeat>
+	</inputs>
+	<outputs>
+		<data format="xml" name="output_file" label="model.xml" />
+	</outputs>
+	<help>
+**Description** This tool can be used to edit the parameters of CellML_ models, e.g. initial conditions, simulation parameters, or physical constants. 
+
+**Tool Use** The CellML file must already be in the history (use the "Upload File" tool in the "Get Data" category to upload a new model). To change a parameter value, click the "Add new Parameter" button and specify the variable's component, name, and new value. This will set the variable's "initial value" attribute to the new value.
+
+**Output** The tool produces one output file:
+
+1. *model.xml*: CellML model with the new parameter values.
+
+.. _CellML: http://www.cellml.org
+		
+	</help>
+</tool>

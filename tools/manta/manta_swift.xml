@@ -1,0 +1,185 @@
+<tool id="manta_tool_swift" name="Manta" version="SAMTOOLS: 1.2; Manta: 0.29.2">
+  <description>Structural variant and indel caller for mapped sequencing data (Swift)</description>
+  <requirements>
+    <requirement type="package">manta</requirement>
+    <requirement type="package">pymodules</requirement>
+    <requirement type="package">samtools</requirement>
+    <requirement type="package">swift</requirement>
+  </requirements>
+  <stdio>
+    <exit_code description="Error running tool" level="warning" range="1:"/>
+  </stdio>
+  <command interpreter="python">
+	manta_swift.py
+        --out-dir $output_log.extra_files_path
+        --output $output_log
+        --log $output_swift_log
+
+	##Ref Genome
+	#if $genomeSource.refGenomeSource == "history":
+          -p '--referenceFasta ${genomeSource.ownFile}'
+        #else:
+        ##use precomputed indexes
+          -p '--referenceFasta ${genomeSource.indices.fields.path}'
+	#end if
+
+        ## input files
+        #if $input_dir_source.input_dir_source_type == "text":
+            --input_dir ${input_dir_source.input_directory_path}
+        #else:
+            --input_dir_file ${input_dir_source.input_directory_path_file}
+        #end if
+
+##        --target $target_file
+        --config=$config_file
+
+	##Optional parameter
+        #if $option.option == "modify_parameters": 
+          #if $option.analysis_mode.option_mode != "wg":
+            -p "--$option.analysis_mode.option_mode"
+          #end if
+          #if $option.analysis_mode.option_mode == "rna":
+            -p "$option.analysis_mode.unstrandedRNA"
+          #end if
+        #end if
+    </command>
+    <inputs>
+      <conditional name="genomeSource">
+        <param label="Will you select a reference from your history or use a built-in fasta file?" name="refGenomeSource" type="select">
+          <option value="indexed">Use a built-in index</option>
+          <option value="history">Use one from the history</option>
+        </param>
+        <when value="indexed">
+          <param label="Select a reference genome" name="indices" type="select">
+            <options from_data_table="all_fasta">
+              <filter column="2" type="sort_by"/>
+              <validator message="No indexes are available" type="no_options"/>
+            </options>
+          </param>
+        </when>
+        <when value="history">
+          <param format="fasta" label="Select a reference from history" name="ownFile" type="data"/>
+        </when>
+      </conditional>
+
+      <conditional name="input_dir_source">
+        <param help="If you choose the file based method, it must contain only one line with the path for your files" label="How will you enter the directory path for your BAM/BAI files?" name="input_dir_source_type" type="select">
+          <option value="text">Text Field</option>
+          <option selected="True" value="file">File</option>
+        </param>
+        <when value="text">
+          <param area="True" help="Please input the full path of the directory that contains a set of BAM files. All the BAM files will be used as input datasets." label="BAM directory path" name="input_directory_path" size="2x40" type="text"/>
+        </when>
+        <when value="file">
+          <param format="txt" help="Must contain only one line with the path for your files" label="File containing path of the directory containing the BAM files" name="input_directory_path_file" type="data"/>
+        </when>
+      </conditional>
+
+      <conditional name="option">
+        <param help="" label="Optional Parameters" name="option" optional="true" type="select">
+	  <option selected="true" value="default_parameters">Default Parameters</option>
+	  <option value="modify_parameters">Modify Parameters</option>
+	</param>
+	<when value="modify_parameters">
+
+          <conditional name="analysis_mode">
+            <param help="" label="Set default mode options" name="option_mode" type="select">
+              <option selected="true" value="wg">Whole genome: Default</option>
+              <option value="exome">Whole Exome: turn off depth filters</option>
+              <option value="rna">RNA-Seq: turn off depth filters, and don't treat anomalous reads as SV evidence when the proper-pair bit is set</option>
+            </param>
+            <when value="wg"></when>
+            <when value="exome"></when>
+            <when value="rna">
+              <param name="unstrandedRNA" type="boolean" label="Is this unstranded RNA" help="--unstrandedRNA. Allows splice-junctions on either strand" truevalue="--unstrandedRNA" falsevalue="" selected="false"/>
+            </when>
+          </conditional>
+          <param name="minCandidateVariantSize" type="integer" label="Minimum candidate variant size" help="--minCandidateVariantSize. Run discovery and candidate reporting for all SVs and indels at or above this size." value="8"/>
+          <param name="minEdgeObservations" type="integer" label="Minimum edge observations" help="--minEdgeObservations. Remove all edges from the graph unless they have this many observations." value="3"/>
+          <param name="minCandidateSpanningCount" type="integer" label="Minimum candidate spanning count" help="--minCandidateSpanningCount. Run discovery and candidate reporting for all SVs and indels with at least this many spanning support observations." value="3"/>
+          <param name="minScoredVariantSize" type="integer" label="Minimum score variant size" help="--minScoredVariantSize. After candidate identification, only score and report SVs and indels at or above this size" value="51"/>
+          <param name="minDiploidVariantScore" type="integer" label="Minimum diploid variant score" help="--minDiploidVariantScore. minimum VCF QUAL score for a variant to be included in the diploid vcf" value="10"/>
+          <param name="minPassDiploidVariantScore" type="integer" label="Minimum passing diploid variant score" help="--minPassDiploidVariantScore. VCF QUAL score below which a variant is marked as filtered in the diploid vcf" value="20"/>
+          <param name="minPassDiploidGTScore" type="integer" label="Minimum passing diploid genotype score" help="--minPassDiploidGTScore. Minimum genotype quality score below which single samples are filtered for a variant in the diploid vcf" value="15"/>
+          <param name="minSomaticScore" type="integer" label="Minimum somatic score" help="--minSomaticScore. Somatic quality scores below this level are not included in the somatic vcf" value="10"/>
+          <param name="minPassSomaticScore" type="integer" label="Minimum pass somatic score" help="--minPassSomaticScore. Somatic quality scores below this level are filtered in the somatic vcf" value="30"/>
+        </when>
+      </conditional>	
+    </inputs>
+    <outputs>
+          <data format="html" label="${tool.name} on ${on_string} (log)" name="output_log"/>
+    <data format="pdf" label="${tool.name} on ${on_string} (summary)" name="output_swift_log"/>
+    </outputs>
+    <configfiles>
+      <configfile name="config_file">
+[manta]
+#if $genomeSource.refGenomeSource == "history":
+referenceFasta = ${genomeSource.ownFile}"
+#else:
+referenceFasta = ${genomeSource.indices.fields.path}
+#end if
+
+#if $option.option != "modify_parameters":
+minCandidateVariantSize = 8
+minEdgeObservations = 3
+minCandidateSpanningCount = 3
+minScoredVariantSize = 51
+minDiploidVariantScore = 10
+minPassDiploidVariantScore = 20
+minPassDiploidGTScore = 15
+minSomaticScore = 10
+minPassSomaticScore = 30
+#else:
+minCandidateVariantSize = ${option.minCandidateVariantSize}
+minEdgeObservations = ${option.minEdgeObservations}
+minCandidateSpanningCount = ${option.minCandidateSpanningCount}
+minScoredVariantSize = ${option.minScoredVariantSize}
+minDiploidVariantScore = ${option.minDiploidVariantScore}
+minPassDiploidVariantScore = ${option.minPassDiploidVariantScore}
+minPassDiploidGTScore = ${option.minPassDiploidGTScore}
+minSomaticScore = ${option.minSomaticScore}
+minPassSomaticScore = ${option.minPassSomaticScore}
+#end if
+      </configfile>
+    </configfiles>
+
+    <help>
+|
+
+
+**Reference**
+	https://github.com/Illumina/manta
+
+-----
+
+**What it does**
+
+Manta calls structural variants (SVs) and indels from mapped paired-end sequencing reads. It is optimized for analysis of germline variation in small sets of individuals and somatic variation in tumor/normal sample pairs. Manta discovers, assembles and scores large-scale SVs, medium-sized indels and large insertions within a single efficient workflow.
+
+-----
+ 
+**Required Parameters**
+
+::
+
+    --bam=FILE, --normalBam=FILE
+                        Normal sample BAM or CRAM file. May be specified more
+                        than once, multiple inputs will be treated as each BAM
+                        file representing a different sample. [optional] (no
+                        default)
+    --tumorBam=FILE, --tumourBam=FILE
+                        Tumor sample BAM or CRAM file. Only up to one tumor
+                        bam file accepted. [optional] (no default)
+    --exome             Set options for WES input: turn off depth filters
+    --rna               Set options for RNA-Seq input: turn off depth filters
+                        and don't treat anomalous reads as SV evidence when
+                        the proper-pair bit is set.
+    --unstrandedRNA     Set if RNA-Seq input is unstranded: Allows splice-
+                        junctions on either strand
+    --referenceFasta=FILE
+                        samtools-indexed reference fasta file [required]
+    --runDir=DIR        Run script and run output will be written to this
+                        directory [required] (default: MantaWorkflow)
+
+    </help>
+</tool>

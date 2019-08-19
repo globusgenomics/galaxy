@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+
+<tool name="SNAP Build Index" id="SNAP_build_index_id">
+  <description>
+  </description>
+
+  <command interpreter="python">
+   snap-index.py
+
+   $inputFASTA
+
+    #if str( $seedSize ):
+        $seedSize
+    #else:
+	none
+    #end if   
+
+   $outputIndex
+
+  </command>
+
+  <inputs>
+    <param name="inputFASTA" type="data" format="fasta" label="Select a fasta file" />
+    <param name="seedSize" type="text"  value="" label="-s" help="-s option to set seed size. We recommend seed size 20 for 100 bp reads and 22 for
+ larger reads."/>
+
+  </inputs>
+
+  <outputs>
+    <data name="outputIndex" label="${tool.name} on ${on_string}" />
+  </outputs>
+
+  <help>
+SNAP_ is a new sequence aligner that is 10-100x faster and simultaneously more accurate than existing tools like BWA, Bowtie2 and SOAP2. It runs on commodity x86 processors, and supports a rich error model that lets it cheaply match reads with more differences from the reference than other tools. This gives SNAP up to 2x lower error rates than existing tools and lets it match larger mutations that they may miss.
+ .. _SNAP: http://snap.cs.berkeley.edu/
+
+SNAP was developed by a team from the UC Berkeley AMP Lab, Microsoft, and UCSF.
+
+SNAP 0.13.4 for Linux (64-bit)
+
+**Usage:**
+
+To build an index:
+
+snap  index  hg19.fa  index-dir	
+
+To align unpaired reads:
+
+snap single index-dir  reads.fq  -o output.sam	
+  
+To align paired-end reads:
+
+snap  paired index-dir  read1.fq  read2.fq  -o  output.sam	
+
+
+  </help>
+
+</tool>

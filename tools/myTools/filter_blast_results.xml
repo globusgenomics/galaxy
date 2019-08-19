@@ -1,0 +1,51 @@
+<tool id="filter_blast_results" name="Filter Top Blast Results">
+  <description>Filter the top x hits for each query based on quantity results for each query, evalue or identity.</description>
+  <requirements>
+      <requirement type="package">perlmodules</requirement>
+  </requirements>
+  <command interpreter="perl">
+filter_blast_results.pl -i $input -o $output -n $pTop
+
+#if $cutoff_parameter.cutoffType=="evalue"
+-e $cutoff_parameter.sevalue
+#else
+-p $cutoff_parameter.spidentity
+#end if
+  </command>
+
+  <inputs>
+    <param format="tabular" name="input" type="data" label="Source file"/>
+
+    <conditional name="cutoff_parameter">
+      <param name="cutoffType" type="select" label="Cutoff Type:" help="You can have a cutoff of you blast results using an e-value or percent identity score.">
+        <option value="evalue">E-value</option>
+        <option value="pidentity">Percent Identity</option>
+      </param>
+      <when value="evalue">
+        <param name="sevalue" type="float" value="1e-5" label="Cutoff E-value:" />
+      </when> <!-- evalue -->
+      <when value="pidentity">
+        <param name="spidentity" type="float" value="90" label="Cutoff Percent Identity Value:" />
+      </when> <!-- pidentity -->
+    </conditional> <!-- cutoff_parameter -->
+    <param name="pTop" type="integer" value="1" label="Keep the top X hits for each query" />
+  </inputs>
+
+  <outputs>
+    <data format="tabular" name="output" metadata_source="input"/>
+  </outputs>
+
+  <tests>
+    <test>
+      <param name="input" value="blast_output1.txt"/>
+      <output name="filtered_blast_out_file1" file="top_blast_hits.txt"/>
+      <param name="pTop" value="1" />
+      <param name="sevalue" value="1e-5" />
+    </test>
+  </tests>
+
+  <help>
+This tool filters blast results given an e-value or percent identity and gets the top X hits for each query.
+  </help>
+
+</tool>

@@ -1,0 +1,55 @@
+<?xml version="1.0" ?>
+<tool id="qiime_gneiss_add-pseudocount" name="qiime gneiss add-pseudocount" version="022019">
+	<description> - Add pseudocount to table</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command>
+	<![CDATA[
+	qiime gneiss add-pseudocount --i-table=$itable
+
+	#if $ppseudocount:
+	 --p-pseudocount=$ppseudocount
+	#end if
+
+	#if str($cmdconfig) != 'None':
+	 --cmd-config=$cmdconfig
+	#end if
+	 --o-composition-table=ocompositiontable;
+
+ cp ocompositiontable.qza $ocompositiontable
+	]]>
+	</command>
+	<inputs>
+		<param format="qza,no_unzip.zip" label="--i-table: FeatureTable[Frequency] The feature table to which pseudocounts should be added.  [required]" name="itable" optional="False" type="data"/>
+		<param label="--p-pseudocount: The value to add to all counts in the feature table.  [default: 1]" name="ppseudocount" optional="True" type="integer" value="1"/>
+		<param label="--cmd-config: Use config file for command options" name="cmdconfig" optional="True" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="qza" label="${tool.name} on ${on_string}: composition-table.qza" name="ocompositiontable"/>
+	</outputs>
+	<help>
+		<![CDATA[
+Add pseudocount to table
+-------------------------
+
+Increment all counts in table by pseudocount.
+
+Parameters
+----------
+table : FeatureTable[Frequency]
+    The feature table to which pseudocounts should be added.
+pseudocount : Int, optional
+    The value to add to all counts in the feature table.
+
+Returns
+-------
+composition_table : FeatureTable[Composition]
+    The resulting feature table.
+		]]>
+	</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

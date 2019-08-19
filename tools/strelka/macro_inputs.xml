@@ -1,0 +1,33 @@
+﻿<macros>
+  <import>macro_configuration.xml</import>
+  <macro name="inputs">
+    <inputs>
+      <param format="bam" name="tumorBam" type="data" label="Tumor bam file"/>
+      <param format="bam" name="normalBam" type="data" label="Normal bam file"/>
+      <conditional name="genomeSource">
+        <param name="refGenomeSource" type="select" label="Choose the reference genome">
+          <option value="cached">Built-in genome</option>
+          <option value="history">use a genome (fasta format) from history</option>
+        </param>
+        <when value="cached">
+          <param name="index" type="select" label="Select a built-in reference genome" help="This list contains genomes cached at this Galaxy instance. If your genome of interest is not present here request it by using 'Help' link at the top of Galaxy interface or use the 'Use a genome (fasta format) from my history' option of the 'Select Reference Genome' dropdown.">
+            <options from_data_table="all_fasta"/>
+          </param>
+        </when>
+        <when value="history">
+          <param format="fasta" name="ownFile" type="data" metadata_name="dbkey" label="Using reference file" help="This option works best for relatively small genomes. If you are working with large human-sized genomes, send request to Galaxy team for adding your reference to this Galaxy instance by using 'Help' link at the top of Galaxy interface."/>
+        </when>
+      </conditional>
+      
+      <expand macro="configuration"/>
+      
+      <param name="conf_file_check" type="boolean" label="output conf file" checked="False" help="Show configuration file on history"/>
+      <param name="output1_file_check" type="boolean" label="snvs filtred" checked="True" help="Show filtred snvs"/>     
+      <param name="output2_file_check" type="boolean" label="indels filtred" checked="True" help="Show filtred indels"/>
+      <param name="output3_file_check" type="boolean" label="all snvs" checked="True" help="Show snvs"/>
+      <param name="output4_file_check" type="boolean" label="all indels" checked="True" help="Show indels"/>
+      <param name="output5_file_check" type="boolean" label="Show normal realigned bam" help="only if isWriteRealignedBam option is checked" checked="False"/>
+      <param name="output6_file_check" type="boolean" label="Show tumor realigned bam" help="only if isWriteRealignedBam option is checked" checked="False"/>
+    </inputs>
+  </macro>
+</macros>

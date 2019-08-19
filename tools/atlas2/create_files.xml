@@ -1,0 +1,27 @@
+<tool id="create_files" description="Create random files" name="Create some empty files" version="1.0">
+  <description>Create empty files in a specified directory</description>
+
+  <command interpreter="python">
+      create_files.py
+      ### number files
+      --qty $number_files
+      ### output directory to be written
+      --outputdir=$outputdir
+      ### outputs
+      -d $output1
+  </command>
+  <inputs>
+    <param name="number_files" type="text" label="Number of files to create" help=""/>
+    <param name="outputdir" type="text" label="Output Directory Path" help=""/>
+  </inputs>
+  <outputs> 
+    <data fortmat="tabular" name="output1" />
+  </outputs>
+  <help>
+
+**What it does**
+
+**Outputs**
+
+  </help>
+</tool>

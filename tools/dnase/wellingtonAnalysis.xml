@@ -1,0 +1,26 @@
+<tool id="Wellington_Analysis" name="Wellington Analysis">
+<description>of a .bed and its original .bam file</description>
+<requirements>
+  <requirement type="package">pymodules</requirement>
+</requirements>
+<command interpreter="python">wellingtonAnalysis.py $input1 $input2 $input2.metadata.bam_index $output $pvalue_cutoff</command>
+<inputs>
+  <param format="bed" name="input1" type="data" label="Input bed file"/>
+  <param format="bam" name="input2" type="data" label="Input bam file"/>
+  <param name="pvalue_cutoff" type="integer" label="Pvalue cutoff" value="-10"/>
+</inputs>
+<outputs>
+  <data format="bed" label="${tool.name} on ${on_string}" name="output"/>
+</outputs>
+<tests>
+<test>
+  <param name="test_input1" value="test_input.txt"/>
+  <param name="test_input2" value="test_input.txt"/>
+  <output name="test_outout" file="test_output.txt"/>
+</test>
+</tests>
+<help>
+This tool does Wellington analysis of a given .bed file and its original .bam file, it returns a .bed file
+</help>
+</tool>
+

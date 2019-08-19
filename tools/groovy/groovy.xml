@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+
+<tool name="groovy" id="groovy_id">
+  <description>
+  </description>
+
+<command interpreter="python">
+groovy.py
+$output
+
+	</command>
+	<inputs>
+
+	</inputs>
+	<outputs>
+		<data format="tabular" name="output" label="Output of ${tool.name}"/>
+	</outputs>
+	<help>
+This tool run the following command:
+
+groovy -cp GLSGeneusRestApiUtils.groovy UpdateProcessUDF_from_Galaxy.groovy
+
+	</help>
+</tool>

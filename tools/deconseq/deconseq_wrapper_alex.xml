@@ -1,0 +1,181 @@
+<tool id="deconseq" name="Deconseq" version="DECONSEQ: 0.4.3">
+  	<description>This tool sorts apart the matching and non-matching reads into two files specified by the user.</description>
+        <requirements>
+          <requirement type="package">deconseq</requirement>
+        </requirements>
+        <command interpreter="python">
+          deconseq_wrapper.py 
+             -f $input_file
+             -dbs &quot;${dbSource.indices.fields.fasta_path}&quot;
+             -dbs_retain=&quot;${db_retain_Source.indices.fields.fasta_path}&quot;
+             -out_dir=&quot;./&quot;
+             -i $alignment_identity_threshold
+             -c $alignment_coverage_threshold
+             -S $chunk_size
+             -z $z_best
+             -T $aln_score_threshold
+             #if $db_retain_Source.selector_group != &quot;none&quot;:
+                 -group $db_retain_Source.selector_group
+             #end if
+        </command>
+<!--
+Usage:
+    deconseq [options] -f <file> -dbs <list> -dbs_retain <list> ...
+
+Options:
+    -f <file>
+            Input file in FASTA or FASTQ format that contains the query
+            sequences.
+
+    -dbs <list>
+            Name of database(s) to use (default: hsref). Names are according
+            to their definition in the config file. Separate multiple
+            database names by comma without spaces.
+
+            Example: -dbs hs1,hs2,hsref
+
+    -dbs_retain <list>
+            Name of database(s) to use for cross-check. Query sequences with
+            hit against any dbs will be compared to these databases.
+            Databases have to be different from names in dbs. Names are
+            according to their definition in the config file. Separate
+            multiple database names by comma without spaces.
+
+            Example: -dbs_retain bact,vir
+
+    -out_dir <dir>
+            Directory where the results should be written (default: .). If
+            the directory does not exist, it will be created.
+
+    -i <integer>
+            Alignment identity threshold in percentage (integer from 1-100
+            without %) used to define matching sequences as similar. The
+            identity is calculated for the part of the query sequence that
+            is aligned to a reference sequence. For example, a query
+            sequence of 100 bp that aligns to a reference sequence over the
+            first 50 bp with 40 matching positions has an identity value of
+            80%.
+
+    -c <integer>
+            Alignment coverage threshold in percentage (integer from 1-100
+            without %) used to define matching sequences as similar. The
+            coverage is calculated for the part of the query sequence that
+            is aligned to a reference sequence. For example, a query
+            sequence of 100 bp that aligns to a reference sequence over the
+            first 50 bp with 40 matching positions has an coverage value of
+            50%.
+
+    -group <integer>
+            If dbs_retain is set, then this option can be used to group the
+            sequences similar to dbs and dbs_retain databases with either
+            the clean or the contamination output file. If group is not set
+            and dbs_retain is set, then three separate files will be
+            generated.
+
+            Use -group 1 for grouping "Clean + Both" and use -group 2 for
+            grouping "Contamination + Both".
+
+    -no_seq_out
+            Prevents the generation of the fasta/fastq output file for the
+            given coverage and identity thresholds. This feature is e.g.
+            useful for the web-version since -i and -c are set interactively
+            and not yet defined at the data processing step.
+
+    -keep_tmp_files
+            Prevents from unlinking the generated tmp files. These usually
+            include the id file and the .tsv file(s). This feature is e.g.
+            useful for the web-version since .tsv files are used to
+            dynamically generate the output files.
+
+    -id <string>
+            Optional parameter. If not set, ID will be automatically
+            generated to prevent from overwriting previous results. This
+            option is useful if integrated into other tools and the output
+            filenames need to be known.
+
+    -S <integer>
+            Chunk size of reads in bp as used by BWA-SW (default: 10000000).
+
+    -z <integer>
+            Z-best value as used by BWA-SW (default: 1).
+
+    -T <integer>
+            Alignment score threshold as used by BWA-SW (default: 30).
+
+-->
+        <inputs>
+           <param format="fastqsanger,fasta" help="If paired-end reads, merge reads by using interleave tool." label="Input file in FASTA or FASTQ format that contains the query sequences" name="input_file" type="data"/>
+           <conditional name="dbSource">
+              <param label="Will you select a database file from your history or use a built-in index?" name="refdbSource" type="select">
+                 <option value="indexed">Use a built-in index</option>
+                 <option value="history">Use one from the history</option>
+              </param>
+              <when value="indexed">
+                 <param label="Select a reference genome" name="indices" type="select">
+                    <options from_data_table="deconseq_indexes">
+                       <filter column="2" type="sort_by"/>
+                    </options>
+                 </param>
+              </when>
+              <when value="history">
+                 <param format="fasta" label="Select a reference database from history" name="ownFile" type="data"/>
+              </when>
+           </conditional>
+
+           <conditional name="db_retain_Source">
+              <param label="Will you select a database file from your history or use a built-in index?" name="refdbretainSource" type="select">
+                 <option value="indexed">Use a built-in index</option>
+                 <option value="history">Use one from the history</option>
+              </param>
+              <when value="indexed">
+                 <param label="Select a reference genome" name="indices" optional="True" type="select">
+                    <options from_data_table="deconseq_indexes">
+                       <filter column="2" type="sort_by"/>
+                    </options>
+                 </param>
+                 <param help="used to group the sequences similar to dbs and dbs_retain databases with either the clean or the contamination output file. If group is not set and dbs_retain is set, then three separate files will be generated. Use -group 1 for grouping Clean + Both and use -group 2 for grouping Contamination + Both." label="Group type" name="selector_group" type="select">
+                    <option selected="True" value="none">None</option>
+                    <option value="1">Clean + Both</option>
+                    <option value="2">Contamination + Both</option>
+                 </param>
+              </when>
+              <when value="history">
+                 <param format="fasta" label="Select a reference database from history" name="ownFile" type="data"/>
+                 <param help="used to group the sequences similar to dbs and dbs_retain databases with either the clean or the contamination output file. If group is not set and dbs_retain is set, then three separate files will be generated. Use -group 1 for grouping Clean + Both and use -group 2 for grouping Contamination + Both." label="Group type" name="selector_group" type="select">
+                    <option selected="True" value="none">None</option>
+                    <option value="1">Clean + Both</option>
+                    <option value="2">Contamination + Both</option>
+                 </param>
+              </when>
+           </conditional>
+
+           <param help="integer from 1-100 without % used to define matching sequences as similar" label="Alignment identity threshold in percentage" name="alignment_identity_threshold" type="integer" value="80"/>
+           <param help="integer from 1-100 without % used to define matching sequences as similar" label="Alignment coverage threshold in percentage" name="alignment_coverage_threshold" type="integer" value="50"/>
+           <param help="" label="Chunk size of reads in bp as used by BWA-SW" name="chunk_size" type="integer" value="10000000"/>
+           <param help="" label="Z-best value as used by BWA-SW" name="z_best" type="integer" value="1"/>
+           <param help="" label="Alignment score threshold as used by BWA-SW" name="aln_score_threshold" type="integer" value="30"/>
+        </inputs>
+        <outputs>
+           <data format_source="input_file" from_work_dir="aligned_clean.fastq" label="${tool.name} on ${on_string}: aligned_clean.fastq" name="aligned_clean">
+              <filter>refdbretainSource['selector_group'] == &quot;None&quot;</filter>
+           </data>
+           <data format_source="input_file" from_work_dir="aligned_contamination.fastq" label="${tool.name} on ${on_string}: aligned_contamination.fastq" name="aligned_contamination">
+              <filter>refdbretainSource['selector_group'] == &quot;None&quot;</filter>
+           </data>
+           <data format_source="input_file" from_work_dir="aligned_both.fastq" label="${tool.name} on ${on_string}: aligned_both.fastq" name="aligned_both">
+              <filter>refdbretainSource['selector_group'] == &quot;None&quot;</filter>
+           </data>
+           <data format_source="input_file" from_work_dir="aligned_clean_both.fastq" label="${tool.name} on ${on_string}: aligned_clean_both.fastq" name="aligned_clean_both">
+              <filter>refdbretainSource['selector_group'] == &quot;1&quot;</filter>
+           </data>
+           <data format_source="input_file" from_work_dir="aligned_contamination.fastq" label="${tool.name} on ${on_string}: aligned_contamination.fastq" name="aligned_contamination">
+              <filter>refdbretainSource['selector_group'] == &quot;1&quot;</filter>
+           </data>
+           <data format_source="input_file" from_work_dir="aligned_contamination_both.fastq" label="${tool.name} on ${on_string}: aligned_contamination_both.fastq" name="aligned_contamination_both">
+              <filter>refdbretainSource['selector_group'] == &quot;2&quot;</filter>
+           </data>
+           <data format_source="input_file" from_work_dir="aligned_clean.fastq" label="${tool.name} on ${on_string}: aligned_clean.fastq" name="aligned_clean">
+              <filter>refdbretainSource['selector_group'] == &quot;2&quot;</filter>
+           </data>
+        </outputs>
+</tool>

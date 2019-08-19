@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+
+{% block body %}
+	<h3>Available projects</h3>
+	<div class="list-group">
+		{% for project in projects %}
+		<a class="list-group-item" href="project_{{ project.id }}.html">{{ project.id }}</a>
+		{% endfor %}
+	</div>
+{% endblock %}

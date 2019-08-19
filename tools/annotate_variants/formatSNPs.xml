@@ -1,0 +1,15 @@
+<tool id="formatSNPs" name="Format SNPs for SeattleSeq">
+	<description>Formats bed SNPs files for submission to SeattleSeq.  Script seperates SNPs from indels.</description>
+	<command interpreter="perl">formatSNPs.pl --input-file $input_file --output-snps $output_snps --output-indels $output_indels</command>
+	<inputs>
+		<param name="input_file" type="data" format="bed" label="SNP bed file" help="List of variants in exome" optional="false"/>
+	</inputs>
+	<outputs>
+		<data name="output_snps" type="data" format="tabular" label="${input_file.name} in SeattleSeq format"/>
+		<data name="output_indels" type="data" format="bed" label="Indels in exome"/>
+	</outputs>
+
+        <help>
+        </help>
+
+</tool>

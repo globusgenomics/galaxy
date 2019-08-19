@@ -1,0 +1,95 @@
+<?xml version="1.0"?>
+
+<tool name="Compute Psi values for genes" id="compute_genes_psi_id">
+  <description>
+  </description>
+  <requirements>
+    <requirement type="package">pymodules</requirement>
+    <requirement type="package">samtools</requirement>
+  </requirements>
+  <command>
+  mkdir $htmlfile.extra_files_path;
+  #set $input_bam_link = str($htmlfile.extra_files_path)+"/input_bam.bam"
+  #set $input_bai_link = str($htmlfile.extra_files_path)+"/input_bam.bam.bai"
+  ln -s $input_BAM $input_bam_link;
+  #if str( $input_BAM.metadata.bam_index ) != "None":
+      ln -s $input_BAM.metadata.bam_index $input_bai_link;
+  #else:
+      samtools index $input_bam_link;
+  #end if
+   python /opt/galaxy/tools/miso/miso_compute_genes_psi.py   
+   $input_GFF
+   $input_bam_link
+   $event_type
+
+    #if str( $events_file ):
+        $events_file
+    #else:
+	none
+    #end if
+
+    #if $settings_file.InputSource == "default":
+      false "$settings_file.default_input"
+    #else:
+      true  "$settings_file.upload_input"
+    #end if
+
+   $read_len
+
+    #if str( $job_name ):
+        $job_name
+    #else:
+	none
+    #end if
+   
+   $htmlfile
+   $__root_dir__
+  </command>
+
+  <inputs>
+
+    <param name="input_GFF" type="data" label="Select a indexed GFF directory with genes"/>
+    <param name="input_BAM" type="data" format="bam" label="Select from bambai datatype, including a sorted, indexed BAM file and its bai file"/>
+
+    <param name="event_type" type="select" label="Input type of event">
+        <option value="default" selected="true">Default</option>
+        <option value="SE">SE</option>
+        <option value="RI">RI</option>
+        <option value="A3SS">A3SS</option>
+        <option value="A5SS">A5SS</option>
+        <option value="MXE">MXE</option>
+    </param>
+
+    <param name="events_file" type="text"  area="True" value="" size="1x20" label="EVENTS_INFO_FILENAME(optional)"  help="Filename with all the events and their coordinates. This is used to compute the length of the alternative regions in each event." />
+
+    <conditional name="settings_file">
+      <param name="InputSource" type="select" label="SETTINGS_FILENAME" help="Will you use default setting file or your uploaded setting file? ">
+        <option value="default" selected="true">Default setting file</option>
+        <option value="upload">Uploaded setting file</option>
+      </param>
+
+      <when value="default">
+        <param name="default_input" type="hidden" value=""/>
+      </when>
+      <when value="upload">
+        <param name="upload_input" type="data" label="Filename specifying MISO settings."/>
+      </when>
+    </conditional>
+
+    <param name="read_len" type="text"  area="True" value="36" size="1x20" label="READ_LEN"  help="Length of sequenced reads." />
+
+    <param name="job_name" type="text"  area="True" value="misojob" size="1x20" label="JOB_NAME(optional)"  help="Name for jobs submitted to queue for SGE jobs." />
+
+  </inputs>
+
+  <outputs>
+    <data format="html" name="htmlfile" label="Output of Compute Psi values for genes.html" />
+  </outputs>
+
+  <help>
+Compute Psi values for a given GFF annotation of either whole mRNA isoforms or isoforms produced by single alternative splicing events. 
+Expects two arguments: an indexed GFF directory with genes to process, and a sorted, indexed BAM file (with headers) to run on.
+
+  </help>
+
+</tool>

@@ -1,0 +1,83 @@
+<tool id="sam_stats" name="sam-stats" version="EA-UTILS: 1.1.2-484">
+    <description> - Compute statistics from SAM or BAM files</description>
+    <requirements>
+        <requirement type="package" version="1.1.2-484">ea-utils</requirement>
+    </requirements>
+    <command>
+        sam-stats
+        $trackMultAlign
+        $reportAllChr
+        #if $rnaSeqStats:
+        -R $rnaSeqStatsFile
+        #end if
+        #if $input.extension == &quot;bam&quot;:
+        -B
+        #end if
+        -S $histBinSize
+        $input
+        &gt; $samStats
+    </command>
+    <inputs>
+        <param format="sam, bam" label="SAM/BAM File" name="input" type="data"/>
+        <param falsevalue="" label="Keep track of multiple alignments (slower!)" name="trackMultAlign" truevalue="-D" type="boolean" value="False"/>
+        <param falsevalue="" label="Report all chr sigs, even if there are more than 1000" name="reportAllChr" truevalue="-A" type="boolean" value="False"/>
+        <!-- <param name="numReadsSubsample" type="integer" value="1000000" min="1" max="1000000" label="Number of reads to sample for per-base statistics (max 1,000,000)" /> -->
+        <param label="Number of bins per chromosome for reads by chromosome &quot;histogram&quot;" min="1" name="histBinSize" type="integer" value="30"/>
+        <param label="Output RNA-Seq statistics (coverage, 3 prime bias, etc.)" name="rnaSeqStats" type="boolean" value="False"/>
+    </inputs>
+
+    <outputs>
+        <data format="tabular" label="${tool.name} on ${on_string}" name="samStats"/>
+        <data format="tabular" label="${tool.name} on ${on_string} (RNA-Seq Stats)" name="rnaSeqStatsFile"> <filter>rnaSeqStats</filter>
+        </data>
+    </outputs>
+
+    <stdio>
+        <exit_code description="Unknown error occurred" level="fatal" range="1:"/>
+    </stdio>
+
+    <tests>
+        <test>
+            <param name="input" value="test.sam"/>
+            <output file="testout.txt" name="samStats"/>
+        </test>
+    </tests>
+
+    <help>
+Overview
+--------
+sam-stats computes varius statics on SAM/BAM alignment files.
+
+Complete Stats::
+
+  &lt;STATS&gt;           : mean, max, stdev, median, Q1 (25 percentile), Q3
+  reads             : # of entries in the sam file, might not be # reads
+  phred             : phred scale used
+  bsize             : # reads used for qual stats
+  mapped reads      : number of aligned reads (unique probe id sequences)
+  mapped bases      : total of the lengths of the aligned reads
+  forward           : number of forward-aligned reads
+  reverse           : number of reverse-aligned reads
+  snp rate          : mismatched bases / total bases
+  ins rate          : insert bases / total bases
+  del rate          : deleted bases / total bases
+  pct mismatch      : percent of reads that have mismatches
+  len &lt;STATS&gt;       : read length stats, ignored if fixed-length
+  mapq &lt;STATS&gt;      : stats for mapping qualities
+  insert &lt;STATS&gt;    : stats for insert sizes
+  &lt;CHR&gt;           : percentage of mapped bases per chr, followed by a signature
+
+Subsampled stats (1M reads max)::
+
+  base qual &lt;STATS&gt; : stats for base qualities
+  A,T,C,G       : base percentages
+
+Meaning of the per-chromosome signature:
+
+  A ascii-histogram of mapped reads by chromosome position.  It is only output if the original SAM/BAM has a header. The values are the log2 of the # of mapped reads at each position + ascii '0'.
+
+See http://code.google.com/p/ea-utils/wiki/SamStatsDetails for more information on each stat, how it's calculated and what it means.
+
+This tool uses the sam-stats program that is part of the ea-utils suite. See http://code.google.com/p/ea-utils/wiki/SamStats for details.
+    </help>
+</tool>

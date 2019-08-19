@@ -1,0 +1,718 @@
+#/bin/bash
+
+ROOT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+source $ROOT_PATH/lib/common.sh
+
+BIN_PATH="$ROOT_PATH/bin"
+LIB_PATH="$ROOT_PATH/lib"
+DOC_PATH="$ROOT_PATH/doc"
+CONF_PATH="$ROOT_PATH/conf"
+DATA_PATH="/mnt/galaxyIndices/genomes/Hsapiens/intogen_data"
+WEB_PATH="$ROOT_PATH/web"
+EXAMPLES_PATH="$ROOT_PATH/examples"
+WORKFLOWS_PATH="$ROOT_PATH/workflows"
+
+WEB_HELP_PATH="$ROOT_PATH/web/help"
+ONEXUS_PATH="$ROOT_PATH/onexus"
+ONEXUS_TEMPLATES_PATH="$ONEXUS_PATH/templates"
+
+EXT_PATH="$ROOT_PATH/external"
+EXT_BIN_PATH="$EXT_PATH/bin"
+EXT_LIB_PATH="$EXT_PATH/lib"
+
+VIRTUALENV_BIN="virtualenv"
+ENV_GLOBAL="no"
+
+ENSEMBL_VERSION=70
+VEP_CACHE_PATH="$DATA_PATH/vep_cache"
+VEP_CACHE_FILE="homo_sapiens_vep_${ENSEMBL_VERSION}.tar.gz"
+VEP_CACHE_URL="ftp://ftp.ensembl.org/pub/release-${ENSEMBL_VERSION}/variation/VEP/$VEP_CACHE_FILE"
+	
+MA_PATH="$DATA_PATH/MA"
+MA_FILE="MA.scores.hg19.tar.bz2"
+MA_URL="http://mutationassessor.org/$MA_FILE"
+MA_DB_FILE="$MA_PATH/ma.db"
+MA_PART_SIZE=10000000
+
+VARDB_VERSION="04"
+VARDB_FILE="var-$VARDB_VERSION.db"
+VARDB_BASE_PATH="$DATA_PATH/db"
+VARDB_PATH="$VARDB_BASE_PATH/$VARDB_FILE"
+VARDB_ZFILE="$VARDB_FILE.bz2"
+VARDB_ZPATH="$DATA_PATH/$VARDB_ZFILE"
+VARDB_URL="http://bg.upf.edu/intogen-data/intogen-sm/$VARDB_ZFILE"
+
+SIGDB_VERSION="03"
+SIGDB_FILE="intogen-sig-$SIGDB_VERSION.db"
+SIGDB_BASE_PATH="$DATA_PATH/db"
+SIGDB_PATH="$SIGDB_BASE_PATH/$SIGDB_FILE"
+SIGDB_ZFILE="$SIGDB_FILE.bz2"
+SIGDB_ZPATH="$DATA_PATH/$SIGDB_ZFILE"
+SIGDB_URL="http://bg.upf.edu/intogen-data/intogen-sm/$SIGDB_ZFILE"
+
+DEVELOP="no"
+
+OFFLINE="yes"
+
+INSTALL_DEPS="yes"
+
+LOG_LEVEL="info"
+
+PYTHON_BIN="python"
+PERL_BIN="perl"
+
+PERL_MIN_VERSION=5.010
+
+CONTACT="Nuria López-Bigas <nuria.lopez@upf.edu>"
+
+# Arguments =============================================================================================
+
+function print_help {
+cat <<EOF
+
+--python PATH         Define the Python interpreter to use.
+
+--perl PATH           Define the Perl interpreter to use.
+
+--runtime PATH        Define the base PATH for temporary files, cache and other runtime files.
+
+--results PATH        Define the base PATH for results files.
+
+--env PATH            Define the PATH for Python virtual environment.
+
+--env-global          Give access to the global site-packages dir to the Python virtual environment.
+
+--develop             Install the development version of BgCore, OncodriveFM and OncodriveCLUST.
+
+--no-deps             Do not install dependencies. Just update configuration files.
+
+--online              Use VEP and Mutation assessor web services. This is for testing purposes only
+                      and it is not recommended, as web services could change at any time breaking
+                      compatibility or data conformance. By default, if this option is not specified,
+                      Variant Effect Predictor and Mutationassessor cache data is downloaded during the setup.
+
+-L LEVEL
+--log-level LEVEL     Define the default log level. Possible values for LEVEL are
+                      debug, info, warn, error. Default is info.
+
+--help                Show this help and exit.
+
+EOF
+#--link-data PATH      Use previously downloaded data from PATH.
+}
+
+ORIGINAL_ARGS="$*"
+
+ARGS=""
+while [ $# -gt 0 ]; do
+	case $1 in
+		--online ) OFFLINE="no" ;;
+		
+		--python ) shift; PYTHON_BIN="$1" ;;
+		
+		--perl ) shift; PERL_BIN="$1" ;;
+		
+		--runtime )
+			shift
+			if mkdir -p $1 2>/dev/null; then
+				RUNTIME_PATH="$(cd $1 && pwd)"
+			fi
+			;;
+		
+		--results )
+			shift
+			if mkdir -p $1 2>/dev/null; then
+				RESULTS_PATH="$(cd $1 && pwd)"
+			fi
+			;;
+
+		--env ) shift; mkdir -p $1; ENV_PATH="$(cd $1 && pwd)" ;;
+
+		--env-global ) ENV_GLOBAL="yes" ;;
+
+		--develop ) DEVELOP="yes" ;;
+		
+		--no-deps ) INSTALL_DEPS="no" ;;
+
+		-L | --log-level ) shift; LOG_LEVEL="$1" ;;
+		
+		-h | --help ) print_help; exit 0 ;;
+		
+		* )
+			if [ -n "$ARGS" ]; then
+				ARGS="$ARGS $1"
+			else
+				ARGS="$1"
+			fi
+			;;
+	esac
+	
+	shift
+done
+
+[ -z "$RUNTIME_PATH" ] && RUNTIME_PATH="$ROOT_PATH/runtime"
+
+CACHE_PATH="$RUNTIME_PATH/cache"
+TEMP_PATH="$RUNTIME_PATH/temp"
+
+[ -z "$RESULTS_PATH" ] && RESULTS_PATH="$RUNTIME_PATH/results"
+
+[ -z "$ENV_PATH" ] && ENV_PATH="$RUNTIME_PATH/pyenv"
+
+[ -f "$CONF_PATH/user.sh" ] && source $CONF_PATH/user.sh
+
+[ ! -d "$RUNTIME_PATH" ] && mkdir -p $RUNTIME_PATH
+
+echo "$ORIGINAL_ARGS" >"$RUNTIME_PATH/setup.txt"
+cat >$RUNTIME_PATH/setup.sh <<EOF
+echo "Running setup $ORIGINAL_ARGS \$* ..."
+$ROOT_PATH/setup $ORIGINAL_ARGS \$*
+EOF
+chmod 755 "$RUNTIME_PATH/setup.sh"
+
+# Commands ==================================================================================================
+
+log info "Checking for required commands ..."
+
+COMMANDS="grep ls find mkdir cp cut mv sort tail head awk sed curl gzip gunzip bunzip2 tar pushd popd make"
+MISSING_COMMANDS=""
+for cmd in $COMMANDS; do
+	if ! cmd_exists $cmd; then
+		if [ -n "$MISSING_COMMANDS" ]; then
+			MISSING_COMMANDS="$MISSING_COMMANDS $cmd"
+		else
+			MISSING_COMMANDS="$cmd"
+		fi
+	fi
+done
+
+if [ -n "$MISSING_COMMANDS" ]; then
+	log error "ERROR: The following required commands were not found: $MISSING_COMMANDS"
+	log error "Please ask your system administrator to install them"
+	exit -1
+fi
+
+# Python ================================================================================================
+
+log info "Setting up Python ..."
+
+# Check Python
+if ! cmd_exists $PYTHON_BIN; then
+	log error "ERROR: Python 2.7+ does not exist and it is required."
+	log error "Please, find more information on how to install it on the following url"
+	log error
+	log error "http://www.python.org/download/releases/2.7.3/"
+	log error
+	#log error "There is also the possibility to run it by using the provided virtual machine. You would need to run setup-vm and start-vm instead"
+	exit -1
+fi
+
+# Check python version
+if ! $PYTHON_BIN -c "import sys; r={True:0,False:1}; exit(r[sys.version_info >= (2,7)])"; then
+	current_python_version=$($PYTHON_BIN -c "import sys; v=sys.version_info; print '{0}.{1}.{2}'.format(v.major, v.minor, v.micro)")
+	log error "ERROR: At least Python 2.7+ is required but found: $current_python_version"
+	log error
+	#log error "There is also the possibility to run it by using the provided virtual machine. You would need to run setup-vm and start-vm instead"
+	exit -1
+fi
+
+# Check virtualenv
+if ! cmd_exists virtualenv; then
+	log warn "WARNING: Required program 'virtualenv' not found, using the included virtualenv.py instead."
+	log warn "Please find more information on how to install it from the following url:"
+	log warn
+	log warn "http://www.virtualenv.org/"
+	log warn
+	VIRTUALENV_BIN="$PYTHON_BIN $EXT_BIN_PATH/virtualenv.py"
+fi
+
+# Create python virtual enviroment
+if [ ! -d "$ENV_PATH" ] || [ ! -f "$ENV_PATH/path.txt" ] || [ "$(cat $ENV_PATH/path.txt)" != "$ENV_PATH" ]; then
+	log info "Python virtual enviroment does not exist, creating it ..."
+
+	[ -d "$ENV_PATH" ] && rm -rf $ENV_PATH
+
+	if [ "$ENV_GLOBAL" == "yes" ]; then
+		SITE_PACKAGES_OPT="--system-site-packages"
+	else
+		SITE_PACKAGES_OPT="--no-site-packages"
+	fi
+
+	if [ "$PYTHON_BIN" != "python" ]; then
+		PYTHON_OPT="--python $PYTHON_BIN"
+	else
+		PYTHON_OPT=""
+	fi
+
+	VE_CMD="$VIRTUALENV_BIN $SITE_PACKAGES_OPT $PYTHON_OPT $ENV_PATH"
+
+	if ! eval $VE_CMD; then
+		log error "ERROR: There was an error creating a virtual enviroment for Python"
+		log error "The command was: $VE_CMD"
+		exit -1
+	fi
+	
+	if [ ! -d $ENV_PATH ]; then
+		log error "ERROR: There was an error creating a virtual enviroment for Python"
+		log error "Virtual enviroment folder not found."
+		exit -1
+	fi
+
+	echo "$ENV_PATH" > "$ENV_PATH/path.txt"
+fi
+
+source "$ENV_PATH/bin/activate"
+
+# Check pip
+if ! cmd_exists pip; then
+	log error "ERROR: The tool for installing and managing Python packages 'pip' was not found."
+	log error "Please find more information on how to install it from the following url:"
+	log error
+	log error "http://www.pip-installer.org/"
+	log error
+	exit -1
+fi
+
+if [ "$INSTALL_DEPS" == "yes" ]; then
+	# General libs
+	pylib_install distribute==0.6.35
+	pylib_install SQLAlchemy==0.8.2
+	pylib_install requests==1.1.0
+	pylib_install Sphinx==1.2b1
+	pylib_install blinker==1.3
+
+	# Check Flask libraries
+	pylib_install Flask==0.10.1
+	pylib_install Flask-Login==0.2.8
+
+	# Check numeric libraries
+	pylib_install numpy==1.7.1
+	pylib_install scipy==0.12.0
+	pylib_install pandas==0.12.0
+	pylib_install statsmodels==0.5.0
+
+	# Check own libraries
+	if [ "$DEVELOP" == "yes" ]; then
+		pylib_install_url wok https://bitbucket.org/bbglab/wok/get/develop.tar.gz
+		pylib_install_url bgcore https://bitbucket.org/bbglab/bgcore/get/develop.tar.gz
+		pylib_install_url oncodrivefm https://bitbucket.org/bbglab/oncodrivefm/get/develop.tar.gz
+		pylib_install_url oncodriveclust https://bitbucket.org/bbglab/oncodriveclust/get/develop.tar.gz
+	else
+		pylib_install_url wok==3.0.0-alpha4 https://bitbucket.org/bbglab/wok/get/3.0.0-alpha4.tar.gz
+		pylib_install_url bgcore==0.3.2 https://bitbucket.org/bbglab/bgcore/get/0.3.2.tar.gz
+		pylib_install_url oncodrivefm==0.5.2 https://bitbucket.org/bbglab/oncodrivefm/get/0.5.2.tar.gz
+		pylib_install_url oncodriveclust==0.4 https://bitbucket.org/bbglab/oncodriveclust/get/0.4.tar.gz
+	fi
+fi
+
+# Configure PYTHONPATH
+SYSTEM_PYTHONPATH=$PYTHONPATH
+PYTHONPATH=""
+
+add_python_path $ROOT_PATH/web
+add_python_path $LIB_PATH/python
+
+# Include eggs
+
+#pushd $LIB_PATH >/dev/null
+#for egg in $(ls $LIB_PATH/*.egg); do
+#	add_python_path $LIB_PATH/$egg
+#done
+#popd >/dev/null
+
+[ -n "$SYSTEM_PYTHONPATH" ] && add_python_path $SYSTEM_PYTHONPATH
+
+export PYTHONPATH=$PYTHONPATH
+
+# Perl ======================================================================================================
+
+log info "Setting up Perl ..."
+
+# Check Perl
+if ! cmd_exists $PERL_BIN; then
+	log error "ERROR: Perl 5 does not exist and it is required."
+	log error "Please, find more information on how to install it on the following url"
+	log error
+	log error "http://www.perl.org/get.html"
+	log error
+	#log error "There is also the possibility to run it by using the provided virtual machine. You would need to run setup-vm and start-vm instead"
+	exit -1
+fi
+
+# Check perl version
+if ! $PERL_BIN -e "if ( $] lt $PERL_MIN_VERSION ) {die}" >/dev/null 2>&1; then
+	current_perl_version=$($PERL_BIN -e 'print $^V')
+	log error "ERROR: At least Perl $PERL_MIN_VERSION is required but found: $current_perl_version"
+	log error
+	#log error "There is also the possibility to run it by using the provided virtual machine. You would need to run setup-vm and start-vm instead"
+	exit -1
+fi
+
+log info "Checking for required Perl libraries ..."
+
+#PERL_REQ_LIBS="local::lib"
+PERL_REQ_LIBS="DBI"
+PERL_MISSING_LIBS=""
+
+for REQ_LIB in $PERL_REQ_LIBS; do
+	if ! perlib_exists $REQ_LIB; then
+		if [ -n "$PERL_MISSING_LIBS" ]; then
+			PERL_MISSING_LIBS="$PERL_MISSING_LIBS $REQ_LIB"
+		else
+			PERL_MISSING_LIBS="$REQ_LIB"
+		fi
+	fi
+done
+
+if [ -n "$PERL_MISSING_LIBS" ]; then
+	log error "ERROR: One or more Perl modules were missing: $PERL_MISSING_LIBS"
+	log error "Contact your system administrator to install them."
+	exit -1
+fi
+
+# Configure PERL5LIB
+SYSTEM_PERL5LIB=$PERL5LIB
+PERL5LIB=""
+
+add_perl_path $LIB_PATH/perl
+add_perl_path $EXT_LIB_PATH/perl
+
+[ -n "$SYSTEM_PERL5LIB" ] && add_perl_path $SYSTEM_PERL5LIB
+
+# liftOver ==================================================================================================
+
+log info "Configuring liftOver for the current platform ..."
+
+KERNEL=$(lowercase $(uname -s))
+PROC=$(uname -p)
+case $PROC in
+	x86_64 ) ;;
+	i?86 ) PROC="i386";;
+	powerpc ) PROC="ppc";;
+	* ) PROC="";;
+esac
+
+if [ ! -n "$PROC" ]; then
+	log error "ERROR: The processor of this machine may not be supported or has not been detected properly."
+	log error "It was found to be a '$PROC' but only x86, x86_64 and powerpc are supported."
+	exit -1
+fi
+
+LIFTOVER_BIN="$EXT_BIN_PATH/liftOver/liftOver.$KERNEL.$PROC"
+
+# Documentation =============================================================================================
+
+log info "Compiling the documentation ..."
+
+pushd $DOC_PATH >/dev/null
+make html
+cp -a _build/html/* $WEB_HELP_PATH
+popd >/dev/null
+
+# VEP cache =================================================================================================
+
+# TODO: VEP_SCRIPT="... --compress 'gunzip -c'"
+
+if [ "$OFFLINE" == "yes" -a ! -d $VEP_CACHE_PATH/homo_sapiens/$ENSEMBL_VERSION ]; then
+	log info "Installing Ensembl variant effect predictor cache ..."
+	log warn "WARNING: This would take some hours depending on your internet connection."
+
+	# Create vep cache folder
+	[ ! -d $VEP_CACHE_PATH ] && mkdir -p $VEP_CACHE_PATH
+
+	#Remove previous library installation
+	#[ -d $LIB_PATH/Bio ] && rm -rf $LIB_PATH/Bio
+
+	# Install
+	#cd $BIN_PATH/variant_effect_predictor
+	#export PERL5LIB=$LIB_PATH:$PERL5LIB
+	#if ! perl INSTALL.pl -v $ENSEMBL_VERSION -d $LIB_PATH -c $VEP_CACHE_PATH; then
+	#	log error "ERROR: There was an error while installing variant effect predictor from Ensembl. Check for a new version that solves this problem or contact with $CONTACT"
+	#	exit -1
+	#fi
+	#cd $ROOT_PATH
+	
+	if ! curl --retry 2 --continue-at - -o "$VEP_CACHE_PATH/$VEP_CACHE_FILE" "$VEP_CACHE_URL"; then
+		log error "ERROR: There was an error while downloading variant effect predictor cache. Check for a new version that solves this problem or contact with $CONTACT"
+		exit -1
+	fi
+	
+	cd $VEP_CACHE_PATH
+	if ! tar -xvf $VEP_CACHE_FILE; then
+		log error "ERROR: There was an error while extracting variant effect predictor cache. Check for a new version that solves this problem or contact with $CONTACT"
+		rm -rf homo_sapiens
+		exit -1
+	fi
+	
+	rm -f $VEP_CACHE_FILE
+	
+	cd $ROOT_PATH
+fi
+
+# MA cache ==================================================================================================
+
+if [ "$OFFLINE" == "yes" ]; then
+	[ ! -d $MA_PATH ] && mkdir -p $MA_PATH
+	
+	STATE=$(ls $MA_PATH | grep -E "*\.state$")
+	if [ ! -n "$STATE" ]; then
+		STATE="download.state"
+		touch $MA_PATH/$STATE
+	fi
+	
+	while [ "$STATE" != "done.state" ]; do
+		case $STATE in
+			download.state )
+				log info "Downloading Mutationassessor data ..."
+				log warn "WARNING: This would take some hours depending on your internet connection."
+				if ! curl --retry 2 --continue-at - -o "$MA_PATH/$MA_FILE" "$MA_URL"; then
+					log error "ERROR: There was an error while downloading the data, perhaps the url has changed. Check for a new version that solves this problem or contact with $CONTACT"
+					exit -1
+				fi
+				[ ! -f $MA_PATH/$MA_FILE ] && exit -1 # When ctrl-C during curl
+				mv $MA_PATH/$STATE $MA_PATH/db.state
+				STATE="db.state"
+			;;
+			
+			db.state )
+				log info "Preparing Mutationassessor data ..."
+
+				if ! python $BIN_PATH/create_ma_db.py --size $MA_PART_SIZE $MA_PATH/$MA_FILE $MA_DB_FILE; then
+                    log error "ERROR: There was an error while reading Mutation assessor data from $f."
+                    exit -1
+                fi
+				
+				mv $MA_PATH/$STATE $MA_PATH/done.state
+				STATE="done.state"
+
+				rm -rf $MA_PATH/$MA_FILE
+			;;
+		esac
+	done
+fi
+
+# VarXrefsDb =====================================================================================================
+
+if [ ! -f "$VARDB_PATH" ]; then
+	log info "Downloading variants external references ..."
+	log warn "WARNING: This would take some hours depending on your internet connection."
+	
+	mkdir -p $VARDB_BASE_PATH
+
+	if ! curl --retry 2 --continue-at - -o "$VARDB_ZPATH" "$VARDB_URL"; then
+		log error "ERROR: There was an error while downloading the data, perhaps the url has changed. Check for a new version that solves this problem or contact with $CONTACT"
+		exit -1
+	fi
+	[ ! -f "$VARDB_ZPATH" ] && exit -1 # When ctrl-C during curl
+	
+	log info "Uncompressing variants external references ..."
+	if ! bunzip2 -c "$VARDB_ZPATH" >$VARDB_PATH; then
+		log error "ERROR: There was an error while uncompressing the data. You can ask for help to $CONTACT"
+		exit -1
+	fi
+	rm "$VARDB_ZPATH"
+fi
+
+# SigDb =====================================================================================================
+
+if [ ! -f "$SIGDB_PATH" ]; then
+	log info "Downloading IntOGen Mutations significant features ..."
+	log warn "WARNING: This would take some hours depending on your internet connection."
+	
+	mkdir -p $SIGDB_BASE_PATH
+
+	if ! curl --retry 2 --continue-at - -o "$SIGDB_ZPATH" "$SIGDB_URL"; then
+		log error "ERROR: There was an error while downloading the data, perhaps the url has changed. Check for a new version that solves this problem or contact with $CONTACT"
+		exit -1
+	fi
+	[ ! -f "$SIGDB_ZPATH" ] && exit -1 # When ctrl-C during curl
+	
+	log info "Uncompressing IntOGen Mutations significant features ..."
+	if ! bunzip2 -c "$SIGDB_ZPATH" >$SIGDB_PATH; then
+		log error "ERROR: There was an error while uncompressing the data. You can ask for help to $CONTACT"
+		exit -1
+	fi
+	rm "$SIGDB_ZPATH"
+fi
+
+# PID file ==================================================================================================
+
+PID_FILE="$RUNTIME_PATH/run.pid"
+
+# ===========================================================================================================
+
+mkdir -p $CONF_PATH
+
+SHELL_CONF=$CONF_PATH/system.sh
+
+log info "Writting shell configuration into $SHELL_CONF ..."
+
+rm -f $SHELL_CONF
+
+cat >$SHELL_CONF <<EOF
+# Shell configuration generated by setup-local on $(date)
+
+ROOT_PATH=$ROOT_PATH
+BIN_PATH=$BIN_PATH
+LIB_PATH=$LIB_PATH
+DOC_PATH=$DOC_PATH
+export CONF_PATH=$CONF_PATH
+DATA_PATH=$DATA_PATH
+WEB_PATH=$WEB_PATH
+WORKFLOWS_PATH=$WORKFLOWS_PATH
+
+EXT_PATH=$EXT_PATH
+EXT_BIN_PATH=$EXT_BIN_PATH
+EXT_LIB_PATH=$EXT_LIB_PATH
+
+RUNTIME_PATH=$RUNTIME_PATH
+CACHE_PATH=$CACHE_PATH
+TEMP_PATH=$TEMP_PATH
+RESULTS_PATH=$RESULTS_PATH
+
+ENV_PATH=$ENV_PATH
+VIRTUALENV_BIN="$VIRTUALENV_BIN"
+
+export PYTHONPATH=$PYTHONPATH
+export PERL5LIB=$PERL5LIB
+
+LOG_LEVEL=$LOG_LEVEL
+
+PYTHON_BIN=$PYTHON_BIN
+PERL_BIN=$PERL_BIN
+
+PID_FILE=$PID_FILE
+EOF
+
+SYSTEM_CONF=$CONF_PATH/system.conf
+
+log info "Writting system configuration into $SYSTEM_CONF ..."
+
+cat >$SYSTEM_CONF <<EOF
+{
+	"#" : "System configuration generated by setup on $(date '+%F %T')",
+	
+	"logging" : "$LOG_LEVEL",
+	
+	"wok" : {
+		"work_path" : "$RUNTIME_PATH/wok",
+		
+		"projects" : [
+			{
+				"name" : "intogen-mutations",
+				"path" : "$ROOT_PATH",
+				"flows" : [
+					"workflows",
+					"workflows/parsing",
+					"workflows/consequences",
+					"workflows/recurrences",
+					"workflows/oncodrivefm",
+					"workflows/combination",
+					"workflows/summary",
+					"workflows/quality",
+					"workflows/website",
+					"workflows/results"
+				]
+			}
+		],
+		
+		"platform" : {
+			"type" : "local",
+			
+			"data" : {
+				"type" : "files"
+			},
+			
+			"jobs" : {
+				"type" : "mcore"
+			},
+			
+			"command" : {
+				"default" : {
+				},
+			
+				"python" : {
+					"bin" : "python",
+					"lib_path" : $(path2json $PYTHONPATH),
+					"virtualenv" : "$ENV_PATH"
+				}
+			}
+		},
+		
+		"logging" : {
+			"loggers" : [
+				["", {
+					"level" : "info",
+					"handlers" : {
+						"type" : "file",
+						"filename" : "$RUNTIME_PATH/wok/last_run.log",
+						"mode" : "w",
+						"level" : "debug"
+					}
+				}]
+			]
+		}
+	},
+
+	"ext_bin_path" : "$EXT_BIN_PATH",
+
+	"perl_bin" : "$PERL_BIN",
+	"perl_lib" : "$PERL5LIB",
+
+	"root_path" : "$ROOT_PATH",
+	"data_path" : "$DATA_PATH",
+	"examples_path" : "$EXAMPLES_PATH",
+	"runtime_path" : "$RUNTIME_PATH",
+	"results_path" : "$RESULTS_PATH",
+	"cache_path" : "$CACHE_PATH",
+	"temp_path" : "$TEMP_PATH",
+
+	"liftover_bin" : "$LIFTOVER_BIN",
+	"liftover_chain_path" : "$DATA_PATH/liftOver",
+
+	"offline" : "$OFFLINE",
+	"vep_cache_path" : "$VEP_CACHE_PATH",
+	"ma_cache_path" : "$MA_DB_FILE",
+	"vardb_path" : "$VARDB_PATH",
+	"sigdb_path" : "$SIGDB_PATH",
+
+	"website" : {
+		"templates_path" : "$ONEXUS_TEMPLATES_PATH"
+	}
+
+}
+EOF
+
+WEB_CONF=$CONF_PATH/web.cfg
+
+log info "Writting web configuration into $WEB_CONF ..."
+
+rm -f $WEB_CONF
+
+cat >$WEB_CONF <<EOF
+# Web configuration generated by setup-local on $(date)
+
+ROOT_PATH = "$ROOT_PATH"
+BIN_PATH = "$BIN_PATH"
+LIB_PATH = "$LIB_PATH"
+DOC_PATH = "$DOC_PATH"
+CONF_PATH = "$CONF_PATH"
+DATA_PATH = "$DATA_PATH"
+WEB_PATH = "$WEB_PATH"
+WORKFLOWS_PATH = "$WORKFLOWS_PATH"
+
+RUNTIME_PATH = "$RUNTIME_PATH"
+TEMP_PATH = "$TEMP_PATH"
+RESULTS_PATH = "$RESULTS_PATH"
+
+import os
+
+WOK_CONF = ["system.conf"]
+if os.path.exists(os.path.join(CONF_PATH, "user.conf")):
+	WOK_CONF += ["user.conf"]
+if "WOK_EXTRA_CONF" in os.environ:
+	names = [c.strip() for c in os.environ["WOK_EXTRA_CONF"].split(",")]
+	WOK_CONF += [n if n.endswith(".conf") else "{}.conf".format(n) for n in names]
+WOK_CONF = [os.path.join(CONF_PATH, n) if not os.path.isabs(n) else n for n in WOK_CONF]
+EOF

@@ -1,0 +1,50 @@
+<tool id="bamStat" name="Bam statistics" version="RSEQC: 2.3.3">
+	<description>for Tophat alignment files</description>
+        <requirements>
+                <requirement type="package" version="default">rseqc</requirement>
+        </requirements>
+
+	<command>/mnt/galaxyTools/tools/rseqc/2.3.3/usr/local/bin/bam_stat.py -i $input_file 2&gt; $output_stats</command>
+	
+	<inputs>
+		<param format="sam,bam" help="In BAM or SAM format" label="Alignment file" name="input_file" optional="false" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="tabular" label="${tool.name} on ${on_string}: alignment stats" name="output_stats" type="data"/>
+	</outputs>
+        <help>
+
+This tool is used to calculate reads mapping statistics for provided BAM or SAM file. This script determines &quot;uniquely mapped reads&quot; from the &quot;NH&quot; tag in BAM/SAM file (please note &quot;NH&quot; is an optional tag, some aligner does NOT provide this tag):
+
+- Total Reads (Total records) = {Multiple mapped reads} + {Uniquely mapped}
+
+- Uniquely mapped = {read-1} + {read-2} (if paired end)
+
+- Uniquely mapped = {Reads map to '+'} + {Reads map to '-'}
+
+- Uniquely mapped = {Splice reads} + {Non-splice reads}
+
+For more information, see the `manual`_.
+
+.. _manual: http://code.google.com/p/rseqc/wiki/Manual
+
+Example output:
+Total Reads      9810963
+Reads QC failed  0
+Optical/PCR duplicate   0
+Non Primary Hits        0
+Unmapped reads  0
+Multiple mapped reads   1512031
+Uniquely mapped 8298932
+Read-1  4258636
+Read-2  4040296
+Reads map to '+'        4153400
+Reads map to '-'        4145532
+Non-splice reads        8013159
+Splice reads    285773
+Reads mapped in proper pairs    5978742
+
+
+        </help>
+
+</tool>

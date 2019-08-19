@@ -1,0 +1,86 @@
+<?xml version="1.0" ?>
+<tool id="qiime_taxa_collapse" name="qiime taxa collapse" version="022019">
+	<description>- Collapse features by their taxonomy at the specified level</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command>
+	<![CDATA[
+	qiime taxa collapse --p-level="$plevel"
+
+	#if str( $id_to_taxonomy_fp.selector ) == 'history'
+		#set $tax = $id_to_taxonomy_fp.taxonomy_fp
+		--i-taxonomy '$tax'
+	#else:
+		#set $tax = $id_to_taxonomy_fp.taxonomy_fp.fields.path
+		--i-taxonomy '$tax'
+	#end if
+
+		--i-table=$itable --o-collapsed-table=ocollapsedtable
+	#if str($cmdconfig) != 'None':
+	 --cmd-config=$cmdconfig
+	#end if
+	;
+	cp ocollapsedtable.qza $ocollapsedtable;
+	]]>
+	</command>
+	<inputs>
+		<param format="qza,no_unzip.zip" label="--i-table: FeatureTable[Frequency] Feature table to be collapsed.  [required]" name="itable" optional="False" type="data"/>
+
+		<conditional name="id_to_taxonomy_fp" optional="True">
+		   <param name="selector" type="select" label="Reference taxonomy to query">
+			  <option value="cached">Public databases</option>
+			  <option value="history">Databases from your history</option>
+		   </param>
+		   <when value="cached">
+			  <param argument="--taxonomy_fp" label="Reference taxonomy" type="select" optional="True">
+				 <options from_data_table="qiime_taxonomy" />
+			  </param>
+		   </when>
+		   <when value="history">
+			  <param argument="--taxonomy_fp" type="data" format="qza,no_unzip.zip" label="Reference databases" optional="True" />
+		   </when>
+		</conditional>
+
+		<param label="--p-level: The taxonomic level at which the features should be collapsed. All ouput features will have exactly this many levels of taxonomic annotation.  [required]" name="plevel" optional="False" type="text"/>
+
+		<param label="--cmd-config: Use config file for command options" name="cmdconfig" optional="True" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="qza" label="${tool.name} on ${on_string}: collapsed-table.qza" name="ocollapsedtable"/>
+	</outputs>
+	<help>
+		<![CDATA[
+Collapse features by their taxonomy at the specified level
+-----------------------------------------------------------
+
+Collapse groups of features that have the same taxonomic assignment through
+the specified level. The frequencies of all features will be summed when
+they are collapsed.
+
+Parameters
+----------
+table : FeatureTable[Frequency]
+    Feature table to be collapsed.
+taxonomy : FeatureData[Taxonomy]
+    Taxonomic annotations for features in the provided feature table. All
+    features in the feature table must have a corresponding taxonomic
+    annotation. Taxonomic annotations that are not present in the feature
+    table will be ignored.
+level : Int
+    The taxonomic level at which the features should be collapsed. All
+    ouput features will have exactly this many levels of taxonomic
+    annotation.
+
+Returns
+-------
+collapsed_table : FeatureTable[Frequency]
+    The resulting feature table, where all features are now taxonomic
+    annotations with the user-specified number of levels.
+    ]]>
+	</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

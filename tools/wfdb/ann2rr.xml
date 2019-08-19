@@ -1,0 +1,98 @@
+<tool id="ann2rr_id" name="ann2rr" version="WFDB: 10.5.20">
+  <description>
+    convert annotation files to interval lists
+  </description>
+  <requirements>
+    <requirement type="package">wfdb</requirement>
+  </requirements>
+
+  <command interpreter="python">
+     wfdb_wrapper.py
+   --program ann2rr
+   --record $record
+   --annotator $annotator
+   --inAnnType ${annotator.ext}
+   --outputfile $outputfile
+   #if $options == &quot;advanced&quot;:
+     --begintime $options.begintime
+     --stoptime $options.stoptime
+     --allIntervals $options.allIntervals
+     --consecutiveIntervals $options.consecutiveIntervals
+     --iformat $options.iformat
+     --itypeEnd $options.itypeEnd
+     --itypeBegun $options.itypeBegun
+     --timesFormatEnd $options.timesFormatEnd
+     --timesFormatBegin $options.timesFormatBegin
+     --annotationsEnd $options.annotationsEnd
+     --annotationsBegin $options.annotationsBegin
+   #end if
+
+  </command>
+
+  <inputs>
+    <param format="hea" label="Record ID" name="record" type="data"/>
+    <param format="atr,qrs,wqrs,nguess" label="Annotator" name="annotator" type="data"/>
+    <conditional name="options">
+      <param label="Modify Options?" name="selectOptions" type="select">
+        <option selected="true" value="default">Default options</option>
+        <option value="advanced">Modify options</option>
+      </param>
+
+      <when value="default"/>
+      <when value="advanced">
+        <param help="Begin at the specified time in record (default: start of the record)." label="Start Time" name="begintime" type="text" value="0"/>
+        <param help="Process until the specified time in record (default: the end of the record)." label="Stop Time" name="stoptime" type="text" value="e"/>
+	<param checked="False" falsevalue="false" help="Print all intervals between annotations. By default, ann2rr prints only RR intervals (those between QRS (beat) annotations). This option overrides the -c and -p options." label="Print all intervals (-A)" name="allIntervals" truevalue="true" type="boolean"/>
+	<param checked="False" falsevalue="false" label="Print intervals between consecutive valid annotations only (-c)" name="consecutiveIntervals" truevalue="true" type="boolean"/>
+        <param help="By default, intervals are printed in units of sample intervals. Other formats include s (seconds), m (minutes), h (hours), and t (time interval in hh:mm:ss format). Formats s, m, and h may be followed by an integer between 0 and 15 inclusive, specifying the number of decimal places (default: 3). For example, use the option -is8 to obtain intervals in seconds with 8 decimal places." label="Print intervals in the specified format" name="iformat" type="text" value=""/>
+        <param help="The type arguments should be annotation mnemonics (e.g., N), as normally printed by rdann(1) in the third column. More than one -p option may be used in a single command, and each -p option may have more than one type argument following it. If type begins with ‘‘-’’, however, it must immediately follow -p (standard annotation mnemonics do not begin with ‘‘-’’, but modification labels in an annotation file may define such mnemonics)." label="Print intervals ended by annotations of the specified types only" name="itypeEnd" type="text" value=""/>
+        <param label="Print intervals begun by annotations of the specified types only" name="itypeBegin" type="text" value=""/>
+        <param help="This option accepts all of the formats defined for -i (to print the date and time in [hh:mm:ss dd/mm/yyyy] if the starting time and date have been recorded in the header file for record). If this option is chosen, the times appear at the end of each line of output." label="Print final times in format" name="timesFormatEnd" type="text" value=""/>
+        <param help="Any of the formats usable for the -v option may be used with -V. If this option is chosen, the times appear at the beginning of each line of output." label="Print initial times in format" name="timesFormatBegin" type="text" value=""/>
+        <param checked="False" falsevalue="false" help="" label="Print final annotations" name="annotationsEnd" truevalue="true" type="boolean"/>
+        <param checked="False" falsevalue="false" help="" label="Print initial annotations" name="annotationsBegin" truevalue="true" type="boolean"/>
+      </when>
+    </conditional>
+  </inputs>
+
+  <outputs>
+    <data format="txt" label="Output of ann2rr on ${on_string}" name="outputfile"/>
+  </outputs>
+
+  <help>
+::
+
+  These programs are typically used to obtain RR interval series from ECG annotation files, or to create an annotation file from such a series, but they have a wider range of uses.
+
+::
+
+  usage: ann2rr -r RECORD -a ANNOTATOR [OPTIONS ...]
+  where RECORD and ANNOTATOR specify the input, and OPTIONS may include::
+
+     -A      print all intervals between annotations (default: print only RR intervals; overrides -c, -p)
+     -c      print intervals between consecutive valid annotations only
+     -f TIME start at specified TIME
+     -i FMT  print intervals using format FMT (see below for values of FMT)
+     -p TYPE [TYPE ...]  print intervals ending with annotations of specified
+                         TYPEs only (use mnemonics such as N or V for TYPE)
+     -P TYPE [TYPE ...]  print intervals beginning with specified types only
+     -t TIME stop at specified TIME
+     -v FMT  print times of ends of intervals using format FMT (see below)
+     -V FMT  print times of beginnings of intervals using format FMT (see below)
+     -w      print annotations that end intervals
+     -W      print annotations that begin intervals
+
+::
+
+  By default, the output contains the RR intervals only, unless one or more
+  of -v, -V, -w, or -W are used.  Intervals and times are printed in units of
+  sample intervals, unless a format is specified using -i, -v, or -V.
+  Formats can be 'h' (hours), 'm' (minutes), 's' (seconds), 't' (hh:mm:ss);
+  when used with -v or -V, format 'T' yields dates and times if available,
+  or the format can be omitted to obtain times in sample intervals.  Formats
+  'h', 'm', and 's' may be followed by a number between 0 and 15, specifying
+  the number of decimal places (default: 3).  For example, to obtain intervals
+  in seconds with 8 decimal places, use '-i s8'.
+  </help>
+
+</tool>

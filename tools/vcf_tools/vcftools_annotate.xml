@@ -1,0 +1,60 @@
+<tool id="vcftools_annotate" name="Annotate" version="ECHO: default; VCFTOOLS: 0.1.11">
+    <description>a VCF dataset with custom filters</description>
+
+    <requirements>
+        <requirement type="binary">echo</requirement>
+        <requirement type="package" version="0.1.11">vcftools</requirement>
+    </requirements>
+    
+    <command>
+        ## Generate filter file.
+        echo &quot;{ tag  =&gt; '${tag}', name =&gt; '${filter}', desc =&gt; '${description}', test =&gt; sub { my @t = split('%', @\\$MATCH[0]); return @t[0] $condition ? \\$PASS : \\$FAIL }, },&quot; &gt; f.txt ;
+
+        ## Annotate.
+        vcf-annotate -f f.txt ${input} &gt; ${output}
+    </command>
+    <inputs>
+        <param format="vcf" label="Input" name="input" type="data"/>
+        <param label="Tag name" name="tag" type="text"/>
+        <param label="Tag description" name="description" type="text">
+            <sanitizer sanitize="False"/>
+        </param>
+        <param label="Filter name" name="filter" type="text"/>
+        <param label="Filter condition" name="condition" type="text">
+            <sanitizer sanitize="False"/>
+        </param>
+    </inputs>
+
+    <outputs>
+        <data format="vcf" name="output"/>
+    </outputs>
+
+    <stdio>
+        <regex description="tool progress" level="log" match=".*" source="both"/>
+    </stdio>
+
+    <tests>
+        <test>
+            <param name="input" value="test_in1.vcf"/>
+            <param name="tag" value="FORMAT/FREQ"/>
+            <param name="description" value="MinAF [7]"/>
+            <param name="filter" value="MinAF"/>
+            <param name="condition" value="&gt;= 7"/>
+            <!-- 2 lines diff because command line with full file path is included in output VCF, and
+                 it not possible to match full file path.  -->
+            <output file="test_out1.vcf" lines_diff="2" name="output"/>
+        </test>
+    </tests>
+
+    <help>
+Annotates VCF dataset with custom annotations. For example, if this format tag is used for allele frequency:
+
+##FORMAT=&lt;ID=FREQ,Number=1,Type=String,Description=&quot;Variant allele frequency&quot;&gt;
+
+you can add a filter for allele frequency using &quot;FORMAT/FREQ&quot; as the tag name and the condition &quot;&gt;= [desired allele freq]&quot;
+
+Please see the VCFtools `documentation`__ for help and further information.
+
+.. __: http://vcftools.sourceforge.net/perl_module.html#vcf-annotate
+    </help>
+</tool>

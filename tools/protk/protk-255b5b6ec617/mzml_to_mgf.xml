@@ -1,0 +1,26 @@
+<tool id="mzml_to_mgf_1" name="MzML to mgf" version="1.0.0">
+	<requirements>
+		<requirement type="package">protkgem</requirement>
+                <requirement type="package">ruby</requirement>
+	</requirements>
+	
+	<description>Converts an mzML file to mgf suitable for searching by omssa</description>
+
+	<command>file_convert.rb $input_file -o $output $maldi</command>
+
+	<inputs>
+
+		<param name="input_file" type="data" format="mzml"  multiple="false" label="Input File" help="Line Spectra in mzML format"/>
+		<param name="maldi" type="boolean" label="Is the data from a MALDI instrument" truevalue="-l" falsevalue=""/>
+
+	</inputs>
+	
+	<outputs>
+		<data format="mgf" name="output" metadata_source="input_file" label="${input_file.display_name}.mgf"/>
+	</outputs>
+
+	<help>
+		Convert line spectra to Mascot Generic Format
+	</help>
+
+</tool>

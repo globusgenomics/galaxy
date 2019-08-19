@@ -1,0 +1,36 @@
+<tool id="cru3d_gain" name="Compute ECC Gain">
+	<description></description>
+<requirements>
+  <requirement type="package">pymodules</requirement>
+</requirements>
+<command interpreter="python">
+  CRU3D_gain.py --output_file "$outfile" --fluxfile "$fluxfile" --simulation "$simulation.extra_files_path" --n_cru $n_cru
+</command>
+<inputs>
+  <param name="simulation" type="data" format="html" label="Simulation data"/>
+    <param name="n_cru" type="integer" value="20000" min="0" label="CRUs per cell"/>
+    </inputs>
+	<outputs>
+		<data format="html" name="outfile" label="CRU3Gain.html" />
+		<data format="tabular" name="fluxfile" label="GainFluxes.txt" />
+	</outputs>
+	<help>
+
+.. class:: warningmark
+
+The input dataset must be the output of a gain simulation.
+
+-----
+
+Estimates peak-to-peak Excitation-Contraction Coupling (ECC) gain. Also produces a table of aggregate RyR and LCC fluxes assuming the given number of release sites per cell.
+
+Table format:
+
+-Column 1: Time (ms)
+
+-Column 2: LCC flux (pA)
+
+-Column 3: RyR flux (pA)
+
+	</help>
+</tool>

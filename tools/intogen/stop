@@ -1,0 +1,16 @@
+#/bin/bash
+
+ROOT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+source $ROOT_PATH/lib/common.sh
+
+if [ ! -f $ROOT_PATH/conf/system.sh ]; then
+	log error "ERROR: setup has not been run yet."
+	exit -1
+fi
+
+source $ROOT_PATH/conf/system.sh
+[ -f "$ROOT_PATH/conf/user.sh" ] && source $ROOT_PATH/conf/user.sh
+
+stop $PID_FILE $1
+

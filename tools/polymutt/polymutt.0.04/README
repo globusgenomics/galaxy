@@ -1,0 +1,11 @@
+To compile type the following command:
+ make
+
+By default openmp is enabled for multiple threading. To compile withouth multi-threading type:
+ make noopenmp
+
+To remove excutables type:
+ make clean
+
+To try it on test files (in ./example subdirctory) type the folllowing commands:
+ make test

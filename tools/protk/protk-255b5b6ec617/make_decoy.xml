@@ -1,0 +1,27 @@
+<tool id="make_decoy_1" name="Create decoy databases" version="1.0.0">
+	<requirements>
+		<requirement type="package">protkgem</requirement>
+                <requirement type="package">ruby</requirement>
+	</requirements>
+	
+	<description>Creates a random protein database with similar properties to a real protein database</description>
+
+	<command>make_decoy.rb $input_file -o $output -L $length -P $prefix $append</command>
+
+	<inputs>
+
+		<param name="input_file" type="data" format="fasta"  multiple="false" label="Input File" help="Real protein sequences. Take care that these are fasta formatted with no more than 80 amino acids per line. There should be no whitespace in the sequences."/>
+		<param name="prefix" type="text" label="String to prepend to generated protein ID's" size="60" value="decoy_"/>
+		<param name="length" type="text" label="Number of random sequences to generate" help="If 0, a database of equal size to the input database will be generated" size="60" value="0"/>
+		<param name="append" type="boolean" checked="true" label="Append input dataset to the generated sequences" truevalue="-A" falsevalue=""/>
+	</inputs>
+	
+	<outputs>
+		<data format="fasta" name="output" metadata_source="input_file" label="Random sequences from ${input_file.display_name}"/>
+	</outputs>
+
+	<help>
+		Create random protein sequences
+	</help>
+
+</tool>

@@ -1,0 +1,22 @@
+<tool id="hint" name="Hint" version="HINT: 1.1.1">
+    <description> predicts TFBSs given open chromatin data </description>
+    <requirements>
+      <requirement type="package">pymodules</requirement>
+    </requirements>
+    <command interpreter="python">
+      hint_wrapper_v02.py
+      --input $input
+      --region $region
+##      --out-dir $output.extra_files_path
+      --output $output
+    </command>
+      <inputs>
+         <param format="bam" help="" name="input" optional="false" type="data" label="Input BAM"/>
+         <param format="bed" help="" name="region" optional="false" type="data" label="Input BED"/>
+      </inputs>
+      <outputs>
+         <data format="bed" label="${tool.name} on ${on_string}" name="output"/>
+      </outputs>
+      <help>
+      </help>
+</tool>

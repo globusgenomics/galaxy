@@ -1,0 +1,27 @@
+<flow name="parsing">
+    <title>Parsing</title>
+    <desc>Parse and prepare the projects to be analysed</desc>
+
+    <out name="projects_out" link="scan_files.projects_out,liftover.lifted_projects"/>
+
+	<module name="scan_projects">
+		<out name="projects" />
+
+		<run>scan_projects.py</run>
+	</module>
+
+    <module name="scan_files">
+		<in name="projects_in" link="scan_projects.projects" />
+        <out name="projects_out" />
+        <out name="liftover_projects" />
+
+        <run>scan_files.py</run>
+    </module>
+
+    <module name="liftover">
+        <in name="projects_in" link="scan_files.liftover_projects" />
+        <out name="lifted_projects" />
+
+        <run>liftover.py</run>
+    </module>
+</flow>

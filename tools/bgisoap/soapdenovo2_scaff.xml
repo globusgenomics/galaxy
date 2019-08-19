@@ -1,0 +1,148 @@
+<tool force_history_refresh="True" id="soapdenovo2_scaff" name="scaff" version="r240">
+    <requirements>
+        <requirement type="package">bgisoap</requirement>
+    </requirements>
+    <command interpreter="python">
+        soapdenovo2_scaff.py
+
+        ## Inputs
+        --arc=$arc
+        --pegrads=$pegrads
+        --pregraph_basic=$pregraph_basic
+        --updated_edge=$updated_edge
+        --contig=$contig
+        --read_in_gap=$read_in_gap
+        --read_on_contig=$read_on_contig
+
+        ## Check if using default or custom parameters
+        --default_full_settings_type=$default_full_settings.settings_type
+        #if $default_full_settings.settings_type == &quot;full&quot;
+            --fill_gaps=$default_full_settings.fill_gaps
+            --compatible_mode=$default_full_settings.compatible_mode
+            --unmask_contigs=$default_full_settings.unmask_contigs
+            --keep_contigs_connected=$default_full_settings.keep_contigs_connected
+            --ass_visual=$default_full_settings.ass_visual
+            --gap_len_diff=$default_full_settings.gap_len_diff
+            --min_contig_len=$default_full_settings.min_contig_len
+            --min_contig_cvg=$default_full_settings.min_contig_cvg
+            --max_contig_cvg=$default_full_settings.max_contig_cvg
+            --insert_size_upper_bound=$default_full_settings.insert_size_upper_bound
+            --bubble_coverage=$default_full_settings.bubble_coverage
+            --genome_size=$default_full_settings.genome_size
+            --ncpu=$default_full_settings.ncpu
+        #end if
+
+        ## Outputs
+        --new_contig_index=$new_contig_index
+        --links=$links
+        --scaf_gap=$scaf_gap
+        --scaf=$scaf
+        --gap_seq=$gap_seq
+        --scaf_seq=$scaf_seq
+        --contig_positions_scaff=$contig_positions_scaff
+        --bubble_in_scaff=$bubble_in_scaff
+        --scaf_stats=$scaf_stats
+    </command>
+    <inputs>
+        <param format="input" label="arc output from SOAPdenovo2 contig" name="arc" type="data"/>
+        <param format="input" label="pegrads output from SOAPdenovo2 map" name="pegrads" type="data"/>
+        <param format="input" label="pregraph basic output from SOAPdenovo2 pregraph" name="pregraph_basic" type="data"/>
+        <param format="input" label="updated edge output from SOAPdenovo2 contig" name="updated_edge" type="data"/>
+        <param format="input" label="contig output from SOAPdenovo2 contig" name="contig" type="data"/>
+        <param format="input" label="readInGap.gz output from SOAPdenovo2 map" name="read_in_gap" type="data"/>
+        <param format="input" label="readOnContig.gz output from SOAPdenovo2 map" name="read_on_contig" type="data"/>
+
+        <!--Other parameters -->
+        <conditional name="default_full_settings">
+            <param help="Default settings is suitable for most mapping needs. If you want full control, use Full parameter list" label="SOAP settings to use" name="settings_type" type="select">
+                <option value="default">Default</option>
+                <option value="full">Full parameter list</option>
+            </param>
+            <when value="default"/>
+            <when value="full">
+                <param label="Fill gaps in scaffold" name="fill_gaps" type="select" value="No">
+                    <option value="No">No</option>
+                    <option value="Yes">Yes</option>
+                </param>
+                <param label="Use compatibility mode to build scaffold with contigs produced by version 1.05" name="compatible_mode" type="select" value="No">
+                    <option value="No">No</option>
+                    <option value="Yes">Yes</option>
+                </param>
+                <param label=" un-mask contigs with high/low coverage before scaffolding" name="unmask_contigs" optional="true" type="select" value="mask">
+                    <option value="mask">Mask</option>
+                    <option value="unmask">Unmask</option>
+                </param>
+                <param label="Keep contigs weakly connected to other contigs in scaffold" name="keep_contigs_connected" type="select" value="NO">
+                    <option value="NO">No</option>
+                    <option value="YES">YEs</option>
+                </param>
+                <param label="Output visualization information of assembly" name="ass_visual" optional="true" type="select" value="NO">
+                    <option value="NO">No</option>
+                    <option value="YES">Yes</option>
+                </param>
+                <param label="Allowed length difference between estimated and filled gaps" name="gap_len_diff" type="integer" value="50"/>
+                <param label="Shortest contig for scaffolding" name="min_contig_len" type="integer" value="20"/>
+                <param help="Contigs shorter than 100bp with coverage smaller than c*avgCvg will be masked before scaffolding unless -u is set" label="Minimum contig coverage (c*avgCvg)" name="min_contig_cvg" type="float" value="0.1"/>
+                <param help="Contigs with coverage larger than C*avgCvg or contigs shorter than 100bp with coverage larger than 0.8*C*avgCvg will be masked before scaffolding unless -u is set" label="Maximum contig coverage (C*avgCvg)" name="max_contig_cvg" type="float" value="2"/>
+                <param help="Will be used as upper bound of insert size for large insert size ( &gt; 1000) when handling pair-end connections between contigs if b is set to larger than 1" label="insertSizeUpperBound" name="insert_size_upper_bound" type="float" value="1.5"/>
+                <param help="Remove contig with lower coverage in bubble structure if both contigs' coverage are smaller than bubbleCoverage*avgCvg" label="Bubble coverage" name="bubble_coverage" type="float" value="0.6"/>
+                <param help="Genome size for statistics" label="Genome size" name="genome_size" type="integer" value="0"/>
+                <param label="Number of CPUs to use" name="ncpu" type="integer" value="8"/>
+            </when>
+        </conditional>
+    </inputs>
+    <outputs>
+        <data format="text" label="scaffold: new contig index" name="new_contig_index">
+        </data>
+        <data format="text" label="scaffold: links" name="links">
+        </data>
+        <data format="text" label="scaffold: scaf gap" name="scaf_gap">
+        </data>
+        <data format="text" label="scaffold: scaf" name="scaf">
+        </data>
+        <data format="text" label="scaffold: gap sequences between contigs" name="gap_seq">
+        </data>
+        <data format="text" label="scaffold: scaffold sequences" name="scaf_seq">
+        </data>
+        <data format="text" label="scaffold: contig positions in scaffolds" name="contig_positions_scaff">
+        </data>
+        <data format="text" label="scaffold: bubbles in scaffolds" name="bubble_in_scaff">
+        </data>
+        <data format="text" label="scaffold: scaffold statistics" name="scaf_stats">
+        </data>
+    </outputs>
+    <tests>
+        <test>
+            <param name="max_read_length" value="50"/>
+            <output name="contig" value="hello world"/>
+        </test>
+    </tests>
+    <help>
+**What it does**
+
+SOAPdenovo is a novel short-read assembly method that can build a de novo draft assembly for the human-sized genomes.
+The program is specially designed to assemble Illumina GA short reads. It creates new opportunities for building
+reference sequences and carrying out accurate analyses of unexplored genomes in a cost effective way.
+
+-----
+
+The scaff operation in SOAPdenovo2 analyses the outputs created by the previous SOAPdenovo2 operations and generates the final assembly results. The following outputs are created
+by the SOAPdenovo2 scaff operation:
+
+1. newContigIndex. Contigs are sorted according their length before scaffolding. Their new index are listed in this file.  This is useful if one wants to corresponds contigs in \*.contig with those in \*.links.
+2. links. Links between contigs which are established by read pairs. New index are used.
+3. scaf_gap. Contigs in gaps found by contig graph outputted by the contiging procedure. Here new index are used.
+4. scaf. Contigs for each scaffold: contig index (concordant to index in \*.contig),  approximate start position on scaffold, orientation, contig length, and its links to others contigs.
+5. gapSeq. Gap sequences between contigs.
+6. scafSeq. Sequences of each scaffolds. The final contig sequences can be extracted by breaking down scaffold sequences at gap regions.
+7. contigPosInscaff. Contigs' positions in each scaffold.
+8. bubbleInScaff. Contigs that form bubble structures in scaffolds. Every two contigs form a bubble and the contig with higher coverage will be kept in scaffold.
+9. scafStatistics. Statistic information of the final scaffold and its contigs.
+
+**More information**
+
+For test data and more detailed information, click here_.
+
+.. _here: http://soap.genomics.org.cn/soapdenovo.html
+    </help>
+</tool>

@@ -1,0 +1,146 @@
+#logo {
+     margin: 50px auto;
+     width: 360px;
+}
+
+#logo img {
+     margin: 15px 18px;
+}
+
+@media (min-width: 768px) {
+    div.show-logo {
+        padding-top: 130px;
+        background-image: url("logo.png");
+        background-repeat: no-repeat;
+        background-position: center top;
+    }
+}
+
+#boxes {
+     margin: 30px auto;
+     width: 600px;
+}
+
+#boxes .well {
+    margin: 15px; padding: 10px 15px 2px 15px;
+}
+
+
+#boxes .figure {
+    margin: 10px 15px 0px 15px;
+    padding: 10px 15px 0px 15px;
+}
+
+#boxes .description {
+    margin: 10px 15px;
+    padding: 0px 15px 0px;
+    font-size: 15px;
+    color: #333;
+    text-align: justify;
+}
+
+#boxes .link {
+    margin: 0px 15px 15px 15px;
+    padding: 0px 15px 0px 15px;
+    float: right;
+}
+
+div.types input {
+    float: left;
+}
+
+div.types label {
+    float: left;
+    padding-top: 2px;
+}
+
+div.types br {
+    display: none;
+}
+
+input[type="text"].search {
+    width: 235px;
+    border: 1px solid #a70c0c;
+
+    height: 24px;
+}
+
+.examples {
+    font-size: 11px;
+    margin: 0px 0 0 120px;
+    padding: 0;
+}
+
+#search input {
+    background: none repeat scroll 0pt 0pt transparent;
+    float: left;
+    margin: 5px;
+}
+
+#search button.search {
+     border: 1px solid #a70c0c;
+     background-color: #a70c0c;
+     border-radius: 3px;
+     float: left;
+     height: 34px;
+     margin: 5px;
+     padding: 5px;
+     width: 40px;
+}
+
+div.wicket-aa {
+     background-color: white;
+     border-color: #CCCCCC;
+     border-style: solid;
+     border-width: 1px;
+     margin: 1px 0pt 0pt;
+     padding: 2px;
+     text-align: left;
+}
+
+div.wicket-aa ul {
+     list-style: none outside none;
+     margin: 0pt;
+     padding: 2px;
+}
+
+div.wicket-aa li {
+     padding: 4px;
+}
+
+div.wicket-aa li span.f {
+     color: #666666;
+}
+
+div.wicket-aa ul li.selected {
+     background-color: #FFFF00;
+     margin: 0pt;
+     padding: 2px;
+}
+#boxes {
+   padding-bottom: 100px;
+}
+
+div.figure table a.label {
+   cursor: default;
+}
+
+div.accordion-heading ul.nav-pills > li {
+	float: none;
+	display: inline-block;
+}
+
+div.accordion-heading {
+	overflow: hidden;
+	white-space: nowrap;
+}
+
+div.accordion-heading > ul.nav {
+	margin-bottom: 0px;
+}
+
+div.accordion-heading ul.nav-pills > .active > a, div.accordion-heading ul.nav-pills > .active > a:hover {
+    color: #0088CC;
+    font-weight: bold;
+    background-color: white;
+}

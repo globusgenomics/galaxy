@@ -1,0 +1,197 @@
+<tool id="gatk3.3_VariantsToTable" name="VariantsToTable" version="JAVA: jre1.7.0_51; GATK3.3: GenomeAnalysisTK-3.3-0">
+  <description>in BAM files</description>
+  <requirements>
+      <requirement type="package">java</requirement>
+      <requirement type="package" version="3.3">gatk3</requirement>
+  </requirements>
+  <macros>
+    <import>gatk_macros.xml</import>
+  </macros>
+  <command interpreter="python">gatk3_wrapper.py
+   --max_jvm_heap_fraction "1"
+   -d "-V" "${reference_source.input_vcf}" "${reference_source.input_vcf.ext}" "gatk_input"
+   -p 'java 
+    -jar "\$GATK3_PATH/GenomeAnalysisTK.jar"
+    -T "VariantsToTable"
+    -o "${output_table}"
+    ## \$GATK3_SITE_OPTIONS
+    ## \$GATK3_NUM_THREADS
+    ##-et "NO_ET" -K "/data/galaxy/appList/GenomeAnalysisTK-2.0-36-gf5c1c1a/gatk3_key_file" ##ET no phone home
+    ##--num_threads 16 ##not supported yet
+    ##-log "${output_log}" ##don't use this to log to file, instead directly capture stdout
+    #if $reference_source.reference_source_selector != "history":
+        -R "${reference_source.ref_file.fields.path}"
+    #end if
+   '
+    #if $fields and $fields.__str__ != '':
+      #set $fields_string = ' -F '.join($fields.__str__.split(','))
+      -p '-F $fields_string'
+    #end if
+    #if $genotypeFields and $genotypeFields.__str__ != '':
+      #set $genotypeFields_string = ' -GF '.join($genotypeFields.__str__.split(','))
+      -p '-GF $genotypeFields_string'
+    #end if
+    ##start standard gatk options
+    #if $gatk_param_type.gatk_param_type_selector == &quot;advanced&quot;:
+        #include source=$standard_gatk_options#
+    #end if
+    
+    #if str( $reference_source.reference_source_selector ) == "history":
+        -d "-R" "${reference_source.ref_file}" "${reference_source.ref_file.ext}" "gatk_input_reference_fasta"
+        --picard_jar "/mnt/galaxyTools/tools/picard/1.121/CreateSequenceDictionary.jar"
+    #end if
+    ##end standard gatk options
+    
+    ##start analysis specific options
+    #if $analysis_param_type.analysis_param_type_selector == "advanced":
+       -p '${analysis_param_type.allowMissingData} ${analysis_param_type.moltenize} ${analysis_param_type.showFiltered} ${analysis_param_type.splitMultiAllelic}'
+    #end if
+  </command>
+  <inputs>
+    <conditional name="reference_source">
+      <param label="Choose the source for the reference list" name="reference_source_selector" type="select">
+        <option value="cached">Locally cached</option>
+        <option value="history">History</option>
+      </param>
+      <when value="cached">
+        <param format="vcf" help="-v,--variant &amp;lt;input_file&amp;gt;" label="VCF file" name="input_vcf" type="data">
+        </param>
+        <param help="-R,--reference_sequence &amp;lt;reference_sequence&amp;gt;" label="Using reference genome" name="ref_file" type="select">
+          <options from_data_table="gatk3_picard_indexes">
+                <filter column="3" type="sort_by"/>
+
+          </options>
+        </param>
+      </when>
+      <when value="history">
+        <param format="vcf" help="-V,--variant &amp;lt;input_file&amp;gt;" label="VCF file" name="input_vcf" type="data"/>
+        <param format="fasta" help="-R,--reference_sequence &amp;lt;reference_sequence&amp;gt;" label="Using reference file" name="ref_file" type="data">
+        </param>
+      </when>
+    </conditional>
+    <param name="fields" multiple="true" display="checkboxes" label="Fields to capture for output in the table" type="select" help="You can select multiple fields">
+        <option value="CHROM">CHROM</option>
+        <option value="POS">POS</option>
+        <option value="ID">ID</option>
+        <option value="REF">REF</option>
+        <option value="ALT">ALT</option>
+        <option value="QUAL">QUAL</option>
+        <option value="AA">AA</option>
+        <option value="AC">AC</option>
+        <option value="AF">AF</option>
+        <option value="AN">AN</option>
+        <option value="BQ">BQ</option>
+        <option value="CIGAR">CIGAR</option>
+        <option value="DB">DB</option>
+        <option value="DP">DP</option>
+        <option value="END">END</option>
+        <option value="H2">H2</option>
+        <option value="H3">H3</option>
+        <option value="MQ">MQ</option>
+        <option value="MQ0">MQ0</option>
+        <option value="NS">NS</option>
+        <option value="SB">SB</option>
+        <option value="SOMATIC">SOMATIC</option>
+        <option value="VALIDATED">VALIDATED</option>
+        <option value="1000G">1000G</option>
+    </param>
+    <param name="genotypeFields" multiple="true" display="checkboxes" label="The name of each genotype field to capture for output in the table" type="select" help="You can select multiple fields">
+        <option value="GT">GT</option>
+        <option value="DP">DP</option>
+        <option value="FT">FT</option>
+        <option value="GL">GL</option>
+        <option value="GLE">GLE</option>
+        <option value="PL">PL</option>
+        <option value="GP">GP</option>
+        <option value="GQ">GQ</option>
+        <option value="HQ">HQ</option>
+        <option value="PS">PS</option>
+        <option value="PQ">PQ</option>
+        <option value="EC">EC</option>
+        <option value="MQ">MQ</option>
+    </param>
+
+    <conditional name="gatk_param_type">
+      <param label="Basic or Advanced GATK options" name="gatk_param_type_selector" type="select">
+        <option selected="True" value="basic">Basic</option>
+        <option value="advanced">Advanced</option>
+      </param>
+      <when value="basic">
+        <!-- Do nothing here -->
+      </when>
+      <when value="advanced">
+        <expand macro="advanced_options" />
+      </when>
+    </conditional>
+    
+    <conditional name="analysis_param_type">
+      <param name="analysis_param_type_selector" type="select" label="Basic or Advanced Analysis options">
+        <option value="basic" selected="True">Basic</option>
+        <option value="advanced">Advanced</option>
+      </param>
+      <when value="basic">
+      </when>
+      <when value="advanced">
+        <param name="allowMissingData" checked="False" falsevalue="" label="Allow missing data" help="-AMD / --allowMissingData. If provided, we will not require every record to contain every field" truevalue="--allowMissingData" type="boolean"/>
+        <param name="moltenize" checked="False" falsevalue="" label="Molten output" help="--moltenize. If provided, we will produce molten output" truevalue="--moltenize" type="boolean"/>
+        <param name="showFiltered" checked="False" falsevalue="" label="Include filtered fields" help="-raw / --showFiltered. If provided, field values from filtered records will be included in the output" truevalue="--showFiltered" type="boolean"/>
+        <param name="splitMultiAllelic" checked="False" falsevalue="" label="Split multi-allelic records" help="-SMA / --splitMultiAllelic. If provided, we will split multi-allelic records into multiple lines of output" truevalue="--splitMultiAllelic" type="boolean"/>
+      </when>
+    </conditional>
+  </inputs>
+  <outputs>
+    <data format="txt" label="${tool.name} on ${on_string} (Variants table)" name="output_table"/>
+  </outputs>
+  <tests>
+  </tests>
+  <help>
+**What it does**
+
+VariantsToTable
+
+Extract specific fields from a VCF file to a tab-delimited table
+
+This tool is designed to extract fields from the VCF to a table format that is more convenient to work with in downstream analyses.
+
+If you encounter errors, please view the `GATK FAQ &lt;http://www.broadinstitute.org/gatk/guide/topic?name=faqs&gt;`_.
+
+------
+
+**Inputs**
+
+GenomeAnalysisTK: accepts a VCF.
+
+**Outputs**
+
+The output is a table file.
+
+
+Go `here &lt;http://www.broadinstitute.org/gatk/guide/topic?name=intro&gt;`_ for details on GATK file formats.
+
+-------
+
+**Settings**::
+
+
+--variant / -V			Input VCF file
+--out / -o			File to which results should be written
+--fields / -F			The name of each field to capture for output in the table
+--genotypeFields / -GFA		The name of each genotype field to capture for output in the table
+--maxRecords /  -M		If provided, we will emit at most maxRecord records to the table
+--splitMultiAllelic / -SMA	If provided, we will split multi-allelic records into multiple lines of output
+--allowMissingData /  -AMD	If provided, we will not require every record to contain every field
+--moltenize			If provided, we will produce molten output
+--showFiltered / -raw		If provided, field values from filtered records will be included in the output
+
+------
+
+**Citation**
+
+For the underlying tool, please cite `DePristo MA, Banks E, Poplin R, Garimella KV, Maguire JR, Hartl C, Philippakis AA, del Angel G, Rivas MA, Hanna M, McKenna A, Fennell TJ, Kernytsky AM, Sivachenko AY, Cibulskis K, Gabriel SB, Altshuler D, Daly MJ. A framework for variation discovery and genotyping using next-generation DNA sequencing data. Nat Genet. 2011 May;43(5):491-8. &lt;http://www.ncbi.nlm.nih.gov/pubmed/21478889&gt;`_
+
+Please also site `McKenna A, Hanna M, Banks E, Sivachenko A, Cibulskis K, Kernytsky A, Garimella K, Altshuler D, Gabriel S, Daly M, DePristo MA (2010). The Genome Analysis Toolkit: a MapReduce framework for analyzing next-generation DNA sequencing data. Genome Res. 20:1297-303. Epub 2010 Jul 19. &lt;http://www.ncbi.nlm.nih.gov/pubmed/20644199&gt;`_
+
+If you use this tool in Galaxy, please cite `Blankenberg D, Von Kuster G, Coraor N, Ananda G, Lazarus R, Mangan M, Nekrutenko A, Taylor J. Galaxy: a web-based genome analysis tool for experimentalists. Curr Protoc Mol Biol. 2010 Jan;Chapter 19:Unit 19.10.1-21. &lt;http://www.ncbi.nlm.nih.gov/pubmed/20069535&gt;`_
+
+  </help>
+</tool>

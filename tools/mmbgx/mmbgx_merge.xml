@@ -1,0 +1,47 @@
+<tool id="mmbgx_merge" name="MMBGX merge" version="MMBGX: mmbgx_0.99.26; R: 3.2.2">
+  <requirements>
+    <requirement type="package">mmbgx</requirement>
+    <requirement type="package" version="3.2.2">R</requirement>
+  </requirements>
+  <description>mmbgx run output directories</description>
+  <command interpreter="python">
+    mmbgx_merge_wrapper.py
+      -o $output
+      -d $output.extra_files_path
+      --output-muave $outputMuave
+      -i $input1.extra_files_path
+      -i $input2.extra_files_path
+      #for $i in $inputs
+        -i ${i.input.extra_files_path}
+      #end for
+  </command>
+  <stdio>
+    <exit_code range="1:"  level="fatal"   description="Error occurred" />
+  </stdio>
+  <inputs>
+    <param format="txt" label="MMBGX output run" name="input1" optional="false" type="data"/>
+    <param format="txt" help="Need to add more files? Use controls below." label="with MMBGX output run" name="input2" optional="false" type="data"/>
+    <repeat name="inputs" title="Input Files">
+      <param format="txt" label="Add file" name="input" type="data"/>
+    </repeat>
+  </inputs>
+  <outputs>
+    <data format="Rdata" label="${tool.name} on ${on_string}: resT" name="output"/>
+    <data format="tabular" label="${tool.name} on ${on_string}: muave" name="outputMuave" />
+  </outputs>
+  <help>
+
+**What it does**
+
+This tool uses the MMBGX_ to merge 2+ output directory runs.
+
+.. _MMBGX: http://www.bgx.org.uk/software/mmbgx.html#standalone
+
+------
+
+**Citation**
+
+For the underlying tool, please cite `Turro E, Lewin A, Rose A, Dallman MJ, Richardson S.; MMBGX: a method for estimating expression at the isoform level and detecting differential splicing using whole-transcript Affymetrix arrays. Nucleic Acids Res. 2010 Jan;38(1):e4. doi: 10.1093/nar/gkp853. Epub 2009 Oct 23. &lt;http://www.ncbi.nlm.nih.gov/pubmed/19854940&gt;`_
+
+  </help>
+</tool>

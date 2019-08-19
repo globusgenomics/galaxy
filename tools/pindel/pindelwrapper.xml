@@ -1,0 +1,120 @@
+<tool id ="pindel_tool" name="Pindel" version="0.2.5b8">
+    <description></description>
+    <requirements>
+        <requirement type="package" version="0.2.5b7">pindel</requirement>
+    </requirements>
+    <stdio>
+        <exit_code range="1:" />
+    </stdio>
+    <command><![CDATA[
+        export LD_LIBRARY_PATH=/mnt/galaxyTools/tools/samtools/1.2/lib/ &&
+        ln -f -s "$input_file.metadata.bam_index" alignment.sorted.bam.bai &&
+        ln -f -s "$input_file" alignment.sorted.bam &&
+        #if $genomeSource.refGenomeSource == "history":
+          ln -f -s "$reference" ref.fa &&
+          samtools faidx ref.fa &&
+        #end if
+       python $__tool_directory__/create_config_file.py
+        --input_file alignment.sorted.bam
+        --insert_size "$insert_size"
+        --sample_label "$sample_label"
+        --output_config_file output_config_file &&
+        pindel
+        #if $genomeSource.refGenomeSource == "history":
+          -f ref.fa
+        #else:
+          -f ${genomeSource.indices.fields.path}
+        #end if
+        -i output_config_file
+        -c "$chromosome"
+        -o prefix &&
+        mv prefix_D $Deletions &&
+        mv prefix_SI $Short_Insertions &&
+        mv prefix_LI $Long_Insertions &&
+        mv prefix_INV $Inversions &&
+        mv prefix_TD $Tandem_Duplications &&
+        mv prefix_RP $Read_Pair &&
+        mv prefix_INT_final $INT_final &&
+        mv prefix_CloseEndMapped $Close_End_Mapped
+    ]]></command>
+    <inputs>
+        <param format="bam" name="input_file" type="data" label="One or more BAM alignment files produced by BWA"/>
+        <param name="sample_label" type="text" value="" label="Sample name" help="name which will show up on the output file for each sample"/>
+        <param name="insert_size" type="integer" value="" label="Expected Insert size" />
+      <conditional name="genomeSource">
+        <param label="Will you select a reference from your history or use a built-in fasta file?" name="refGenomeSource" type="select">
+          <option value="indexed">Use a built-in index</option>
+          <option value="history">Use one from the history</option>
+        </param>
+        <when value="indexed">
+          <param label="Select a reference genome" name="indices" type="select">
+            <options from_data_table="all_fasta">
+              <filter column="2" type="sort_by"/>
+              <validator message="No indexes are available" type="no_options"/>
+            </options>
+          </param>
+        </when>
+        <when value="history">
+          <param format="fasta" label="Select a reference from history" name="ownFile" type="data"/>
+          <param name="official_reference_name" type="text" label="Official Name for Reference Genome"/>
+        </when>
+      </conditional>
+        <param name="chromosome" type="text" value="ALL" help="Select a chromsome. ALL will use all chromosomes"
+               label="Which chromosome to operate on"/>
+    </inputs>
+    <outputs>
+        <data format="txt" name="Deletions" type="data" label="${input_file.element_identifier} Deletions"/>
+        <data format="txt" name="Short_Insertions" type="data" label="${input_file.element_identifier} Short Insertions"/>
+        <data format="txt" name="Long_Insertions" type="data" label="${input_file.element_identifier} Long Insertions"/>
+        <data format="txt" name="Inversions" type="data" label="${input_file.element_identifier} Inversions"/>
+        <data format="txt" name="Tandem_Duplications" type="data" label="${input_file.element_identifier} Tandom Duplications"/>
+        <data format="txt" name="Breakpoints" type="data" label="${input_file.element_identifier} Breakpoints"/>
+        <data format="txt" name="Read_Pair" type="data" label="${input_file.element_identifier} Read Pair Evidence"/>
+        <data format="txt" name="INT_final" type="data" label="${input_file.element_identifier} INT_final"/>
+        <data format="txt" name="Close_End_Mapped" type="data" label="${input_file.element_identifier} Close End Mapped"/>
+    </outputs>
+    <tests>
+        <test>
+            <param name="input_file" value="X_100000_Hum1.bam" ftype="bam"/>
+            <param name="insert_size" value="250"/>
+            <param name="reference" value="dm6.fa" ftype="fasta"/>
+            <param name="chromosome" value="ALL"/>
+            <output name="Deletions" file="X_100000_Hum1.bam_Deletions" ftype="txt"/>
+            <output name="Short_Insertions" file="X_100000_Hum1.bam_Short_Insertions" ftype="txt"/>
+            <output name="Long_Insertions" file="X_100000_Hum1.bam_Long_Insertions" ftype="txt"/>
+            <output name="Inversions" file="X_100000_Hum1.bam_Inversions" ftype="txt"/>
+            <output name="Tandem_Duplications" file="X_100000_Hum1.bam_Tandem_Duplications" ftype="txt"/>
+            <output name="Breakpoints" file="X_100000_Hum1.bam_Breakpoints" ftype="txt"/>
+            <output name="Read_Pair" file="X_100000_Hum1.bam_Read_Pair_Evidence" ftype="txt"/>
+            <output name="INT_Final" file="X_100000_Hum1.bam_INT_final" ftype="txt"/>
+            <output name="Close_End_Mapped" file="X_100000_Hum1.bam_Close_End_Mapped" ftype="txt"/>
+        </test>
+    </tests>
+    <help> <![CDATA[
+
+Pindel can detect breakpoints of large deletions, medium sized insertions, inversions, tandem duplications and other structural variants at single-based resolution from next-generation sequencing data. It uses a pattern growth approach to identify the breakpoints of these variants from paired-end short reads.
+
+The following inputs/parameters are required:
+- One or more BAM alignment files produced by BWA
+- Expected Insert Size for each alignment file
+- Sample label for each alignment file
+- Reference genome in fasta format (the same one used in alignment)
+- Which chromosome to operate on
+
+The following output files are produced by Pindel:
+- Deletions
+- Short Insertions
+- Long Insertions
+- Inversions
+- Tandom Duplications
+- Breakpoints
+- Read Pair Evidence
+- INT_final
+- Close End Mapped
+
+
+    ]]> </help>
+    <citations>
+        <citation type="doi">doi:10.1093/bioinformatics/btp394</citation>
+    </citations>
+</tool>

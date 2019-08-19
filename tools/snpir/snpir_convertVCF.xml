@@ -1,0 +1,39 @@
+<tool id="snpir_convert_vcf" name="SNPiR convert VCF" version="SNPIR: 12-May-2014; SAMTOOLS: 1.2; UCSC_TOOLS: 20140801; BEDTOOLS: 2.17.0">
+  <requirements>
+    <requirement type="package">snpir</requirement>
+    <requirement type="package">samtools</requirement>
+    <requirement type="package">ucsc_tools</requirement>
+    <requirement type="package">bedtools</requirement>
+  </requirements>
+  <description>to SNPiR custom variant format and filter variants with low quality</description>
+  <command>
+    convertVCF.sh $inputFile $outFile $qualityThreshold
+  </command>
+  <inputs>
+    <param format="vcf" label="Input VCF" name="inputFile" type="data"/>
+    <param label="Quality Threshold" min="0" name="qualityThreshold" type="integer" value="20"/>
+  </inputs>
+  <outputs>
+    <data format="vcf" label="${tool.name} on ${on_string}" name="outFile"/>
+  </outputs>
+  <tests>
+    <test>
+    </test>
+  </tests>
+  <help>
+
+.. class:: infomark
+
+**Purpose**
+
+Convert VCF to SNPiR custom variant format and filter variants with low quality
+
+------
+
+.. class:: infomark
+
+**Inputs, outputs, and parameters**
+
+
+  </help>
+</tool>

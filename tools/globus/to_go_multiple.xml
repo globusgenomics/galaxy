@@ -1,0 +1,78 @@
+<tool id="globus_send_data_multiple" name="Send Multiple Data via Globus">
+  <description>Transfers data via Globus.</description>
+  <action module="galaxy_ext.globus.tools.actions.globus" class="GlobusTransferOutMultiple"/>
+  <requirements>
+    <requirement type="package">pymodules</requirement>
+  </requirements>
+  <command interpreter="python">
+    transfer_out_multiple.py
+    $username
+    -o transfer.log
+    --goauth-token "$goauth"
+    --source-ep="$from_endpoint"
+    --destination-ep="$to_endpoint"
+    #for $i, $s in enumerate( $src_dataset ):
+      #set $extra_file = ""
+      --dataset "$s.from_path" "$s.to_path" "$out_file"
+      #if str($s.from_path.ext) == "bam":
+        #if str( $s.from_path.metadata.bam_index ) != "None":
+          #set $to_path = str($s.to_path) + ".bai" 
+          --dataset "$s.from_path.metadata.bam_index" "$to_path" "$out_file" 
+        #end if
+      #end if           
+    #end for
+    --deadline="$deadline"
+  </command>
+  <inputs>
+    <param name="goauth" type="hidden" size="100" label="Globus Auth Token">
+      <sanitizer>
+	<valid>
+	  <add value="|"/>
+	</valid>
+      </sanitizer>
+    </param>
+    <param name="username" type="hidden" size="100" label="Globus Username"/>
+    <param name="from_endpoint" type="hidden" size="100" label="Source Endpoint">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="to_endpoint" type="text" size="100" label="Destination Endpoint">
+      <sanitizer sanitize="False"/>
+    </param>
+    <repeat name="src_dataset" title="Send Files" min="1">
+      <param name="from_path" type="data" size="100" label="Send this dataset"/>
+      <param name="to_path" type="text" size="100" label="Destination Path">
+        <sanitizer sanitize="False"/>
+      </param>
+    </repeat>
+    <param name="deadline" type="text" size="10" value="240" label="Deadline (In minutes)"/>
+  </inputs>
+  <outputs>
+    <data name="out_file" type="data" format="txt"/>
+  </outputs>
+  <tests>
+    <test>
+      <!-- TODO: UPDATE TEST CASE -->
+      <param name="namefield" value="Bob"/>
+      <output name="out_file1" file="helloworld_out.txt"/>
+    </test>
+  </tests>
+  <help>
+.. class:: warningmark
+    
+  **WARNING:** Be careful not to exceed disk quotas!
+    
+-----
+    
+**What it does**
+    
+  Transfers a dataset from your Galaxy installation to a Globus
+  Online endpoint.
+    
+-----
+    
+**Example**
+    
+  Specify your certs, your endpoints, and some paths within those endpoints.
+
+  </help>
+</tool>

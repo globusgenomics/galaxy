@@ -1,0 +1,15 @@
+<tool id="seattleSNPparser" name="Parse SeattleSeq output">
+	<description>Parses the relevant information from a SeattleSeq SNP file</description>
+	<command interpreter="perl">seattleSNPparser.pl --output-from-seattle-seq $seattleseq_output --input-to-seattle-seq $seattleseq_input --annotated-snps-output $annotated_snps_output </command>
+	<inputs>
+		<param name="seattleseq_output" type="data" format="tabular" label="SeattleSeq output" help="The output file downloaded from the SeattleSeq Annotation server"/>
+		<param name="seattleseq_input" type="data" format="tabular" label="SeattleSeq input" help="The input file submitted to the SeattleSeq Annotation server"/>
+	</inputs>
+	<outputs>
+		<data name="annotated_snps_output" type="data" format="tabular" label="Formatted SeattleSeq output on ${on_string}"/>
+	</outputs>
+        <help>
+        </help>
+
+</tool>
+

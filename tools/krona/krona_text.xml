@@ -1,0 +1,54 @@
+<tool id="krona-text" name="Visualize  with Krona" version="1">
+
+  <description>Visualise any hierarchical data</description> 
+
+  <requirements>		
+    <requirement type="package" version="2.6">krona-tools</requirement>
+  </requirements>
+        
+  <!-- the command to run when user hits execute. Run our Rscript and pass the parameter to it -->
+  <command interpreter="python">
+    runKrona.py $isMothur -o $outputfile
+    #for $file_count, $input_file in enumerate( $input_files ):
+      -d "$input_file.inputfile" "$input_file.inputfile_name"
+    #end for
+
+  </command>
+
+
+  <inputs>
+  <!-- parameter examples, see https://wiki.galaxyproject.org/Admin/Tools/ToolConfigSyntax for descriptions -->
+
+    <!-- file from history -->
+    <repeat min="1"  name="input_files" title="Input Files">
+      <param name="inputfile" type="data" label="Select input file" help="Choose input file from history. Format: count - Hierarchy (tab separated)"/>
+      <param name="inputfile_name" type="text" label="Sample Name" help="Sample name which will show up in your chart." />
+    </repeat>
+    <param name="isMothur" type="boolean" checked="False" truevalue="-m" falsevalue="" label="is this output from MOTHUR?" help="e.g. taxonomy file generated from Classify.otu?"/>
+
+    
+  </inputs>
+
+  
+  <outputs>
+    <data format="html" name="outputfile"  from_work_dir="text.krona.html" label="Krona on ${on_string}: HTML"/>
+  </outputs>
+
+  <help>
+Input file must be a tab-delimited file with first column being a count, rest the hierarchy, for example::
+
+    2	Fats	Saturated fat  
+    3	Fats	Unsaturated fat	Monounsaturated fat  
+    3	Fats	Unsaturated fat	Polyunsaturated fat  
+    13	Carbohydrates	Sugars  
+    4	Carbohydrates	Dietary fiber  
+    21	Carbohydrates  
+    5	Protein  
+    4  
+
+Would yield the following graph: http://krona.sourceforge.net/examples/text.krona.html
+
+
+    
+  </help>
+</tool> 

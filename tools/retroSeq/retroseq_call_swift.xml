@@ -1,0 +1,70 @@
+<tool id="retroseq_call_swift" name="RetroSeq Call using Swift" version="RETROSEQ: default; BEDTOOLS: 2.17.0; SAMTOOLS: 1.2; VCFTOOLS: vcftools_0.1.11; PICARD: 1.134">
+ <description>Decide if TEV is present</description>
+ <requirements>
+   <requirement type="package">retroSeq</requirement>
+   <requirement type="package">bedtools</requirement>
+   <requirement type="package">samtools</requirement>
+   <requirement type="package">swift</requirement>
+   <requirement type="package">vcftools</requirement>
+   <requirement type="package">picard</requirement>
+ </requirements>
+ <command interpreter="python">
+retroseq_wrapper.py --call 
+--swift
+--bam $bam_input
+--input $retroseq_discover
+--ref $ref
+--output-vcf $output
+--output-bed $bed_output
+--output-candidates $candidates_output
+$hets
+#if $filter:
+  --filter $filter
+  --refTEsName $refTEsName
+#end if
+#if $quality != '':
+  -q $quality
+#end if
+#if $depth != '':
+  --depth $depth
+#end if
+#if $reads != '':
+  --reads $reads
+#end if
+#if $ignoreRGs != '':
+  --ignoreRGs &quot;$ignoreRGs&quot;
+#end if
+#if $inputBamIndex:
+    --indexBam $inputBamIndex
+#end if
+--extra-files-path $output.extra_files_path
+ </command>
+ <inputs>
+    <param format="bam" label="BAM file of paired reads mapped to reference genome" name="bam_input" type="data"/>
+    <param format="bai" help="If one is not available, it will be generated for you. In workflows where several tools need the same Index file, it might be useful in the interest of time to produce an index file separately and provide as input to those tools." label="BAM index file" name="inputBamIndex" optional="true" type="data"/>
+    <param format="vcf" label="A single output file from the PE discover stage" name="retroseq_discover" type="data"/>
+    <param format="fasta" label="Fasta of reference genome" name="ref" type="data"/>
+    <param checked="false" falsevalue="" label="Call heterozygous insertions. Default is homozygous" name="hets" truevalue="--hets" type="boolean"/>
+    <param label="Minimum mapping quality for a read mate that anchors the insertion call" name="quality" size="8" type="integer" value="30"/>
+    <param help="For example, Alu, AluY, LINE" label="Name of TE type of reference elements. These will be filtered out from the calling." name="refTEsName" size="30" type="text" value="Alu"/>
+    <param format="tabular" label="Tab file with TE type and BED file of reference elements. These will be filtered out from the calling." name="filter" optional="true" type="data"/>
+    <param help="Default is 200" label="Max average depth of a region to be considered for calling" name="depth" size="8" type="integer" value="200"/>
+    <param help="Default is 5" label="Minimum number of reads required to make a call" name="reads" size="8" type="integer" value="5"/>
+    <param help="Default is none" label="Read group names that should be ignored." name="ignoreRGs" size="30" type="text" value=""/>
+ </inputs>
+ <outputs>
+    <data format="vcf" label="${tool.name} on ${on_string}: VCF" name="output"/>
+    <data format="bed" label="${tool.name} on ${on_string}: Candidates BED" name="candidates_output"/>&quot;
+    <data format="bed" label="${tool.name} on ${on_string}: BED" name="bed_output"/>&quot;
+ </outputs>
+ <help>
+
+**What it does**
+
+The calling phase takes one or more outputs from the discovery phase, clusters the reads, and carries out various checks on the breakpoints to decide if a TEV is present. You can provide a list of locations to ignore per TE type - this would typically be the list of locations of the reference elements of that type (-filter option).
+
+The final TE calls from RetroSeq are in VCF format. The calls are annotated with information on number of supporting reads (GQ tag). The FL tag ranges from 1-8 and gives information on the breakpoint with 8 being the most confident calls and lower values indicating calls that don’t meet the breakpoint criteria for reasons such as lack of 5’ or 3’ reads.
+
+ </help>
+
+</tool>

@@ -1,0 +1,19 @@
+<?xml version="1.0" ?>
+<macros>
+    <token name="@VERSION@">4.9</token>
+    <xml name="requirements">
+        <requirements>
+            <requirement type="package">pymodules</requirement>
+	    <requirement type="package">perlmodules</requirement>
+            <requirement type="package" version="4.9">homer</requirement>
+            <requirement type="package">samtools</requirement>
+            <requirement type="package">R</requirement>
+            <yield/>
+        </requirements>
+    </xml>
+    <xml name="stdio">
+        <stdio>
+            <exit_code range="1:" />
+        </stdio>
+    </xml>
+</macros>

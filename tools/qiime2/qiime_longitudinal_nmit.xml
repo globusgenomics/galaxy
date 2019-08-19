@@ -1,0 +1,99 @@
+<?xml version="1.0" ?>
+<tool id="qiime_longitudinal_nmit" name="qiime longitudinal nmit" version="022019">
+	<description> - Nonparametric microbial interdependence test</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command>
+	<![CDATA[
+		qiime longitudinal nmit --i-table=$itable
+
+	#def list_dict_to_string(list_dict):
+		#set $file_list = list_dict[0]['additional_input'].__getattr__('file_name')
+		#for d in list_dict[1:]:
+			#set $file_list = $file_list + ',' + d['additional_input'].__getattr__('file_name')
+		#end for
+		#return $file_list
+	#end def
+
+	 --m-metadata-file=$list_dict_to_string($input_files_mmetadatafile) --p-individual-id-column="$pindividualidcolumn"
+	#if str($cmdconfig) != 'None':
+	 --cmd-config=$cmdconfig
+	#end if
+
+	#if str($pdistmethod) != 'None':
+	 --p-dist-method=$pdistmethod
+	#end if
+
+	#if str($pcorrmethod) != 'None':
+	 --p-corr-method=$pcorrmethod
+	#end if
+	 --o-distance-matrix=odistancematrix;
+
+	cp odistancematrix.qza $odistancematrix;
+	]]>
+	</command>
+	<inputs>
+		<param format="qza,no_unzip.zip" label="--i-table: FeatureTable[RelativeFrequency] Feature table to use for microbial interdependence test.  [required]" name="itable" optional="False" type="data"/>
+
+		<repeat name="input_files_mmetadatafile" optional="False" title="--m-metadata-file">
+			<param label="--m-metadata-file: Metadata file or artifact viewable as metadata. This option may be supplied multiple times to merge metadata. Sample metadata file containing individual_id_column.  [required]" name="additional_input" type="data" format="tabular,qza,no_unzip.zip" />
+		</repeat>
+
+		<param label="--p-individual-id-column: Metadata column containing IDs for individual subjects.  [required]" name="pindividualidcolumn" optional="False" type="text"/>
+
+		<param label="--p-corr-method: The temporal correlation test to be applied.
+                                  [default: kendall]" name="pcorrmethod" optional="True" type="select">
+			<option selected="True" value="None">Selection is Optional</option>
+			<option value="kendall">kendall</option>
+			<option value="pearson">pearson</option>
+			<option value="spearman">spearman</option>
+		</param>
+
+		<param label="--p-dist-method: Temporal distance method, see
+                                  numpy.linalg.norm for details.  [default:
+                                  fro]" name="pdistmethod" optional="True" type="select">
+			<option selected="True" value="None">Selection is Optional</option>
+			<option value="fro">fro</option>
+			<option value="nuc">nuc</option>
+		</param>
+
+		<param label="--cmd-config: Use config file for command options" name="cmdconfig" optional="True" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="qza" label="${tool.name} on ${on_string}: distance-matrix.qza" name="odistancematrix"/>
+	</outputs>
+	<help>
+		<![CDATA[
+Nonparametric microbial interdependence test
+---------------------------------------------
+
+Perform nonparametric microbial interdependence test to determine
+longitudinal sample similarity as a function of temporal microbial
+composition. For more details and citation, please see
+doi.org/10.1002/gepi.22065
+
+Parameters
+----------
+table : FeatureTable[RelativeFrequency]
+    Feature table to use for microbial interdependence test.
+metadata : Metadata
+    Sample metadata file containing individual_id_column.
+individual_id_column : Str
+    Metadata column containing IDs for individual subjects.
+corr_method : Str % Choices({'kendall', 'pearson', 'spearman'}), optional
+    The temporal correlation test to be applied.
+dist_method : Str % Choices({'fro', 'nuc'}), optional
+    Temporal distance method, see numpy.linalg.norm for details.
+
+Returns
+-------
+distance_matrix : DistanceMatrix
+    The resulting distance matrix.
+		]]>
+	</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

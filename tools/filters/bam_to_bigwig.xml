@@ -1,0 +1,58 @@
+<tool id="bam_to_bigwig" name="BAM to BigWig" version="0.2.0">
+
+  <description>Calculates coverage from a BAM alignment file</description>
+
+  <requirements>
+    <requirement type="package">pymodules</requirement>
+    <requirement type="package" version="1.2">samtools</requirement>
+    <requirement type="package" version="2.17.0">bedtools</requirement>
+    <requirement type="package">ucsc_tools</requirement>
+  </requirements>
+
+  <command interpreter="python">
+    bam_to_bigwig.py 
+    --input $input 
+    --output $output 
+    --out-dir $output.extra_files_path
+    -p '-split'
+  </command>
+
+  <inputs>
+    <param format="bam" name="input" type="data" label="BAM alignment file"/>
+  </inputs>
+
+  <outputs>
+    <data format="bigwig" name="output" />
+  </outputs>
+
+  <tests>
+    <test>
+      <param name="input" value="bam_to_bigwig_test.bam"/>
+      <output name="output" file="bam_to_bigwig_test.bigwig"/>
+    </test>
+  </tests>
+
+<help><![CDATA[
+**What it does**
+
+Creates a coverage file in BigWig format, given a BAM alignment file.
+
+Gaps or skips (CIGAR D or N operators) are not counted towards the coverage
+calculation, which is important when mapping RNA Seq reads to genes with
+introns.
+
+**Input**
+
+A BAM alignment file. This needs to have the genome database build used in
+alignment annotated. If your file has '?' for the database build, click on the
+pencil icon to edit the alignment attributes, and specify the organism used to
+align against.
+
+**Output**
+
+BigWig files can be loaded directly from Galaxy into the UCSC browser. They can
+be loaded incrementally by UCSC, so a single file can be used to represent the
+entire genome without having to upload the entire thing as a custom track.
+
+]]></help>
+</tool>

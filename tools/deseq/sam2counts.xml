@@ -1,0 +1,68 @@
+<tool id="sam2counts" name="SAM/BAM To Counts">
+	<description>Produce count data from SAM or BAM files</description>
+
+	<requirements>
+		<requirement type="package">pymodules</requirement>
+	</requirements>
+
+	<command interpreter="python">
+		sam2counts_galaxy.py 
+
+		#if str($filetype.ftype_select) == "sam":
+		${first_input_sam}
+		#for $input_file_sam in $filetype.input_files_sam:
+		  ${input_file_sam.additional_input_sam}
+		#end for
+		#end if
+
+		#if str($filetype.ftype_select) == "bam":
+		-b
+
+		${first_input_bam}
+		#for $input_file_bam in $filetype.input_files_bam:
+		  ${input_file_bam.additional_input_bam}
+		#end for
+		#end if
+
+		-o $counts
+		-l $colnames
+	</command>
+
+	<inputs>
+                <param name="colnames" type="text" size="30" label="Short names for samples" help="A comma-separated list of short names for the samples in order">
+                        <validator type="empty_field"/>
+                        <validator type="regex" message="Must be a comma-separated tuple with no spaces">^(\w+,)+\w+$</validator>
+                </param>
+
+		<conditional name="filetype">
+
+		<param name="ftype_select" type="select" label="Are the input files SAM or BAM format?">
+			<option value="sam">SAM</option>
+			<option value="bam">BAM</option>
+		</param>
+
+		<when value="sam">
+        		<param format="sam" name="first_input_sam" type="data" label="SAM file" help=""/>
+        		<repeat name="input_files_sam" title="Additional SAM Files">
+            			<param format="sam" name="additional_input_sam" type="data" label="SAM file" help=""/>
+        		</repeat>
+		</when>
+
+		<when value="bam">
+                        <param format="bam" name="first_input_bam" type="data" label="BAM file" help=""/>
+                        <repeat name="input_files_bam" title="Additional BAM Files">
+                                <param format="bam" name="additional_input_bam" type="data" label="BAM file" help=""/>
+                        </repeat>
+                </when>
+
+		</conditional>
+	</inputs>
+
+	<outputs>
+		<data format="tabular" name="counts"/>
+	</outputs>
+
+	<help>
+	</help>
+
+</tool>

@@ -1,0 +1,109 @@
+<tool id="rgTDT1" name="Transmission Distortion:" version="PLINK: 1.07">
+    <requirements><requirement type="package">plink</requirement></requirements>
+
+    <description>for family data</description>
+
+    <command interpreter="python">
+        rgTDT.py -i '$i.extra_files_path/$i.metadata.base_name' -o '$title'
+        -r '$out_file1' -l '$logf'  -g '$gffout'
+    </command>
+
+    <inputs>
+       <param format="pbed" label="Genotypes for analysis from your current history datasets" name="i" size="132" type="data"/>
+       <param label="Title for the output to remind you what you did" name="title" size="80" type="text" value="rgTDT"/>
+   </inputs>
+
+   <outputs>
+       <data format="tabular" label="${title}_rgTDT.xls" name="out_file1"/>
+       <data format="gff" label="${title}_rgTDT.gff" name="gffout"/>
+       <data format="txt" label="${title}_rgTDTlog.txt" name="logf"/>
+   </outputs>
+
+<tests>
+ <test>
+ <param ftype="pbed" name="i" value="tinywga">
+   <metadata name="base_name" value="tinywga"/>
+   <composite_data value="tinywga.bim"/>
+   <composite_data value="tinywga.bed"/>
+   <composite_data value="tinywga.fam"/>
+   <edit_attributes type="name" value="tinywga"/> 
+ </param>
+ <param name="title" value="rgTDTtest1"/>
+ <output compare="diff" file="rgTDTtest1_TDT.xls" ftype="tabular" name="out_file1"/>
+ <output compare="diff" file="rgTDTtest1_TDT_topTable.gff" ftype="gff" name="gffout"/>
+ <output file="rgTDTtest1_TDT_log.txt" ftype="txt" lines_diff="79" name="logf"/>
+ </test>
+</tests>
+
+
+<help>
+
+.. class:: infomark
+
+**Attribution**
+
+This tool relies on the work of many people. It uses Plink http://pngu.mgh.harvard.edu/~purcell/plink/ for
+analysis, and the R http://cran.r-project.org/ for graphics respectively.
+
+This implementation is a Galaxy tool wrapper around these third party applications.
+It was originally designed and written for family based data from the CAMP Illumina run of 2007 by
+ross lazarus (ross.lazarus@gmail.com) and incorporated into the rgenetics toolkit.
+
+Rgenetics merely exposes them, wrapping Plink so you can use it in Galaxy.
+
+-----
+
+.. class:: infomark
+
+**Syntax**
+
+- **Genotype file** is the input family data chosen from available library compressed files
+- **Format** determines how your data will be returned to your Galaxy workspace - the gg format is strongly recommended
+
+-----
+
+.. class:: infomark
+
+**Summary**
+
+This tool will perform the standard transmission distortion analyses suitable for
+nuclear families and a simple binary &quot;affected&quot; phenotype
+
+If you don't see the genotype data set you want here, it can be imported using one of the methods available from
+the Galaxy Get Data tool page.
+
+Outputs will include a GFF toptable with a link to view at UCSC if you want to see your
+results as a fully fledged UCSC track.
+
+Finally, if you can't live without
+spreadsheet data, choose the .xls tab delimited format. It's not a stupid binary excel file. Just a plain old tab delimited
+one with a header. Fortunately excel is dumb enough to open these without much protest.
+
+
+----
+
+.. class:: infomark
+
+**Attribution**
+
+This Galaxy tool relies on Plink (see Plinksrc_) to test TDT models. 
+
+So, we rely on the author (Shaun Purcell) for the documentation you need specific to those settings - they are very nicely documented - see
+DOC_
+
+Tool and Galaxy datatypes originally designed and written for the Rgenetics
+series of whole genome scale statistical genetics tools by ross lazarus (ross.lazarus@gmail.com)
+
+Copyright Ross Lazarus March 2007
+This Galaxy wrapper is released licensed under the LGPL_ but is about as useful as a chocolate teapot without Plink which is GPL.
+
+I'm no lawyer, but it looks like you got GPL if you use this software. Good luck.
+
+.. _Plinksrc: http://pngu.mgh.harvard.edu/~purcell/plink/ 
+
+.. _LGPL: http://www.gnu.org/copyleft/lesser.html
+
+.. _DOC: http://pngu.mgh.harvard.edu/~purcell/plink/anal.shtml#tdt
+
+</help>
+</tool>

@@ -1,0 +1,56 @@
+{% extends "layout.html" %}
+
+{% from "quality.jinja2" import quality_scripts, quality_control %}
+
+{% block stylesheets %}
+<link rel="stylesheet" type="text/css" href="static/css/quality.css"/>
+{% endblock %}
+
+{% block scripts %}
+
+{{ quality_scripts("static/js/") }}
+
+<script type="text/javascript" src="static/js/quality-plots.js"></script>
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		var data = {{ quality|tojson|safe }};
+		updateQualityPlots(data);
+	});
+</script>
+{% endblock %}
+
+{% macro nav(index, projects) -%}
+<div class="clearfix"></div>
+<div class="qc-nav btn-toolbar">
+	<div class="btn-group">
+		{% set prev_ref = projects[index - 1].id if index > 0 else "#" %}
+		<a class="btn btn-info{{ ' disabled' if prev_ref == '#' else '' }}" href="project_{{ prev_ref }}.html">&larr; Prev</a>
+	</div>
+	<div class="btn-group">
+		{% set next_ref = projects[index + 1].id if index < projects|length - 1 else "#" %}
+		<a class="btn btn-info{{ ' disabled' if next_ref == '#' else '' }}" href="project_{{ next_ref }}.html">Next &rarr;</a>
+	</div>
+
+	<div class="btn-group">
+		<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+			{{ project.id }} <span class="caret"></span>
+		</button>
+		<ul class="dropdown-menu">
+			{% for p in projects %}
+			<li><a class="{{ 'active' if loop.index0 == index else '' }}" href="project_{{ p.id }}.html">{{ p.id }}</a></li>
+			{% endfor %}
+		</ul>
+	</div>
+</div>
+{%- endmacro %}
+
+{% block body %}
+	<div class="row">
+		<div class="col-12">
+			{{ nav(index, projects) }}
+			{{ quality_control(quality) }}
+			{{ nav(index, projects) }}
+		</div>
+	</div>
+{% endblock %}

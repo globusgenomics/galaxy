@@ -1,0 +1,11 @@
+<tool id="DateTime1" name="Date Picker" force_history_refresh="True">
+    <description>Pick a date</description>
+    <command>echo $input1 2>&amp;1 >$out_file1</command>
+    <inputs>
+        <param format="yymmdd" name="input1" type="datetime" label="Select a date" value=""/>
+    </inputs>
+    <outputs>
+        <data format="txt" name="out_file1" />
+    </outputs>
+    <help>DateTime Tool Parameter Demonstrator</help>
+</tool>

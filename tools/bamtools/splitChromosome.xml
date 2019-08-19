@@ -1,0 +1,44 @@
+<tool id="splitChromosome" name="Split BAM to Chromosomes" version="1.0.1">
+  <description>splits BAM file to individual BAM files per chromosome</description>
+  <command interpreter="python">
+    splitChromosome.py
+      --input1=$input1
+  </command>
+  <inputs>
+    <param name="input1" type="data" format="bam" label="BAM File to Convert" />
+  </inputs>
+  <outputs>
+    <data format="bam" name="output1" label="${tool.name} on ${on_string}: Chrm1 BAM" />
+    <data format="bam" name="output2" label="${tool.name} on ${on_string}: Chrm2 BAM" />
+    <data format="bam" name="output3" label="${tool.name} on ${on_string}: Chrm3 BAM" />
+    <data format="bam" name="output4" label="${tool.name} on ${on_string}: Chrm4 BAM" />
+    <data format="bam" name="output5" label="${tool.name} on ${on_string}: Chrm5 BAM" />
+    <data format="bam" name="output6" label="${tool.name} on ${on_string}: Chrm6 BAM" />
+    <data format="bam" name="output7" label="${tool.name} on ${on_string}: Chrm7 BAM" />
+    <data format="bam" name="output8" label="${tool.name} on ${on_string}: Chrm8 BAM" />
+    <data format="bam" name="output9" label="${tool.name} on ${on_string}: Chrm9 BAM" />
+    <data format="bam" name="output10" label="${tool.name} on ${on_string}: Chrm10 BAM" />
+    <data format="bam" name="output11" label="${tool.name} on ${on_string}: Chrm11 BAM" />
+    <data format="bam" name="output12" label="${tool.name} on ${on_string}: Chrm12 BAM" />
+    <data format="bam" name="output13" label="${tool.name} on ${on_string}: Chrm13 BAM" />
+    <data format="bam" name="output14" label="${tool.name} on ${on_string}: Chrm14 BAM" />
+    <data format="bam" name="output15" label="${tool.name} on ${on_string}: Chrm15 BAM" />
+    <data format="bam" name="output16" label="${tool.name} on ${on_string}: Chrm16 BAM" />
+    <data format="bam" name="output17" label="${tool.name} on ${on_string}: Chrm17 BAM" />
+    <data format="bam" name="output18" label="${tool.name} on ${on_string}: Chrm18 BAM" />
+    <data format="bam" name="output19" label="${tool.name} on ${on_string}: Chrm19 BAM" />
+    <data format="bam" name="output20" label="${tool.name} on ${on_string}: Chrm20 BAM" />
+    <data format="bam" name="output21" label="${tool.name} on ${on_string}: Chrm21 BAM" />
+    <data format="bam" name="output22" label="${tool.name} on ${on_string}: Chrm22 BAM" />
+    <data format="bam" name="output23" label="${tool.name} on ${on_string}: Chrm23 BAM" />
+    <data format="bam" name="outputX" label="${tool.name} on ${on_string}: ChrmX BAM" />
+    <data format="bam" name="outputY" label="${tool.name} on ${on_string}: ChrmY BAM" />
+  </outputs>
+  <help>
+
+**What it does**
+
+The splitChromosome option on the bam executable splits an indexed BAM file into multiple files based on the Chromosome (Reference Name).
+The files all have the same base name, but with an _# where # corresponds with the associated reference id from the BAM file.
+  </help>
+</tool>

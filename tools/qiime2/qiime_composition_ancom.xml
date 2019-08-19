@@ -1,0 +1,94 @@
+<?xml version="1.0" ?>
+<tool id="qiime_composition_ancom" name="qiime composition ancom" version="022019">
+	<description> - Apply ANCOM to identify features that differ in abundance.</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command><![CDATA[
+  
+  qiime composition ancom --i-table=$itable
+
+  #def list_dict_to_string(list_dict):
+	  #set $file_list = list_dict[0]['additional_input'].__getattr__('file_name')
+	  #for d in list_dict[1:]:
+		  #set $file_list = $file_list + ',' + d['additional_input'].__getattr__('file_name')
+	  #end for
+	  #return $file_list
+  #end def
+ 
+ --m-metadata-file=$list_dict_to_string($input_files_mmetadatafile) --m-metadata-column="$mmetadatacolumn"
+
+  #if str($pdifferencefunction) != 'None':
+   --p-difference-function=$pdifferencefunction
+  #end if
+
+  #if str($cmdconfig) != 'None':
+   --cmd-config=$cmdconfig
+  #end if
+
+  #if str($ptransformfunction) != 'None':
+   --p-transform-function=$ptransformfunction
+  #end if
+ 
+   --o-visualization=ovisualization;
+   
+  qiime tools export --input-path ovisualization.qzv --output-path out   && mkdir -p '$ovisualization.files_path'
+  && cp -r out/* '$ovisualization.files_path'
+  && mv '$ovisualization.files_path/index.html' '$ovisualization';
+  
+  ]]></command>
+	<inputs>
+		<param format="qza,no_unzip.zip" label="--i-table: FeatureTable[Composition] - The feature table to be used for ANCOM computation.  [required]" name="itable" optional="False" type="data"/>
+		<repeat name="input_files_mmetadatafile" optional="False" title="--m-metadata-file">
+			<param format="tabular" label="--m-metadata-file: Metadata file or artifact viewable as metadata. This option may be supplied multiple times to merge metadata. [required]" name="additional_input" type="data"/>
+		</repeat>
+		<param label="--m-metadata-column: MetadataColumn[Categorical] - Column from metadata file or artifact viewable as metadata. The categorical sample metadata column to test for differential abundance across.  [required]" name="mmetadatacolumn" optional="False" type="text"/>
+		<param label="--p-difference-function: " name="pdifferencefunction" optional="True" type="select">
+			<option selected="True" value="None">Selection is Optional</option>
+			<option value="mean_difference">mean_difference</option>
+			<option value="f_statistic">f_statistic</option>
+		</param>
+		<param label="--cmd-config: Use config file for command options" name="cmdconfig" optional="True" type="data"/>
+		<param label="--p-transform-function: " name="ptransformfunction" optional="True" type="select">
+			<option selected="True" value="None">Selection is Optional</option>
+			<option value="log">log</option>
+			<option value="clr">clr</option>
+			<option value="sqrt">sqrt</option>
+		</param>
+	</inputs>
+	<outputs>
+		<data format="html" label="${tool.name} on ${on_string}: visualization.qzv" name="ovisualization"/>
+	</outputs>
+	<help>
+<![CDATA[
+Apply ANCOM to identify features that differ in abundance.
+----------------------------------------------------------
+
+Apply Analysis of Composition of Microbiomes (ANCOM) to identify features
+that are differentially abundant across groups.
+
+Parameters
+----------
+table : FeatureTable[Composition]
+    The feature table to be used for ANCOM computation.
+metadata : MetadataColumn[Categorical]
+    The categorical sample metadata column to test for differential
+    abundance across.
+transform_function : Str % Choices({'clr', 'log', 'sqrt'}), optional
+    The method applied to transform feature values before generating
+    volcano plots.
+difference_function : Str % Choices({'f_statistic', 'mean_difference'}), optional
+    The method applied to visualize fold difference in feature abundances
+    across groups for volcano plots.
+
+Returns
+-------
+visualization : Visualization
+ 
+]]>
+</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

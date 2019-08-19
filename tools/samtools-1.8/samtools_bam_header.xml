@@ -1,0 +1,32 @@
+<tool id="samtools1.8_samtools_bamheader" name="BAM Header" version="SAMTOOLS: 1.8">
+  <requirements>
+    <requirement type="package" version="1.8">samtools</requirement>
+  </requirements>
+  <description>write the BAM's header section</description>
+  <command>
+    samtools view -H $input1 &gt; $output1
+  </command>
+  <inputs>
+    <param format="bam" label="BAM File" name="input1" type="data"/>
+  </inputs>
+  <outputs>
+    <data format="sam" label="${tool.name} on ${on_string}: SAM header" name="output1"/>
+  </outputs>
+  <tests>
+  </tests>
+  <help>
+
+**What it does**
+
+This tool uses the SAMTools_ toolkit to produce the header of a BAM file.
+
+.. _SAMTools: http://samtools.sourceforge.net/samtools.shtml
+
+------
+
+**Citation**
+
+For the underlying tool, please cite `Li H, Handsaker B, Wysoker A, Fennell T, Ruan J, Homer N, Marth G, Abecasis G, Durbin R; 1000 Genome Project Data Processing Subgroup. The Sequence Alignment/Map format and SAMtools. Bioinformatics. 2009 Aug 15;25(16):2078-9. &lt;http://www.ncbi.nlm.nih.gov/pubmed/19505943&gt;`_
+
+  </help>
+</tool>

@@ -1,0 +1,36 @@
+<tool id="directory_dataset_hack" name="Directory Path Dataset">
+  <description>
+    Creates a dataset that consists of a directory path.
+  </description>
+  <command interpreter="python">
+    directory_dataset_hack.py
+    $out_file1
+    $path_or_pathsegment
+  </command>
+  <inputs>
+    <param name="path_or_pathsegment" type="text" label="Genome name or path to directory"/>
+  </inputs>
+  <outputs>
+    <data name="out_file1" type="data" format="txt"/>
+  </outputs>
+  <tests>
+  </tests>
+  <help>
+  .. class:: warningmark
+    
+  **WARNING:** This is a hack that depends on galaxy being able to read whatever path is entered by the user.
+    
+-----
+    
+**What it does**
+    
+  Creates a file containing a directory path.
+    
+-----
+    
+**Example**
+    
+TODO
+
+  </help>
+</tool>

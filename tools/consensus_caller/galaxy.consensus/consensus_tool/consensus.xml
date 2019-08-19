@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+
+<tool name="Consensus Genotyper for Exome Variants" id="cges"  > 
+    <description>
+        Naive consensus caller for ATLAS SNP2, GATK UG, freebayes output files.
+    </description>
+    <requirements>
+       <requirement type="package">pymodules</requirement>
+       <requirement type="package">vcftools</requirement>
+       <requirement type="package">tabix</requirement>
+    </requirements>
+    <command interpreter="python">
+        consensus_genotyper.py
+          --genotype-threshold $genotype_threshold
+          --site-threshold $site_threshold
+          $ignore_missing
+          $VCF1
+          #for $i, $s in enumerate( $addVCF )
+              ${s.moreVCF.file_name}
+          #end for
+          | vcf-sort > $output_vcf
+    </command>
+
+    <inputs>
+        <param name="VCF1" type="data" format="vcf"
+            label="VCF Input">
+        </param>
+        <repeat name="addVCF" title="Additional VCFs">
+            <param name="moreVCF" type="data" format="vcf" label="VCF"/>
+        </repeat>
+        <param name="site_threshold" type="integer" value="0" label="Concordance threshold for variant sites.">
+        </param>
+        <param name="genotype_threshold" type="integer" value="0" label="Concordance threshold for genotypes.">
+        </param>
+        <param name="ignore_missing" type="boolean" truevalue="--ignore-missing" falsevalue="" label="Ignore missing genotypes during vote.">
+        </param>
+    </inputs>
+    
+    <outputs>
+        <data format="vcf" name="output_vcf" label="${tool.name} on ${on_string}: Consensus VCF" />
+    </outputs>
+
+    <help>
+    usage: consensus_genotyper.py [-h] [--site-threshold SITETHRESH]
+                              [--genotype-threshold GENOTHRESH]
+                              [--ignore-missing]
+                              VCFS [VCFS ...]
+
+Find sites and genotypes that aggree among an arbitrary number of VCF files.
+
+positional arguments:
+  VCFS                  List of VCF files for input.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --site-threshold SITETHRESH, -s SITETHRESH
+                        Number of inputs which must agree for a site to be
+                        included in the output.
+  --genotype-threshold GENOTHRESH, -g GENOTHRESH
+                        Number of inputs which must agree for a genotype to be
+                        marked as non-missing.
+  --ignore-missing, -m  Flag specifying how to handle missing genotypes in the
+                        vote. If present, missing genotypes are excluded from
+                        the genotype concordance vote unless all genotypes are
+                        missing.   usage: consensus_genotyper.py [-h] VCFS [VCFS ...]
+
+    Find sites and genotypes which aggree among an arbitrary number of VCF files.
+
+    positional arguments:
+      VCFS        List of VCF files for input.
+
+    optional arguments:
+      -h, --help  show this help message and exit
+
+    </help>
+
+</tool>

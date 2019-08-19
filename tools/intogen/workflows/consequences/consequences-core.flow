@@ -1,0 +1,76 @@
+<flow name="consequences-core">
+    <title>Variation consequences</title>
+    <desc>Variation consequences</desc>
+
+    <in name="projects_in" />
+
+	<out name="recurrences_projects" link="update_db.recurrences_projects" />
+	<out name="oncodrivefm_projects" link="update_db.oncodrivefm_projects" />
+	<out name="oncodriveclust_projects" link="update_db.oncodriveclust_projects" />
+	<out name="projects_out" link="update_db.projects_out" />
+
+	<module name="variants">
+		<in name="projects_in" link="projects_in" />
+		<out name="partitions" />
+
+		<run>variants.py</run>
+	</module>
+
+    <module name="VEP">
+        <title>Variant Effect Predictor</title>
+        <desc>Runs the Variant Effect Predictor to predict the functional consequences of variants</desc>
+
+        <in name="partitions" link="variants.partitions" />
+
+        <out name="results" />
+
+        <run>vep.py</run>
+    </module>
+
+	<module name="MA" wsize="10">
+		<title>Mutations assessor</title>
+		<desc>Runs Mutations assesor</desc>
+
+		<in name="partitions" link="VEP.results" />
+
+		<out name="results" />
+
+		<run>ma.py</run>
+	</module>
+
+	<module name="fimpact" wsize="40">
+		<title>Calculate functional impact</title>
+		<desc>Calculate consequences functional impact</desc>
+
+		<in name="partitions" link="MA.results" />
+
+		<out name="results" />
+
+		<run>fimpact.py</run>
+	</module>
+
+	<module name="classify" maxpar="1">
+		<title>Classify partitions by project</title>
+		<desc>Classify consequences partitions by project</desc>
+
+		<in name="partitions" link="fimpact.results" />
+
+		<out name="projects" />
+
+		<run>classify.py</run>
+	</module>
+
+	<module name="update_db">
+		<title>Import consequences into the database</title>
+		<desc>Import consequences into the database</desc>
+
+		<in name="projects_in" link="classify.projects" />
+
+		<out name="projects_out" />
+		<out name="recurrences_projects" />
+		<out name="oncodrivefm_projects" />
+		<out name="oncodriveclust_projects" />
+
+		<run>update_db.py</run>
+	</module>
+</flow>

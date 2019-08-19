@@ -1,0 +1,76 @@
+<tool id="junction_saturation" name="Junction Saturation" version="RSEQC: 2.3.3">
+	<description>detects splice junctions from each subset and compares them to reference gene model</description>
+	<requirements>
+		<requirement type="package">R</requirement>
+		<requirement type="package">rseqc</requirement>
+                <requirement type="package">pymodules</requirement>
+	</requirements>
+	<command> junction_saturation.py -i $input -o output -r $refgene -m $intronSize -v $minSplice
+
+		#if $percentiles.specifyPercentiles
+			-l $percentiles.lowBound -u $percentiles.upBound -s $percentiles.percentileStep
+		#end if
+                2&gt; $outputlog
+	</command>
+	<inputs>
+		<param format="bam,sam" label="input bam/sam file" name="input" type="data"/>
+		<param format="bed" label="reference gene model" name="refgene" type="data"/>
+		<param label="Minimum intron size (bp, default=50)" name="intronSize" type="integer" value="50"/>
+		<param label="Minimum coverage (default=1)" name="minSplice" type="integer" value="1"/>
+		<conditional name="percentiles">
+			<param label="Specify sampling bounds and frequency" name="specifyPercentiles" type="boolean" value="false"/>
+			<when value="true">
+				<param label="Lower Bound Sampling Frequency (bp, default=5)" name="lowBound" type="integer" value="5"/>
+				<param label="Upper Bound Sampling Frequency (bp, default=100)" name="upBound" type="integer" value="100"/>
+				<param label="Sampling increment (default=5)" name="percentileStep" type="integer" value="5"/>
+			</when>
+		</conditional>
+	</inputs>
+	<outputs>
+		<data format="r" from_work_dir="output.junctionSaturation_plot.r" label="${tool.name} on ${on_string}: R script" name="outputr"/>
+		<data format="pdf" from_work_dir="output.junctionSaturation_plot.pdf" label="${tool.name} on ${on_string}: PDF" name="outputpdf"/>
+                <data format="txt" label="${tool.name} on ${on_string}: log" name="outputlog"/>
+	</outputs>
+	<help>
+.. image:: https://code.google.com/p/rseqc/logo?cct=1336721062
+
+-----
+
+About RSeQC
++++++++++++
+
+The RSeQC package provides a number of useful modules that can comprehensively evaluate high throughput sequence data especially RNA-seq data. “Basic modules” quickly inspect sequence quality, nucleotide composition bias, PCR bias and GC bias, while “RNA-seq specific modules” investigate sequencing saturation status of both splicing junction detection and expression estimation, mapped reads clipping profile, mapped reads distribution, coverage uniformity over gene body, reproducibility, strand specificity and splice junction annotation.
+
+The RSeQC package is licensed under the GNU GPL v3 license.
+
+Inputs
+++++++++++++++
+
+Input BAM/SAM file
+	Alignment file in BAM/SAM format.
+
+Reference gene model
+	Gene model in BED format.
+
+Sampling Percentiles - Upper Bound, Lower Bound, Sampling Increment (defaults= 100, 5, and 5)
+	Sampling starts from the Lower Bound and increments to the Upper Bound at the rate of the Sampling Increment.
+
+Minimum intron length (default=50)
+	Minimum intron length (bp).
+
+Minimum coverage (default=1)
+	Minimum number of supportting reads to call a junction.
+
+Output
+++++++++++++++
+
+1. output.junctionSaturation_plot.r: R script to generate plot
+2. output.junctionSaturation_plot.pdf
+
+.. image:: http://dldcc-web.brc.bcm.edu/lilab/liguow/RSeQC/figure/junction_saturation.png 
+
+In this example, current sequencing depth is almost saturated for &quot;known junction&quot; (red line) detection because the number of &quot;known junction&quot; reaches a plateau. In other words, nearly all &quot;known junctions&quot; (expressed in this particular tissue) have already been detected, and continue sequencing will not detect additional &quot;known junction&quot; and will only increase junction coverage (i.e. junction covered by more reads). While current sequencing depth is not saturated for novel junctions (green).
+
+
+	</help>
+</tool>

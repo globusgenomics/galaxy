@@ -1,0 +1,132 @@
+<?xml version="1.0" ?>
+<tool id="qiime_longitudinal_first-differences" name="qiime longitudinal first-differences" version="022019">
+	<description> - Compute first differences or difference from baseline between sequential states</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command>
+	<![CDATA[	
+	
+	qiime longitudinal first-differences --p-state-column="$pstatecolumn"
+	
+	#if '__pd__' in str($pindividualidcolumn):
+		#set $pwhere_temp = $pindividualidcolumn.replace('__pd__', "#")
+		#set $pindividualidcolumn = $pwhere_temp
+	#end if
+
+	#def list_dict_to_string(list_dict):
+		#set $file_list = list_dict[0]['additional_input'].__getattr__('file_name')
+		#for d in list_dict[1:]:
+			#set $file_list = $file_list + ' --m-metadata-file=' + d['additional_input'].__getattr__('file_name')
+		#end for
+		#return $file_list
+	#end def
+
+
+	 --m-metadata-file=$list_dict_to_string($input_files_mmetadatafile) --p-individual-id-column="$pindividualidcolumn" --p-metric="$pmetric"
+	#if str($itable) != 'None':
+	 --i-table=$itable
+	#end if
+
+	#if str($cmdconfig) != 'None':
+	 --cmd-config=$cmdconfig
+	#end if
+
+	#if str($preplicatehandling) != 'None':
+	 --p-replicate-handling=$preplicatehandling
+	#end if
+	 --o-first-differences=ofirstdifferences
+	#if str($pbaseline):
+	 --p-baseline="$pbaseline"
+	#end if
+	;
+	cp ofirstdifferences.qza $ofirstdifferences;
+	]]>
+	</command>
+	<inputs>
+		<repeat name="input_files_mmetadatafile" optional="False" title="--m-metadata-file">
+			<param label="--m-metadata-file: Metadata file or artifact viewable as metadata. This option may be supplied multiple times to merge metadata. Sample metadata file containing individual_id_column.  [required]" name="additional_input" type="data" format="tabular,qza,no_unzip.zip" />
+		</repeat>
+
+		<param label="--p-state-column: Metadata column containing state (e.g., Time) across which samples are paired. [required]" name="pstatecolumn" optional="False" type="text"/>
+		<param label="--p-individual-id-column: Metadata column containing IDs for individual subjects.  [required]" name="pindividualidcolumn" optional="False" type="text"/>
+
+		<param label="--p-metric: Numerical metadata or artifact column to test.  [required]" name="pmetric" optional="False" type="text"/>
+
+		<param label="--p-replicate-handling: Choose how replicate samples are handled. If
+                                  replicates are detected, 'error' causes
+                                  method to fail; 'drop'' will discard all
+                                  replicated samples; 'random' chooses one
+                                  representative at random from among
+                                  replicates.  [default: error]" name="preplicatehandling" optional="True" type="select">
+			<option selected="True" value="None">Selection is Optional</option>
+			<option value="error">error</option>
+			<option value="random">random</option>
+			<option value="drop">drop</option>
+		</param>
+
+		<param label="--p-baseline: A value listed in the state_column metadata column against which all other states should be compared. Toggles calculation of static differences instead of first differences (which are calculated if no value is given for baseline). If a 'baseline' value is provided, sample differences at each state are compared against the baseline state, instead of the previous state. Must be a value listed in the state_column. [optional]" name="pbaseline" optional="True" type="text"/>
+
+		<param format="qza,no_unzip.zip" label="--i-table: FeatureTable[RelativeFrequency] Feature table to optionally use for computing first differences.  [optional]" name="itable" optional="True" type="data"/>
+
+		<param label="--cmd-config: Use config file for command options" name="cmdconfig" optional="True" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="qza" label="${tool.name} on ${on_string}: first-differences.qza" name="ofirstdifferences"/>
+	</outputs>
+	<help>
+		<![CDATA[
+Compute first differences or difference from baseline between sequential states
+--------------------------------------------------------------------------------
+
+Calculates first differences in "metric" between sequential states for
+samples collected from individual subjects sampled repeatedly at two or
+more states. First differences can be performed on a metadata column
+(including artifacts that can be input as metadata) or a feature in a
+feature table. Outputs a data series of first differences for each
+individual subject at each sequential pair of states, labeled by the
+SampleID of the second state (e.g., paired differences between time 0 and
+time 1 would be labeled by the SampleIDs at time 1). This file can be used
+as input to linear mixed effects models or other longitudinal or diversity
+methods to compare changes in first differences across time or among groups
+of subjects. Also supports differences from baseline (or other static
+comparison state) by setting the "baseline" parameter.
+
+Parameters
+----------
+table : FeatureTable[RelativeFrequency], optional
+    Feature table to optionally use for computing first differences.
+metadata : Metadata
+    Sample metadata file containing individual_id_column.
+state_column : Str
+    Metadata column containing state (e.g., Time) across which samples are
+    paired.
+individual_id_column : Str
+    Metadata column containing IDs for individual subjects.
+metric : Str
+    Numerical metadata or artifact column to test.
+replicate_handling : Str % Choices({'drop', 'error', 'random'}), optional
+    Choose how replicate samples are handled. If replicates are detected,
+    "error" causes method to fail; "drop" will discard all replicated
+    samples; "random" chooses one representative at random from among
+    replicates.
+baseline : Float, optional
+    A value listed in the state_column metadata column against which all
+    other states should be compared. Toggles calculation of static
+    differences instead of first differences (which are calculated if no
+    value is given for baseline). If a "baseline" value is provided, sample
+    differences at each state are compared against the baseline state,
+    instead of the previous state. Must be a value listed in the
+    state_column.
+
+Returns
+-------
+first_differences : SampleData[FirstDifferences]
+    Series of first differences.
+		]]>
+	</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

@@ -1,0 +1,136 @@
+<collection>
+    <title>Mutations consequence-types</title>
+    <loader>
+        <plugin>tsv-loader</plugin>
+        <parameter>
+            <key>data</key>
+            <value>/results/consequence.tsv</value>
+        </parameter>
+        <parameter>
+            <key>NULL_VALUE</key>
+            <value>\N</value>
+        </parameter>
+    </loader>
+    <fields>
+        <field>
+            <label>gene</label>
+            <title>Gene</title>
+            <id>GENE_ID</id>
+            <type>string</type>
+        </field>
+        <field>
+            <label>transcript</label>
+            <title>Transcript</title>
+            <id>TRANSCRIPT_ID</id>
+            <type>string</type>
+        </field>
+        <field>
+            <label>sift</label>
+            <title>Sift</title>
+            <id>SIFT_SCORE</id>
+            <type>double</type>
+        </field>
+        <field>
+            <label>sift-trans</label>
+            <title>Sift transfic</title>
+            <id>SIFT_TRANSFIC</id>
+            <type>double</type>
+        </field>
+        <field>
+            <label>sift-trans-class</label>
+            <title>Sift transfic class</title>
+            <id>SIFT_TRANSFIC_CLASS</id>
+            <type>string</type>
+        </field>
+        <field>
+            <label>pph2</label>
+            <title>Pph2</title>
+            <id>PPH2_SCORE</id>
+            <type>double</type>
+        </field>
+        <field>
+            <label>pph2-trans</label>
+            <title>Pph2 transfic</title>
+            <id>PPH2_TRANSFIC</id>
+            <type>double</type>
+        </field>
+        <field>
+            <label>pph2-trans-class</label>
+            <title>Pph2 transfic class</title>
+            <id>PPH2_TRANSFIC_CLASS</id>
+            <type>string</type>
+        </field>
+        <field>
+            <label>ma</label>
+            <title>Ma</title>
+            <id>MA_SCORE</id>
+            <type>double</type>
+        </field>
+        <field>
+            <label>ma-trans</label>
+            <title>Ma transfic</title>
+            <id>MA_TRANSFIC</id>
+            <type>double</type>
+        </field>
+        <field>
+            <label>ma-trans-class</label>
+            <title>Ma transfic class</title>
+            <id>MA_TRANSFIC_CLASS</id>
+            <type>string</type>
+        </field>
+        <field>
+            <label>ct</label>
+            <title>Ct</title>
+            <id>CT</id>
+            <type>string</type>
+        </field>
+        <field>
+            <label>chr</label>
+            <title>Chromosome</title>
+            <id>CHR</id>
+            <type>string</type>
+        </field>
+        <field>
+            <label>start</label>
+            <title>start</title>
+            <id>START</id>
+            <type>integer</type>
+        </field>
+        <field>
+            <label>allele</label>
+            <title>Allele</title>
+            <id>ALLELE</id>
+            <type>string</type>
+        </field>
+        <field>
+            <label>protein</label>
+            <title>Protein</title>
+            <id>PROTEIN_ID</id>
+            <type>string</type>
+        </field>
+        <field>
+            <label>uniprot</label>
+            <title>Uniprot</title>
+            <id>UNIPROT_ID</id>
+            <type>string</type>
+        </field>
+        <field>
+            <label>protein-pos</label>
+            <title>Protein position</title>
+            <id>PROTEIN_POS</id>
+            <type>string</type>
+        </field>
+        <field>
+            <label>aa change</label>
+            <title>Aa change</title>
+            <id>AA_CHANGE</id>
+            <type>string</type>
+        </field>
+    </fields>
+    <links>
+        <link>
+            <collection>${genes}</collection>
+            <field>GENE_ID</field>
+        </link>
+    </links>
+</collection>

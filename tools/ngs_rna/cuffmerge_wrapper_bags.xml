@@ -1,0 +1,175 @@
+<tool id="cuffmerge_bags" name="Cuffmerge" version="CUFFLINKS: 2.1.1">
+    <!-- Wrapper supports Cuffmerge versions 1.3 and newer -->
+    <description>merge together several Cufflinks assemblies</description>
+    <requirements>
+        <requirement type="package">cufflinks</requirement>
+    </requirements>
+    <command interpreter="python">
+        cuffmerge_wrapper.py
+        
+            --num-threads=&quot;4&quot;
+            
+            ## Use annotation reference?
+            #if $annotation.use_ref_annotation == &quot;Yes&quot;:
+                -g $annotation.reference_annotation
+            #end if
+            
+            ## Use sequence data?
+            #if $seq_data.use_seq_data == &quot;Yes&quot;:
+	        -s
+                #if $seq_data.seq_source.index_source == &quot;history&quot;:
+                    --ref_file=$seq_data.seq_source.ref_file
+                #else:
+                    --ref_file=&quot;None&quot;
+                #end if
+                --dbkey=${first_input.metadata.dbkey} 
+                --index_dir=${GALAXY_DATA_INDEX_DIR}
+            #end if
+            
+            ## Outputs.
+            --merged-transcripts=${merged_transcripts}
+                        
+            ## Inputs.
+            #if str($input_source_cond.input_source) == &quot;file&quot;:
+              ${input_source_cond.first_input}
+              #for $input_file in $input_source_cond.input_files:
+                ${input_file.additional_input}
+              #end for
+            #else:
+              #import os, glob
+              #if os.path.exists(str($input_source_cond.input_file.extra_files_path)):
+                  #set $path = $input_source_cond.input_file.extra_files_path
+              #else:
+                  #set $fh = open(str($input_source_cond.input_file), &quot;r&quot;)
+                  #set $path = &quot;%s/data&quot; % ($fh.readline().rstrip(&quot;\n&quot;))
+              #end if
+              #set $files = glob.glob(&quot;%s/*/*.gtf&quot; % $path)
+              #set $number_of_files = len($files)
+              #if $number_of_files &gt; 0:
+                #set $inputs = &quot; &quot;.join($files)
+                $inputs
+              #else:
+                &quot;missing GTF files&quot;
+              #end if
+              #for $extra_input_file in $input_source_cond.input_bags:
+                #if os.path.exists(str($extra_input_file.additional_input_file.extra_files_path)):
+                  #set $path = $extra_input_file.additional_input_file.extra_files_path
+                #else:
+                  #set $fh = open(str($extra_input_file.additional_input_file), &quot;r&quot;)
+                  #set $path = &quot;%s/data&quot; % ($fh.readline().rstrip(&quot;\n&quot;))
+                #end if
+                #set $files = glob.glob(&quot;%s/*/*.gtf&quot; % $path)
+                #set $number_of_files = len($files)
+                #if $number_of_files &gt; 0:
+                  #set $inputs = &quot; &quot;.join($files)
+                  $inputs
+                #end if
+              #end for
+            #end if
+    </command>
+    <inputs>
+        <conditional name="input_source_cond">
+          <param label="Input Source" name="input_source" type="select">
+            <option selected="True" value="file">History</option>
+            <option value="bag">Dataset Bag</option>
+          </param>
+          <when value="file">
+            <param format="gtf" help="" label="GTF file produced by Cufflinks" name="first_input" type="data"/>
+            <repeat name="input_files" title="Additional GTF Input Files">
+              <param format="gtf" help="" label="GTF file produced by Cufflinks" name="additional_input" type="data"/>
+            </repeat>
+          </when>
+          <when value="bag">
+            <param format="txt" label="Input directory of samples" name="input_file" type="data"/>
+            <repeat name="input_bags" title="Additional Input Bags">
+              <param format="txt" label="Input directory of samples" name="additional_input_file" type="data"/>
+            </repeat>
+          </when>
+        </conditional>
+
+        <conditional name="annotation">
+            <param label="Use Reference Annotation" name="use_ref_annotation" type="select">
+                <option value="No">No</option>
+                <option value="Yes">Yes</option>
+            </param>
+            <when value="Yes">
+                <param format="gff3,gtf" help="Requires an annotation file in GFF3 or GTF format." label="Reference Annotation" name="reference_annotation" type="data"/>    
+            </when>
+            <when value="No">
+            </when>
+        </conditional>
+        <conditional name="seq_data">
+            <param help="Use sequence data for some optional classification functions, including the addition of the p_id attribute required by Cuffdiff." label="Use Sequence Data" name="use_seq_data" type="select">
+                <option value="No">No</option>
+                <option value="Yes">Yes</option>
+            </param>
+            <when value="No"/>
+            <when value="Yes">
+                <conditional name="seq_source">
+                  <param label="Choose the source for the reference list" name="index_source" type="select">
+                    <option value="cached">Locally cached</option>
+                    <option value="history">History</option>
+                  </param>
+                  <when value="cached"/>
+                  <when value="history">
+                      <param format="fasta" label="Using reference file" name="ref_file" type="data"/>
+                  </when>
+                </conditional>
+            </when>
+        </conditional>
+    </inputs>
+
+    <outputs>
+        <data format="gtf" label="${tool.name} on ${on_string}: merged transcripts" name="merged_transcripts"/>
+    </outputs>
+
+    <tests>
+        <!-- 
+            cuffmerge -g cuffcompare_in3.gtf cuffcompare_in1.gtf cuffcompare_in2.gtf
+        -->
+        <test>
+            <param ftype="gtf" name="first_input" value="cuffcompare_in1.gtf"/>
+            <param ftype="gtf" name="additional_input" value="cuffcompare_in2.gtf"/>
+            <param name="use_ref_annotation" value="Yes"/>
+            <param ftype="gtf" name="reference_annotation" value="cuffcompare_in3.gtf"/>
+            <param name="use_seq_data" value="No"/>
+			<!-- oId assignment differ/are non-deterministic -->
+            <output file="cuffmerge_out1.gtf" lines_diff="50" name="merged_transcripts"/>
+        </test>
+    </tests>
+
+    <help>
+**Cuffmerge Overview**
+
+Cuffmerge is part of Cufflinks_. Please cite: Trapnell C, Williams BA, Pertea G, Mortazavi AM, Kwan G, van Baren MJ, Salzberg SL, Wold B, Pachter L. Transcript assembly and abundance estimation from RNA-Seq reveals thousands of new transcripts and switching among isoforms. Nature Biotechnology doi:10.1038/nbt.1621
+
+.. _Cufflinks: http://cufflinks.cbcb.umd.edu/
+        
+------
+
+**Know what you are doing**
+
+.. class:: warningmark
+
+There is no such thing (yet) as an automated gearshift in expression analysis. It is all like stick-shift driving in San Francisco. In other words, running this tool with default parameters will probably not give you meaningful results. A way to deal with this is to **understand** the parameters by carefully reading the `documentation`__ and experimenting. Fortunately, Galaxy makes experimenting easy.
+
+.. __: http://cufflinks.cbcb.umd.edu/manual.html#cuffmerge
+
+------
+
+**Input format**
+
+Cuffmerge takes Cufflinks' GTF output as input, and optionally can take a &quot;reference&quot; annotation (such as from Ensembl_)
+
+.. _Ensembl: http://www.ensembl.org 
+
+------
+
+**Outputs**
+
+Cuffmerge produces the following output files:
+
+Merged transcripts file:
+
+Cuffmerge produces a GTF file that contains an assembly that merges together the input assemblies.    </help>
+</tool>

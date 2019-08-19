@@ -1,0 +1,109 @@
+<tool id="EMORY_globus_dnaComplete_jointGenotyping_optimized" name="EMORY: DNA Whole Genome Joint Genotyping Optimized Workflow" version="GenomeAnalysisTK-3.4-46; JAVA: jre1.7.0_51" >
+  <description>Joint Genotyping with variant recalibration </description>
+  <action module="galaxy_ext.globus.tools.actions.globus" class="GlobusTransferOptimizedWorkflow"/>
+  <parallelism method="basic"/>
+  <requirements>
+    <requirement type="package">gatk3</requirement>
+    <requirement type="package">pymodules</requirement>
+    <requirement type="package">java</requirement>
+  </requirements>
+  <command interpreter="python">
+    EMORY_dnaComplete_joint_genotyping_optimized_04202016.py 
+      ##use precomputed indexes
+      -u $username
+      -k $userkey
+      -c $usercert
+      --goauth-token "$goauth"
+      --destination-ep=$data_source.to_endpoint
+      --destination-path="$data_source.to_path"
+
+    #if $data_source.location == "local":
+        --input-path $data_source.joint_files.extra_files_path 
+        --source-ep="$data_source.from_endpoint"
+        --source-path="$data_source.from_path"
+    #else:
+      --source-ep="$data_source.from_endpoint"
+      --source-path="$data_source.from_path"
+      --type $path_type
+      --out-transfer-log $out_file1
+    #end if
+
+      ## GATK reference files
+      --gatk-ref "${gatk_ref_file.fields.path}"
+
+      ## output vcf file
+      --output-vcf $output_vcf
+      --output-log $output_log
+      &gt;  $output_log
+  </command>
+  <inputs>
+     <param name="goauth" type="hidden" size="100" label="Globus Auth Token">
+      <sanitizer>
+        <valid>
+          <add value="|"/>
+        </valid>
+      </sanitizer>
+    </param>
+    <param name="username" type="hidden" size="100" label="Globus Username"/>
+    <param name="userkey" type="hidden" size="100" label="Globus User Key"/>
+    <param name="usercert" type="hidden" size="100" label="Globus User Certificate"/>
+    <param name="globuscert" type="hidden" size="100" label="Globus Certificate"/>
+    <param name="path_type" type="hidden" value="receive" size="100" label="Is this a directory or a file path"/>
+    <conditional name="data_source">
+      <param name="location" label="Data location" type="select" help="">
+        <option selected="True" value="local">History</option>
+        <option value="remote">Remote Endpoint</option>
+      </param>
+      <when value="remote">
+        <param name="from_endpoint" type="gsrc_endpoint" label="Source Endpoint">
+          <sanitizer sanitize="False"/>
+        </param>
+        <param name="from_path" type="gsrc_path" size="100" label="Source Path">
+          <sanitizer sanitize="False"/>
+        </param>
+        <param name="get_data_flag" type="hidden" size="100" label="Send or Receive data"/>
+        <param name="to_endpoint" type="hidden" size="100" label="Destination Endpoint">
+          <sanitizer sanitize="False"/>
+        </param>
+        <param name="to_path" type="hidden" size="100" label="Destination Path">
+          <sanitizer sanitize="False"/>
+        </param>
+      </when>
+      <when value="local">
+        <param name="joint_files" type="data" format="txt" label="Select Data object containing Joint files" />
+        <param name="from_endpoint" type="hidden" label="Source Endpoint" value="ep#none">
+          <sanitizer sanitize="False"/>
+        </param>
+        <param name="from_path" type="hidden" size="100" label="Source Path" value="none">
+          <sanitizer sanitize="False"/>
+        </param>
+        <param name="to_endpoint" type="hidden" size="100" label="Destination Endpoint" value="nothing">
+          <sanitizer sanitize="False"/>
+        </param>
+        <param name="to_path" type="hidden" size="100" label="Destination Path" value="nothing">
+          <sanitizer sanitize="False"/>
+        </param>
+      </when>
+    </conditional>
+    <param help="" label="GATK reference genome" name="gatk_ref_file" type="select">
+      <options from_data_table="gatk3_picard_indexes"/>
+    </param>
+    <param label="Just the hidden name" name="hidden_name" type="hidden" value="OUTPUT_NAME"/>
+  </inputs>
+  <outputs>
+    <data format="txt" label="${tool.name} on GlobusTransfer (transfer log)" name="out_file1" >
+      <filter>(data_source['location'] == 'remote')</filter>
+    </data>
+    <data format="vcf" label="${tool.name} on ${$hidden_name}.vcf" name="output_vcf"/>
+`   <data format="txt" label="${tool.name} on ${$hidden_name}.log" name="output_log"/>
+  </outputs>
+  <tests>
+    <test>
+    </test>
+  </tests> 
+  <help>
+
+**What it does**
+
+  </help>
+</tool>

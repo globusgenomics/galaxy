@@ -1,0 +1,59 @@
+<tool id="cnvkit_target_prep" name="cnvkit target bed file prep" version="CNVKIT: v0.7.5">
+  <description> Prepare a BED file of targeted (baited) regions for use with cnvkit.  </description>
+  <requirements>
+    <requirement type="package">pymodules</requirement>
+  </requirements>
+
+  <command interpreter="python">
+  cnvkit.py target "$targetbed"  
+  
+  #if $annotation.file  == "indexed":
+      --annotate
+      ${annotation.indices.fields.path}    
+  #else:
+      --annotate
+     ${annotation.ownFile}
+  #end if
+  --split -o "$out_file"  <!--ask alex how to replace refFlat.txt-->
+  </command>
+
+ <stdio>
+    <exit_code range="1:"  level="fatal" description="Error in job execution" />
+  </stdio>
+  
+  <inputs>
+      <param format="bed" name="targetbed" type="data" label="Target regions (bed)"/>
+  
+     <conditional name ="annotation">
+       <param label="Does your target BED file include gene annotation? If not, please try here" name="file" type="select">
+          <option value="indexed">Use a built-in gene annotation</option>
+          <option value="history">Use one from the history</option>
+       </param>
+          <when value="indexed">
+            <param label="Select a gene annotation file" name="indices" type="select">
+              <options from_data_table="gene_annotation"></options>
+            </param>
+          </when>
+          
+          <when value="history">
+               <param format="tabular" label="Select a gene annotation file from history" name="ownFile" type="data"/>
+          </when>
+      </conditional>
+  </inputs>
+  <outputs>
+    <data format="bed" name="out_file" label="${tool.name} on ${on_string}: BED file of targeted (baited) regions "/>
+  </outputs>
+
+  <tests>
+    <test>
+      <param name="targetbed" value="test.bed"/>
+      <param name="refFlat" value="refFlat.txt"/>
+      <output name="out_file" file="my_targets.bed"/>
+    </test>
+  </tests>
+
+  <help>
+This tool runs segmentation on a CNVkit CNR file.
+  </help>
+
+</tool>

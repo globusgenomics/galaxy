@@ -1,0 +1,45 @@
+<tool id="forestSV_swift" name="forestSV">
+    <description>Structural variant detection using Swift for parallelization</description>
+        <requirements>
+            <requirement type="package">pymodules</requirement>
+            <requirement type="package">swift</requirement>
+            <requirement type="package">R</requirement>
+        </requirements>
+        <command interpreter="python">forestSV_wrapper.py
+            --inputHtml $inputHtml
+            --output-bed-html $outputBedHtmlFile
+            --output-bed-path $outputBedHtmlFile.extra_files_path
+            --output-calls-rdata-html $outputCallsRdataHtmlFile
+            --output-calls-rdata-path $outputCallsRdataHtmlFile.extra_files_path
+            --output-scores-rdata-html $outputScoresRdataHtmlFile
+            --output-scores-rdata-path $outputScoresRdataHtmlFile.extra_files_path
+            --db_key $db_key
+            --output-bed-all $outputBedCat
+        </command>
+
+        <inputs>
+            <param type="select" name="db_key" label="Human Genome Version" >
+                <option value="hg18">hg18</option>
+                <option value="hg19" selected="true">hg19</option>
+            </param>
+            <param name="inputHtml" type="data" format="html" label="HTML file containing dataset of chromosomal BAM files." help="ForestSV will be submitted for each chromosome. This method will be submitted using SWIFT for parallelization" />
+        </inputs>
+
+        <outputs>
+            <data format="bed" name="outputBedCat" label="${tool.name} on ${on_string}: Calls: BED file for all Chromosomes" />
+            <data format="html" name="outputBedHtmlFile" label="${tool.name} on ${on_string}: Calls: BED Dataset for all Chromosomal BAMs" />
+            <data format="html" name="outputCallsRdataHtmlFile" label="${tool.name} on ${on_string}: Calls: Rdata Dataset for all Chromosomal BAMs" />
+            <data format="html" name="outputScoresRdataHtmlFile" label="${tool.name} on ${on_string}: Scores: Rdata Dataset for all Chromosomal BAMs" />
+        </outputs>
+
+<help>
+
+**What it does**
+
+Runs forestSV to detect structural variants given BAM input files. 
+
+You can submit a set of BAM files which come from a whole Genome BAM file. This assumes that you have split your BAM files using the Split BAM per Chromosome tool.
+The tool will be run in parallel if a set of BAM files is introduced using SWIFT.
+
+</help>
+</tool>

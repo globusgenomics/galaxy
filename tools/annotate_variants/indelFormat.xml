@@ -1,0 +1,17 @@
+<tool id="indelFormat" name="Format and annotate indels" version="BEDTOOLS: 2.17.0">
+	<description>Annotates a list of indels using BedTool's intersect bed.  The output of intersect bed is printed to a file.  The output is also formatted and printed to a tab-separated file.</description>
+<requirements>
+    <requirement type="package">bedtools</requirement>
+</requirements>
+	<command interpreter="perl">indelFormat.pl --input-indels $input_indels --bedintersect-output $bedintersect_output --annotated-indels $annotated_indels --exons $exons</command>
+	<inputs>
+		<param format="bed" help="List of indels in exome" label="Indel bed file" name="input_indels" optional="false" type="data"/>
+		<param format="bed" help="List of exons" label="Bed file of exons" name="exons" optional="false" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="bed" label="bedintersect of ${input_indels.name}" name="bedintersect_output" type="data"/>
+		<data format="tabular" label="Annotated list of indels in exome" name="annotated_indels" type="data"/>
+	</outputs>
+	<help>
+	</help>
+</tool>

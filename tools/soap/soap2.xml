@@ -1,0 +1,156 @@
+<tool id="soap2" name="soap2" version="BGISOAP: default">
+    <description>- improved version of soap1</description>
+    <requirements>
+        <requirement type="package">bgisoap</requirement>
+    </requirements>
+    <command interpreter="python">
+soap2.py
+
+## Reference source
+--fileSource=$genomeSource.refGenomeSource
+#if $genomeSource.refGenomeSource == &quot;history&quot;:
+    ##build index on the fly
+    --ref=&quot;${genomeSource.ownFile}&quot;
+    --dbkey=$dbkey
+#else:
+    ##use precomputed indexes
+    --ref=&quot;${genomeSource.indices.fields.path}&quot;
+    --do_not_build_index
+    #end if
+
+## Output
+--alignment_out=$alignment_out
+--unpaired_alignment_out=$unpaired_alignment_out
+
+## Check if doing single-end or paired-end mapping
+--analysis_settings_type=$analysis_settings.analysis_type
+
+#if $analysis_settings.analysis_type == &quot;single&quot;
+    --forward_set=$analysis_settings.forward_set
+#else
+    ## Inputs
+    --forward_set=$analysis_settings.forward_set
+    --reverse_set=$analysis_settings.reverse_set
+    --min_insert_size=$analysis_settings.min_insert_size
+    --max_insert_size=$analysis_settings.max_insert_size
+#end if
+
+## Check if using default or custom parameters
+--default_full_settings_type=$default_full_settings.settings_type
+
+#if $default_full_settings.settings_type == &quot;full&quot;
+    --filter=$default_full_settings.filter
+    --read_id=$default_full_settings.read_id
+    --report_repeats=$default_full_settings.report_repeats
+    --long_insert_align=$default_full_settings.long_insert_align
+    --high_error_rate=$default_full_settings.high_error_rate
+    --allow_all_mismatches=$default_full_settings.allow_all_mismatches
+    --match_mode=$default_full_settings.match_mode
+    --num_threads=$default_full_settings.num_threads
+#end if
+    </command>
+    <inputs>
+        <conditional name="genomeSource">
+            <param label="Select a reference genome from your history or use a built-in index" name="refGenomeSource" type="select">
+                <option value="indexed">Use built-in index</option>
+                <option value="history">Use one from history</option>
+            </param>
+            <when value="indexed">
+                <param label="Select a reference genome" name="indices" type="select">
+                    <options from_data_table="2bwtbuilder_indexes">
+                        <!--<filter type="sort_by" column="2" />-->
+                        <validator message="No indexes are available" type="no_options"/>
+                    </options>
+                </param>
+            </when>
+            <when value="history">
+                <param format="fasta" label="Select a reference from history" metadata_name="dbkey" name="ownFile" type="data"/>
+            </when>
+        </conditional>
+        <conditional name="analysis_settings">
+            <param label="What type of mapping do you want to perform?" name="analysis_type" type="select">
+                <option value="single">Single</option>
+                <option value="paired">Paired</option>
+            </param>
+            <when value="single">
+                <param format="input" label="FASTA file" name="forward_set" type="data">
+                </param>
+            </when>
+            <when value="paired">
+                <param format="input" label="Forward FASTA file" name="forward_set" type="data">
+                </param>
+                <param format="input" label="Reverse FASTA file" name="reverse_set" type="data">
+                </param>
+                <param label="Minimal insert size for alignments" name="min_insert_size" type="integer" value="400">
+                </param>
+                <param label="Maximum insert size for alignments" name="max_insert_size" type="integer" value="600">
+                </param>
+            </when>
+        </conditional>
+        <conditional name="default_full_settings">
+            <param help="Default settings is suitable for most mapping needs. If you want full control, use Full parameter list" label="SOAP settings to use" name="settings_type" type="select">
+                <option value="default">Default</option>
+                <option value="full">Full parameter list</option>
+            </param>
+            <when value="default"/>
+            <when value="full">
+                <param label="Filter low-quality reads containing &gt;n Ns" name="filter" type="integer" value="5"/>
+                <param label="Read ID in output file" name="read_id" type="text" value="name"/>
+                <param label="Report repeat hits?" name="report_repeats" type="select" value="0">
+                    <option value="0">None</option>
+                    <option value="1">Random</option>
+                    <option value="2">All</option>
+                </param>
+                <!-- New for SOAP2 -->
+                <!-- Need to ask Ruibang for details of this parameter. Not clear from SOAP2 documentation. -->
+                <param name="long_insert_align" type="integer" value="0"/>
+                <param label="Configure no. of basepairs to align against due to high nos. of errors on a read" name="high_error_rate" type="integer" value="256"/>
+                <param label="Allow all mismatches in a single read?" name="allow_all_mismatches" type="integer" value="2"/>
+                <param name="match_mode" type="select" value="4">
+                    <option value="0">Exact match only</option>
+                    <option value="1">One mismatch only</option>
+                    <option value="2">Two mismatches only</option>
+                    <option value="3">Gap</option>
+                    <option value="4">Find best hits</option>
+                </param>
+                <param label="Multi-threads" name="num_threads" type="integer" value="1"/>
+            </when>
+        </conditional>
+    </inputs>
+    <outputs>
+        <data format="output" label="soap2: An alignment of paired reads on a reference sequence" name="alignment_out" type="data">
+        </data>
+        <data format="output" label="soap2: Unpaired alignment hits" name="unpaired_alignment_out" type="data">
+            <filter>analysis_settings.analysis_type == &quot;paired&quot;</filter>
+        </data>
+    </outputs>
+  <tests>
+      <test>
+          <param ftype="fasta" name="forward_set" value="bgisoap/soap1/test_PE1.fa"/>
+          <param ftype="fasta" name="reverse_set" value="bgisoap/soap1/test_PE2.fa"/>
+          <param ftype="fasta" name="ref_seq" value="bgisoap/soap1/ref.fa"/>
+          <param name="min_insert_size" value="100"/>
+          <param name="max_insert_size" value="150"/>
+          <output file="bgisoap/soap1/out.sop" name="alignment_out"/>
+          <output file="bgisoap/soap1/single.sop" name="unpaired_alignment_out"/>
+      </test>
+  </tests>
+<help>
+
+**What it does**
+
+SOAP2 (also known as SOAPaligner) is a member of the SOAP (Short Oligonucleotide Analysis Package). This second version of the SOAP tool for short oligonucleotide alignment features fast, accurate alignment for huge amounts of short reads generated by the Illumina/Solexa Genome Analyzer.
+
+Compared to version 1 of SOAP, SOAP2 is one order of magnitude faster so that, for example, it requires only 2 minutes to align one million single-end reads onto the human reference genome. Another improvement of SOAP2 is that it now supports a wide range of read lengths.
+
+SOAP2 made improvements in time and space efficiency by a re-implementing the basic data structures and algorithms used in SOAP1.The core algorithms and the indexing data structures (2way-BWT) were developed by T.W. Lam, Alan Tam, Simon Wong, Edward Wu and S.M. Yiu of the Algorithms Research group at the Department of Computer Science, the University of Hong Kong.
+
+
+**More information**
+
+For test data and more detailed information, click here_.
+
+.. _here: http://soap.genomics.org.cn/soapaligner.html
+
+</help>
+</tool>

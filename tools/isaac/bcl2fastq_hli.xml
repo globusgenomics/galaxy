@@ -1,0 +1,82 @@
+<tool id="bcl2fastq_hli" name="BCL2Fastq - Special" version="ILLUMINA: v2.15.0.4">
+    <action class="HistoryManagement" module="galaxy_ext.globus.tools.actions.globus"/>
+    <description>Convert BCL to fastq</description>
+
+    <requirements>
+        <requirement type="package">illumina</requirement>
+        <requirement type="package">pymodules</requirement>
+    </requirements>
+
+    <command interpreter="python">
+        bcl2fastq.py
+        #if $input_format.input_format_selector == &quot;tar&quot;:
+            --input-tar $input_format.input_tar_file
+            --input-name $input_format.input_tar_file.name
+        #else:
+            --input-dir $input_format.input_illumina_file.extra_files_path
+            --input-name $input_format.input_illumina_file.name
+        #end if
+       #if $indexing.selector == &quot;no&quot;:
+         --no-index
+       #else: 
+         --samplesheet $indexing.samplesheet
+       #end if
+        -p &quot;$ignore_missing_bcls&quot; -p &quot;$ignore_missing_filter&quot; -p &quot;$ignore_missing_locs&quot;
+        --fastq-out $out_fastqfiles --fastq-out-dir $out_fastqfiles.extra_files_path
+        --reports-out $out_reports --reports-out-dir $out_reports.extra_files_path
+        --stats-out $out_stats --stats-out-dir $out_stats.extra_files_path
+        --interop-out $out_interop --interop-out-dir $out_interop.extra_files_path
+        #if $add_to_library.add_to_library_selector == &quot;yes&quot;:
+            --userkey $userkey
+            --url &quot;$url&quot;
+        #end if
+    </command>
+    <inputs>
+        <conditional name="input_format">
+            <param label="Illumina file format" name="input_format_selector" type="select">
+                <option selected="True" value="tar">Tarred Illumina file</option>
+                <option value="untarred">Illumina Directory Structure</option>
+            </param>
+            <when value="tar">
+                <param format="data" help="This should be an Illumina directory structure which has been transferred and is tarred" label="Input Illumina Tar file" name="input_tar_file" type="data"/>
+            </when>
+            <when value="untarred">
+                <param format="txt" help="This should be an Illumina directory structure which has been untarred" label="Input Illumina Untarred file" name="input_illumina_file" type="data"/>
+            </when>
+        </conditional>
+        <conditional name="indexing">
+          <param label="Specify Indexes via SampleSheet" name="selector" type="select">
+            <option selected="True" value="yes">Provide SampleSheet</option>
+            <option value="no">no-indexing</option>
+          </param>
+          <when value="yes">
+            <param format="txt,tabular,csv" help="If performing demultiplexing user will have to provide a properly formatted SampleSheet.csv file" label="SampleSheet file" name="samplesheet" type="data"/>
+          </when>
+          <when value="no"/>
+        </conditional>
+        <!--<param name="minimum_trimmed_read_length" type="integer" label="Minimum read length after adapter trimming" value="32" help="Default is 32" />-->
+        <param falsevalue="" help="" label="Ignore missing bcls" name="ignore_missing_bcls" selected="True" truevalue="--ignore-missing-bcls" type="boolean"/>
+        <param falsevalue="" help="" label="Ignore missing filter" name="ignore_missing_filter" selected="False" truevalue="--ignore-missing-filter" type="boolean"/>
+        <param falsevalue="" help="" label="Ignore missing locs" name="ignore_missing_locs" selected="False" truevalue="--ignore-missing-locs" type="boolean"/>
+        <conditional name="add_to_library">
+            <param label="Add Outputs to Shared Library" name="add_to_library_selector" type="select">
+                <option value="yes">Yes</option>
+                <option selected="True" value="no">No</option>
+            </param>
+            <when value="no"/>
+            <when value="yes">
+                <param label="URL" name="url" type="hidden"/>
+                <param label="Key" name="userkey" size="100" type="hidden"/>
+            </when>
+        </conditional>
+    </inputs>
+    <outputs>
+        <data format="txt" label="BCL2Fastq Fastq file on ${on_string}" name="out_fastqfiles"/>
+        <data format="txt" label="BCL2Fastq Reports file on ${on_string}" name="out_reports"/>
+        <data format="txt" label="BCL2Fastq Stats file on ${on_string}" name="out_stats"/>
+        <data format="txt" label="BCL2Fastq Interop file on ${on_string}" name="out_interop"/>
+    </outputs>
+
+    <help>
+    </help>
+</tool>

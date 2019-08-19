@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<tool_dependency>
+    <package name="somatic-sniper" version="unstable">
+        <install version="1.0">
+            <actions>
+            
+            	<action type="download_by_url">http://downloads.sourceforge.net/project/samtools/samtools/0.1.6/samtools-0.1.6.tar.bz2</action>
+                <action type="shell_command">sed -i.bak 's/-lcurses/-lncurses/' Makefile</action>
+                <action type="shell_command">sed -i.bak 's/-lz -L. -lbam/-lbam -lz -L./' Makefile</action>
+                <action type="shell_command">make</action>
+                <action type="move_directory_files">
+                    <source_directory>.</source_directory>
+                    <destination_directory>$INSTALL_DIR/bin/samtools</destination_directory>
+                </action>              
+                
+                <action type="download_file">https://github.com/genome/somatic-sniper/archive/master.zip</action>
+                <action type="download_file">https://github.com/genome/build-common/tarball/master</action>
+                <action type="shell_command">unzip master.zip</action>	
+		<action type="shell_command">tar -xzvf master</action>
+		<action type="shell_command">rm -rf  somatic-sniper-master/build-common/</action>
+		<action type="shell_command">mv genome-build-common-077bd57/ somatic-sniper-master/build-common/</action>		
+                <action type="shell_command">cmake -D Samtools_INCLUDE_DIR:PATH=$INSTALL_DIR/bin/samtools somatic-sniper-master/ &amp;&amp; make</action>
+                <action type="move_directory_files">
+                    <source_directory>bin</source_directory>
+                    <destination_directory>$INSTALL_DIR/bin</destination_directory>
+                </action> 
+                <action type="set_environment">
+                    <environment_variable name="PATH" action="prepend_to">$INSTALL_DIR/bin</environment_variable>
+                </action>
+            </actions>
+        </install>
+        <readme>
+        	Somatic-sniper compiled version is unstable, for stable version use debian package system apt-get, this install requires cmake and zlib (for samtools)
+        </readme>
+    </package>
+    
+    
+</tool_dependency>

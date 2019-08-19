@@ -1,0 +1,425 @@
+<tool id="soapdenovo2" name="SOAPdenovo2" version="BGISOAP: default">
+    <description>- perform de novo genome assembly with optimized k-mer determination</description>
+    <requirements>
+        <requirement type="package">bgisoap</requirement>
+    </requirements>
+    <command interpreter="python">
+        soapdenovo2.py
+
+        ## Reference source
+        --file_source=$config_source.config_source_select
+        #if $config_source.config_source_select == &quot;history&quot;:
+            ##Select configuration from history
+            --configuration=$config_source.own_file
+        #else:
+            ##Create new config file
+            ## Parameters required in config file
+            ## Maximum read length
+            --max_read_length=$config_source.max_read_length
+
+            #for $i in $config_source.libraries
+                ##[LIB]
+                ## Average insert size
+                --avg_ins=$i.avg_ins
+                ## Reverse sequence?
+                --reverse_seq=$i.reverse_seq
+                ## Read operations
+                --asm_flags=$i.asm_flags
+                ## Use only first 100 bps of each read
+                --rd_len_cutoff=$i.rd_len_cutoff
+                ## Rank
+                --rank=$i.rank
+                ## The cutoff of a pair number for a reliable connection (at least 3 for short insert size)
+                --pair_num_cutoff=$i.pair_num_cutoff
+                ## Minimum aligned length to contigs for a reliable read location (at least 32 for short insert size)
+                --map_len=$i.map_len
+
+                ## Check if using single or paired reads
+                --type_of_data=$i.data_type.single_paired
+                #if $i.data_type.single_paired == &quot;single&quot;
+                    --format_of_data=$i.data_type.data_format.fastq_fasta
+                    #if $i.data_type.data_format.fastq_fasta == &quot;fastq&quot;
+                        --single_fastq_input1=$i.data_type.data_format.input1
+                    #else if $i.data_type.data_format.fastq_fasta == &quot;fasta&quot;
+                        --single_fasta_input1=$i.data_type.data_format.input1
+                    #else
+                        --single_bam_input1=$i.data_type.data_format.input1
+                    #end if
+                #else
+                    --format_of_data=$i.data_type.data_format.fastq_fasta
+                    #if $i.data_type.data_format.fastq_fasta == &quot;fastq&quot;
+                        --paired_fastq_input1=$i.data_type.data_format.input1
+                        --paired_fastq_input2=$i.data_type.data_format.input2
+                    #else if $i.data_type.data_format.fastq_fasta == &quot;fasta&quot;
+                        --paired_fasta_input1=$i.data_type.data_format.input1
+                        --paired_fasta_input2=$i.data_type.data_format.input2
+                    #else
+                        --paired_bam_input1=$i.data_type.data_format.input1
+                        --paired_bam_input2=$i.data_type.data_format.input2
+                    #end if
+                #end if
+            #end for
+        #end if
+
+        ## Check if using default or custom parameters
+        --default_full_settings_type=$default_full_settings.settings_type
+        #if $default_full_settings.settings_type == &quot;full&quot;
+            --kmer_size=$default_full_settings.kmer_size
+            --ncpu=$default_full_settings.ncpu
+            --init_memory_assumption=$default_full_settings.init_memory_assumption
+            --kmer_freq_cutoff=$default_full_settings.kmer_freq_cutoff
+            --resolve_repeats=$default_full_settings.resolve_repeats
+            --edge_cov_cutoff=$default_full_settings.edge_cov_cutoff
+            --merge_level=$default_full_settings.merge_level
+            --max_k=$default_full_settings.max_k
+            --weight=$default_full_settings.weight
+            ##--keep_avail_read=$default_full_settings.keep_avail_read
+            --merge_clean_bubble=$default_full_settings.merge_clean_bubble
+            ##--output_gap_related_reads=$default_full_settings.output_gap_related_reads
+            --kmer_r2c=$default_full_settings.kmer_r2c
+            --fill_gaps=$default_full_settings.fill_gaps
+            --unmask_contigs=$default_full_settings.unmask_contigs
+            --keep_contigs_connected=$default_full_settings.keep_contigs_connected
+            --gap_len_diff=$default_full_settings.gap_len_diff
+            --min_contig_len=$default_full_settings.min_contig_len
+            --min_contig_cvg=$default_full_settings.min_contig_cvg
+            --max_contig_cvg=$default_full_settings.max_contig_cvg
+            --insert_size_upper_bound=$default_full_settings.insert_size_upper_bound
+            --bubble_coverage=$default_full_settings.bubble_coverage
+            --genome_size=$default_full_settings.genome_size
+            --ass_visual=$default_full_settings.ass_visual
+        #end if
+
+        ## Output files
+        --contig=$contig
+        --scafseq=$scafseq
+
+    </command>
+    <inputs>
+        <conditional name="config_source">
+        <param label="Select a configuration file from history or create a new one?" name="config_source_select" type="select">
+            <option value="history">Use one from history</option>
+            <option value="create">Create new configuration file</option>
+        </param>
+        <when value="history">
+            <param label="Select configuration file from history" metadata_name="dbkey" name="own_file" type="data"/>
+        </when>
+        <when value="create">
+            <param format="input" label="Maximum read length" name="max_read_length" type="integer" value="90"/>
+            <repeat min="1" name="libraries" title="libraries">
+                <!-- [LIB] -->
+                <param label="Average insert size" name="avg_ins" type="integer" value="200"/>
+                <param label="Reverse sequence?" name="reverse_seq" type="select" value="0">
+                    <option value="0">forward-reverse</option>
+                    <option value="1">reverse-forward</option>
+                </param>
+                <param label="Which operations should the reads be used for?" name="asm_flags" type="select" value="3">
+                    <option value="3">For contig and scaffold assembly</option>
+                    <option value="1">For only contig assembly</option>
+                    <option value="2">For only scaffold assembly</option>
+                </param>
+                <param label="Input the length of base pairs to use from reads" name="rd_len_cutoff" type="integer" value="100"/>
+                <param label="Which order are the reads used while scaffolding" name="rank" type="integer" value="1"/>
+                <param label="Pair number cutoff for a reliable connection" name="pair_num_cutoff" type="integer" value="3"/>
+                <param label="Length of contig that has to be aligned for a reliable read location" name="map_len" type="integer" value="32"/>
+                <!-- Actual sequence data - can be single or paired reads -->
+                <conditional name="data_type">
+                    <param label="What type of data are you using?" name="single_paired" type="select">
+                        <option value="single">Single</option>
+                        <option value="paired">Paired</option>
+                    </param>
+                    <when value="single">
+                        <conditional name="data_format">
+                            <param label="What type of data are you using?" name="fastq_fasta" type="select">
+                                <option value="fastq">FASTQ</option>
+                                <option value="fasta">FASTA</option>
+                                <option value="bam">BAM</option>
+                            </param>
+                            <when value="fastq">
+                                <param format="input" label="Forward FASTQ file" name="input1" type="data">
+                                </param>
+                            </when>
+                            <when value="fasta">
+                                <param format="input" label="Forward FASTA file" name="input1" type="data">
+                                </param>
+                            </when>
+                            <when value="bam">
+                                <param format="input" label="Forward BAM file" name="input1" type="data">
+                                </param>
+                            </when>
+                        </conditional>
+                    </when>
+                    <when value="paired">
+                        <conditional name="data_format">
+                            <param label="What is the format of your sequence data?" name="fastq_fasta" type="select">
+                                <option value="fastq">FASTQ</option>
+                                <option value="fasta">FASTA</option>
+                                <option value="bam">BAM</option>
+                            </param>
+                            <when value="fastq">
+                                <param format="input" label="Forward FASTQ file" name="input1" type="data">
+                                </param>
+                                <param format="input" label="Reverse FASTQ file" name="input2" type="data">
+                                </param>
+                            </when>
+                            <when value="fasta">
+                                <param format="input" label="Forward FASTA file" name="input1" type="data">
+                                </param>
+                                <param format="input" label="Reverse FASTA file" name="input2" type="data">
+                                </param>
+                            </when>
+                            <when value="bam">
+                                <param format="input" label="Forward BAM file" name="input1" type="data">
+                                </param>
+                                <param format="input" label="Reverse BAM file" name="input2" type="data">
+                                </param>
+                            </when>
+                        </conditional>
+                    </when>
+                </conditional>
+            </repeat>
+        </when>
+        </conditional>
+        <!--Other parameters -->
+        <conditional name="default_full_settings">
+        <param help="Default settings is suitable for most mapping needs. If you want full control, use Full parameter list" label="SOAP settings to use" name="settings_type" type="select">
+            <option value="default">Default</option>
+            <option value="full">Full parameter list</option>
+        </param>
+        <when value="default"/>
+        <when value="full">
+        <!-- Not required
+        <param name="config_file"
+               type="Plain text"
+               label="Configuration information for SOAPdenovo2"/>
+         -->
+        <param label="k value in kmer" max="127" min="13" name="kmer_size" type="integer" value="63"/>
+        <param label="Number of CPUs to use" name="ncpu" type="integer" value="8"/>
+        <param label="Initiate the memory assumption to avoid further reallocation, unit G" name="init_memory_assumption" type="integer" value="0"/>
+        <param label="Delete kmers with frequency no larger than?" name="kmer_freq_cutoff" type="integer" value="0"/>
+        <param label="Resolve repeats by reads" name="resolve_repeats" type="select" value="NO">
+            <option value="NO">No</option>
+            <option value="YES">Yes</option>
+        </param>
+        <param label="Delete edges with coverage no larger than?" name="edge_cov_cutoff" type="integer" value="1"/>
+        <param label="Strength of merging similar sequences during contiging" name="merge_level" type="select" value="1">
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+        </param>
+        <param label="Max k when using multi-kmer" name="max_k" type="integer" value="1"/>
+        <param label="Weight to filter arc when linearizing two edges" name="weight" type="integer" value="0"/>
+        <!--
+        <param name="keep_avail_read"
+               type="text"
+               optional="true"
+               label="Keep available read (*.read)"/>
+        -->
+        <param label="Merge clean bubble before iterate" name="merge_clean_bubble" optional="true" type="text"/>
+	<!--
+        <param name="output_gap_related_reads"
+               type="select"
+               value="NO"
+               optional="true"
+               label="Output gap related reads in map step for using SRkgf to fill gap">
+            <option value="NO">No</option>
+            <option value="YES">Yes</option>
+        </param>
+	-->
+        <param label="kmer size to be used for mapping reads to contigs" max="63" min="13" name="kmer_r2c" type="integer" value="13"/>
+        <param label="Fill gaps in scaffold" name="fill_gaps" type="select">
+            <option value="NO">No</option>
+            <option value="YES">Yes</option>
+        </param>
+        <param label=" un-mask contigs with high/low coverage before scaffolding" name="unmask_contigs" optional="true" type="select" value="mask">
+            <option value="mask">Mask</option>
+            <option value="unmask">Unmask</option>
+        </param>
+        <param label="Keep contigs weakly connected to other contigs in scaffold" name="keep_contigs_connected" type="select" value="NO">
+        <option value="NO">No</option>
+        <option value="YES">YEs</option>
+        </param>
+        <param label="Allowed length difference between estimated and filled gaps" name="gap_len_diff" type="integer" value="50"/>
+        <param label="Shortest contig for scaffolding" name="min_contig_len" type="integer" value="20"/>
+        <param help="Contigs shorter than 100bp with coverage smaller than c*avgCvg will be masked before scaffolding unless -u is set" label="Minimum contig coverage (c*avgCvg)" name="min_contig_cvg" type="float" value="0.1"/>
+        <param help="Contigs with coverage larger than C*avgCvg or contigs shorter than 100bp with coverage larger than 0.8*C*avgCvg will be masked before scaffolding unless -u is set" label="Maximum contig coverage (C*avgCvg)" name="max_contig_cvg" type="float" value="2"/>
+        <param help="Will be used as upper bound of insert size for large insert size ( &gt; 1000) when handling pair-end connections between contigs if b is set to larger than 1" label="insertSizeUpperBound" name="insert_size_upper_bound" type="float" value="1.5"/>
+        <param help="Remove contig with lower coverage in bubble structure if both contigs' coverage are smaller than bubbleCoverage*avgCvg" label="Bubble coverage" name="bubble_coverage" type="float" value="0.6"/>
+        <param help="Genome size for statistics" label="Genome size" name="genome_size" type="integer" value="0"/>
+        <param label="Output visualization information of assembly" name="ass_visual" optional="true" type="select" value="NO">
+            <option value="NO">No</option>
+            <option value="YES">Yes</option>
+        </param>
+        </when>
+        </conditional>
+    </inputs>
+    <outputs>
+        <!-- Provide 2 files as output from SOAPdenovo -->
+        <data format="output" label="soapdenovo2: Contig sequence file" name="contig" type="data">
+        </data>
+        <data format="output" label="soapdenovo2: Scaffold sequence file" name="scafseq" type="data">
+        </data>
+    </outputs>
+    <tests>
+        <test>
+            <param name="max_read_length" value="50"/>
+            <output name="contig" value="hello world"/>
+        </test>
+    </tests>
+    <help>
+
+**What it does**
+
+SOAPdenovo is a novel short-read assembly method that can build a de novo draft assembly for the human-sized genomes.
+The program is specially designed to assemble Illumina GA short reads. It creates new opportunities for building
+reference sequences and carrying out accurate analyses of unexplored genomes in a cost effective way.
+
+**System requirements**
+
+SOAPdenovo2 is designed for assembling large plant and animal genomes, although it also works well on bacteria and
+fungal genomes. The code runs on 64-bit/32-bit Linux/MAC OSX systems with a minimum of 5G physical memory. Approximately
+150 GB of memory is required to process large genomes such as those of humans.
+
+
+**Notes**
+
+This Galaxy tool is a wrapping of SOAPdenovo version 2.04. This version supports large k-mers of up to 127 in size to process
+long reads. Changes which have been made to SOAPdenovo-1 include:
+
+1. Merging of the 63mer and 127mer versions.
+
+2. A new module named &quot;sparse-pregraph&quot; has been written which can reduce considerable computational consumption.
+
+3. The &quot;Multi-kmer&quot; method has been introduced in the &quot;contig&quot; step to allow the utilization of the advantages of small and large kmers.
+
+4. The scaffolding algorithm has been improved to obtain longer and more accurate scaffolds.
+
+5. Asynchronous Input/Output (AIO) has been introduced to boost the performance of reading files.
+
+6. Information for visualization purposes has been made available after scaffolding.
+
+**Configuring SOAPdenovo2**
+
+For large genome projects involving deep sequencing, data is usually organized as a series of read sequence files generated
+from multiple libraries. A configuration file is required by SOAPdenovo2 to inform the assembler where to find these
+files and about other relevant information required for the de novo assembly process. This configuration file is
+automatically generated for SOAPdenovo2 by setting parameters on this tool page.
+
+The configuration file has a section for global information, and is then followed by sections for each library.
+Currently, only the maximum read length parameter, max_rd_len, is required in the global information section. Any reads
+with lengths longer than max_rd_len will be cut to this length.
+
+Information about the sequencing data should be organized in the corresponding library section. Each library section
+starts with the tag [LIB] and includes the following items::
+
+  avg_ins           This value indicates the average insert size of this library or
+                    the peak value position in the insert size distribution.
+
+  reverse_seq       This option takes a value that is 0 or 1 which tells the assembler if
+                    the read sequences need to be complementarily reversed. Illumima GA
+                    produces two types of paired-end libraries: a) forward-reverse,
+                    generated from fragmented DNA ends with a typical insert size less than
+                    500 bp; b) forward-forward, generated from circularizing libraries with
+                    typical insert size greater than 2 Kb. The parameter &quot;reverse_seq&quot;
+                    should be set to indicate this: 0, forward-reverse; 1, forward-forward.
+
+  asm_flags         Setting this parameter indicates which part(s) the reads are used. It
+                    takes a value of 1 for only contig assembly, 2 for only scaffold assembly,
+                    3 for both contig and scaffold assembly, and 4 for only gap closure.
+
+  rd_len_cutof      The assembler will cut reads from the current library to this length.
+
+  rank              This sets integer values and decides the order for reads to be used for
+                    scaffold assembly. Libraries with the same &quot;rank&quot; are used at the same
+                    time during scaffold assembly.
+
+  pair_num_cutoff   This parameter is the cutoff value for pair number for a reliable connection
+                    between two contigs or pre-scaffolds. The minimum number for paired-end reads
+                    and mate-pair reads is 3 and 5 respectively.
+
+  map_len           This parameter is used in the &quot;map&quot; step and is the minimum alignment length
+                    between a read and a contig required for a reliable read location. The minimum
+                    length for paired-end reads and mate-pair reads is 32 and 35, respectively.
+
+The assembler accepts read files in three kinds of formats: FASTA, FASTQ and BAM.
+
+Mate-pair relationship can be indicated in two ways: two sequence files with reads in the same order belonging to a
+pair, or two adjacent reads in a single file (FASTA only) belonging to a pair. If a read in a BAM file fails
+platform/vendor quality checks, e.g. the flag field 0x0200 is set, itself and it's paired read will be ignored.
+
+In the configuration file, single end files are indicated by &quot;f=/path/filename&quot; or &quot;q=/pah/filename&quot; for fasta or fastq
+formats separately. Paired reads in two fasta sequence files are indicated by &quot;f1=&quot; and &quot;f2=&quot;, whilst paired reads in two
+fastq sequence files are indicated by &quot;q1=&quot; and &quot;q2=&quot;. Paired reads in a single fasta sequence file is indicated by a
+&quot;p=&quot; item. Reads in BAM sequence files is indicated by &quot;b=&quot;.
+
+All of the above items in each library section are optional since the assembler assigns default values for most of them.
+
+**Output files**
+
+Two files are generated by SOAPdenovo2:
+
+1. The contig file contains sequences without mate pair information.
+2. The scafSeq file contains scaffold portions of the genome which have been reconstructed from contigs and gaps.
+
+**FAQ**
+
+How do I set the K-mer size?
+
+The program accepts odd numbers between 13 and 31. Larger K-mers will have a higher rate of uniqueness in the genome and
+make the graph simpler, but it requires deep sequencing depth and longer read length to guarantee the overlap at
+any genomic location.
+
+How do I set the library rank?
+
+SOAPdenovo2 will use the pair-end libraries with insert size from smaller to larger to construct scaffolds. Libraries
+with the same rank would be used at the same time. For example, in a data set of a human genome, we set five ranks for
+five libraries with insert size 200-bp, 500-bp, 2-Kb, 5-Kb and 10-Kb, separately. It is desired that the pairs in each
+rank provide adequate physical coverage of the genome.
+
+
+**Format of output files**
+
+*Output files from pregraph*
+
+1. kmerFreq. Each row shows the number of Kmers with a frequency equals the row number. Note that those peaks of frequencies which are the integral multiple of 63 are due to the data structure.
+2. edge. Each record gives the information of an edge in the pre-graph: length, Kmers on both ends, average kmer coverage, whether it's reverse-complementarily identical and the sequence.
+3. markOnEdge and path. These two files are for using reads to solve small repeats.
+4. preArc. Connections between edges which are established by the read paths.
+5. vertex. Kmers at the ends of edges.
+6. preGraphBasic. Some basic information about the pre-graph: number of vertex, K value, number of edges, maximum read length etc.
+
+*Output files from contig*
+
+1. contig. Contig information: corresponding edge index, length, kmer coverage, whether it's tip and the sequence. Either a contig or its reverse complementry counterpart is included. Each reverse complementary contig index is indicated in the *.ContigIndex file.
+2. Arc. Arcs coming out of each edge and their corresponding coverage by reads
+3. updated.edge. Some information for each edge in graph: length, Kmers at both ends, index difference between the reverse-complementary edge and this one.
+4. ContigIndex. Each record gives information about each contig in the *.contig. it's edge index, length, the index difference between its reverse-complementary counterpart and itself.
+
+*Output files from map*
+
+1. peGrads. Information for each clone library: insert-size, read index upper bound, rank and pair number cutoff for a reliable link. This file can be revised manually for scaffolding tuning.
+2. readOnContig. Reads' locations on contigs. Here contigs are referred by their edge index. However, about half of them are not listed in the *.contig file for their reverse-complementary counterparts are included already.
+3. readInGap. This file includes reads that could be located in gaps between contigs. This information will be used to close gaps in scaffolds if &quot;-F&quot; is set.
+
+*Output files from scaff*
+
+1. newContigIndex. Contigs are sorted according their length before scaffolding. Their new index are listed in this file.  This is useful if one wants to corresponds contigs in *.contig with those in *.links.
+2. links. Links between contigs which are established by read pairs. New index are used.
+3. scaf_gap. Contigs in gaps found by contig graph outputted by the contiging procedure. Here new index are used.
+4. scaf. Contigs for each scaffold: contig index (concordant to index in *.contig),  approximate start position on scaffold, orientation, contig length, and its links to others contigs.
+5. gapSeq. Gap sequences between contigs.
+6. scafSeq. Sequences of each scaffolds.
+7. contigPosInscaff. Contigs' positions in each scaffold.
+8. bubbleInScaff. Contigs that form bubble structures in scaffolds. Every two contigs form a bubble and the contig with higher coverage will be kept in scaffold.
+9. scafStatistics. Statistic information of final scaffold and contig.
+
+**More information**
+
+For test data and more detailed information, click here_.
+
+.. _here: http://soap.genomics.org.cn/soapdenovo.html
+
+
+    </help>
+</tool>

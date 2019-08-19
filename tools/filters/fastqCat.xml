@@ -1,0 +1,85 @@
+<tool id="fastqcat1" name="Concatenate multiple Fastq datasets">
+    <description>tail-to-head stored in a directory for paired-end files</description>
+    <command interpreter="python">
+        ## get the file names
+        #import os, glob
+        #set $path = ""
+        #if os.path.exists(str($input1.extra_files_path)):
+            #set $path = $input1.extra_files_path
+        #else:
+            #set $fh = open(str($input1), "r")
+            #set $path = $fh.readline().rstrip("\n")
+        #end if
+        fastqcatWrapper.py 
+        $out_file1 $out_file2
+        $path
+    </command>
+    <inputs>
+        <param name="input1" type="data" label="Concatenate Fastq files in a Dataset object" help=""/>
+    </inputs>
+    <outputs>
+        <data name="out_file1" format="fastqsanger" label="${tool.name} on ${input1.name}: Forward"/>
+        <data name="out_file2" format="fastqsanger" label="${tool.name} on ${input1.name}: Reverse"/>
+    </outputs>
+    <tests>
+        <test>
+        </test>
+        <!--TODO: if possible, enhance the underlying test code to handle this test
+            the problem is multiple params with the same name "input2"
+        <test>
+            <param name="input1" value="1.bed"/>
+            <param name="input2" value="2.bed"/>
+            <param name="input2" value="3.bed"/>
+            <output name="out_file1" file="cat_wrapper_out2.bed"/>
+        </test>
+        -->
+    </tests>
+    <help>
+
+.. class:: warningmark
+
+**WARNING:** This tool is only for fastqfiles. 
+
+-----
+
+**What it does**
+
+Concatenates fastq files from multiple lanes stored in a dataset object (directory) into one forward and one reverse fastq file
+
+-----
+
+**Example**
+
+If your input directory contains the following files:
+
+    CCD1-53-Total-RNA-L001_R1_001.fastq.gz
+    CCD1-53-Total-RNA-L001_R2_001.fastq.gz
+    CCD1-53-Total-RNA-L002_R1_001.fastq.gz
+    CCD1-53-Total-RNA-L002_R2_001.fastq.gz
+    CCD1-53-Total-RNA-L003_R1_001.fastq.gz
+    CCD1-53-Total-RNA-L003_R2_001.fastq.gz
+    CCD1-53-Total-RNA-L004_R1_001.fastq.gz
+    CCD1-53-Total-RNA-L004_R2_001.fastq.gz
+
+It will concatenate files:
+
+    CCD1-53-Total-RNA-L001_R1_001.fastq.gz
+    CCD1-53-Total-RNA-L002_R1_001.fastq.gz
+    CCD1-53-Total-RNA-L003_R1_001.fastq.gz
+    CCD1-53-Total-RNA-L004_R1_001.fastq.gz
+
+to one file:
+    CCD1-53-Total-RNA-R1_001.fastq.gz
+
+and:
+
+    CCD1-53-Total-RNA-L001_R2_001.fastq.gz
+    CCD1-53-Total-RNA-L002_R2_001.fastq.gz
+    CCD1-53-Total-RNA-L003_R2_001.fastq.gz
+    CCD1-53-Total-RNA-L004_R2_001.fastq.gz
+
+to:
+    CCD1-53-Total-RNA-R2_001.fastq.gz
+
+    </help>
+</tool>

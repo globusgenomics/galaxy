@@ -1,0 +1,30 @@
+<tool id="dada2-filter-and-trim" name="dada2: Filter and Trim" version="3.4.4">
+  <description>
+    Filters and trims an input fastq file(s) (can be compressed) based on several user-definable criteria, and outputs fastq file(s) (compressed by default) containing those trimmed reads which passed the filters. Corresponding forward and reverse fastq file(s) can be provided as input, in which case filtering is performed on the forward and reverse reads independently, and both reads must pass for the read pair to be output.
+  </description>
+  <requirements>
+    <requirement type="package" version="3.4.4">R</requirement>
+  </requirements>
+  <edam_operations>
+    <edam_operation>operation_3192</edam_operation>
+    <edam_operation>operation_3695</edam_operation>
+  </edam_operations>
+  <command detect_errors="exit_code"><![CDATA[
+    Rscript dada2-filter-and-trim.R \
+    --fwd '$fwd' \
+    --rev '$rev' \
+    --filt '$filt' \
+    --filt.rev '$filt.rev' \
+  ]]></command>
+  <inputs>
+    <param name="fwd" type="data" multiple="True"/>
+    <param name="rev" type="data" multiple="True"/>
+  </inputs>
+  <outputs>
+    <data name="filt" format="fastqsanger.gz" />
+    <data name="filt.rev" format="fastqsanger.gz" />
+  </outputs>
+  <citations>
+    <citation type="doi">10.1038/nmeth.3869</citation>
+  </citations>
+</tool>

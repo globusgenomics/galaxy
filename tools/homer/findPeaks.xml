@@ -1,0 +1,182 @@
+<tool id="homer_findpeaks" name="findPeaks" version="@VERSION@.0">
+  <description>performs all of the peak calling and transcript identification analysis</description>
+  <macros>
+     <import>macros.xml</import>
+  </macros> 
+  <expand macro="requirements"/>
+  <expand macro="stdio"/>
+  <command interpreter="python">    
+    findPeaks.py
+    --mode $mode
+    -o $output
+    --input $input.extra_files_path
+    #if $control_input:
+      --input2 $control_input.extra_files_path
+    #end if
+  </command>
+
+  <inputs>
+        <param name="mode" type="select" label="Select a mode of operation" help="">
+            <option value="factor" selected="true">factor</option>
+            <option value="histone">histone</option>
+            <option value="super">super</option>
+            <option value="groseq">groseq</option>
+            <option value="tss">tss</option>
+            <option value="dnase">dnase</option>
+            <option value="mC">mC</option>
+        </param>
+    <param name="input" type="data" format="txt" label="Tag directory"/>
+    <param name="control_input" type="data" optional="true" format="txt" label="Control tag directory"/>
+  </inputs>
+
+  <outputs>
+    <data format="txt" label="${tool.name} on ${on_string}:" name="output"/>
+  </outputs>
+
+  <help>
+
+        .. class:: infomark
+
+        **Homer findPeaks**
+
+        More information on accepted formats and options
+
+        http://homer.ucsd.edu/homer/ngs/peaks.html
+
+**Finding Enriched Peaks, Regions, and Transcripts**
+
+HOMER contains a program called **findPeaks** that performs all of the peak calling and transcript identification analysis.  (Not to be confused with another peak finding program called FindPeaks_, which was also very creatively named).  Finding peaks is one of the central goals of any ChIP-Seq experiment, and the same basic principles apply to other types of sequencing such as DNase-Seq.  The basic idea is to identify regions in the genome where we find more sequencing reads than we would expect to see by chance.  There are number of different approaches one can use to find peaks, and correspondingly there are many different methods for identifying peaks from ChIP-Seq experiments.  It is not required that you use HOMER for peak finding to use the rest of the tools included in HOMER.
+
+.. _FindPeaks: http://www.bcgsc.ca/platform/bioinfo/software/findpeaks
+
+**findPeaks** has 7 basic modes of operation:
+
+**factor**
+Peak finding for single contact or focal ChIP-Seq experiments or DNase-Seq.  This type of analysis is useful for transcription factors, and aims to identify the precise location of DNA-protein contact.  This type of peak finding uses a FIXED width peak size, which is automatically estimated from the Tag Autocorrelation.
+
+**histone**
+Peak finding for broad regions of enrichment found in ChIP-Seq experiments for various histone marks.  This analysis finds variable-width peaks. 
+
+**super**
+Find Super Enhancers in your data
+
+**groseq**
+De novo transcript identification from strand specific GRO-Seq.  This attempts to identify transcripts from nascent RNA sequencing reads. 
+
+**tss**
+Identification of promoter/TSS from 5'RNA-Seq/CAGE or 5'GRO-Seq data.  More info in the TSS section.
+
+**dnase**
+Adjusted parameters for DNase-Seq peak finding.  (NOTE: this is only for tag-style DNase-Seq) More info in the DNase section.
+
+**mC**
+DNA methylation analysis - documentation coming soon...
+
+
+HOMER does not perform de novo transcript isoform detection from spliced RNA-Seq.  There is already a bunch of great work on this topic, and differential isoform detection, etc. with RNA-seq is quite difficult.  We recommend the Tophat/Cufflinks family of programs for RNA-Seq isoform detection.
+
+**Using findPeaks**
+
+To run **findPeaks**, you will normally type:  
+
+**findPeaks &lt;tag directory&gt; -style &lt;factor | histone&gt; -o auto -i &lt;control tag directory&gt;**
+
+i.e. **findPeaks ERalpha-ChIP-Seq/ -style factor -o auto -i Control-ChIP-Seq/**
+
+Where the first argument must be the tag directory (required).  The other options are not required.  The "-style &lt;...&gt;" option can be either "factor", "histone", or one of a number of specialized types.  Use the "-i" option to specify a control experiment tag directory (good idea when doing ChIP-Seq).
+
+**Output files**
+
+Use the "-o &lt;filename&gt;" to specify where to send the resulting peak file.  If "-o" is not specified, the peak file will be written to stdout.  
+
+If "-o auto" is specified, the peaks will be written to:
+"&lt;tag directory&gt;/peaks.txt" (-style factor)
+"&lt;tag directory&gt;/regions.txt" (-style histone)
+"&lt;tag directory&gt;/transcripts.txt" and "&lt;tag directory&gt;/transcripts.gtf" (-style groseq)
+
+The top portion of the peak file will contain parameters and various analysis information.  This output differs somewhat for GRO-Seq analysis, and is explained in more detail later. Some of the values are self explanatory.  Others are explained below:
+
+# HOMER Peaks
+# Peak finding parameters:
+# tag directory = Sox2-ChIP-Seq
+#
+# total peaks = 10280
+# peak size = 137
+# peaks found using tags on both strands
+# minimum distance between peaks = 342
+# fragment length = 132
+# genome size = 4000000000
+# Total tags = 9908245.0
+# Total tags in peaks = 156820.0
+# Approximate IP efficiency = 1.58%
+# tags per bp = 0.001907
+# expected tags per peak = 0.523
+# maximum tags considered per bp = 1.0
+# effective number of tags used for normalization = 10000000.0
+# Peaks have been centered at maximum tag pile-up
+# FDR rate threshold = 0.001000
+# FDR effective poisson threshold = 0.000000
+# FDR tag threshold = 8.0
+# number of putative peaks = 10800
+#
+# size of region used for local filtering = 10000
+# Fold over local region required = 4.00
+# Poisson p-value over local region required = 1.00e-04
+# Putative peaks filtered by local signal = 484
+#
+# Maximum fold under expected unique positions for tags = 2.00
+# Putative peaks filtered for being too clonal = 36
+#
+# cmd = findPeaks Sox2-ChIP-Seq -style factor -o auto
+#
+# Column Headers:
+
+Genome size represents the total effective number of mappable bases in the genome (remember each base could be mapped in each direction)
+
+Approximate IP effeciency describes the fraction of tags found in peaks versus. genomic background.  This provides an estimate of how well the ChIP worked.  Certain antibodies like H3K4me3, ERa, or PU.1 will yield very high IP efficiencies (&gt;20%), while most rand in the 1-20% range.  Once this number dips below 1% it's a good sign the ChIP didn't work very well and should probably be optimized.
+
+Below the header information are the peaks, listed in each row.  Columns contain information about each peak:
+Column 1: PeakID - a unique name for each peak (very important that peaks have unique names...)
+Column 2: chr - chromosome where peak is located
+Column 3: starting position of peak
+Column 4: ending position of peak
+Column 5: Strand (+/-)
+Column 6: Normalized Tag Counts - number of tags found at the peak, normalized to 10 million total mapped tags (or defined by the user)
+Column 7: (-style factor): Focus Ratio - fraction of tags found appropriately upstream and downstream of the peak center.
+(-style histone/-style groseq): Region Size - length of enriched region
+Column 8: Peak score (position adjusted reads from initial peak region - reads per position may be limited)
+Columns 9+: Statistics and Data from filtering
+Two generic tools are available as part of HOMER to convert peak files to BED files and back.  This will allow you to upload your peak files to the UCSC Genome Browser, or convert peak files in BED format from another program into a peak file that can be used by HOMER.  These programs are named pos2bed.pl and bed2pos.pl, which can be used the following way:
+
+pos2bed.pl peakfile.txt &gt; peakfile.bed
+bed2pos.pl peakfile.bed &gt; peakfile.txt
+
+------
+
+**Finding Transcription Factor Peaks with HOMER**
+
+To find peaks for a transcription factor use the findPeaks command:
+
+findPeaks &lt;tag directory&gt; -style factor -o auto -i &lt;input tag directory&gt;
+
+i.e. findPeaks ERalpha-ChIP-Seq/ -style factor -o auto -i MCF7-input-ChIP-Seq
+
+Identification of Putative Peaks
+If findPeaks is run in "factor" mode, a fixed peak size is selected based on estimates from the autocorrelation analysis performed during the makeTagDirectory command.  This type of analysis maximizes sensitivity for identifying locations where the factor makes a single contact with the DNA. Peak size can be set manually with "-size &lt;#&gt;".
+
+findPeaks loads tags from each chromosome, adjusting them to the center of their fragments, or by half of the estimated fragment length in the 3' direction (this value is also automatically estimated from the autocorrelation analysis).  The fragment length can be specified manually using the "-fragLength &lt;#&gt;" option.  It then scans the entire genome looking for fixed width clusters with the highest density of tags.  As clusters are found, the regions immediately adjacent are excluded to ensure there are no "piggyback peaks" feed off the signal of large peaks.  By default, peaks must be greater than 2x the peak width apart from on another (set manually with "-minDist &lt;#&gt;").  This continues until all tags have been assigned to clusters.
+
+After all clusters have been found, a tag threshold is established to correct for the fact that we may expect to see clusters simply by random chance.  Previously, to estimate the expected number of peaks for each tag threshold, HOMER would randomly assign tag positions and repeat the peak finding procedure.  HOMER now assumes the local density of tags follows a Poisson distribution, and uses this to estimate the expected peak numbers given the input parameters much more quickly.  Using the expected distribution of peaks, HOMER calculates the expected number of false positives in the data set for each tag threshold, setting the threshold that beats the desired False Discovery Rate specified by the user (default: 0.001, "-fdr &lt;#&gt;").
+
+HOMER assumes the total number of mappable base pairs in the genome is 2,000,000,000 bp (** change from previous version.  here 2e9 assumes the actual number of mappable positions is actually 2x [think + and - strand]) , which is "close enough" for human and mouse calculations.  You can specify a different genome size using "-gsize &lt;#&gt;".  HOMER also uses the reads themselves to estimate the size of the genome (i.e. that highest tag position on each chromosome).  If this estimate is lower than the default, it will use that value to avoid using too large of a number on smaller genomes (For example, if you used findPeaks on drosophila data without specifying "-gsize").
+
+It is important to note that this false discovery rate controls for the random distribution of tags along the genome, and not any other sources of experimental variation.  Alternatively, users can specify the threshold using "-poisson &lt;#&gt;" to calculate the tag threshold that yields a cumulative poisson p-value less than provided or "-tagThreshold &lt;#&gt;" to specify a specific number tags to use as the threshold.
+
+</help>
+
+  <tests>
+    <test>
+    </test>
+  </tests>
+
+</tool>

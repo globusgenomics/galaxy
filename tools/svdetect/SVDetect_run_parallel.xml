@@ -1,0 +1,330 @@
+<tool id="svdetect_run_parallel" name="Detect clusters of anomalously mapped pairs" version="SVDETECT: SVDetect_r0.8b; SAMTOOLS: 1.2; BEDTOOLS: 2.17.0">
+
+<description>and identify structural variants</description>
+  <requirements>
+     <requirement type="package">svdetect</requirement>
+     <requirement type="package">perlmodules</requirement>
+     <requirement type="package">samtools</requirement>
+     <requirement type="package">bedtools</requirement>
+  </requirements>
+
+<command interpreter="perl">SVDetect_run_parallel.pl
+
+#if $getLinks.linking == &quot;linking&quot;
+linking
+<!-- -out1 '$links_file' -->
+#end if
+#if $getFilteredLinks.filtering == &quot;filtering&quot;
+filtering
+<!--- out2 '$flinks_file' -->
+#if str($getFilteredLinks.links2SV) == &quot;create&quot;
+links2SV
+-out3 '$sv_file'
+#end if
+#if  $getFilteredLinks.file_conversion.file_conversion_select==&quot;convert&quot; and str($getFilteredLinks.file_conversion.links2circos) == &quot;create&quot;
+links2circos
+-out4 '$circos_file'
+#end if
+#if  $getFilteredLinks.file_conversion.file_conversion_select==&quot;convert&quot; and str($getFilteredLinks.file_conversion.links2bed) == &quot;create&quot;
+links2bed
+-out5 '$bed_file'
+#end if
+#end if
+-conf '$config_file'
+-l '$log_file'
+-N '$sample_name'
+
+</command>
+
+<inputs>
+	<param label="Sample Name" name="sample_name" type="text" value="sample"/>
+	<param format="bam" label="Input BAM file (.ab.bam)" name="mates_file" type="data"/>
+   	<param format="len" help="Tabulated file format with Chromosome ID (integer from 1), name and length" label="Chromosomes list file (.len)" name="cmap_file" type="data"/>
+  	<param format="txt" label="Type of sequencing technology and libraries" name="mates_orientation" type="select">
+		<option value="FR">Illumina paired-ends</option>
+		<option value="RF">Illumina mate-pairs</option>
+		<option value="FR">SOLiD paired-ends</option>
+		<option value="RR">SOLiD mate-pairs</option>
+   	</param>
+	<param help="Length of the first read in a pair (left read)" label="Read 1 length (bp)" name="read1_length" size="10" type="integer" value="50"/>
+	<param help="Length of the second read in a pair (right read)" label="Read 2 length (bp)" name="read2_length" size="10" type="integer" value="50"/>
+	<param format="txt" label="Type of SV to detect" name="sv_type" type="select">
+		<option value="all">all types of SVs</option>
+		<option value="intra">intrachromosomal SVs only</option>
+		<option value="inter">interchromosomal SVs only</option>
+  	</param>
+   	
+   	<conditional name="getLinks">
+   		<param help="Detection and isolation of links" label="Linking procedure" name="linking" type="select">
+			<option value="linking">Yes</option>
+			<option value="">No, already done</option>
+  		</param>
+		<when value="">
+    			<!-- do nothing here -->
+   		</when>
+    		<when value="linking">
+			<param checked="True" falsevalue="do_not_split" help="Untick it if already done" label="Do you want to split the original mate file per chromosome for parallel computing?" name="splitmate" truevalue="split" type="boolean"/>
+    			<param help="Equal to at least “2µ+2√2σ" label="Window size (bp)" name="window_size" size="20" type="integer" value="3000"/>
+			<param help="Equal to 1/2 or 1/4 of the window size" label="Step length size (bp)" name="step_length" size="20" type="integer" value="250"/>
+    		</when>
+   	</conditional>
+
+   	<conditional name="getFilteredLinks">
+	   	<param help="Filtering of links according different parameters and thresholds" label="Filtering procedure" name="filtering" type="select">
+			<option value="filtering">Yes</option>
+                        <option value="">No</option>
+	  	</param>
+		<when value="">
+	    		<!-- do nothing here -->
+	   	</when>
+	    	<when value="filtering">
+			
+			<param checked="False" falsevalue="do_not_split" help="Untick it if (the linking is) already done" label="Do you want to split the original link file per chromosome for parallel computing?" name="splitlink" truevalue="split" type="boolean"/>
+			<param label="List of chromosome names to keep or exclude" name="chromosomes" size="20" type="text"/>
+			<param label="Minimum number of pairs in a cluster" name="nb_pairs_threshold" size="20" type="integer" value="5"/>
+		
+			<conditional name="filter1">
+	   			<param label="Strand filtering procedure" name="strand_filtering" type="select">
+					<option value="strand">Yes</option>
+					<option value="">No</option>
+	  			</param>
+				<when value="">
+	    				<!-- do nothing here -->
+	   			</when>
+	    			<when value="strand">
+
+					<conditional name="filter2">
+			   			<param label="Order filtering procedure" name="order_filtering" type="select">
+							<option value="order">Yes</option>
+							<option value="">No</option>
+			  			</param>
+						<when value="">
+			    				<!-- do nothing here -->
+			   			</when>
+			    			<when value="order">
+
+							<conditional name="filter3">
+					   			<param label="Insert-size filtering procedure" name="insert_size_filtering" type="select">
+									<option value="insert">Yes</option>
+									<option value="">No</option>
+					  			</param>
+								<when value="">
+					    				<!-- do nothing here -->
+					   			</when>
+					    			<when value="insert">
+									<param label="Minimal number of sigma fold for the insert size filtering and to call insertions and deletions" name="indel_sigma_threshold" size="20" type="float" value="3"/>
+									<param label="minimal number of sigma fold for the insert size filtering to call tandem duplications" name="dup_sigma_threshold" size="20" type="float" value="3"/>
+									<param help="for Illumina mate-pairs only" label="Minimal number of sigma fold for the insert size filtering to call singletons" name="singleton_sigma_threshold" size="20" type="float" value="4"/>
+			    					</when>
+			   				</conditional>
+
+							<param label="Mean insert size value (µ) of normally mapped mate-pairs, in bp" name="mu_length" size="20" type="integer" value="3000"/>
+							<param label="Calculated sd value (σ) from the distribution of normally mapped  mate-pairs, in bp" name="sigma_length" size="20" type="integer" value="250"/>
+			    				<param label="Minimal number of pairs in a subgroup of paired-end reads for balanced events" name="nb_pairs_order_threshold" size="20" type="integer" value="2"/>
+			    			</when>
+			   		</conditional>
+						
+					<param help="A value of 1 means all the pairs in a cluster were consistent between each other after applying filters" label="Minimal final filtering score for calling SVs" name="final_score_threshold" size="20" type="float" value="1.0"/>
+	    			</when>
+	   		</conditional>
+		
+			<param checked="True" falsevalue="do_not_create" label="Do you want to have filtered links in a tabulated file format showing significant SVs?" name="links2SV" truevalue="create" type="boolean"/>
+		
+			<conditional name="file_conversion">
+				<param help="Converts filtered links to Circos/BED files format for graphical view of SVs" label="Output file conversion" name="file_conversion_select" type="select">
+					<option value="do_not_convert">No</option>
+					<option value="convert">Yes</option>
+				</param>
+				<when value="do_not_convert">
+					    <!-- do nothing here -->
+				</when>
+				<when value="convert">
+					<param checked="True" falsevalue="do_not_create" label="Converts the link list to the Circos link format" name="links2circos" truevalue="create" type="boolean"/>
+					<param checked="False" falsevalue="do_not_create" label="Converts the link list to the UCSC BED format" name="links2bed" truevalue="create" type="boolean"/>
+					<param label="Organism ID" name="organism_id" size="10" type="text" value="hs"/>
+					<repeat max="7" min="1" name="color_code" title="Color-code">
+						<param label="Color" name="color" type="select">
+							<option value="grey">grey</option>
+							<option value="black">black</option>
+							<option value="blue">blue</option>
+							<option value="green">green</option>
+							<option value="purple">purple</option>
+							<option value="orange">orange</option>
+							<option value="red">red</option>
+						</param>
+						<param label="Interval" name="interval" type="text" value="1,3"/>
+					</repeat>
+				</when>
+			</conditional>
+    		</when>
+	</conditional>
+</inputs>
+
+
+<outputs>
+	<!--<data format="txt" name="links_file" label="svdetect.links">
+		<filter>getLinks['linking']=="linking"</filter>
+	</data>
+	<data format="txt" name="flinks_file" label="svdetect.links.filtered">
+		<filter>getFilteredLinks['filtering']=="filtering"</filter>
+	</data>-->
+	<data format="sv" label="${sample_name}.sv" name="sv_file">
+		<filter>(
+			getFilteredLinks['filtering']==&quot;filtering&quot; and
+			getFilteredLinks['links2SV'] is True
+			)
+	         </filter>
+	</data>
+	<data format="segdup" label="${sample_name}.segdup" name="circos_file">
+		<filter>(
+			getFilteredLinks['filtering']==&quot;filtering&quot; and
+			getFilteredLinks['file_conversion']['file_conversion_select']==&quot;convert&quot; and
+			getFilteredLinks['file_conversion']['links2circos'] is True
+			)
+	         </filter>
+	</data>
+	<data format="bed" label="${sample_name}.bed" name="bed_file">
+		<filter>(
+			getFilteredLinks['filtering']==&quot;filtering&quot; and
+			getFilteredLinks['file_conversion']['file_conversion_select']==&quot;convert&quot; and
+			getFilteredLinks['file_conversion']['links2bed'] is True
+			)
+	         </filter>
+	</data>
+	<data format="txt" label="${sample_name}.svdetect_run.log" name="log_file"/>
+</outputs>
+
+
+
+<configfiles>
+	<configfile name="config_file">
+&lt;general&gt;
+input_format = bam
+sv_type = ${sv_type}
+mates_orientation=${mates_orientation}
+read1_length=${read1_length}
+read2_length=${read2_length}
+mates_file=${mates_file}
+cmap_file=${cmap_file}
+tmp_dir=$__new_file_path__/svdetect/tmp
+output_dir=$__new_file_path__/svdetect
+num_threads=8
+&lt;/general&gt; 
+
+#if $getLinks.linking == &quot;linking&quot;
+&lt;detection&gt;
+#if str($getLinks.splitmate) == &quot;split&quot;
+split_mate_file=1
+#else
+split_mate_file=0
+#end if
+window_size=${getLinks.window_size}
+step_length=${getLinks.step_length}
+&lt;/detection&gt; 
+#end if
+
+#if $getFilteredLinks.filtering == &quot;filtering&quot;
+&lt;filtering&gt;
+#if str($getFilteredLinks.splitlink) == &quot;split&quot;
+split_link_file=1
+#else
+split_link_file=0
+#end if
+#if str($getFilteredLinks.chromosomes) != &quot;&quot;
+chromosomes=${getFilteredLinks.chromosomes}
+#end if
+nb_pairs_threshold=${getFilteredLinks.nb_pairs_threshold}
+#if $getFilteredLinks.filter1.strand_filtering == &quot;strand&quot;
+strand_filtering=1
+final_score_threshold=${getFilteredLinks.filter1.final_score_threshold}
+#if $getFilteredLinks.filter1.filter2.order_filtering == &quot;order&quot;
+order_filtering=1
+mu_length=${getFilteredLinks.filter1.filter2.mu_length}
+sigma_length=${getFilteredLinks.filter1.filter2.sigma_length}
+nb_pairs_order_threshold=${getFilteredLinks.filter1.filter2.nb_pairs_order_threshold}
+#if $getFilteredLinks.filter1.filter2.filter3.insert_size_filtering == &quot;insert&quot;
+insert_size_filtering=1
+indel_sigma_threshold=${getFilteredLinks.filter1.filter2.filter3.indel_sigma_threshold}
+dup_sigma_threshold=${getFilteredLinks.filter1.filter2.filter3.dup_sigma_threshold}
+singleton_sigma_threshold=${getFilteredLinks.filter1.filter2.filter3.singleton_sigma_threshold}
+#else
+insert_size_filtering=0
+#end if
+#else
+order_filtering=0
+#end if
+#else
+strand_filtering=0
+#end if
+&lt;/filtering&gt; 
+#end if
+
+#if $getFilteredLinks.filtering == &quot;filtering&quot;
+#if $getFilteredLinks.file_conversion.file_conversion_select == &quot;convert&quot;
+#if str($getFilteredLinks.file_conversion.links2circos) == &quot;create&quot;
+&lt;circos&gt;
+organism_id=${getFilteredLinks.file_conversion.organism_id}
+&lt;colorcode&gt;
+#for $color_repeat in $getFilteredLinks.file_conversion.color_code
+${color_repeat.color}=${color_repeat.interval}
+#end for
+&lt;/colorcode&gt;
+&lt;/circos&gt;
+#end if
+#if str($getFilteredLinks.file_conversion.links2bed) == &quot;create&quot;
+&lt;bed&gt;
+&lt;colorcode&gt;
+#for $color_repeat in $getFilteredLinks.file_conversion.color_code
+#if str($color_repeat.color)== &quot;grey&quot;
+190,190,190=${color_repeat.interval}
+#end if
+#if str($color_repeat.color)== &quot;black&quot;
+0,0,0=${color_repeat.interval}
+#end if
+#if str($color_repeat.color)== &quot;blue&quot;
+0,0,255=${color_repeat.interval}
+#end if
+#if str($color_repeat.color)== &quot;green&quot;
+0,255,0=${color_repeat.interval}
+#end if
+#if str($color_repeat.color)== &quot;purple&quot;
+153,50,205=${color_repeat.interval}
+#end if
+#if str($color_repeat.color)== &quot;orange&quot;
+255,140,0=${color_repeat.interval}
+#end if
+#if str($color_repeat.color)== &quot;red&quot;
+255,0,0=${color_repeat.interval}
+#end if
+#end for
+&lt;/colorcode&gt;
+&lt;/bed&gt;
+#end if
+#end if
+#end if	
+	</configfile>
+</configfiles>
+
+  <help>
+**What it does**
+
+SVDetect - Version : 0.8b
+
+Parallel version (nCPU=8)
+
+SVDetect is a application for the isolation and the type prediction of intra- and inter-chromosomal rearrangements from paired-end/mate-pair sequencing data provided by the high-throughput sequencing technologies
+
+This tool aims to identifying structural variations (SVs) with both clustering and sliding-window strategies, and helping in their visualization at the genome scale.
+SVDetect is compatible with SOLiD and Illumina (&gt;=1.3) reads.
+
+Manual documentation available at the http://svdetect.sourceforge.net/Site/Manual.html
+
+-----
+
+.. class:: infomark
+
+Contact Bruno Zeitouni (svdetect@curie.fr) for any questions or concerns about the Galaxy implementation of SVDetect.
+
+  </help>
+
+</tool>

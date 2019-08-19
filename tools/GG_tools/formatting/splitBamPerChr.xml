@@ -1,0 +1,27 @@
+<tool id="splitBamPerChr" name="Split BAM">
+	<description>per chromosome</description>
+	<requirements>
+           <requirement type="package">samtools</requirement>
+        </requirements>
+	<command interpreter="python">splitBamPerChr.py --input $inputBam --output $outputFile --files_path $outputFile.extra_files_path 
+        #if $inputBamIndex:
+            --indexBam $inputBamIndex
+        #end if
+	</command>
+
+	<inputs>
+		<param format="bam" name="inputBam" type="data" label="BAM file to split" />
+               <param format="bai" name="inputBamIndex" type="data" optional="true" label="BAM index file" help="If one is not available, it will be generated for you. In workflows where several tools need the same Index file, it might be useful in the interest of time to produce an index file separately and provide as input to those tools." />
+	</inputs>
+
+	<outputs>
+		<data format="html" name="outputFile" metadata_source="inputBam" label="Split BAM files dataset: ${tool.name} on ${on_string}"/>
+	</outputs>
+
+<help>
+
+**What it does**
+
+This tool splits an input BAM file per chromosome. Stores the output in a specific directory and lists the contents in the ouput HTML file.
+</help>
+</tool>

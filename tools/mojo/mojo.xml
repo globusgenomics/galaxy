@@ -1,0 +1,69 @@
+<tool id="mojo" name="MOJO" version="MOJO: MOJO-v0.0.5">
+  <description>Minimum Overlap Junction Optimizer</description>
+  <requirements>
+    <requirement type="package">mojo</requirement>
+  </requirements>
+  <command interpreter="python">
+    #*
+     The following script is written in the &quot;Cheetah&quot; language:
+     http://www.cheetahtemplate.org/docs/users_guide_html_multipage/contents.html
+    *#
+    mojo_wrapper.py 
+    --output-fusions $output_fusions_calls
+    --output-pileup $output_fusions_pileup
+    --output-tmp $output_fusions_calls.extra_files_path
+    #set $fq1s = &quot;&quot; 
+    #set $fq2s = &quot;&quot;
+    #for $i, $input_fastq in enumerate( $input_fastqs ):
+        --fq1 $input_fastq.input_forward_fastq 
+        --fq2 $input_fastq.input_reverse_fastq 
+    #end for
+    -R &quot;${ref_file.fields.path}&quot;
+
+    ##start with advanced options
+    #if $param_type.param_type_selector == &quot;advanced&quot;:
+       -p '--junct_mismatch ${param_type.junct_mismatch}'
+       -p '--read_through ${param_type.read_through}'
+       -p '--min_span ${param_type.min_span_reads},${param_type.min_span_coefficient},${param_type.min_span_scaling}' 
+    #end if
+  </command>
+  <inputs>
+    <repeat help="--fq1, -1, --fq2, -2" min="1" name="input_fastqs" title="Fastq files">
+      <param format="fastqillumina, fastqsanger" help="--fq1" label="Illumina forward Fastq file" name="input_forward_fastq" type="data"/>
+      <param format="fastqillumina, fastqsanger" help="--fq2" label="Illumina reverse Fastq file" name="input_reverse_fastq" type="data"/>
+    </repeat>
+    <param help="" label="Using reference genome" name="ref_file" type="select">
+      <options from_data_table="mojo_indexes">
+      </options>
+    </param>
+    <conditional name="param_type">
+      <param label="Basic or Advanced options" name="param_type_selector" type="select">
+        <option selected="True" value="basic">Basic</option>
+        <option value="advanced">Advanced</option>
+      </param>
+      <when value="basic"/>
+      <when value="advanced">
+        <param help="threshold for minimum number of discordant reads. (R)" label="Minimum of Span reads" name="min_span_reads" type="integer" value="2"/>
+        <param help="threshold for minimum number of discordant reads. To set hard cut-offs, set X and Y to 0. (X)" label="Coefficient of Span reads" name="min_span_coefficient" type="integer" value="2"/>
+        <param help="threshold for minimum number of discordant reads. (Y). To set hard cut-offs, set X and Y to 0." label="Scaling of Span reads" name="min_span_scaling" type="integer" value="80000000"/>
+        <param help="a fusion is designated as read-through if the genes are on the same strand and the 5prime gene is upstream of the 3prime gene, and, the distance between both is less than read_through. --read_through" label="Read-through threshold" name="read_through" type="integer" value="200000"/>
+        <param help="--junct_mismatch" label="Maximum mismatch rate in split-reads aligning to function junctions" name="junct_mismatch" type="float" value="0.03"/>
+
+      </when>
+    </conditional>
+  </inputs>
+  <outputs>
+    <data format="tabular" label="${tool.name} on ${on_string}: fusion calls" name="output_fusions_calls"/>
+    <data format="tabular" label="${tool.name} on ${on_string}: fusion pileup" name="output_fusions_pileup"/>
+  </outputs>
+        
+  <tests>
+    <test>
+    </test>
+  </tests>
+  <help>
+  </help>
+  <citations>
+    <citation type="doi">10.1093/bioinformatics/btt656</citation>
+  </citations>
+</tool>

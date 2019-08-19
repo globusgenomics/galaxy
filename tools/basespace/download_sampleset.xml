@@ -1,0 +1,49 @@
+<tool id="basespace_download_sample" name="Get Sample set Data from BaseSpace" version="JQ: 1.4">
+  <description>Transfer data from BaseSpace for a sample set</description>
+  <action class="HistoryManagement" module="galaxy_ext.globus.tools.actions.globus"/>
+  <requirements>
+    <requirement type="package">jq</requirement>
+    <requirement type="package">pymodules</requirement>
+  </requirements>
+  <command interpreter="bash">
+    #import os
+    getFilesBySampleId.sh $accessToken $dataID $out_file1.extra_files_path;
+    python $__root_dir__/tools/basespace/add_files_to_shared_library.py -s $dataID -u &quot;$url&quot; -k $userkey -p $out_file1.extra_files_path -o $out_file1
+  </command>
+  <stdio>
+    <exit_code description="Error in Transfer" level="fatal" range="1:"/>
+  </stdio>
+  <inputs>
+    <param label="BaseSpace Acces Token" name="accessToken" size="100" type="text">
+      <sanitizer>
+	<valid>
+	  <add value="|"/>
+	</valid>
+      </sanitizer>
+    </param>
+    <param label="Enter the BaseSpace Sample ID" name="dataID" type="text"/>
+    <param label="URL" name="url" type="hidden"/>
+    <param label="Key" name="userkey" size="100" type="hidden"/>
+  </inputs>
+  <!--<code file="basespace_filter.py"/>-->
+  <outputs>
+    <data format="txt" name="out_file1"/>
+    <!--<data name="out_file1" type="data" format="txt"/>-->
+  </outputs>
+  <tests>
+  </tests>
+  <help>
+
+.. class:: warningmark
+    
+  **WARNING:** Be careful not to exceed disk quotas!
+    
+-----
+    
+**What it does**
+    
+  Transfers data between from BaseSpace to your Galaxy installation
+  and creates a galaxy dataset from transfered file.
+
+  </help>
+</tool>

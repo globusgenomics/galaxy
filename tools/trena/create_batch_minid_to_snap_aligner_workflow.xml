@@ -1,0 +1,26 @@
+<tool id="create_batch_for_snap_wf" name="Create batch for TRENA SNAP workflow" version="1.0">
+    <description></description>
+    <action module="galaxy_ext.globus.tools.actions.globus" class="BatchSubmit"/>
+    <requirements>
+        <requirement type="package">pymodules</requirement>
+    </requirements>
+
+    <command>
+        mkdir $output.extra_files_path;
+        python /opt/galaxy/tools/trena/create_bdbag_batch_files_from_metadata.py $input_file $output.extra_files_path "$input_file.name" "$historyid" "$url" "$userapi";
+        python /opt/galaxy/tools/trena/create_batch_for_snap_wf.py $output.extra_files_path $output "$output.name" "$historyid" "$url" "$userapi"
+    </command>
+    <inputs>
+      <param name="input_file" type="data" format="tabular,txt" label="Bag location metadata" help="This should be the item with BAG like structure."/>
+      <param name="historyid" type="hidden" value="**" label="History id"/>
+      <param name="url" type="hidden" value="**" label="URL"/>
+      <param name="userapi" type="hidden" value="**" label="Key"/>
+      <param name="username" type="hidden" value="**" label="Globus Username"/>
+    </inputs>
+    <outputs>
+        <data name="output" format="txt" label="Batch submit file on ${on_string}: batch object" />
+    </outputs>
+
+    <help>
+    </help>
+</tool>

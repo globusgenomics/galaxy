@@ -1,0 +1,24 @@
+<tool id="globus_swift_qc" name="Swift - QC Workflow">
+  <description>Swift - QC</description>
+  <command interpreter="bash">
+     ./swift_qc.sh -log $log_file -level $level -template $template -jobthrottle $jobthrottle -i=$input -p=$input.extra_files_path -relative=/ -o=$out_file1
+  </command>
+  <inputs>
+    <param name="jobthrottle" type="text" value="1000" label="Job Throttle"/>
+    <param name="template" type="select" label="Execution">
+       <option value="galaxy-qc-condor">Condor</option>
+       <option value="galaxy-qc-local">Local</option>
+    </param>
+    <param format="cga" type="data" name="input" label="Cgatools Dataset"/>
+    <param name="level" type="select" label="Run Level">
+       <option value="1">2 Parts</option>
+       <option value="2">10 Parts</option>
+       <option value="3">Full Dataset</option>
+    </param>
+  </inputs>
+  <outputs>
+     <data format="cga" type="data" name="out_file1"/>
+     <data format="txt" type="data" name="log_file"/>
+  </outputs>
+</tool>
+

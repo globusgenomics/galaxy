@@ -1,0 +1,156 @@
+<?xml version="1.0" ?>
+<tool id="qiime_vsearch_join-pairs" name="qiime vsearch join-pairs" version="022019">
+	<description> - Join paired-end reads.</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command>
+	<![CDATA[
+	qiime vsearch join-pairs --i-demultiplexed-seqs=$idemultiplexedseqs
+
+	#if $pminovlen:
+	 --p-minovlen=$pminovlen
+	#end if
+
+	#if str($ptruncqual):
+	 --p-truncqual="$ptruncqual"
+	#end if
+
+	#if str($cmdconfig) != 'None':
+	 --cmd-config=$cmdconfig
+	#end if
+
+	#if str($pminmergelen):
+	 --p-minmergelen="$pminmergelen"
+	#end if
+
+	#if $pmaxdiffs:
+	 --p-maxdiffs=$pmaxdiffs
+	#end if
+
+	#if str($pqminout):
+	 --p-qminout="$pqminout"
+	#end if
+
+	#if str($pmaxmergelen):
+	 --p-maxmergelen="$pmaxmergelen"
+	#end if
+
+	#if str($pmaxns):
+	 --p-maxns="$pmaxns"
+	#end if
+
+	#if $pallowmergestagger:
+  	 --p-allowmergestagger
+  #else
+  	--p-no-allowmergestagger
+	#end if
+
+	#if $pminlen:
+	 --p-minlen=$pminlen
+	#end if
+
+	#if $pqmax:
+	 --p-qmax=$pqmax
+	#end if
+
+	#if str($pmaxee):
+	 --p-maxee="$pmaxee"
+	#end if
+
+	#if str($pqmin):
+	 --p-qmin="$pqmin"
+	#end if
+
+	#if $pqmaxout:
+	 --p-qmaxout=$pqmaxout
+	#end if
+	 --o-joined-sequences=ojoinedsequences;
+
+	cp ojoinedsequences.qza $ojoinedsequences;
+	]]>
+	</command>
+	<inputs>
+		<param format="qza,no_unzip.zip" label="--i-demultiplexed-seqs: SampleData[PairedEndSequencesWithQuality] The demultiplexed paired-end sequences to be joined.  [required]" name="idemultiplexedseqs" optional="False" type="data"/>
+
+		<param label="--p-truncqual: Truncate sequences at the first base with the specified quality score value or lower. [optional]" name="ptruncqual" optional="True" type="text"/>
+
+		<param label="--p-minlen: Sequences shorter than minlen after truncation are discarded.  [default: 1]" name="pminlen" optional="True" type="integer" value="1"/>
+		<param label="--p-maxns: Sequences with more than maxns N characters are discarded.  [optional]" name="pmaxns" optional="True" type="text"/>
+
+		<param label="--p-allowmergestagger: --p-no-allowmergestagger Allow joining of staggered read pairs. [default: False]" name="pallowmergestagger" checked="False" type="boolean"/>
+
+		<param label="--p-minovlen: Minimum overlap length of forward and reverse reads for joining.  [default: 10]" name="pminovlen" optional="True" type="integer" value="10"/>
+		<param label="--p-maxdiffs: Maximum number of mismatches in the forward/reverse read overlap for joining. [default: 10]" name="pmaxdiffs" optional="True" type="integer" value="10"/>
+
+		<param label="--p-minmergelen: Minimum length of the joined read to be retained.  [optional]" name="pminmergelen" optional="True" type="text"/>
+		<param label="--p-maxmergelen: Maximum length of the joined read to be retained.  [optional]" name="pmaxmergelen" optional="True" type="text"/>
+
+		<param label="--p-maxee: Maximum number of expected errors in the joined read to be retained.  [optional]" name="pmaxee" optional="True" type="text"/>
+
+		<param label="--p-qmin: The minimum allowed quality score in the input.  [default: 0]" name="pqmin" optional="True" type="text" value="0"/>
+		<param label="--p-qminout: The minimum allowed quality score to use in output.  [default: 0]" name="pqminout" optional="True" type="text" value="0"/>
+
+		<param label="--p-qmax: The maximum allowed quality score in the input.  [default: 41]" name="pqmax" optional="True" type="integer" value="41"/>
+		<param label="--p-qmaxout: The maximum allowed quality score to use in output.  [default: 41]" name="pqmaxout" optional="True" type="integer" value="41"/>
+
+		<param label="--cmd-config: Use config file for command options" name="cmdconfig" optional="True" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="qza" label="${tool.name} on ${on_string}: joined-sequences.qza" name="ojoinedsequences"/>
+	</outputs>
+	<help>
+		<![CDATA[
+Join paired-end reads.
+-----------------------
+
+Join paired-end sequence reads using vsearch's merge_pairs function. The
+qmin, qminout, qmax, and qmaxout parameters should only need to be modified
+when working with older fastq sequence data. See the vsearch documentation
+for details on how paired-end joining is performed, and for more
+information on the parameters to this method.
+
+Parameters
+----------
+demultiplexed_seqs : SampleData[PairedEndSequencesWithQuality]
+    The demultiplexed paired-end sequences to be joined.
+truncqual : Int % Range(0, None), optional
+    Truncate sequences at the first base with the specified quality score
+    value or lower.
+minlen : Int % Range(0, None), optional
+    Sequences shorter than minlen after truncation are discarded.
+maxns : Int % Range(0, None), optional
+    Sequences with more than maxns N characters are discarded.
+allowmergestagger : Bool, optional
+    Allow joining of staggered read pairs.
+minovlen : Int % Range(0, None), optional
+    Minimum overlap length of forward and reverse reads for joining.
+maxdiffs : Int % Range(0, None), optional
+    Maximum number of mismatches in the forward/reverse read overlap for
+    joining.
+minmergelen : Int % Range(0, None), optional
+    Minimum length of the joined read to be retained.
+maxmergelen : Int % Range(0, None), optional
+    Maximum length of the joined read to be retained.
+maxee : Float % Range(0.0, None), optional
+    Maximum number of expected errors in the joined read to be retained.
+qmin : Int % Range(-5, 2, inclusive_end=True), optional
+    The minimum allowed quality score in the input.
+qminout : Int % Range(-5, 2, inclusive_end=True), optional
+    The minimum allowed quality score to use in output.
+qmax : Int % Range(40, 41, inclusive_end=True), optional
+    The maximum allowed quality score in the input.
+qmaxout : Int % Range(40, 41, inclusive_end=True), optional
+    The maximum allowed quality score to use in output.
+
+Returns
+-------
+joined_sequences : SampleData[JoinedSequencesWithQuality]
+    The joined sequences.
+    ]]>
+	</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

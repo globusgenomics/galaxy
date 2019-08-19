@@ -1,0 +1,181 @@
+<tool id="gatk3.3_SplitNCigarReads" name="SplitNCigarReads" version="JAVA: jre1.7.0_51; GATK3.3: GenomeAnalysisTK-3.3-0; SAMTOOLS: 0.1.18">
+  <description>on BAM files</description>
+  <requirements>
+      <requirement type="package">java</requirement>
+      <requirement type="package" version="3.3">gatk3</requirement>
+      <requirement type="package" version="1.1">samtools</requirement>
+  </requirements>
+  <macros>
+    <import>gatk_macros.xml</import>
+  </macros>
+  <command interpreter="python">gatk3_wrapper.py
+   --max_jvm_heap_fraction &quot;1&quot;
+   -d &quot;-I&quot; &quot;${reference_source.input_bam}&quot; &quot;${reference_source.input_bam.ext}&quot; &quot;gatk_input_1&quot;
+   #if str( $input_bam.input_bam.metadata.bam_index ) != &quot;None&quot;:
+       -d &quot;&quot; &quot;${reference_source.input_bam.metadata.bam_index}&quot; &quot;bam_index&quot; &quot;gatk_input_1&quot; ##hardcode galaxy ext type as bam_index
+   #end if
+   -p 'java 
+    -jar &quot;\$GATK3_PATH/GenomeAnalysisTK.jar&quot;
+    -T &quot;SplitNCigarReads&quot;
+    \$GATK3_SITE_OPTIONS
+    ## \$GATK3_NUM_THREADS
+    ##-et &quot;NO_ET&quot; -K &quot;/data/galaxy/appList/GenomeAnalysisTK-2.0-36-gf5c1c1a/gatk3_key_file&quot; ##ET no phone home
+    #if $reference_source.reference_source_selector != &quot;history&quot;:
+        -R &quot;${reference_source.ref_file.fields.path}&quot;
+    #end if
+    --out &quot;${output_bam}&quot;
+    $fixOverhangs
+    --maxBasesInOverhang $maxBasesInOverhang
+    --maxMismatchesInOverhang $maxMismatchesInOverhang
+    --maxReadsInMemory $maxReadsInMemory
+   '
+   
+    ##start standard gatk options
+    #if $gatk_param_type.gatk_param_type_selector == &quot;advanced&quot;:
+        #include source=$standard_gatk_options#
+    #end if
+    
+    #if $reference_source.reference_source_selector == &quot;history&quot;:
+        -d &quot;-R&quot; &quot;${reference_source.ref_file}&quot; &quot;${reference_source.ref_file.ext}&quot; &quot;gatk_input_reference_fasta&quot;
+        --picard_jar &quot;/mnt/galaxyTools/tools/picard/1.121/CreateSequenceDictionary.jar&quot;
+    #end if
+    ##end standard gatk options
+    ##start analysis specific options
+    #if $analysis_param_type.analysis_param_type_selector == &quot;advanced&quot;:
+        -p '
+        --maxDepth ${analysis_param_type.maxDepth}
+        --maxFractionOfReadsWithLowMAPQ ${analysis_param_type.maxFractionOfReadsWithLowMAPQ}
+        --maxLowMAPQ &quot;${analysis_param_type.maxLowMAPQ}&quot;
+        --minBaseQuality &quot;${analysis_param_type.min_base_quality}&quot;
+        --minMappingQuality &quot;${analysis_param_type.min_mapping_quality}&quot;
+        --minDepth &quot;${analysis_param_type.minDepth}&quot;
+        --minDepthForLowMAPQ &quot;${analysis_param_type.minDepthForLowMAPQ}&quot;
+        '
+    #end if
+
+  </command>
+  <inputs>
+    <conditional name="reference_source">
+      <param label="Choose the source for the reference list" name="reference_source_selector" type="select">
+        <option value="cached">Locally cached</option>
+        <option value="history">History</option>
+      </param>
+      <when value="cached">
+        <repeat help="-I,--input_file &amp;lt;input_file&amp;gt;" min="1" name="input_bams" title="BAM file">
+            <param format="bam" label="BAM file" name="input_bam" type="data">
+              <validator type="unspecified_build"/>
+              <validator message="Sequences are not currently available for the specified build." metadata_column="dbkey" metadata_name="dbkey" table_name="gatk3_picard_indexes" type="dataset_metadata_in_data_table"/> <!-- fixme!!! this needs to be a select -->
+            </param>
+        </repeat>
+        <param help="-R,--reference_sequence &amp;lt;reference_sequence&amp;gt;" label="Using reference genome" name="ref_file" type="select">
+          <options from_data_table="gatk3_picard_indexes">
+                <filter column="3" type="sort_by"/>
+
+            <!-- <filter type="data_meta" key="dbkey" ref="input_bam" column="dbkey"/> does not yet work in a repeat...--> 
+          </options>
+          <validator message="A built-in reference genome is not available for the build associated with the selected input file" type="no_options"/>
+        </param>
+      </when>
+      <when value="history"> <!-- FIX ME!!!! -->
+        <param format="bam" label="BAM file" name="input_bam" type="data"/>
+        <param format="fasta" help="-R,--reference_sequence &amp;lt;reference_sequence&amp;gt;" label="Using reference file" name="ref_file" type="data"/>
+      </when>
+    </conditional>
+    <param falsevalue="" help="--doNotFixOverhangs" label="Do not have the walker hard-clip overhanging sections of the reads" name="fixOverhangs" truevalue="--doNotFixOverhangs" type="boolean"/>
+    <param help="--maxBasesInOverhang,-maxOverhang &amp;lt;maxBasesInOverhang&amp;gt;" label="Max number of bases allowed in the overhang" name="maxBasesInOverhang" type="integer" value="40"/>
+    <param help="--maxMismatchesInOverhang,-maxMismatches &amp;lt;maxMismatches&amp;gt;" label="Max number of mismatches allowed in the overhang" name="maxMismatchesInOverhang" type="integer" value="1"/>
+    <param help="--maxReadsInMemory,-maxInMemory &amp;lt;maxReadsInMemory&amp;gt;" label="Max reads allowed to be kept in memory at a time by the BAM writer" name="maxReadsInMemory" type="integer" value="150000"/>
+
+    <conditional name="gatk_param_type">
+      <param label="Basic or Advanced GATK options" name="gatk_param_type_selector" type="select">
+        <option selected="True" value="basic">Basic</option>
+        <option value="advanced">Advanced</option>
+      </param>
+      <when value="basic">
+        <!-- Do nothing here -->
+      </when>
+      <when value="advanced">
+        <expand macro="advanced_options" />
+      </when>
+    </conditional>
+    
+    <conditional name="analysis_param_type">
+      <param label="Basic or Advanced Analysis options" name="analysis_param_type_selector" type="select">
+        <option selected="True" value="basic">Basic</option>
+        <option value="advanced">Advanced</option>
+      </param>
+      <when value="basic">
+        <!-- Do nothing here -->
+      </when>
+      <when value="advanced">
+        <param help="--maxDepth" label="Maximum read depth before a locus is considered poorly mapped" name="maxDepth" type="integer" value="-1"/>
+        <param help="-frlmq,--maxFractionOfReadsWithLowMAPQ &amp;lt;maxFractionOfReadsWithLowMAPQ&amp;gt;" label="If the fraction of reads at a base with low mapping quality exceeds this value, the site may be poorly mapped" name="maxFractionOfReadsWithLowMAPQ" type="float" value="0.1"/>
+        <param help="-mlmq,--maxLowMAPQ &amp;lt;maxLowMAPQ&amp;gt;" label="Maximum value for MAPQ to be considered a problematic mapped read" name="maxLowMAPQ" type="integer" value="1"/>
+        <param help="-mbq,--minBaseQuality &amp;lt;minBaseQuality&amp;gt;" label="Minimum quality of bases to count towards depth" name="min_base_quality" type="integer" value="20"/>
+        <param help="-mmq,--minMappingQuality &amp;lt;minMappingQuality&amp;gt;" label="Minimum mapping quality of reads to count towards depth" name="min_mapping_quality" type="integer" value="10"/>
+        <param help="--minDepth &amp;lt;minDepth&amp;gt;" label="Minimum QC+ read depth before a locus is considered callable" name="minDepth" type="integer" value="4"/>
+        <param help="--Minimum read depth before a locus is considered a potential candidate for poorly mapped,-mdflmq &amp;lt;minDepthForLowMAPQ&amp;gt;" label="Minimum read depth before a locus is considered a potential candidate for poorly mapped" name="minDepthForLowMAPQ" type="integer" value="10"/>
+      </when>
+    </conditional>
+  </inputs>
+  <outputs>
+    <data format="bam" label="${tool.name} on ${on_string} (BAM)" name="output_bam"/>
+  </outputs>
+  <trackster_conf/>
+  <tests>
+      <test>
+      </test>
+  </tests>
+  <help>
+**What it does**
+
+------
+
+**Inputs**
+
+GenomeAnalysisTK: CallableLoci accepts aligned BAM input files.
+
+
+**Outputs**
+
+The output is in various table formats.
+
+
+Go `here &lt;http://www.broadinstitute.org/gatk/guide/topic?name=intro&gt;`_ for details on GATK file formats.
+
+-------
+
+**Settings**::
+
+ calculateCoverageOverGenes     File     NA     Calculate the coverage statistics over this list of genes. Currently accepts RefSeq.
+ ignoreDeletionSites     boolean     false     Ignore sites consisting only of deletions
+ includeDeletions     boolean     false     Include information on deletions
+ maxBaseQuality     byte     127     Maximum quality of bases to count towards depth. Defaults to 127 (Byte.MAX_VALUE).
+ maxMappingQuality     int     2147483647     Maximum mapping quality of reads to count towards depth. Defaults to 2^31-1 (Integer.MAX_VALUE).
+ minBaseQuality     byte     -1     Minimum quality of bases to count towards depth. Defaults to -1.
+ minMappingQuality     int     -1     Minimum mapping quality of reads to count towards depth. Defaults to -1.
+ nBins     int     499     Number of bins to use for granular binning
+ omitDepthOutputAtEachBase     boolean     false     Will omit the output of the depth of coverage at each base, which should result in speedup
+ omitIntervalStatistics     boolean     false     Will omit the per-interval statistics section, which should result in speedup
+ omitLocusTable     boolean     false     Will not calculate the per-sample per-depth counts of loci, which should result in speedup
+ omitPerSampleStats     boolean     false     Omits the summary files per-sample. These statistics are still calculated, so this argument will not improve runtime.
+ outputFormat     String     rtable     the format of the output file (e.g. csv, table, rtable); defaults to r-readable table
+ partitionType     Set[Partition]     [sample]     Partition type for depth of coverage. Defaults to sample. Can be any combination of sample, readgroup, library.
+ printBaseCounts     boolean     false     Will add base counts to per-locus output.
+ printBinEndpointsAndExit     boolean     false     Prints the bin values and exits immediately. Use to calibrate what bins you want before running on data.
+ start     int     1     Starting (left endpoint) for granular binning
+ stop     int     500     Ending (right endpoint) for granular binning
+ summaryCoverageThreshold     int[]     [15]     for summary file outputs, report the % of bases coverd to &gt;= this number. Defaults to 15; can take multiple arguments.
+
+------
+
+**Citation**
+
+For the underlying tool, please cite `DePristo MA, Banks E, Poplin R, Garimella KV, Maguire JR, Hartl C, Philippakis AA, del Angel G, Rivas MA, Hanna M, McKenna A, Fennell TJ, Kernytsky AM, Sivachenko AY, Cibulskis K, Gabriel SB, Altshuler D, Daly MJ. A framework for variation discovery and genotyping using next-generation DNA sequencing data. Nat Genet. 2011 May;43(5):491-8. &lt;http://www.ncbi.nlm.nih.gov/pubmed/21478889&gt;`_
+
+Please also site `McKenna A, Hanna M, Banks E, Sivachenko A, Cibulskis K, Kernytsky A, Garimella K, Altshuler D, Gabriel S, Daly M, DePristo MA (2010). The Genome Analysis Toolkit: a MapReduce framework for analyzing next-generation DNA sequencing data. Genome Res. 20:1297-303. Epub 2010 Jul 19. &lt;http://www.ncbi.nlm.nih.gov/pubmed/20644199&gt;`_
+
+If you use this tool in Galaxy, please cite `Blankenberg D, Von Kuster G, Coraor N, Ananda G, Lazarus R, Mangan M, Nekrutenko A, Taylor J. Galaxy: a web-based genome analysis tool for experimentalists. Curr Protoc Mol Biol. 2010 Jan;Chapter 19:Unit 19.10.1-21. &lt;http://www.ncbi.nlm.nih.gov/pubmed/20069535&gt;`_
+
+  </help>
+</tool>

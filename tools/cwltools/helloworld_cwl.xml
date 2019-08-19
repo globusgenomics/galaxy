@@ -1,0 +1,32 @@
+<tool id="cwl_hello_world" name="Simple CWL Hello World Tool">
+  <description>Just say hello there</description>
+  <requirements>
+    <requirement type="package">anaconda</requirement>
+  </requirements>
+  <command>
+    cp -r /opt/galaxy/tools/cwltools/* .;
+    echo $variable > input.txt;
+    cwltool --non-strict hello_world.cwl hello_world.cwl.json;
+    cp helloworld.txt $outfile
+  </command>
+    <stdio>
+        <regex match=".*" source="both" level="log" description="tool progress"/>
+    </stdio>
+  <inputs>
+    <param name="variable" type="text" size="10" value="State your name " label="With whom do I have the pleasure?"/>
+  </inputs>
+  <outputs>
+    <data name="outfile" type="data" format="txt"/>
+  </outputs>
+  <tests>
+    <test>
+      <!-- TODO: UPDATE TEST CASE -->
+      <param name="namefield" value="Bob"/>
+      <output name="out_file1" file="helloworld_out.txt"/>
+    </test>
+  </tests>
+  <help>
+   Running a simple CWL example workflow from Synapse.
+
+  </help>
+</tool>

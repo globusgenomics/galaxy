@@ -1,0 +1,98 @@
+<tool id="inner_distance" name="Inner Distance" version="RSEQC: 2.3.3">
+	<description>calculate the inner distance (or insert size) between two paired RNA reads</description>
+	<requirements>
+		<requirement type="package">R</requirement>
+		<requirement type="package">rseqc</requirement>
+                <requirement type="package">pymodules</requirement>
+	</requirements>
+	<command> inner_distance.py -i $input -o output -r $refgene
+
+		#if $bounds.hasLowerBound
+			-l $bounds.lowerBound
+		#end if
+
+		#if $bounds2.hasUpperBound
+			-u $bounds2.upperBound
+		#end if
+
+		#if $steps.step
+			-s $steps.stepSize
+		#end if
+                2&gt; $outputlog
+	</command>
+	<inputs>
+		<param format="bam,sam" label="input bam/sam file" name="input" type="data"/>
+		<param format="bed" label="reference gene model" name="refgene" type="data"/>
+		<conditional name="bounds">
+			<param label="Specify lower bound" name="hasLowerBound" type="boolean" value="false"/>
+			<when value="true">
+				<param label="Estimated Lower Bound (bp, default=-250)" name="lowerBound" type="integer" value="-250"/>
+			</when>
+		</conditional>
+		<conditional name="bounds2">
+			<param label="Specify upper bound" name="hasUpperBound" type="boolean" value="false"/>
+			<when value="true">
+				<param label="Estimated Upper Bound (bp, default=250)" name="upperBound" type="integer" value="250"/>
+			</when>
+		</conditional>
+		<conditional name="steps">
+			<param label="Specify step size" name="step" type="boolean" value="false"/>
+			<when value="true">
+				<param label="Step size (bp, default=5)" name="stepSize" type="integer" value="5"/>
+			</when>
+		</conditional>
+	</inputs>
+	<outputs>
+		<data format="txt" from_work_dir="output.inner_distance.txt" label="${tool.name} on ${on_string}: Inner Distance Report" name="outputtxt"/>
+		<data format="txt" from_work_dir="output.inner_distance_freq.txt" label="${tool.name} on ${on_string}: Inner Distance Frequence Report" name="outputfreqtxt"/>
+		<data format="pdf" from_work_dir="output.inner_distance_plot.pdf" label="${tool.name} on ${on_string}: Plot" name="outputpdf"/>
+		<data format="r" from_work_dir="output.inner_distance_plot.r" label="${tool.name} on ${on_string}: R script" name="outputr"/>
+                <data format="txt" label="${tool.name} on ${on_string}: log" name="outputlog"/>
+	</outputs>
+	<help>
+.. image:: https://code.google.com/p/rseqc/logo?cct=1336721062
+
+-----
+
+About RSeQC
++++++++++++
+
+The RSeQC package provides a number of useful modules that can comprehensively evaluate high throughput sequence data especially RNA-seq data. “Basic modules” quickly inspect sequence quality, nucleotide composition bias, PCR bias and GC bias, while “RNA-seq specific modules” investigate sequencing saturation status of both splicing junction detection and expression estimation, mapped reads clipping profile, mapped reads distribution, coverage uniformity over gene body, reproducibility, strand specificity and splice junction annotation.
+
+The RSeQC package is licensed under the GNU GPL v3 license.
+
+Inputs
+++++++++++++++
+
+Input BAM/SAM file
+	Alignment file in BAM/SAM format.
+
+Reference gene model
+	Gene model in BED format.
+
+Estimated Upper/Lower Bounds (defaults=250 and -250)
+	Estimated upper/lower bounds of inner distance (bp).
+
+Step size (default=5)
+	Step size of histogram
+
+
+Output
+++++++++++++++
+
+1. output.inner_distance.txt:
+- first column is read ID
+-second column is inner distance. Could be negative value if PE reads were overlapped or mapping error (e.g. Read1_start  less than Read2_start, while Read1_end much greater than Read2_end due to spliced mapping of read1)
+- third column indicates how paired reads were mapped: PE_within_same_exon, PE_within_diff_exon,PE_reads_overlap
+2. output..inner_distance_freq.txt:
+- inner distance starts
+- inner distance ends
+- number of read pairs
+- note the first 2 columns are left side half open interval
+3. output.inner_distance_plot.r: R script to generate histogram
+4. output.inner_distance_plot.pdf: histogram plot
+
+.. image:: http://dldcc-web.brc.bcm.edu/lilab/liguow/RSeQC/figure/inner_distance.png
+
+	</help>
+</tool>

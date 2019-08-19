@@ -1,0 +1,29 @@
+<tool id="calculate_TMB" name="Calculate TMB" version="" >
+  <description>for an exon VCF with target BED file</description>
+  <requirements>
+    <requirement type="package">bedtools</requirement>
+    <requirement type="package">pymodules</requirement>
+  </requirements>
+  <command interpreter="python">
+   calculate_TMB_v2.py $bed_file $vcf_file > $out_file
+  </command>
+  <inputs>
+      <param name="bed_file" type="data" format="bed" label="Exon Target BED file"/>
+      <param name="vcf_file" type="data" format="vcf" label="VCF file" help=""/>
+  </inputs>
+  <outputs>
+    <data format="txt" label="${tool.name} on ${on_string}.TMB.txt" name="out_file"/>
+  </outputs>
+  <tests>
+    <test>
+    </test>
+  </tests> 
+  <help>
+
+**What it does**
+
+Measures the Tumor Mutational Burden (TMB). 
+TMB is a measurement of the number of mutations per megabase carried by tumor cells and an emerging area of focus in biomarker research.
+
+  </help>
+</tool>

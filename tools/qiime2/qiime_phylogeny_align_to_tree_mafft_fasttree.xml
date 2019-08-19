@@ -1,0 +1,71 @@
+<?xml version="1.0" ?>
+<tool id="qiime_phylogeny_align_to_tree_mafft_fasttree" name="qiime phylogeny align to tree mafft fasttree" version="022019">
+	<description> - Construct a phylogenetic tree with FastTree.</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command>
+	<![CDATA[
+	qiime phylogeny align-to-tree-mafft-fasttree --i-sequences=$isequences
+	#set $pnthreads = '${GALAXY_SLOTS:-4}'
+
+	#if str($pnthreads):
+	 --p-n-threads="$pnthreads"
+	#end if
+
+        #if $pmaskmaxgapfrequency:
+          --p-mask-max-gap-frequency=$pmaskmaxgapfrequency
+        #end if
+        #if $pmaskminconservation:
+          --p-mask-min-conservation=$pmaskminconservation
+        #end if
+
+
+	#if str($cmdconfig) != 'None':
+	 --cmd-config=$cmdconfig
+	#end if
+	 --o-tree=otree
+         --o-rooted-tree=orootedtree
+         --o-masked-alignment=omaskedalignment
+         --o-alignment=oalignment;
+	cp otree.qza $otree;
+        cp orootedtree.qza $orootedtree;
+        cp omaskedalignment.qza $omaskedalignment;
+        cp oalignment.qza $oalignment;
+	]]>
+	</command>
+	<inputs>
+		<param format="qza,no_unzip.zip" label="--i-sequences: FeatureData[AlignedSequence] Aligned sequences to be used for phylogenetic reconstruction.  [required]" name="isequences" optional="False" type="data"/>
+		<param label="--cmd-config: Use config file for command options" name="cmdconfig" optional="True" type="data"/>
+                <param label="--p-mask-max-gap-frequency: The maximum relative frequency of gap characters in a column for the column to be retained. This relative frequency must be a number between 0.0 and 1.0 (inclusive), where 0.0 retains only those columns without gap characters, and 1.0 retains all columns regardless of gap character frequency. [default: 1.0]" name="pmaskmaxgapfrequency" optional="True" type="float" value="1.0"/>
+                <param label="--p-mask-min-conservation: The minimum relative frequency of at least one non-gap character in a column for that column to be retained. This relative frequency must be a number between 0.0 and 1.0 (inclusive). For example, if a value of 0.4 is provided, a column will only be retained if it contains at least one character that is present in at least 40% of the sequences.  [default: 0.4]" name="pmaskminconservation" optional="True" type="float" value="0.4"/>
+	</inputs>
+	<outputs>
+		<data format="qza" label="${tool.name} on ${on_string}: unrootedtree.qza" name="otree"/>
+                <data format="qza" label="${tool.name} on ${on_string}: rootedtree.qza" name="orootedtree"/>
+                <data format="qza" label="${tool.name} on ${on_string}: alignment.qza" name="oalignment"/>
+                <data format="qza" label="${tool.name} on ${on_string}: masked_alignment.qza" name="omaskedalignment"/>
+	</outputs>
+	<help>
+		<![CDATA[
+Construct a phylogenetic tree with FastTree.
+---------------------------------------------
+
+Construct a phylogenetic tree with FastTree.
+
+Parameters
+----------
+alignment : FeatureData[AlignedSequence]
+    Aligned sequences to be used for phylogenetic reconstruction.
+
+Returns
+-------
+tree : Phylogeny[Unrooted]
+    The resulting phylogenetic tree.
+		]]>
+	</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

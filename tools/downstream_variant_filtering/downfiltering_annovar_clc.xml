@@ -1,0 +1,58 @@
+<tool id="downfiltering_annovar_clc" name="Filter Annovar Variants" version="1.0.0">
+  <description>for CLC</description>
+  <requirements>
+    <requirement type="package">pymodules</requirement>
+    <requirement type="package">bedtools</requirement>
+  </requirements>
+  <command>
+    mkdir $output.extra_files_path;
+    $__tool_directory__/downFiltering.py filter
+      --dir $output.extra_files_path
+      #if $input_source.input_source_type == "annotations":
+        --variant-annotations-directory ${input_source.input_directory.extra_files_path}
+      #else:
+        --vcf ${input_source.matrix_file}
+        --rdf ${input_source.rdf_file}
+        --sample-list ${input_source.samplename_file}
+      #end if
+      #if str($exclude_intervals) != "None":
+          --exclude $exclude_intervals
+      #end if
+      --window $window
+      --population-threshold $population_threshold
+      #if str($gtf_file) != "None":
+        --gtf $gtf_file
+      #end if
+      --output $output
+  </command>
+    <inputs>
+      <conditional name="input_source">
+        <param label="Input type" name="input_source_type" type="select">
+          <option selected="True" value="annotations">CLC Annovar Annotations</option>
+          <option value="matrix">Multi-sample Matrix</option>
+        </param>
+        <when value="annotations">
+          <param help="Should be html file" label="CLC Annotation files directory object" name="input_directory" type="data" format="txt,html"/>
+        </when>
+        <when value="matrix">
+          <param label="CLC Multi-sample Annotation Matrix" name="matrix_file" type="data" format="txt,bed,tabular" help="Make sure header columns are unique. Annovar and CLC sometimes produce columns with the same names."/>
+          <param label="CLC Multi-sample RDF Matrix" name="rdf_file" type="data" format="txt,bed,tabular"/>
+          <param label="Sample Name files" name="samplename_file" type="data" format="txt,bed,tabular" help="Each line must contain the name of each sample as it appears on the header of both Annotation and RDF matrix"/>
+        </when>
+      </conditional>
+      <param format="bed,tabular" label="Exclude intervals" name="exclude_intervals" type="data" help="BED file of regions to exclude" optional="True"/>
+      <param format="gtf" label="Reference GTF" name="gtf_file" type="data" optional="True"/>
+      <param help="Variants within this window size will be considered part of the same cluster" label="Cluster window" name="window" type="integer" value="20"/>
+      <param help="Population variant occurrence percentage threshold for a given cluster" label="Population variant ocurrence threshold" name="population_threshold" type="float" value="0.75" min="0" max="1"/>
+    </inputs>
+    <outputs>
+      <data format="bed" label="${tool.name} on ${on_string}: Filtered matrix" name="output"/>
+    </outputs>
+    <help>
+
+**What it does**
+
+Filter variant list annotated with Annovar based on following set of rules:
+
+    </help>
+</tool>

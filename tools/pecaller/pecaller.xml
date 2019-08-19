@@ -1,0 +1,57 @@
+<tool id="pecaller" name="PEcaller" version="PECALLER: 2016-3-3">
+  <description> is a variant calling program </description>
+  <requirements>
+    <requirement type="package">pecaller</requirement>
+  </requirements>
+  <command>
+<![CDATA[
+          #for $i, $s in enumerate($pileup_files):
+              #set $input_path = $s.pileup_file
+              #set $link_name = "pileup_" + str($i) + ".gz"
+              ln -s $input_path $link_name;
+          #end for
+          #set $num_pileup_file = 5 + len($pileup_files)
+          pecaller pileup $index $num_pileup_file output $probe_to_call $theta $haploid $no_threads $use_pedfile;
+]]>
+  </command>
+
+  <stdio>
+    <exit_code range="1:" level="fatal" description="Error" />
+  </stdio>
+
+   <inputs>
+          <param name="index" type="select" label="Select a reference genome" help="If your genome of interest is not listed, please contact globus genomics admin">
+                    <options from_data_table="pemapper_indexes"></options>
+          </param>
+
+          <repeat name="pileup_files" title="genotype call pileup files" min="1">
+             <param format="pileup" help="" label="pileup file input" name="pileup_file" type="data"/>
+          </repeat>
+
+          <param label="probe to call" name="probe_to_call" type="float" value="0.95"/>
+          <param label="theta" name="theta" type="float" value="0.001"/>
+          <param label="Haploid?" name="haploid" type="text" value="n"/>
+          <param label="Number of threads" name="no_threads" type="integer" value="24"/>
+          <param label="Use pedfile" name="use_pedfile" type="text" value="n"/>
+   </inputs>
+
+   <outputs>
+      <data format="tabular" label="${tool.name} on ${on_string} (base output)" name="out_base" from_work_dir="output.base.gz"/>
+      <data format="tabular" label="${tool.name} on ${on_string} (dist)" name="out_dist" from_work_dir="output.dist.txt"/> 
+      <data format="tabular" label="${tool.name} on ${on_string} (pile output)" name="out_pile" from_work_dir="output.piles.gz"/>
+      <data format="tabular" label="${tool.name} on ${on_string} (snp output)" name="snp" from_work_dir="output.snp"/>  
+   </outputs>
+   
+    <tests>
+     <test>
+     </test>
+   </tests>
+   <help>
+**PEmapper and PEcaller**
+
+PEmapper_ and PEcaller_ are reference-based NGS short-read mapping and variant calling programs written by Dr.David J. Cutler at Emory University.
+
+.. _PEmapper: https://sourceforge.net/projects/pemapper/
+.. _PEcaller: https://github.com/wingolab-org/pecaller   
+  </help>
+</tool>

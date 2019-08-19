@@ -1,0 +1,47 @@
+ <tool id="chr_prefix" name="Add/Remove chr prefix" version="1">
+
+  <description> add or remove chr prefix from a column </description>
+  
+   <code file="getcolumnnames.py"/>
+   
+  <command interpreter="bash"> 
+  	chrprefix.sh 
+  		$infile
+  		"${go.column}"
+  		$addremove
+		$outputfile		
+  </command>
+
+  <outputs>
+  	<data format="tabular" name="outputfile" label="${sample} - chr-prefix on ${on_string}"/>
+  </outputs>
+  
+  <inputs>
+
+  	<param name="infile" type="data" label="Select inputfile" help="must be a tab-delimited file with a 1-line header" />   
+  	<conditional name="go">
+		<param name="ready" type="select"  label="Ready to select column?"  help="Set to NO and back to YES after changing input file">
+			<option value="no" selected="True">no</option>
+			<option value="yes">yes</option>	
+		</param>
+			
+		<when value="yes">		
+  			<param name="column"   type="select" dynamic_options="get_headers(infile)"  multiple="False" label="Select Column"   />
+  		</when>
+  	</conditional>		
+  		
+  	<param name="addremove" type="select" label="Add or remove the chr prefix?">
+  		<option value="add">Add</option>
+  		<option value="remove">Remove</option> 
+  	</param> 
+  	<param name="sample"	type="text" value="" label="Output File Name" help="Optional."/>	
+
+  </inputs>
+
+  <help>
+  
+**What it does**
+removes or adds the "chr" prefix in a column of a file. Some tools expect you to indicate chromosomes as "chr1,chr2,chrX", while others expect only 1,2,X as input. This tool allows you to easily switch notations
+
+  </help>
+</tool>

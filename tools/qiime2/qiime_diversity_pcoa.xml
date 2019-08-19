@@ -1,0 +1,46 @@
+<?xml version="1.0" ?>
+<tool id="qiime_diversity_pcoa" name="qiime diversity pcoa" version="022019">
+	<description> - Principal Coordinate Analysis</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command><![CDATA[
+  qiime diversity pcoa --i-distance-matrix=$idistancematrix
+  
+  #if str($cmdconfig) != 'None':
+   --cmd-config=$cmdconfig
+  #end if
+  
+   --o-pcoa=opcoa;
+   
+  cp opcoa.qza $opcoa;
+  ]]></command>
+	<inputs>
+		<param format="qza,no_unzip.zip" label="--i-distance-matrix: DistanceMatrix The distance matrix on which PCoA should be computed.  [required]" name="idistancematrix" optional="False" type="data"/>
+		<param label="--cmd-config: Use config file for command options" name="cmdconfig" optional="True" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="qza" label="${tool.name} on ${on_string}: pcoa.qza" name="opcoa"/>
+	</outputs>
+	<help><![CDATA[
+Principal Coordinate Analysis
+------------------------------
+
+Apply principal coordinate analysis.
+
+Parameters
+----------
+distance_matrix : DistanceMatrix
+    The distance matrix on which PCoA should be computed.
+
+Returns
+-------
+pcoa : PCoAResults
+    The resulting PCoA matrix.
+      ]]>
+	</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

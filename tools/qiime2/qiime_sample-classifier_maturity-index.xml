@@ -1,0 +1,203 @@
+<?xml version="1.0" ?>
+<tool id="qiime_sample-classifier_maturity-index" name="qiime sample-classifier maturity-index" version="022019">
+	<description> - Microbial maturity index prediction.</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command>
+	<![CDATA[
+	qiime sample-classifier maturity-index --i-table=$itable
+
+	#def list_dict_to_string(list_dict):
+		#set $file_list = list_dict[0]['additional_input'].__getattr__('file_name')
+		#for d in list_dict[1:]:
+			#set $file_list = $file_list + ' --m-metadata-file=' + d['additional_input'].__getattr__('file_name')
+		#end for
+		#return $file_list
+	#end def
+
+	 --m-metadata-file=$list_dict_to_string($input_files_mmetadatafile) --p-group-by="$pgroupby" --p-column="$pcolumn" --p-control="$pcontrol"
+
+	#set $pnjobs = '${GALAXY_SLOTS:-4}'
+
+	#if str($pnjobs):
+	 --p-n-jobs="$pnjobs"
+	#end if
+
+
+	#if $pparametertuning:
+	  --p-parameter-tuning
+	#else
+		--p-no-parameter-tuning
+	#end if
+
+	#if $pstep:
+	 --p-step=$pstep
+	#end if
+
+	#if $pstratify:
+	  --p-stratify
+	#else
+		--p-no-stratify
+	#end if
+
+	#if $poptimizefeatureselection:
+	  --p-optimize-feature-selection
+	#else
+		--p-no-optimize-feature-selection
+	#end if
+
+	#if $ptestsize:
+	 --p-test-size=$ptestsize
+	#end if
+	 --o-visualization=ovisualization
+	#if str($pestimator) != 'None':
+	 --p-estimator=$pestimator
+	#end if
+
+	#if $pmazstats:
+	  --p-maz-stats
+ 	#else
+ 		--p-no-maz-stats
+	#end if
+
+	#if str($cmdconfig) != 'None':
+	 --cmd-config=$cmdconfig
+	#end if
+
+	#if $pcv:
+	 --p-cv=$pcv
+	#end if
+
+	#if $pnestimators:
+	 --p-n-estimators=$pnestimators
+	#end if
+
+	#if str($prandomstate):
+	 --p-random-state="$prandomstate"
+	#end if
+	;
+	qiime tools export --input-path ovisualization.qzv --output-path out   && mkdir -p '$ovisualization.files_path'
+	&& cp -r out/* '$ovisualization.files_path'
+	&& mv '$ovisualization.files_path/index.html' '$ovisualization'
+	]]>
+	</command>
+	<inputs>
+		<param format="qza,no_unzip.zip" label="--i-table: FeatureTable[Frequency] Feature table containing all features that should be used for target prediction. [required]" name="itable" optional="False" type="data"/>
+
+		<repeat name="input_files_mmetadatafile" optional="False" title="--m-metadata-file">
+			<param label="--m-metadata-file: Metadata file or artifact viewable as metadata. This option may be supplied multiple times to merge metadata. [required]" name="additional_input" type="data" format="tabular,qza,no_unzip.zip" />
+		</repeat>
+
+		<param label="--p-column: Numeric metadata column to use as prediction target.  [required]" name="pcolumn" optional="False" type="text"/>
+
+		<param label="--p-group-by: Categorical metadata column to use for plotting and significance testing between main treatment groups.  [required]" name="pgroupby" optional="False" type="text"/>
+		<param label="--p-control: Value of group_by to use as control group. The regression model will be trained using only control group data, and the maturity scores of other groups consequently will be assessed relative to this group.  [required]" name="pcontrol" optional="False" type="text"/>
+
+		<param label="--p-estimator: Regression model to use for prediction.
+                                  [default: RandomForestRegressor]" name="pestimator" optional="True" type="select">
+			<option selected="True" value="None">Selection is Optional</option>
+			<option value="Ridge">Ridge</option>
+			<option value="RandomForestRegressor">RandomForestRegressor</option>
+			<option value="GradientBoostingRegressor">GradientBoostingRegressor</option>
+			<option value="ExtraTreesRegressor">ExtraTreesRegressor</option>
+			<option value="SVR">SVR</option>
+			<option value="ElasticNet">ElasticNet</option>
+			<option value="Lasso">Lasso</option>
+		</param>
+		<param label="--p-n-estimators: Number of trees to grow for estimation. More trees will improve predictive accuracy up to a threshold level, but will also increase time and memory requirements. This parameter only affects ensemble estimators, such as Random Forest, AdaBoost, ExtraTrees, and GradientBoosting.  [default: 100]" name="pnestimators" optional="True" type="integer" value="100"/>
+
+		<param label="--p-test-size: Fraction of input samples to exclude from training set and use for classifier testing. [default: 0.2]" name="ptestsize" optional="True" type="float" value="0.2"/>
+
+		<param label="--p-step: If optimize_feature_selection is True, step is the percentage of features to remove at each iteration.  [default: 0.05]" name="pstep" optional="True" type="float" value="0.05"/>
+
+		<param label="--p-cv: Number of k-fold cross-validations to perform.  [default: 5]" name="pcv" optional="True" type="integer" value="5"/>
+
+		<param label="--p-random-state: Seed used by random number generator. [optional]" name="prandomstate" optional="True" type="text"/>
+
+		<param label="--p-parameter-tuning: --p-no-parameter-tuning Automatically tune hyperparameters using random grid search.  [default: True]" name="pparametertuning" checked="True" type="boolean"/>
+		<param label="--p-optimize-feature-selection: --p-no-optimize-feature-selection Automatically optimize input feature selection using recursive feature elimination.  [default: True]" name="poptimizefeatureselection" checked="True" type="boolean"/>
+
+		<param label="--p-stratify: --p-no-stratify  Evenly stratify training and test data among metadata categories. If True, all values in column must match at least two samples. [default: False]" name="pstratify" checked="False" type="boolean"/>
+
+		<param label="--p-maz-stats: --p-no-maz-stats Calculate anova and pairwise tests on MAZ scores.  [default: True]" name="pmazstats" checked="True" type="boolean"/>
+
+		<param label="--cmd-config: Use config file for command options" name="cmdconfig" optional="True" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="html" label="${tool.name} on ${on_string}: visualization.qzv" name="ovisualization"/>
+	</outputs>
+	<help>
+		<![CDATA[
+Microbial maturity index prediction.
+-------------------------------------
+
+Calculates a "microbial maturity" index from a regression model trained on
+feature data to predict a given continuous metadata column, e.g., to
+predict age as a function of microbiota composition. The model is trained
+on a subset of control group samples, then predicts the column value for
+all samples. This visualization computes maturity index z-scores to compare
+relative "maturity" between each group, as described in
+doi:10.1038/nature13421. This method can be used to predict between-group
+differences in relative trajectory across any type of continuous metadata
+gradient, e.g., intestinal microbiome development by age, microbial
+succession during wine fermentation, or microbial community differences
+along environmental gradients, as a function of two or more different
+"treatment" groups.
+
+Parameters
+----------
+table : FeatureTable[Frequency]
+    Feature table containing all features that should be used for target
+    prediction.
+metadata : Metadata
+		\
+column : Str
+    Numeric metadata column to use as prediction target.
+group_by : Str
+    Categorical metadata column to use for plotting and significance
+    testing between main treatment groups.
+control : Str
+    Value of group_by to use as control group. The regression model will be
+    trained using only control group data, and the maturity scores of other
+    groups consequently will be assessed relative to this group.
+estimator : Str % Choices({'ElasticNet', 'ExtraTreesRegressor', 'GradientBoostingRegressor', 'Lasso', 'RandomForestRegressor', 'Ridge', 'SVR'}), optional
+    Regression model to use for prediction.
+n_estimators : Int % Range(1, None), optional
+    Number of trees to grow for estimation. More trees will improve
+    predictive accuracy up to a threshold level, but will also increase
+    time and memory requirements. This parameter only affects ensemble
+    estimators, such as Random Forest, AdaBoost, ExtraTrees, and
+    GradientBoosting.
+test_size : Float % Range(0.0, 1.0, inclusive_start=False), optional
+    Fraction of input samples to exclude from training set and use for
+    classifier testing.
+step : Float % Range(0.0, 1.0, inclusive_start=False), optional
+    If optimize_feature_selection is True, step is the percentage of
+    features to remove at each iteration.
+cv : Int % Range(1, None), optional
+    Number of k-fold cross-validations to perform.
+random_state : Int, optional
+    Seed used by random number generator.
+parameter_tuning : Bool, optional
+    Automatically tune hyperparameters using random grid search.
+optimize_feature_selection : Bool, optional
+    Automatically optimize input feature selection using recursive feature
+    elimination.
+stratify : Bool, optional
+    Evenly stratify training and test data among metadata categories. If
+    True, all values in column must match at least two samples.
+maz_stats : Bool, optional
+    Calculate anova and pairwise tests on MAZ scores.
+
+Returns
+-------
+visualization : Visualization
+		\
+		]]>
+	</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

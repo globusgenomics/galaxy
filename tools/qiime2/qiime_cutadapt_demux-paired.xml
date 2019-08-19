@@ -1,0 +1,82 @@
+<?xml version="1.0" ?>
+<tool id="qiime_cutadapt_demux-paired" name="qiime cutadapt demux-paired" version="022019">
+	<description> - Demultiplex paired-end sequence data with barcodes in- sequence.</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command><![CDATA[
+  
+  qiime cutadapt demux-paired --i-seqs=$iseqs
+
+  #def list_dict_to_string(list_dict):
+	  #set $file_list = list_dict[0]['additional_input'].__getattr__('file_name')
+	  #for d in list_dict[1:]:
+		  #set $file_list = $file_list + ',' + d['additional_input'].__getattr__('file_name')
+	  #end for
+	  #return $file_list
+  #end def
+ 
+ --m-forward-barcodes-file=$list_dict_to_string($input_files_mforwardbarcodesfile) --m-forward-barcodes-column="$mforwardbarcodescolumn"
+
+  #if str($cmdconfig) != 'None':
+   --cmd-config=$cmdconfig
+  #end if
+ 
+ --o-per-sample-sequences=opersamplesequences --o-untrimmed-sequences=ountrimmedsequences
+
+  #if $perrorrate:
+   --p-error-rate=$perrorrate
+  #end if
+  ;
+
+  cp opersamplesequences.qza $opersamplesequences;
+  cp ountrimmedsequences.qza $ountrimmedsequences;
+  
+]]></command>
+	<inputs>
+		<param format="qza,no_unzip.zip" label="--i-seqs: Multiplexed Paired End Barcode In Sequence - The paired-end sequences to be demultiplexed.  [required]" name="iseqs" optional="False" type="data"/>
+		<repeat name="input_files_mforwardbarcodesfile" optional="False" title="--m-forward-barcodes-file">
+			<param label="--m-forward-barcodes-file: Metadata file or artifact viewable as metadata. This option may be supplied multiple times to merge metadata. [required]" name="additional_input" type="data" format="tabular,qza,no_unzip.zip" />
+		</repeat>
+		<param label="--m-forward-barcodes-column: Metadata Column[Categorical] - Column from metadata file or artifact viewable as metadata. The sample metadata column listing the per-sample barcodes for the forward reads.  [required]" name="mforwardbarcodescolumn" optional="False" type="text"/>
+		<param label="--cmd-config: Use config file for command options" name="cmdconfig" optional="True" type="data"/>
+		<param label="--p-error-rate: The level of error tolerance, specified as the maximum allowable error rate.  [default: 0.1]" name="perrorrate" optional="True" type="float" value="0.1"/>
+	</inputs>
+	<outputs>
+		<data format="qza" label="${tool.name} on ${on_string}: per-sample-sequences.qza" name="opersamplesequences"/>
+		<data format="qza" label="${tool.name} on ${on_string}: untrimmed-sequences.qza" name="ountrimmedsequences"/>
+	</outputs>
+	<help><![CDATA[ 
+  
+Demultiplex paired-end sequence data with barcodes in-sequence.
+---------------------------------------------------------------
+
+Demultiplex sequence data (i.e., map barcode reads to sample ids). Barcodes
+are expected to be located within the sequence data (versus the header, or
+a separate barcode file).
+
+Parameters
+----------
+seqs : MultiplexedPairedEndBarcodeInSequence
+    The paired-end sequences to be demultiplexed.
+forward_barcodes : MetadataColumn[Categorical]
+    The sample metadata column listing the per-sample barcodes for the
+    forward reads.
+error_rate : Float % Range(0, 1, inclusive_end=True), optional
+    The level of error tolerance, specified as the maximum allowable error
+    rate.
+
+Returns
+-------
+per_sample_sequences : SampleData[PairedEndSequencesWithQuality]
+    The resulting demultiplexed sequences.
+untrimmed_sequences : MultiplexedPairedEndBarcodeInSequence
+    The sequences that were unmatched to barcodes.
+    
+    ]]>
+</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

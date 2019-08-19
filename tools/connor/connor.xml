@@ -1,0 +1,56 @@
+<tool id="connor" name="Connor" version="Connor V.0.5">
+  <requirements>
+    <requirement type="package">pymodules</requirement>
+  </requirements>
+  <description>Deduplication based on custom inline DNA barcodes</description>
+  <command>
+    ln -s $inputFile input.bam; ln -s ${inputFile.metadata.bam_index} input.bam.bai;
+    connor --force
+    #if $consensus_freq_threshold != "0.6":
+      -f $consensus_freq_threshold
+    #end if
+    #if $min_fam_size_threshold != "3":
+      -s $min_fam_size_threshold
+    #end if
+    #if $umt_dist_threshold != "1":
+      -d $umt_dist_threshold
+    #end if
+    --log_file $out_log
+    ##--annotated_output_bam $annotated_output_bam
+    ./input.bam $outFile
+  </command>
+    <stdio>
+        <regex description="tool progress" level="log" match=".*" source="both"/>
+    </stdio>
+  <inputs>
+    <param format="bam" label="Input BAM" name="inputFile" type="data"/>
+    <param label="Consensus Frequency Threshold" min="0" max="1" name="consensus_freq_threshold" type="float" value="0.6" help="(--consensus_freq_threshold) Ambiguous base calls at a specific position in a family are transformed to either majority base call, or N if the majority percentage is below this threshold."/>
+    <param label="Minimum family size threshold" min="0" name="min_fam_size_threshold" type="integer" value="3" help="(--min_family_size_threshold) families with count of original reads less than threshold are excluded from the deduplicated output." />
+    <param label="UMT Distance threshold" min="0" name="umt_dist_threshold" type="integer" value="1" help="UMTs equal to or closer than this Hamming distance will be combined into a single family. Lower threshold make more families with more consistent UMTs; 0 implies UMI must match exactly."/>
+  </inputs>
+  <outputs>
+    <data format="bam" label="${tool.name} on ${on_string}: Deduplicated BAM" name="outFile"/>
+    <!--<data format="bam" label="${tool.name} on ${on_string}: Annotated BAM" name="annotated_output_bam"/>-->
+    <data format="txt" label="${tool.name} on ${on_string}: Log file" name="out_log"/>
+  </outputs>
+  <tests>
+    <test>
+    </test>
+  </tests>
+  <help>
+
+.. class:: infomark
+
+**Purpose**
+
+Convert VCF to SNPiR custom variant format and filter variants with low quality
+
+------
+
+.. class:: infomark
+
+**Inputs, outputs, and parameters**
+
+
+  </help>
+</tool>

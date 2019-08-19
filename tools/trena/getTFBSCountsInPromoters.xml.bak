@@ -1,0 +1,63 @@
+<tool id="get_tfbs_counts_in_promoter" name="TFBS counts in promoters" version="TReNA: x-y-z">
+	<description>get counts of binding sites for each TF proximal to each gene</description>
+        <requirements>
+	     <requirement type="package">pymodules</requirement>
+             <requirement type="package" version="3.2.5">R</requirement>
+        </requirements>
+	<command interpreter="python">
+           gettfbscounts_wrapper.py 
+           --out-dir $output.extra_files_path
+           --output $output
+           --genome $genomedb
+           --tissue $projectdb
+           #if str($genelist) != "None":
+             --genelist $genelist
+           #end if  
+           #if str($tflist) != "None":
+             --tflist $tflist
+           #end if
+           ##--biotype $biotype
+           ##--moltype $moleculetype
+           #if $checkGeneID:
+             --geneID T
+           #else: 
+             --geneID F
+           #end if
+           --upstreamsize $upstream
+           --downstreamsize $downstream
+	</command>
+
+	<inputs>
+          <param name="genomedb" type="select" label="Genome Database" help="">
+            <option value="postgres://localhost/hg38">hg38</option>
+            <option value="postgres://localhost/hg19">hg19</option>
+            <option value="postgres://localhost/mm10">mm10</option>
+            <option value="postgres://localhost/mm9">mm9</option>
+           <!--options from_data_table="genome_db"></options-->
+          </param> 
+          <param name="projectdb" type="select" label="Tissue Type Database" help="">
+            <option value="postgres://localhost/wholebrain">wholebrain</option>
+            <option value="postgres://localhost/lymphoblast">lymphoblast</option>
+                     <!--options from_data_table="project_db"></options-->
+          </param>
+          <param format="txt, tabular" name="genelist" type="data" label="List of genes" help="If no gene list provided, by default it will use all available genes in a model database." optional="True"/>
+          <param format="tabular" name="tflist" type="data" label="List of Transcription Factors (TFs)" help= "If no TF list provided, by default it will use all available TFs in a model database." optional="True"/>
+          <!--param name="biotype" type="select" label="Biotype" help="">
+            <option value="protein_coding">protein_coding</option>
+          </param>
+          <param name="moleculetype" type="select" label="Molecule Type" help="">
+                    <option value="gene"> gene</option>
+          </param-->
+          <param checked="True" label="Use Gene IDs" name="checkGeneID" type="boolean" help="If checked, the gene and TF inputs are expected as Ensembl IDs (i.e. ENSG). Otherwise, gene symbols are expected."/>
+          <param label="Upstream Search Window Size from TSS" name="upstream" type="integer" value="10000"/>
+          <param label="Downstream Search Window Size from TSS" name="downstream" type="integer" value="10000"/>
+    </inputs>
+
+	<outputs>
+		<data format="RData" name="output" label="TF counts in promoter"/>
+	</outputs>
+
+	<help>
+	</help>
+
+</tool>

@@ -1,0 +1,155 @@
+<tool id="rapsearch2_wrapper" name="Rapsearch2" version="Rapsearch: 2.23">
+    <description>protein similarity search tool</description>
+    <version_command>rapsearch 2>&amp;1 >/dev/null | grep "Fast protein" | cut -f1 -d ":"</version_command>
+    <command >
+      rapsearch
+        #if str($input_type.type) == "regular":
+          -q $input_type.query
+        #else:
+          #import glob
+          #set $path = "%s/%s" % ($input_type.dir_object.extra_files_path, $input_type.sample_name)
+          #set $files = glob.glob("%s*" % $path)
+          -q $files[0]
+        #end if
+        #if $db_opts.db_opts_selector == &quot;db&quot;:
+          -d ${db_opts.database.fields.path}
+        ###else:
+        ##  -subject $db_opts.subject
+        #end if
+        -z \${GALAXY_SLOTS:-1} 
+        #if str($adv.evalue_cutoff) != "0.1":
+          -e $adv.evalue_cutoff
+        #end if
+        #if str($adv.bit_score) != "0.0":
+          -i $adv.bit_score
+        #end if
+        #if str($adv.min_alignment_length) != "0":
+          -l $adv.min_alignment_length
+        #end if
+        #if str($adv.db_seqs_desc) != "500":
+          -v $adv.db_seqs_desc
+        #end if
+        #if str($adv.db_seqs_align) != "100":
+          -b $adv.db_seqs_align
+        #end if
+        #if str($adv.query_type) != "u":
+          -t $adv.query_type
+        #end if
+        $adv.output_all
+        $adv.gap
+        $adv.fast
+        $adv.hssp
+        $adv.xml
+        $output_format
+        > $output
+    </command>
+    <inputs>
+        <conditional name="input_type">
+          <param name="type" type="select" label="Select a way to provide forward and reverse fastq files ?" help="">
+            <option value="regular" selected="true">Single FASTA file</option>
+            <option value="directory_object">Directory object - Fasta files in a directory (via Globus Transfer)</option>
+          </param>
+          <when value="regular">
+            <param format="fastq,fasta,fastqsanger" label="Input query" name="query" type="data" help="If input is Fastq, the file must be uncompressed. Input can be Fasta"/> 
+          </when>
+          <when value="directory_object">
+            <param name="dir_object" type="data" format="txt" label="Directory object containing fastq or fasta files"/>
+            <param label="Sample Name inside the directory" name="sample_name" type="text"/>
+          </when>
+        </conditional>
+        <conditional name="db_opts">
+            <param label="Subject database/sequences" name="db_opts_selector" type="select">
+              <option selected="True" value="db">Rapsearch Database</option>
+              <!--<option value="file">FASTA file</option>-->
+            </param>
+            <when value="db">
+                <param label="Rapsearch database" name="database" type="select">
+                    <options from_file="rapsearch.loc">
+                      <column index="0" name="value"/>
+                      <column index="1" name="name"/>
+                      <column index="2" name="path"/>
+                    </options>
+                </param>
+                <param name="subject" type="hidden" value=""/> 
+            </when>
+            <!--<when value="file">
+                <param name="database" type="hidden" value=""/> 
+                <param format="fasta" label="Protein FASTA file to use as database" name="subject" type="data"/> 
+            </when>-->
+        </conditional>
+        <param checked="false" falsevalue="-u 1" label="Output format in aln format" name="output_format" truevalue="-u 2" type="boolean" help="-u; Default is to output in m8 format."/>
+        <section name="adv" title="Advanced options">
+          <param label="Set expectation value cutoff" name="evalue_cutoff" size="15" type="float" value="0.1" help="-e"/>
+          <param label="Bit score cutoff" name="bit_score" size="15" type="float" value="0.0" help="-i"/>
+          <param label="Minimum alignment length" name="min_alignment_length" size="15" type="integer" value="0" help="-l"/>
+          <param label="Number of database sequences to show one-line descriptions" name="db_seqs_desc" size="15" type="integer" value="500" help="-v"/>
+          <param label="Number of database sequence to show alignments" name="db_seqs_align" size="15" type="integer" value="100" help="-b"/>
+          <param label="Type of query sequences" name="query_type" type="select">
+            <option selected="True" value="u">Unknown</option>
+            <option value="n">Nucleotide</option>
+            <option value="a">Amino acid</option>
+            <option value="q">Fastq</option>
+          </param>
+          <param checked="false" falsevalue="" label="Output ALL/MATCHED query reads into the alignment file" name="output_all" truevalue="-p t" type="boolean" help="-p"/>
+          <param checked="true" falsevalue="-g f" label="Perform gap extension to speed up" name="gap" truevalue="" type="boolean" help="-g"/>
+          <param checked="false" falsevalue="" label="Perform fast search" name="fast" truevalue="-a t" type="boolean" help="-a; default is normal search"/>
+          <param checked="false" falsevalue="" label="Perform HSSP criteria instead of evalue criteria" name="hssp" truevalue="-w t" type="boolean" help="-w; Default is to perform evaule criteria"/>
+          <param checked="false" falsevalue="" label="Print hits in XML format" name="xml" truevalue="-x t" type="boolean" help="-x"/>
+        </section>
+    </inputs>
+    <outputs>
+        <data format="tabular" label="${tool.name} on ${on_string}" name="output">
+        </data>
+    </outputs>
+    <requirements>
+        <requirement type="package">rapsearch</requirement>
+    </requirements>
+    <tests>
+    </tests>
+    <help>
+    
+.. class:: warningmark
+
+**Note**. Database searches may take a substantial amount of time.
+
+-----
+
+**What it does**
+
+Search a *protein database* using the RapSearch2 command line tool.
+
+-----
+
+**Output format**
+
+Because Galaxy focuses on processing tabular data, the default output of this
+tool is tabular. 
+
+====== ========= ============================================
+Column NCBI name Description
+------ --------- --------------------------------------------
+     1 qseqid    Query Seq-id (ID of your sequence)
+     2 sseqid    Subject Seq-id (ID of the database hit)
+     3 pident    Percentage of identical matches
+     4 length    Alignment length
+     5 mismatch  Number of mismatches
+     6 gapopen   Number of gap openings
+     7 qstart    Start of alignment in query
+     8 qend      End of alignment in query
+     9 sstart    Start of alignment in subject (database hit)
+    10 send      End of alignment in subject (database hit)
+    11 evalue    Expectation value (E-value)
+    12 bitscore  Bit score
+====== ========= ============================================
+
+The xml option produces XML output, which is designed to be parsed by
+another program, and is understood by some Galaxy tools.
+
+-------
+
+**References**
+
+https://www.ncbi.nlm.nih.gov/pubmed/22039206
+
+    </help>
+</tool>

@@ -1,0 +1,100 @@
+<tool id="table_annovar" name="ANNOVAR Annotate VCF" version="ANNOVAR: 2013Aug23">
+    <description>with functional information using ANNOVAR</description>
+
+    <requirements>
+        <requirement type="package">annovar</requirement>
+    </requirements>
+
+    <command>
+        ## Convert VCF to AV input format.
+        convert2annovar.pl -format vcf4 -includeinfo ${input} &gt; input.avinput
+
+        ## Variant annotation; make sure to include entry in indexes table for build database. 
+
+        #set protocol = []
+        #set operation = []
+
+        ## Add gene annotations.
+        #if $gene_anns:
+            #silent protocol.append( str( $gene_anns )  )
+            #silent operation.append( ','.join( ['g' for t in range( str($gene_anns).count(',') + 1 )] ) )
+        #end if
+
+        ## Add regions.
+        #if $regions:
+            #silent protocol.append( str( $regions ) )
+            #silent operation.append( ','.join( ['r' for t in range( str($regions).count(',') + 1 )] ) )
+        #end if
+
+        ## Add filters.
+        #if $filters:
+            #silent protocol.append( str( $filters ) )
+            #silent operation.append( ','.join( ['f' for t in range( str($filters).count(',') + 1 )] ) )
+        #end if
+
+        #set protocol = ','.join( $protocol )
+        #set operation = ','.join( $operation ) 
+
+        ## Reduce variants.
+        ; table_annovar.pl input.avinput ${__get_data_table_entry__('annovar_loc', 'dbkey', $input.dbkey, 'path')} -protocol ${protocol} -operation ${operation} -nastring NA -buildver ${input.dbkey} --outfile output
+
+        ## Process annotated table to remove &quot;NA&quot; strings from numerical columns and copy to output.
+        ; cat output.${input.dbkey}_multianno.txt | python \$SCRIPT_PATH/replace_NA.py &gt; ${output}
+    </command>
+
+    <inputs>
+        <param format="vcf" help="" label="Variants" metadata_name="dbkey" name="input" type="data">
+        <validator type="unspecified_build"/>
+    </param>
+
+    <param help="" label="Gene Annotations" multiple="True" name="gene_anns" optional="True" type="select">
+        <options from_data_table="annovar_loc">
+            <filter column="1" key="dbkey" ref="input" type="data_meta"/>
+            <filter column="2" name="type" type="static_value" value="gene_ann"/>
+        </options>
+    </param>
+
+    <param help="" label="Annotation Regions" multiple="True" name="regions" optional="True" type="select">
+        <options from_data_table="annovar_loc">
+            <filter column="1" key="dbkey" ref="input" type="data_meta"/>
+            <filter column="2" name="type" type="static_value" value="region"/>
+        </options>
+    </param>
+    
+    <param help="" label="Annotation Databases" multiple="True" name="filters" type="select">
+        <options from_data_table="annovar_loc">
+            <filter column="1" key="dbkey" ref="input" type="data_meta"/>
+            <filter column="2" name="type" type="static_value" value="filter"/>
+        </options>
+    </param>
+    </inputs>
+
+    <stdio>
+        <regex description="tool progress" level="log" match=".*" source="both"/>
+    </stdio>
+
+    <outputs>
+        <data format="tabular" name="output"/>
+    </outputs>
+
+    <tests>
+    </tests>
+
+    <help>
+**What it does**
+
+This tool will annotate variants using specified gene annotations, regions, and filtering databases. Input is a VCF dataset, and output is a table of annotations for each variant in the 
+VCF dataset.
+
+**ANNOVAR Website and Documentation**
+
+Website: http://www.openbioinformatics.org/annovar/
+
+Paper: http://nar.oxfordjournals.org/content/38/16/e164
+
+**Important Usage Note**
+
+ANNOVAR is open-source and free for non-profit use. If you use it for commercial purposes, please contact BIOBASE (info@biobase-international.com) directly for license related issues. Also see http://www.openbioinformatics.org/annovar/annovar_faq.html#license
+
+    </help>
+</tool>

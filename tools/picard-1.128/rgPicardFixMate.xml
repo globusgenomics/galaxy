@@ -1,0 +1,102 @@
+<tool id="picard1.128_rgPicFixMate" name="Paired Read Mate Fixer" version="PICARD: 1.128">
+  <description>for paired data</description>
+  <command interpreter="python">
+   picard_wrapper.py -i &quot;$input_file&quot; -o &quot;$out_file&quot; --tmpdir &quot;${__new_file_path__}&quot; -n &quot;$out_prefix&quot; 
+   --output-format &quot;$outputFormat&quot; -j &quot;\$JAVA_JAR_PATH/picard.jar FixMateInformation&quot; --sortorder &quot;$sortOrder&quot;
+  </command>
+  <requirements><requirement type="package" version="1.128">picard</requirement></requirements>
+  <inputs>
+    <param format="bam,sam" help="If empty, upload or import a SAM/BAM dataset." label="SAM/BAM dataset to fix" name="input_file" type="data"/>
+      <param help="If in doubt, leave as default and read Picard/Samtools documentation" label="Sort order" name="sortOrder" type="select">
+        <option selected="true" value="coordinate">Coordinate sort</option>
+        <option value="queryname">Query name sort</option>
+        <option value="unsorted">Unsorted - docs not clear if this means unchanged or not</option>
+      </param>
+    <param help="Use this remind you what the job was for." label="Title for the output file" name="out_prefix" size="80" type="text" value="Fix Mate"/>
+    <param checked="True" falsevalue="sam" help="Uncheck for SAM output" label="Output BAM instead of SAM" name="outputFormat" truevalue="bam" type="boolean"/>
+  </inputs>
+  <outputs>
+    <data format="bam" label="${tool.name} on ${on_string}: ${outputFormat} with fixed mates" name="out_file">
+    <change_format>
+     <when format="sam" input="outputFormat" value="sam"/>
+    </change_format> 
+    </data>
+  </outputs>
+  <tests>
+    <test>
+      <param name="input_file" value="picard_input_sorted_pair.sam"/>
+      <param name="sortOrder" value="coordinate"/>
+      <param name="outputFormat" value="True"/>
+      <param name="out_prefix" value="Test FixMate"/>
+      <output file="picard_output_fixmate_sorted_pair.bam" ftype="bam" name="out_file"/>
+    </test>
+    <test>
+      <param name="input_file" value="picard_input_sorted_pair.sam"/>
+      <param name="sortOrder" value="coordinate"/>
+      <param name="outputFormat" value="False"/>
+      <param name="out_prefix" value="Test FixMate"/>
+      <output file="picard_output_fixmate_sorted_pair.sam" ftype="sam" name="out_file"/>
+    </test>
+  </tests>
+  <help>
+
+
+.. class:: infomark
+
+**Purpose**
+
+Ensure that all mate-pair information is in sync between each read and it's mate pair.
+
+**Picard documentation**
+
+This is a Galaxy wrapper for FixMateInformation, a part of the external package Picard-tools_.
+
+ .. _Picard-tools: http://www.google.com/search?q=picard+samtools
+
+.. class:: warningmark
+
+**Useful for paired data only**
+
+Likely won't do anything helpful for single end sequence data
+Currently, Galaxy doesn't distinguish paired from single ended SAM/BAM so make sure
+the data you choose are valid (paired end) SAM or BAM data - unless you trust this
+tool not to harm your data.
+
+-----
+
+.. class:: infomark
+
+**Syntax**
+
+- **Input** - a paired read sam/bam format aligned short read data in your current history
+- **Sort order** - can be used to adjust the ordering of reads 
+- **Title** - the title to use for all output files from this job - use it for high level metadata
+- **Output Format** - either SAM or compressed as BAM
+
+-----
+
+.. class:: infomark
+
+**Inputs, outputs, and parameters**
+
+.. csv-table::
+
+   :header-rows: 1
+
+  Option,Description
+  &quot;INPUT=File&quot;,&quot;The input file to fix. This option may be specified 0 or more times.&quot;
+  &quot;OUTPUT=File&quot;,&quot;The output file to write to&quot;
+  &quot;SORT_ORDER=SortOrder&quot;,&quot;Optional sort order if the OUTPUT file should be sorted differently than the INPUT file. Default value: null. Possible values: {unsorted, queryname, coordinate}&quot;
+  &quot;CREATE_MD5_FILE=Boolean&quot;,&quot;Whether to create an MD5 digest for any BAM files created. Default value: false&quot;
+
+.. class:: warningmark
+
+**Warning on SAM/BAM quality**
+
+Many SAM/BAM files produced externally and uploaded to Galaxy do not fully conform to SAM/BAM specifications. Galaxy deals with this by using the **LENIENT**
+flag when it runs Picard, which allows reads to be discarded if they're empty or don't map. This appears
+to be the only way to deal with SAM/BAM that cannot be parsed.
+
+
+  </help>
+</tool>

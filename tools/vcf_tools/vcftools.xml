@@ -1,0 +1,133 @@
+<tool id="vcftools" name="VCFtools" version="VCFTOOLS: vcftools_0.1.11">
+	<description>
+		The vcftools program is intended for analysis of diploid SNP data in VCF format.
+	</description>
+	<requirements>
+		<requirement type="package" version="vcftools_0.1.14">vcftools</requirement> 
+	</requirements>
+    <stdio>
+        <regex description="tool progress" level="log" match=".*" source="both"/>
+    </stdio>
+	<command>
+           vcftools
+           #if str($basic) == &quot;gzvcf&quot;:
+             --gzvcf
+           #elif str($basic) == &quot;bcf&quot;:
+             --bcf
+           #else:
+             --vcf
+           #end if
+
+           $input
+
+           #for $chromosome in $chr:
+             --chr $chromosome.number
+           #end for
+
+           #for $chromosome in $notchr:
+             --notchr $chromosome.number
+           #end for
+
+           #if str($frombp) != &quot;&quot;:
+             --from-bp $frombp
+           #end if
+
+           #if str($tobp) != &quot;&quot;:
+             --to-bp $tobp
+           #end if
+
+           #for $snp in $snps:
+             --snp $snp.id
+           #end for
+
+           #if str($positionsfile) != &quot;None&quot;:
+             --positions $positionsfile
+           #end if
+
+           #if str($excludepositionsfile) != &quot;None&quot;:
+             --exclude-positions  $excludepositionsfile
+           #end if
+
+           #if str($bedfile) != &quot;None&quot;:
+             --bed $bedfile
+           #end if
+
+           #if str($excludebedfile) != &quot;None&quot;:
+             --exclude-bed  $excludebedfile
+           #end if
+
+
+           #if str($snpfile) != &quot;None&quot;:
+             --snps $snpfile
+           #end if
+
+           #if str($excludesnpfile) != &quot;None&quot;:
+             --exclude $excludesnpfile
+           #end if
+
+           #if str($indels) == &quot;keeponlyindels&quot;:
+             --keep-only-indels
+           #elif str($indels) == &quot;removeindels&quot;:
+             --remove-indels
+           #end if
+
+           #if str($thin) != "None":
+             --thin $thin
+           #end if
+           #if str($max_non_ref_ac) != "10000000":
+              --max-non-ref-ac $max_non_ref_ac
+           #end if
+
+           #if str($non_ref_ac) != "1":
+              --non-ref-ac $non_ref_ac
+           #end if
+
+           $removefilterall $recode $recodeinfoall &gt; out.recode.vcf
+	</command>
+	<inputs>
+		<param format="vcf" label="Input vcf file" name="input" type="data"/>
+		<param label="Basic Options" name="basic" type="select" value="vcf">
+			<option value="vcf">Decompressed vcf file (default)</option>
+			<option value="gzvcf">Compressed (gzipped) vcf file</option>
+			<option value="bcf">Compressed (bgzf) bcf file</option>
+		</param>
+		<repeat name="chr" title="Include chromosomes to be processed">
+			<param label="Chromosome number" name="number" optional="true" type="integer"/>
+		</repeat>
+		<repeat name="notchr" title="Exclude chromosomes from processing">
+			<param label="Chromosome number" name="number" optional="true" type="integer"/>
+		</repeat>
+		<param help="only if chromosomes are included. You must also specify the end of range to be processed." label="Beginning of range to be processed" name="frombp" optional="true" type="integer"/>
+		<param help="only if chromosomes are included. You must also specify the beginning of range to be processed." label="End of range to be processed" name="tobp" optional="true" type="integer"/>
+
+                <param format="tabular" help="Each line of the input file should contain a (tab-separated) chromosome and position. The file can have comment lines that start with hash character." label="List of position sites to include" name="positionsfile" optional="true" type="data"/>
+                <param format="tabular" help="Each line of the input file should contain a (tab-separated) chromosome and position. The file can have comment lines that start with hash character." label="List of position sites to exclude" name="excludepositionsfile" optional="true" type="data"/>
+
+                <param format="bed" help="The file should contain the first three columns (chrom, chromStart and chromEnd). The BED file is expected to have a header line." label="List of sites to include" name="bedfile" optional="true" type="data"/>
+                <param format="bed" help="The file should contain the first three columns (chrom, chromStart and chromEnd). The BED file is expected to have a header line" label="List of sites to exclude" name="excludebedfile" optional="true" type="data"/>
+
+
+		<repeat name="snps" title="SNPs to include">
+			<param help="e.g. a dbSNP rsID" label="ID of SNP" name="id" optional="true" type="text"/>
+		</repeat>
+		<param format="txt, tabular" help="The file should contain a list of SNP IDs (e.g. dbSNP rsIDs), with one ID per line." label="List of SNPs to include" name="snpfile" optional="true" type="data"/>
+		<param format="txt, tabular" help="The file should contain a list of SNP IDs (e.g. dbSNP rsIDs), with one ID per line." label="List of SNPs to disclude" name="excludesnpfile" optional="true" type="data"/>
+		<param label="Indel options" name="indels" type="select" value="none">
+			<option value="keeponlyindels">Keep only indels</option>
+			<option value="none">None</option>
+			<option value="removeindels"> Remove indels</option>
+		</param>
+                <param label="Thin" name="thin" type="text" help="Thin sites so that no two sites are within the specified distance from one another" value="None"/>
+		<param falsevalue="" label="Remove all sites with the FILTER tag" name="removefilterall" truevalue="--remove-filtered-all" type="boolean" value="false"/>
+		<param falsevalue="" label="Recode" name="recode" truevalue="--recode" type="boolean" value="false"/>
+                <param falsevalue="" help="(--recode-INFO-all)" label="Recode INFO all" name="recodeinfoall" truevalue="--recode-INFO-all" type="boolean" value="false"/>
+                <param label="Include only sites with all Non-Reference Counts (ac)" name="non_ref_ac" type="integer" value="1"/>
+                <param label="Maximum sites with all Non-Reference Counts (ac)" name="max_non_ref_ac" type="integer" value="10000000"/>
+	</inputs>
+	<outputs>
+		<data format="vcf" from_work_dir="out.recode.vcf" name="output"/>
+	</outputs>
+	<help>
+		Welcome to VCFtools - a program package designed for working with VCF files, such as those generated by the 1000 Genomes Project. The aim of VCFtools is to provide methods for working with VCF files: validating, merging, comparing and calculate some basic population genetic statistics. More information at http://vcftools.sourceforge.net/index.html.
+	</help>
+</tool>

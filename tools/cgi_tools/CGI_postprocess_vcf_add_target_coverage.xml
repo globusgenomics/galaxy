@@ -1,0 +1,30 @@
+<tool id="CGI_postprocess_vcf_add_target_coverage" name="Post-process VCF"  version="1.0.0">
+  <description>Add target coverage information</description>
+  <requirements>
+    <requirement type="package">pymodules</requirement>
+    <!--<requirement type="package">java</requirement>-->
+  </requirements>
+  <command interpreter="python">
+    CGI_postprocess_vcf_add_target_coverage.py $picard_targets $input_vcf $depth_cut $sample_name &gt; $output
+  </command>
+  <inputs>
+    <param name="picard_targets" type="data" format="tabular,txt" label="Picard target count file" help="This should be gen
+erated by Picard HSMetrics"/>
+    <param name="input_vcf" type="data" format="vcf" label="Input VCF to add coverage information to" help="The VCF file sh
+ould be generated from the same BAM file used in your HSMetrics job" />
+    <param type="integer" label="Depth Cut" name="depth_cut" help="Default of 60" value="60" />
+    <param label="Sample Name" name="sample_name" type="text"/>
+  </inputs>
+  <outputs>
+    <data format="vcf" label="${tool.name} on ${$sample_name}: VCF" name="output"/>
+  </outputs>
+  <tests>
+    <test>
+    </test>
+  </tests>
+  <help>
+
+**What it does**
+
+  </help>
+</tool>

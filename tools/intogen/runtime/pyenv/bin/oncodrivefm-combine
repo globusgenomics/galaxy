@@ -1,0 +1,10 @@
+#!/nfs/software/galaxy_dev/tools/intogen/runtime/pyenv/bin/python2.7
+# EASY-INSTALL-ENTRY-SCRIPT: 'oncodrivefm==0.5.2','console_scripts','oncodrivefm-combine'
+__requires__ = 'oncodrivefm==0.5.2'
+import sys
+from pkg_resources import load_entry_point
+
+if __name__ == '__main__':
+    sys.exit(
+        load_entry_point('oncodrivefm==0.5.2', 'console_scripts', 'oncodrivefm-combine')()
+    )

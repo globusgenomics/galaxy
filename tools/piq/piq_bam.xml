@@ -1,0 +1,21 @@
+<tool id="piq_bam" name="piq_bam" version="PIQ: 1.3">
+    <description> converts BAM to internal binary format </description>
+    <requirements>
+      <requirement type="package">pymodules</requirement>
+      <requirement type="package" version="3.3.3">R</requirement>
+      <requirement type="package">piq</requirement>
+    </requirements>
+    <command interpreter="python">
+      piq_bam_wrapper.py
+      --input $input
+      --output $output
+    </command>
+      <inputs>
+         <param format="bam" help="" name="input" optional="false" type="data" label="Input BAM"/>
+      </inputs>
+      <outputs>
+         <data format="data" label="${tool.name} on ${on_string}" name="output"/>
+      </outputs>
+      <help>
+      </help>
+</tool>

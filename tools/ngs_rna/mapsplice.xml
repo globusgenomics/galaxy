@@ -1,0 +1,156 @@
+<tool id="rnaseq_alignment_mapsplice" name="MapSplice2" version="MAPSPLICE: MapSplice-v2.1.7; BOWTIE: 1.1.2; SAMTOOLS: 1.2">
+	<description> Accurate mapping of RNA-seq reads for splice junction discovery</description>
+	<stdio>
+		<exit_code err_level="fatal" range="1:"/>
+	</stdio>
+        <requirements>
+             <requirement type="package">mapsplice</requirement>
+             <requirement type="package">bowtie</requirement>
+             <requirement type="package">samtools</requirement>
+        </requirements>
+	<command interpreter="python">
+            /mnt/galaxyTools/tools/mapsplice/MapSplice-v2.1.7/mapsplice.py 
+            ## Handle reference file.
+            #if $Bowtieidx.genomeSource == &quot;history&quot;:
+                --own_file=$Bowtieidx.ownFile
+            #else:
+                -x ${Bowtieidx.index.fields.path}
+            #end if
+            --seglen $seglen
+            ##--c ${ref_chrfiles.index.fields.path}
+            --c /mnt/galaxyIndices/genomes/Hsapiens/hg19/seq/chromFa
+            #if $input_type_conditional.readsformat == &quot;single&quot;:
+                -1 $input_type_conditional.single_input1
+            #else:
+                -1 $input_type_conditional.paired_input1
+                -2 $input_type_conditional.paired_input2
+            #end if
+            ##--output $output 
+            ###for $input_file in $input_files:
+            ##  ${input_file.additional_input}
+            ###end for  
+            ##$bamORsam
+            --bam 
+            --min-map-len $minMapLen
+            --max-hits $maxHits
+            --max-hits $maxHits
+            --min-intron $minIntron
+            --max-intron $maxIntron
+            $nonCanonical
+            --splice-mis $spliceMismatches
+            --max-append-mis $maxAppendMis
+            --ins $maxInsert 
+            --del $maxDeletion
+            ###if $fusionSearch != &quot;none&quot;:
+            ##    $fusionSearch
+            ###end if
+            ##-d &quot;$output.files_path&quot;
+            --threads 32
+            ###if $genegtf == &quot;None&quot;:
+            ##    --gene-gtf $genegtf
+            ###end if
+	</command>
+
+	<inputs>
+            <conditional name="input_type_conditional">
+                <param help="" label="Single or Paired-end Input Fastq files" name="readsformat" type="select">
+                    <option value="single">SINGLE-END</option>
+                    <option value="paired">PAIRED-END</option>
+                </param>
+                <when value="single">
+                    <param format="fasta,fastq" help="" label="Query file" name="single_input1" type="data"/>		
+                    <!--<repeat name="single_input1_files" title="Additional Input Files">
+                        <param format="fasta,fastq" name="additional_input" type="data" label="FASTA or FASTQ read files" help=""/>
+                    </repeat>-->
+                </when>
+                <when value="paired">
+                    <param format="fasta,fastq" help="" label="Forward query file" name="paired_input1" type="data"/>
+                    <!--<repeat name="paired_input1_files" title="Additional Forward Input Files">
+                        <param format="fasta,fastq" name="paired_additional_input1" type="data" label="FASTA or FASTQ read files" help=""/>
+                    </repeat>-->
+                    <param format="fasta,fastq" help="" label="Reverse query file" name="paired_input2" type="data"/>
+                    <!--<repeat name="paired_input2_files" title="Additional Reverse Input Files">
+                        <param format="fasta,fastq" name="paired_additional_input2" type="data" label="FASTA or FASTQ read files" help=""/>
+                    </repeat>-->
+                </when>
+            </conditional>
+            <conditional name="Bowtieidx">
+                <param help="Built-ins were indexed using default options" label="Will you select a reference genome from your history or use a built-in index?" name="genomeSource" type="select">
+                    <option value="indexed">Use a built-in index</option>
+                    <option value="history">Use one from the history</option>
+                </param>
+                <when value="indexed">
+                    <param help="" label="Select a Bowtie reference genome" name="index" type="select">
+                        <options from_data_table="bowtie_indexes">
+                            <filter column="3" type="sort_by"/>
+                            <validator message="No indexes are available for the selected input dataset" type="no_options"/>
+                        </options>
+                    </param>
+                </when>
+                <when value="history">
+                    <param format="fasta" label="Select the reference genome" metadata_name="dbkey" name="ownFile" type="data"/>
+                </when>  <!-- history -->
+            </conditional>  <!-- Bowtieidx -->
+            <!--<param name="ref_chrfiles" type="select" label="Select a Mapsplice reference genome" help="">
+                <options from_data_table="mapsplice_indexes">
+                    <filter type="sort_by" column="2"/>
+                    <validator type="no_options" message="No indexes are available for the selected input dataset"/>
+                </options>
+            </param>-->
+            <!--<param name="bamORsam" type="boolean" truevalue="-bam" falsevalue="" checked="True" label="Generate BAM output" help="" />-->
+            <param help="Suggested to be in range of [18,25], if the segment is too short it will be mapped everywhere" label="Length of read segments" name="seglen" type="integer" value="25"/>
+            <param help="MapSplice will only report read alignments that can be completely mapped or mapped no less than int bases. Set this option to 0 to only report completely mapped reads." label="Minimum Mapped Length" name="minMapLen" type="integer" value="50"/>
+            <param help="Any read that has more than int alignments will be abandoned. Default is 4" label="Maximum alignments per read" name="maxHits" type="integer" value="4"/>
+            <param help="Mapsplice will not search for any splice junctions with a gap shorter than int bp. Default is 50." label="Minimum length of splice junctions" name="minIntron" type="integer" value="50"/>
+            <param help="Mapsplice will not search for any splice junctions with a gap longer than int bp. Default is 300,000." label="Maximum length of splice junctions." name="maxIntron" type="integer" value="300000"/>
+            <param checked="False" falsevalue="" help="" label="Search for non-canonical in addition to canonical and semi-canonical junctions." name="nonCanonical" truevalue="--non-canonical" type="boolean"/>
+             <param help="mismatches that are allowed in the first/last segment crossing a splice junction in the range of [0, 2]. Default is 1." label="Maximum number of mismatches allowed" name="spliceMismatches" type="integer" value="1"/>
+             <param help="Maximum number of mismatches allowed to append a high error exonic segment next to an adjacent low error segment. Default is 3." label="Maximum number of mismatches" name="maxAppendMis" type="integer" value="3"/>
+             <param help="Default is 6, must be in range [0, 10]" label="Maximum insertion length" name="maxInsert" type="integer" value="6"/>
+             <param help="Default is 6, must be in range [0, 10]" label="Maximum deletion length." name="maxDeletion" type="integer" value="6"/>
+             <!--<param name="fusionSearch" type="select" label="Fusion search type" help="Search for canonical and semi-canonical fusion junctions or Search for canonical, semi-canonical, and non-canonical fusion junctions or None">
+                 <option value="none">NONE</option>
+                 <option value="fusion">Fusion</option>
+                 <option value="fusion-non-canonical">Fusion-Non-canonical</option>
+             </param>-->
+             <!--<param name="genegtf" format="gtf"  type="data" label="Gene annotation file in GTF format, used to annotate fusion junctions" help="" optional="True"/>-->
+        </inputs>
+
+	<outputs>
+            <data format="bam" from_work_dir="mapsplice_out/alignments.bam" label="${tool.name} on ${on_string}: bam" name="alignment"/>
+            <data format="tabular" from_work_dir="mapsplice_out/junctions.txt" label="${tool.name} on ${on_string}: junctions" name="juctions"/>
+            <data format="tabular" from_work_dir="mapsplice_out/insertions.txt" label="${tool.name} on ${on_string}: insertions" name="insertions"/>
+            <data format="tabular" from_work_dir="mapsplice_out/deletions.txt" label="${tool.name} on ${on_string}: deletions" name="deletions"/>
+            <data format="tabular" from_work_dir="mapsplice_out/deletions.txt" label="${tool.name} on ${on_string}: deletions" name="deletions"/>
+	</outputs>
+
+	<help>
+
+**What it does**
+
+MapSplice is an algorithm for mapping RNA-seq data to reference genome for splice junction discovery.
+Features of MapSplice include
+
+1. alignment of both short reads shorter than 75bp and long reads not short than 75bp.
+2. both CPU and memory efficiency.
+3. detection of small exons.
+4. discovery of canonical, semi-canonical and non-canonical junctions.
+5. splice inference based on the alignment quality and diversity of reads mapped to a junction.
+6. identification of chimeric events (intra-chromosomes and inter-chromosomes, inter-strands) with long reads.
+7. identification of chimeric events (intra-chromosomes and inter-chromosomes, inter-strands) with short paired-end reads.
+8. support paired-end reads and single-end reads 
+
+----
+
+**Citation**
+
+If you use this tool please read and cite the following paper.
+
+Kai Wang; Darshan Singh; Zheng Zeng; Stephen J. Coleman; Yan Huang; Gleb L. Savich; Xiaping He; Piotr Mieczkowski; Sara A. Grimm; Charles M. Perou; James N. MacLeod; Derek Y. Chiang; Jan F. Prins; Jinze Liu
+Nucleic Acids Research 2010; doi: 10.1093/nar/gkq622
+
+
+	</help>
+
+
+</tool>

@@ -1,0 +1,42 @@
+<tool id="get_databag_from_minid_to_collection" name="Get BDBag from MINID to collection">
+  <description>transfer data given a MINID to a collection</description>
+  <action module="galaxy_ext.globus.tools.actions.globus" class="BatchSubmit"/>
+  <requirements>
+    <requirement type="package">pymodules</requirement>
+  </requirements>
+  <command interpreter="python">
+   ##encode-bag-client-minid.py 
+   get-bdbag-client-minid.py
+  $minid . $__user_email__ $goauth;
+  mv ./*/*/data/* .;
+  for f in *_1.fastq.gz; do mv "\$f" "`basename \$f _1.fastq.gz`_forward.fastq.gz"; done;
+  for f in *_2.fastq.gz; do mv "\$f" "`basename \$f _2.fastq.gz`_reverse.fastq.gz"; done
+  </command>
+   <stdio>
+     <exit_code range="1:"  level="warning"   description="Bad input dataset" />
+   </stdio>
+   <inputs>
+    <param name="minid" type="text" label="MINID" />
+    <param name="username" type="hidden" size="100" label="Globus Username" value="**"/>
+    <param name="goauth" type="hidden" value= "**" size="100" label="Globus Transfer Auth Token">
+	<sanitizer>
+        <valid>
+          <add value="|"/>
+        </valid>
+      </sanitizer>
+    </param>
+   </inputs>
+   <outputs>
+     <collection name="list_output" type="list:paired" label="Collections on ${minid}">
+       <!-- Use named regex group to grab pattern
+           <identifier_0>_<identifier_1>.fq. Here identifier_0 is the list
+           identifier in the nested collection and identifier_1 is either
+           forward or reverse (for instance samp1_forward.fq).
+       -->
+       <discover_datasets pattern="(?P&lt;identifier_0&gt;[^_]+)_(?P&lt;identifier_1&gt;[^_]+)\.fastq.gz" ext="fastqsanger.gz" />
+     </collection>
+   </outputs>
+<help>
+
+</help>
+</tool>

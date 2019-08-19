@@ -1,0 +1,85 @@
+<tool id="svdetect_import" name="Import data">
+  <description>BAM, chromosome info or sv files</description>
+  <command interpreter="bash">SVDetect_import.sh -i $file_path
+  #if str($type.file_type)=="bam"
+  -o $outbamfile
+  #elif str($type.file_type)=="len"
+  -o $outlenfile
+  #elif str($type.file_type)=="sv"
+  -o $outsvfile
+  #end if
+  </command>
+  <inputs>
+    <param name="file_name" type="text" value="file1" label="File Name"/>
+    <conditional name="type">
+      <param name="file_type" type="select" label="Select the file type to import" help="BAM file (BAM) or text file (SAM, chromosome list or a SV tabulated text file)">
+          <option value="bam">BAM file (.bam)</option>
+          <option value="len">Chromosome info file (.len)</option>
+          <option value="sv">SVDetect output file (.sv)</option>
+      </param>
+    <when value="bam">
+      <!-- do nothing here -->
+    </when>
+    <when value="len">
+      <!-- do nothing here -->
+    </when>
+     <when value="sv">
+      <!-- do nothing here -->
+    </when>
+    </conditional>
+     <param name="file_path" type="text" size="150" label="Path to file"/>
+  </inputs>
+  <outputs>
+    <data format="bam" name="outbamfile" label="${file_name}.bam">
+      <filter>type['file_type']=="bam"</filter>
+    </data>
+    <data format="len" name="outlenfile" label="${file_name}.len">
+      <filter>type['file_type']=="len"</filter>
+    </data>
+    <data format="sv" name="outsvfile" label="${file_name}.sv">
+      <filter>type['file_type']=="sv"</filter>
+    </data>
+  </outputs>
+  <help>
+**What it does**
+
+This tool allows you to import quickly a BAM file, a chromosome info file or a SVDetect output file from you computer as inputs for SVDetect.
+
+
+**Example of chromosome file**
+
+Input len file::
+
+    1  chr1  247249719
+    2  chr2  242951149
+    3  chr3  199501827
+    4  chr4  191273063
+    5  chr5  180857866
+    6  chr6  170899992
+    7  chr7  158821424
+    8  chr8  146274826
+    9  chr9  140273252
+    10  chr10  135374737
+    11  chr11  134452384
+    12  chr12  132349534
+    13  chr13  114142980
+    14  chr14  106368585
+    15  chr15  100338915
+    16  chr16  88827254
+    17  chr17  78774742
+    18  chr18  76117153
+    19  chr19  63811651
+    20  chr20  62435964
+    21  chr21  46944323
+    22  chr22  49691432
+    23  chrX  154913754
+    24  chrY  57772954
+
+-----
+
+.. class:: infomark
+
+Contact Bruno Zeitouni (svdetect@curie.fr) for any questions or concerns about the Galaxy implementation of SVDetect.
+  </help>
+
+</tool>

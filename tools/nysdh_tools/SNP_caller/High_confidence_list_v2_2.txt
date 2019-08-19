@@ -1,0 +1,46 @@
+Antimicrobial	Locus	NT	Codon	WT_nt	Alt_nt	WT_aa	Alt_aa	Status	Note
+Ethambutol	embB	916,918	306	ATG	CTG,GTG,ATA,ATT,ATC,TTG	Met	Leu,Val,Ile,Ile,Ile,Leu	Coding	
+Ethambutol	embB	1216,1217	406	GGC	AGC,GAC,GCC,TGC	Gly	Ser,Asp,Ala,Cys	Coding	
+Ethambutol	embB	1490	497	CAG	CGG	Gln	Arg	Coding	
+Fluoroquinolones	gyrA	220	74	GCC	TCC	Ala	Ser	Coding	
+Fluoroquinolones	gyrA	269	90	GCG	GTG	Ala	Val	Coding	
+Fluoroquinolones	gyrA	271	91	TCG	CCG	Ser	Pro	Coding	
+Fluoroquinolones	gyrA	280,281	94	GAC	AAC,CAC,TAC,GGC,GCC	Asp	Asn,His,Tyr,Gly,Ala	Coding		
+Fluoroquinolones	gyrB	1495	499	AAC	GAC,GTC	Asn	Asp,Val	Coding	
+Isoniazid	katG	836	279	GGC	GAC	Gly	Asp	Coding	
+Isoniazid	katG	944,945	315	AGC	ATC,AAC,ACC,AGA,ACA	Ser	Ile,Asn,Thr,Arg,Thr	Coding	
+Isoniazid	katG	1574	525	CAG	CCG	Gln	Pro	Coding	
+Isoniazid	katG	1180	394	ACG	CCG	Thr	Pro	Coding	
+Isoniazid	oxyR-ahpC promoter region	-81	-81	C	T	-	-	Non-coding	Classic position -39
+Ethionamid	mabA-inhA promoter region	-15	-15	C	T	-	-	Non-coding	
+Isoniazid	mabA-inhA promoter region	-15	-15	C	T	-	-	Non-coding	
+Isoniazid	mabA-inhA promoter region	-8	-8	T	A,C	-	-	Non-coding	
+Ethionamid	mabA-inhA promoter region	-8	-8	T	A,C	-	-	Non-coding	
+Isoniazid	mabA-inhA promoter region	-17	-17	G	T	-	-	Non-coding	
+Ethionamid	mabA-inhA promoter region	-17	-17	G	T	-	-	Non-coding	
+Isoniazid	mabA	609	203	CTG	CTA	Leu	Leu	Coding	
+Ethionamid	mabA	609	203	CTG	CTA	Leu	Leu	Coding	
+Pyrazinamide	pncA promoter region	-	-	-	-	-	-	Any_NC	
+Pyrazinamide	pncA	-	-	-	-	-	-	Any_C	
+Rifampin	rpoB	508	170	GTC	TTC	Val	Phe	Coding	E. coli Position 251
+Rifampin	rpoB	1289	430	CTG	CCG	Leu	Pro	Coding	E. coli Position 511
+Rifampin	rpoB	1295	432	CAA	CTA,CCA	Gln	Leu,Pro	Coding	E. coli Position 513
+Rifampin	rpoB	1303,1304	435	GAC	GTC,TAC	Asp	Val,Tyr	Coding	E. coli Position 516
+Rifampin	rpoB	1322	441	TCG	TTG	Ser	Leu	Coding	E. coli Position 522
+Rifampin	rpoB	1334,1335	445	CAC	AAC,GAC,TAC,CGC,CTC	His	Asn,Asp,Tyr,Arg,Leu	Coding	E. coli Position 526
+Rifampin	rpoB	1349,1350	450	TCG	TTG,TGG,TGT	Ser	Leu,Trp,Cys	Coding	E. coli Position 531
+Rifampin	rpoB	1355	452	CTG	CCG	Leu	Pro	Coding	E. coli Position 533
+Rifampin	rpoB	1471	491	ATC	TTC	Ile	Phe	Coding	E. coli Position 572
+Streptomycin	rrs1	512	512	C	T	-	-	Non-coding	
+Streptomycin	rrs1	513	513	A	C,T	-	-	Non-coding	
+Streptomycin	rrs1	516	516	C	T	-	-	Non-coding	
+Streptomycin	rrs1	906	906	A	C	-	-	Non-coding	
+Streptomycin	rpsL	128	43	AAG	AGG,ATG,AAT	Lys	Arg,Met,Asn	Coding	
+Streptomycin	rpsL	262,263	88	AAG	CAG,AGG,AAT,ATG	Lys	Gln,Arg,Asn,Met	Coding	
+Kanamycin	eis promoter region	-10	-10	G	A	-	-	Non-coding	
+Kanamycin	eis promoter region	-37	-37	G	T	-	-	Non-coding	
+Kanamycin/Amikacin	rrs2	1400	1400	A	G	-	-	Non-coding	
+Isoniazid	inhA	280	94	TCG	GCG	Ser	Ala	Coding
+Ethionamid	inhA	280	94	TCG	GCG	Ser	Ala	Coding
+Ethionamid	ethA	-	-	-	-	-	-	Stop_codon
+Isoniazid	katG	-	-	-	-	-	-	Stop_codon

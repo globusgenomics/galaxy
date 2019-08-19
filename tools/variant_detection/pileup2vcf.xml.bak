@@ -1,0 +1,16 @@
+<tool id="pileup2vcf" name="Pileup to VCF converter">
+	<description>Converts pileup format to VCF format.</description>
+	<command interpreter="perl">pileup2vcf.pl -r $ref_seq &lt; $in_pileup > $out_vcf</command>
+	<inputs>
+		<param name="ref_seq" type="data" format="fasta" label="Reference sequence" optional="false"/>
+		<param name="in_pileup" type="data" label="Pileup file" help="List of variants in pileup format" optional="false"/>
+	</inputs>
+	<outputs>
+		<data name="out_vcf" label="${in_pileup.name} on ${on_string}.vcf"/>
+	</outputs>
+	<help>
+		
+This tool converts a pileup variant call file to a VCF variant call file.
+
+	</help>
+</tool>

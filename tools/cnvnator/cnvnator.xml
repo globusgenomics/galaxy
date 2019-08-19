@@ -1,0 +1,58 @@
+<tool id="cnvnator_docker" name="Cnvnator" version="CNVNATOR: 09-19-2016">
+  <description> is a tool for CNV discovery and genotyping from depth-of-coverage by mapped reads </description>
+  <requirements>
+    <requirement type="package">pymodules</requirement>
+  </requirements>
+  <command interpreter="python">
+  cnvnator_wrapper.py
+
+  #if $in_type.input_type == "built-in":
+    --reference_name $in_type.genome
+    --reference $in_type.genome.fields.path
+  #else:
+    --reference $in_type.input1
+  #end if
+
+  --bam $inputBamFile
+  --output $output 
+  --log $output_log 
+  --summary $summary
+  --output-dir $output.extra_files_path
+
+  </command>
+
+  <stdio>
+    <exit_code range="1:" level="fatal" description="Error" />
+  </stdio>
+
+   <inputs>
+    <conditional name="in_type">
+      <param name="input_type" type="select" label="Use a built-in FASTA file or one from the history?">
+        <option value="built-in">Built-in</option>
+        <option value="history">History file</option>
+      </param>
+      <when value="built-in">
+        <param name="genome" type="select" label="Select a built-in genome" help="if your genome of interest is not listed - contact Galaxy team">
+          <options from_data_table="all_fasta_metasv" />
+        </param>
+      </when>
+      <when value="history">
+        <param name="input1" type="data" format="fasta" label="Input genome (FASTA format)" />
+      </when>
+    </conditional>
+    <param name="inputBamFile" format="bam" type="data" label="input bam file" />
+   </inputs>
+
+   <outputs>
+      <data format="tabular" label="${tool.name} on ${on_string} (log)" name="output_log"/>
+      <data format="tabular" label="${tool.name} on ${on_string} (output)" name="output" />
+      <data format="tabular" label="${tool.name} on ${on_string} (summary)" name="summary" /> 
+   </outputs>
+   
+    <tests>
+     <test>
+     </test>
+   </tests>
+   <help>
+  </help>
+</tool>

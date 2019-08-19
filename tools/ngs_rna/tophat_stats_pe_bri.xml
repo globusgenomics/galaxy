@@ -1,0 +1,28 @@
+<tool id="tophatstatsPE_bri" name="Tophat Stats PE" version="1.0">
+  <description>Calculate mapping statistics from Tophat SAM files (BRI).</description>
+  <command interpreter="perl">tophatstatsPE_bri.pl $hits $fastq > $output</command>
+  <inputs>
+    <param name="hits" type="data" format="sam" label="SAM file produced by Tophat"/>
+    <param name="fastq" type="data" format="fastq" label="Fastq file used to produce the SAM file" />
+  </inputs>
+  <outputs>
+    <data format="txt" name="output" />
+  </outputs>
+  <tests>
+  </tests>
+  <help>
+**Tophat Stats PE**
+
+This tool generates mapping statics from SAM files produced by
+Tophat (after samtools bam to sam conversion).
+
+**Example output:**
+
+
+
+**Credit**
+
+Cheat/Kludge use of John Garbe's ( University of Minnesota) code
+
+  </help>
+</tool>

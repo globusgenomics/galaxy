@@ -1,0 +1,20 @@
+<tool id="filterVarByDepth" name="Filter variants by depth">
+	<description></description>
+	<command>awk '{if(\$8>=$min_depth) print \$1 "\t" (\$2 -1) "\t" \$2 "\t" \$3 "\t" \$4 "\t" \$5 "\t" \$6 "\t" \$7 "\t" \$8 "\t" \$9 "\t" \$10}' $input > $filtered_output</command>
+	<inputs>
+		<param name="input" type="data" label="List of variants" help="List of variants in pileup format" optional="false"/>
+		<param name="min_depth" type="float" label="Minimum depth" help="Variants that have a depth less than this will be removed" value="5.0"/>
+	</inputs>
+	<outputs>
+		<data name="filtered_output" type="data" format="bed" label="${input.name} filtered by depth"/>
+	</outputs>
+	<help>
+
+This tool filters out variants with low coverage.
+
+.. class:: warningmark
+
+**Note:** This tool filters variants by depth and then converts to bed format
+
+	</help>
+</tool>

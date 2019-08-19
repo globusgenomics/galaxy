@@ -1,0 +1,18 @@
+<display id="proteomics_protxml" version="1.0.0" name="view protXML in">
+	<dynamic_links from_file="tool-data/protk_display_site.txt" skip_startswith="#" id="0" name="0">
+        <!-- Define parameters by column from file -->
+        <dynamic_param name="site_id" value="0"/>
+        <dynamic_param name="site_url" value="1"/>
+        <!-- We define url and params as normal, but values defined in dynamic_param are available by specified name -->
+        <url target_frame="galaxy_main">${site_url}/init_local?file=${encoded_filename.qp}&amp;type=protxml</url>
+        <param type="data" name="prot_file" viewable="False" format="protXML"/>
+        <param type="data" dataset="prot_file" name="protxml_file" format="protXML" viewable="False" />
+        <param type="template" name="encoded_filename" strip="True" >
+            #import binascii
+            ${binascii.hexlify( $protxml_file.file_name )}
+        </param>
+        <param type="template" name="galaxy_url" strip="True" >
+                ${BASE_URL.split(":")[1][2:]}
+        </param>
+    </dynamic_links>
+</display>

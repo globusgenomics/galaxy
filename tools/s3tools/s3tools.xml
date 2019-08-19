@@ -1,0 +1,25 @@
+<tool id="backup_to_s3" description="Backup files to a S3 bucket" name="BackupToS3" version="1.0">
+ <description>Submit Seattle Seq</description>
+ <command interpreter="python">
+   /opt/galaxy/tools/s3tools/s3cmd put $from_dataset s3://sulakhe/emory_data$remote_path
+ </command>
+ <inputs>
+   <param name="from_dataset" type="data" label="Send this dataset" />
+   <param name="remote_path" type="text" size="30" label="Remote Path:"/>
+ </inputs>
+ <outputs> 
+   <data name="out_file1" type="data" format="txt"/>
+ </outputs>
+ <tests>
+   <test>
+     <!--
+     chrM_base is the index files' location/base name. 
+     -->
+   </test>
+ </tests>
+ <help>
+
+**Copies a file to a remote S3 bucket for backup storage. Currently the bucket is hardcoded. **
+
+ </help>
+ </tool>

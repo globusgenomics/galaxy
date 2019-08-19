@@ -1,0 +1,180 @@
+<?xml version="1.0"?>
+<tool_dependency>
+    <package name="defuse" version="0.6.0">
+        <install version="1.0">
+            <actions>
+                <action type="download_by_url">http://sourceforge.net/projects/defuse/files/defuse/0.6/defuse-0.6.0.tar.gz</action>
+                <action type="shell_command">cd tools &amp;&amp; make</action>
+                <action type="move_directory_files">
+                    <source_directory>.</source_directory>
+                    <destination_directory>$INSTALL_DIR</destination_directory>
+                </action>
+                <action type="set_environment">
+                    <environment_variable name="DEFUSE_PATH" action="set_to">$INSTALL_DIR</environment_variable>
+                </action>
+            </actions>
+        </install>
+        <readme>
+deFuse code
+To build the deFuse toolset you must have the boost c++ development libraries installed. If they are not installed on your system you can download them from the boost website. A full install of boost is not required. The easiest thing to do is to download the latest boost source tar.gz, extract it, then add the extracted path to the CPLUS_INCLUDE_PATH environment variable (in bash, `export CPLUS_INCLUDE_PATH=/boost/directory/:$CPLUS_INCLUDE_PATH`)
+        </readme>
+    </package>
+
+    <package name="samtools" version="0.1.18">
+        <install version="1.0">
+            <actions>
+                <action type="download_by_url">http://sourceforge.net/projects/samtools/files/samtools/0.1.18/samtools-0.1.18.tar.bz2</action>
+                <action type="shell_command">sed -i.bak -e 's/-lcurses/-lncurses/g' Makefile</action>
+                <action type="shell_command">make</action>
+                <action type="move_file">
+                    <source>samtools</source>
+                    <destination>$INSTALL_DIR/bin</destination>
+                </action>
+                <action type="move_file">
+                    <source>misc/maq2sam-long</source>
+                    <destination>$INSTALL_DIR/bin</destination>
+                </action>
+                <action type="set_environment">
+                    <environment_variable name="PATH" action="prepend_to">$INSTALL_DIR/bin</environment_variable>
+                </action>
+            </actions>
+        </install>
+        <readme>
+Compiling SAMtools requires the ncurses and zlib development libraries.
+        </readme>
+    </package>
+
+
+    <package name="bowtie" version="0.12.7">
+        <install version="1.0">
+            <actions>
+                <action type="download_by_url">http://downloads.sourceforge.net/project/bowtie-bio/bowtie/0.12.7/bowtie-0.12.7-src.zip</action>
+                <action type="shell_command">make</action>
+                <action type="move_file">
+                    <source>bowtie</source>
+                    <destination>$INSTALL_DIR/bin</destination>
+                </action>
+                <action type="move_file">
+                    <source>bowtie-build</source>
+                    <destination>$INSTALL_DIR/bin</destination>
+                </action>
+                <action type="move_file">
+                    <source>bowtie-inspect</source>
+                    <destination>$INSTALL_DIR/bin</destination>
+                </action>
+                <action type="set_environment">
+                    <environment_variable name="PATH" action="prepend_to">$INSTALL_DIR/bin</environment_variable>
+            </action>
+            </actions>
+        </install>
+        <readme>
+            Compiling Bowtie requires libpthread to be present on your system.
+        </readme>
+    </package>
+
+    <package name="gmap" version="2012-07-20">
+        <install version="1.0">
+            <actions>
+	        <action type="download_by_url" target_filename="gmap-2012-07-20.tar.gz">http://research-pub.gene.com/gmap/src/gmap-gsnap-2012-07-20.v2.tar.gz</action>
+                <action type="shell_command">./configure</action>
+                <action type="shell_command">make</action>
+                <action type="move_file">
+                    <source>src/gmap</source>
+                    <destination>$INSTALL_DIR/bin</destination>
+                </action>
+                <action type="move_file">
+                    <source>src/gmapindex</source>
+                    <destination>$INSTALL_DIR/bin</destination>
+                </action>
+                <action type="move_file">
+                    <source>src/gsnap</source>
+                    <destination>$INSTALL_DIR/bin</destination>
+                </action>
+                <action type="move_file">
+                    <source>src/uniqscan</source>
+                    <destination>$INSTALL_DIR/bin</destination>
+                </action>
+                <action type="move_file">
+                    <source>src/iit_store</source>
+                    <destination>$INSTALL_DIR/bin</destination>
+                </action>
+                <action type="move_file">
+                    <source>src/iit_get</source>
+                    <destination>$INSTALL_DIR/bin</destination>
+                </action>
+                <action type="move_file">
+                    <source>src/atoiindex</source>
+                    <destination>$INSTALL_DIR/bin</destination>
+                </action>
+                <action type="move_file">
+                    <source>src/snpindex</source>
+                    <destination>$INSTALL_DIR/bin</destination>
+                </action>
+                <action type="move_file">
+                    <source>src/cmetindex</source>
+                    <destination>$INSTALL_DIR/bin</destination>
+                </action>
+                <action type="move_file">
+                    <source>src/get-genome</source>
+                    <destination>$INSTALL_DIR/bin</destination>
+                </action>
+                <action type="move_directory_files">
+                    <source_directory>util</source_directory>
+                    <destination_directory>$INSTALL_DIR/bin</destination_directory>
+                </action>
+                <action type="set_environment">
+                    <environment_variable name="PATH" action="prepend_to">$INSTALL_DIR/bin</environment_variable>
+                </action>
+            </actions>
+        </install>
+        <readme>
+        </readme>
+    </package>
+
+    <package name="blat" version="34x10">
+        <install version="1.0">
+            <actions>
+                <action type="download_by_url">http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/blat/blat</action>
+                <action type="shell_command">chmod 755 blat</action>
+                <action type="move_file">
+                    <source>blat</source>
+                    <destination>$INSTALL_DIR/bin</destination>
+                </action>
+                <action type="set_environment">
+                    <environment_variable name="PATH" action="prepend_to">$INSTALL_DIR/bin</environment_variable>
+                </action>
+            </actions>
+        </install>
+        <readme>
+This only handles blat for a non-commercial linux system.
+
+Please note that the Blat source and executables are freely available for
+academic, nonprofit and personal use. Commercial licensing information is
+available on the Kent Informatics website (http://www.kentinformatics.com/).
+        </readme>
+    </package>
+
+    <package name="fatotwobit" version="34x10">
+        <install version="1.0">
+            <actions>
+                <action type="download_by_url">http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/faToTwoBit</action>
+                <action type="shell_command">chmod 755 faToTwoBit</action>
+                <action type="move_file">
+                    <source>faToTwoBit</source>
+                    <destination>$INSTALL_DIR/bin</destination>
+                </action>
+                <action type="set_environment">
+                    <environment_variable name="PATH" action="prepend_to">$INSTALL_DIR/bin</environment_variable>
+                </action>
+            </actions>
+        </install>
+        <readme>
+This only handles faToTwoBit for a non-commercial linux system.
+
+Please note that the source and executables are freely available for
+academic, nonprofit and personal use. Commercial licensing information is
+available on the Kent Informatics website (http://www.kentinformatics.com/).
+        </readme>
+    </package>
+
+</tool_dependency>

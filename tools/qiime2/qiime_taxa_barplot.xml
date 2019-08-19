@@ -1,0 +1,97 @@
+<?xml version="1.0" ?>
+<tool id="qiime_taxa_barplot" name="qiime taxa barplot" version="022019">
+	<description>- Visualize taxonomy with an interactive bar plot</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command>
+	<![CDATA[
+	qiime taxa barplot
+
+	#if str( $id_to_taxonomy_fp.selector ) == 'history'
+		#set $tax = $id_to_taxonomy_fp.taxonomy_fp
+		--i-taxonomy '$tax'
+	#else:
+		#set $tax = $id_to_taxonomy_fp.taxonomy_fp.fields.path
+		--i-taxonomy '$tax'
+	#end if
+
+	#def list_dict_to_string(list_dict):
+		#set $file_list = list_dict[0]['additional_input'].__getattr__('file_name')
+		#for d in list_dict[1:]:
+			#set $file_list = $file_list + ' --m-metadata-file=' + d['additional_input'].__getattr__('file_name')
+		#end for
+		#return $file_list
+	#end def
+
+	 --m-metadata-file=$list_dict_to_string($input_files_mmetadatafile)
+	 --i-table=$itable --o-visualization=ovisualization
+
+	#if str($cmdconfig) != 'None':
+	 --cmd-config=$cmdconfig
+	#end if
+	;
+	qiime tools export --input-path ovisualization.qzv --output-path out   && mkdir -p '$ovisualization.files_path'
+	&& cp -r out/* '$ovisualization.files_path'
+	&& mv '$ovisualization.files_path/index.html' '$ovisualization'
+	]]>
+	</command>
+	<inputs>
+		<param format="qza,no_unzip.zip" label="--i-table: FeatureTable[Frequency] Feature table to visualize at various taxonomic levels.  [required]" name="itable" optional="False" type="data"/>
+
+		<conditional name="id_to_taxonomy_fp" optional="True">
+		   <param name="selector" type="select" label="Reference taxonomy to query">
+			  <option value="cached">Public databases</option>
+			  <option value="history">Databases from your history</option>
+		   </param>
+		   <when value="cached">
+			  <param argument="--taxonomy_fp" label="Reference taxonomy" type="select" optional="True">
+				 <options from_data_table="qiime_taxonomy" />
+			  </param>
+		   </when>
+		   <when value="history">
+			  <param argument="--taxonomy_fp" type="data" format="qza,no_unzip.zip" label="Reference databases" optional="True" />
+		   </when>
+		</conditional>
+
+		<repeat name="input_files_mmetadatafile" optional="False" title="--m-metadata-file">
+			<param label="--m-metadata-file: Metadata file or artifact viewable as metadata. This option may be supplied multiple times to merge metadata. The sample metadata.  [required]" name="additional_input" type="data" format="tabular,qza,no_unzip.zip" />
+		</repeat>
+
+		<param label="--cmd-config: Use config file for command options" name="cmdconfig" optional="True" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="html" label="${tool.name} on ${on_string}: visualization.qzv" name="ovisualization"/>
+	</outputs>
+	<help>
+		<![CDATA[
+Visualize taxonomy with an interactive bar plot
+------------------------------------------------
+
+This visualizer produces an interactive barplot visualization of
+taxonomies. Interactive features include multi-level sorting, plot
+recoloring, sample relabeling, and SVG figure export.
+
+Parameters
+----------
+table : FeatureTable[Frequency]
+    Feature table to visualize at various taxonomic levels.
+taxonomy : FeatureData[Taxonomy]
+    Taxonomic annotations for features in the provided feature table. All
+    features in the feature table must have a corresponding taxonomic
+    annotation. Taxonomic annotations that are not present in the feature
+    table will be ignored.
+metadata : Metadata
+    The sample metadata.
+
+Returns
+-------
+visualization : Visualization
+		\
+		]]>
+	</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

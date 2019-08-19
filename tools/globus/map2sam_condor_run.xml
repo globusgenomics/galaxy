@@ -1,0 +1,57 @@
+<tool id="map2sam_condor_run" name="Parallel CGA Map2Sam">
+  <description>Converts CGI initial reference mappings into SAM format.</description>
+  <command interpreter="python">
+map2sam_condor_run.py '$input' '$reference' '$output1' '$output1.extra_files_path' '$selected_lane' '$selected_part'
+  </command>
+  <inputs>
+    <param format="cga" name="input" type="data" label="Complete Genomics Dataset"/>
+    <param format="crr" name="reference" type="data" label="Complete Genomics reference file"/>
+    <param name="selected_lane" optional="true" type="select" multiple="true" label="Optionally limit run to specific lanes.">
+      <option value="">Select Lane(s)</option>
+      <option value="01">1</option>
+      <option value="02">2</option>
+      <option value="03">3</option>
+      <option value="04">4</option>
+      <option value="05">5</option>
+      <option value="06">6</option>
+      <option value="07">7</option>
+      <option value="08">8</option>
+      <option value="09">9</option>
+      <option value="10">10</option>
+      <option value="11">11</option>
+      <option value="12">12</option>
+      <option value="13">13</option>
+      <option value="14">14</option>
+      <option value="15">15</option>
+      <option value="16">16</option>
+    </param>
+    <param name="selected_part" optional="true" type="select" multiple="true" label="Optionally limit run to specific parts.">
+      <option value="">Select Part(s)</option>
+      <option value="01">1</option>
+      <option value="02">2</option>
+      <option value="03">3</option>
+      <option value="04">4</option>
+      <option value="05">5</option>
+      <option value="06">6</option>
+      <option value="07">7</option>
+      <option value="08">8</option>
+      <option value="09">9</option>
+      <option value="10">10</option>
+      <option value="11">11</option>
+      <option value="12">12</option>
+    </param>
+  </inputs>
+  <outputs>
+    <data format="cga" name="output1" label="CGA QC output"/>
+  </outputs>
+  <help>
+    The Map2Sam converter takes as input Reads and Mappings files, a library 
+    structure file and a crr reference file and generates one SAM file as an 
+    output. The output is sent into stdout by default. All the mapping records 
+    from the input are converted into corresponding SAM records one to one. In 
+    addition, the unmapped DNB records are reported as SAM records having 
+    appropriate indication. Map2Sam converter tries to identify primary 
+    mappings and highlight them using the appropriate flag. The negative gaps 
+    in CGI mappings are represented using GS/GQ/GC tags.
+  </help>
+</tool>

@@ -1,0 +1,23 @@
+<project>
+
+    <alias>
+        genes = https://bitbucket.org/intogen/intogen-sources.git?ensembl/hsa/genes
+        pathways = https://bitbucket.org/intogen/intogen-sources.git?kegg/pathways
+        pathway2gene = https://bitbucket.org/intogen/intogen-sources.git?kegg/map/ensembl_hsa_genes
+        intogen_arrays = https://bitbucket.org/intogen/intogen-arrays.git
+        intogen_mutations = https://bitbucket.org/intogen/intogen-mutations.git?data/global/variant-recurrences
+        intogen_tcga = https://bitbucket.org/intogen/intogen-tcga.git
+        cosmic = https://bitbucket.org/intogen/intogen-sources.git?cosmic/gene-recurrences
+        cgc = https://bitbucket.org/intogen/intogen-sources.git?cgc/genes
+        filters = https://bitbucket.org/intogen/intogen-sources.git?filters
+        all_tabs = $SHOW_ALL_TABS
+    </alias>
+
+    <plugins>
+        <plugin>
+            <id>tsv-loader</id>
+            <location>mvn:org.onexus/org.onexus.collection.loader.tsv/0.4.0-SNAPSHOT</location>
+        </plugin>
+    </plugins>
+</project>
+

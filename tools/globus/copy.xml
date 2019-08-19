@@ -1,0 +1,39 @@
+<tool id="globus_copy" name="File Copy">
+  <description>Perform a globus online transfer.</description>
+  <command>
+    cp $ftp_upload_dir/$inpath ./copied.out
+  </command>
+  <inputs>
+    <param name="inpath" type="text" size="100" label="Source File Path">
+      <sanitizer sanitize="False"/>
+    </param>
+  </inputs>
+  <outputs>
+    <data name="out_file1" type="data" from_work_dir="copied.out"/>
+  </outputs>
+  <tests>
+    <test>
+      <!-- TODO: UPDATE TEST CASE -->
+      <param name="namefield" value="Bob"/>
+      <output name="out_file1" file="helloworld_out.txt"/>
+    </test>
+  </tests>
+  <help>
+.. class:: warningmark
+    
+  **WARNING:** Be careful not to exceed disk quotas!
+    
+-----
+    
+**What it does**
+    
+  Creates a symbolic link to data to force that data to be interpreted as a dataset.
+    
+-----
+    
+**Example**
+    
+  TODO: example
+  
+  </help>
+</tool>

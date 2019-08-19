@@ -1,0 +1,56 @@
+<tool id="hh_channel" name="New Channel">
+	<description></description>
+        <requirements>
+          <requiement type="package">pymodules</requirement>
+        </requirements>
+	<command interpreter="python">
+		
+		hh_channel.py $output_file $E_rest $g 
+		#for $i, $s in enumerate( $equations )
+		"${s.eq}" ${s.exp}
+		#end for
+	
+	</command>	
+	<inputs>
+		<param name="E_rest" type="float" value="" label="Resting Potential (mV)"  />
+		<param name="g" type="float" value="" min="0" label="Conductance (mS/cm^2)"  />
+		<repeat name="equations" title="Gating Variable" help="Enter channel gating parameters: gating variable exponent and ODE right-hand side as a Python expression. Use the variable V for membrane potential and x for the gating variable, e.g. for the Hodgkin-Huxley m gate use exponent 3 and equation (0.1*(V+25)) / (exp((V+25)/10)-1)*(1-x) - 4*exp(V/18)*x.">
+			<param name="eq" type="text" label="Equation" area="true" />
+			<param name="exp" type="float" value="" label="Exponent"  />
+		</repeat>
+	</inputs>
+	<outputs>
+		<data format="txt" name="output_file" label="channel.txt" />
+	</outputs>
+	<help>
+**Description** 
+
+This tool creates an ion channel specification file for use with the "Cell Simulator" tool.
+
+**Tool Use** 
+
+The channel's resting potential and conductance must be specified. It is assumed that the channel's current is given in the following form: g*(x_1^n_1)*(x_2^n_2)*...*(x_k^n_k)*(V-E_rest), where g is the conductance, E_rest is the resting potential, and x_1, ..., x_k are a set of independent gating variables each raised to their respective powers n_1, ..., n_k.
+
+Click the "Add new Gating Variable" button to append a new gating variable to the channel. For each gating variable, you must specify the right-hand side of the variable ODE and the gating variable's exponent (n_k). The equation must be a valid Python expression containing only Python math functions (e.g. exp(), pow(), log(), etc.), the variable V representing the membrane potential, and the variable x representing the gating variable.
+
+The gating variables are optional. Passive (e.g. leak) currents can be specified by not including any gating variables.
+
+**Example**
+
+For the Hodgkin-Huxley Na+ channel, one might use the following parameters:
+
+- **Resting Potential:** 115.0
+- **Conductance:** 120.0
+- Gating Variable 1 (the "m" gate):
+	- Equation: ((0.1*(-V+25))/(exp((-V+25)/10)-1))*(1-x) - 4*exp(-V/18)*x
+	- Exponent: 3
+- Gating Variable 2 (the "h" gate):
+	- Equation: 0.07*exp(-V/20)*(1-x) - (x/(exp((-V+30)/10)+1))
+	- Exponent: 1
+
+**Output** 
+
+The tool produces a text file containing the channel specifications. This file is to be used as an input to the "Cell Simulation" tool.
+
+	</help>
+</tool>

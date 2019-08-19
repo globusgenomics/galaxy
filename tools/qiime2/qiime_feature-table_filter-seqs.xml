@@ -1,0 +1,104 @@
+<?xml version="1.0" ?>
+<tool id="qiime_feature-table_filter-seqs" name="qiime feature-table filter-seqs" version="022019">
+	<description> - Filter features from sequences</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command>
+	<![CDATA[
+	qiime feature-table filter-seqs --i-data=$idata
+	#if '__sq__' in str($pwhere):
+		#set $pwhere_temp = $pwhere.replace('__sq__', "'")
+		#set $pwhere = $pwhere_temp
+	#end if
+
+	#if str($pwhere):
+	 --p-where="$pwhere"
+	#end if
+
+
+	#if str($itable) != 'None':
+	 --i-table=$itable
+	#end if
+
+	#if $input_files_mmetadatafile:
+
+	#def list_dict_to_string(list_dict):
+		#set $file_list = list_dict[0]['additional_input'].__getattr__('file_name')
+		#for d in list_dict[1:]:
+			#set $file_list = $file_list + ',' + d['additional_input'].__getattr__('file_name')
+		#end for
+		#return $file_list
+	#end def
+	 --m-metadata-file=$list_dict_to_string($input_files_mmetadatafile)
+	#end if
+
+	#if str($cmdconfig) != 'None':
+	 --cmd-config=$cmdconfig
+	#end if
+
+	#if $pexcludeids:
+	  --p-exclude-ids
+	#else
+		--p-no-exclude-ids
+	#end if
+
+	 --o-filtered-data=ofiltereddata;
+	 cp ofiltereddata.qza $ofiltereddata;
+	]]>
+	</command>
+	<inputs>
+		<param format="qza,no_unzip.zip" label="--i-data: FeatureData[Sequence] The sequences from which features should be filtered.  [required]" name="idata" optional="False" type="data"/>
+		<param format="qza,no_unzip.zip" label="--i-table: FeatureTable[Frequency] Table containing feature ids used for id- based filtering.  [optional]" name="itable" optional="True" type="data"/>
+		<param label="--p-where: SQLite WHERE clause specifying feature metadata criteria that must be met to be included in the filtered feature table. If not provided, all features in `metadata` that are also in the sequences will be retained.  [optional]" name="pwhere" optional="True" type="text"/>
+
+		<repeat name="input_files_mmetadatafile" optional="True" title="--m-metadata-file">
+			<param label="--m-metadata-file: Metadata file or artifact viewable as metadata. This option may be supplied multiple times to merge metadata. Feature metadata used for id-based filtering, with `where` parameter when selecting features to retain, or with `exclude_ids` when selecting features to discard.  [optional]" name="additional_input" type="data" format="tabular,qza,no_unzip.zip" />
+		</repeat>
+
+		<param label="--p-exclude-ids: --p-no-exclude-ids If true, the features selected by the `metadata` (with or without the `where` parameter) or `table` parameter will be excluded from the filtered sequences instead of being retained.  [default: False]" name="pexcludeids" checked="False" type="boolean"/>
+		<param label="--cmd-config: Use config file for command options" name="cmdconfig" optional="True" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="qza" label="${tool.name} on ${on_string}: filtered-data.qza" name="ofiltereddata"/>
+	</outputs>
+	<help>
+		<![CDATA[
+Filter features from sequences
+-------------------------------
+
+Filter features from sequences based on a feature table or metadata. See
+the filtering tutorial on https://docs.qiime2.org for additional details.
+This method can filter based on ids in a table or a metadata file, but not
+both (i.e., the table and metadata options are mutually exclusive).
+
+Parameters
+----------
+data : FeatureData[Sequence]
+    The sequences from which features should be filtered.
+table : FeatureTable[Frequency], optional
+    Table containing feature ids used for id-based filtering.
+metadata : Metadata, optional
+    Feature metadata used for id-based filtering, with `where` parameter
+    when selecting features to retain, or with `exclude_ids` when selecting
+    features to discard.
+where : Str, optional
+    SQLite WHERE clause specifying feature metadata criteria that must be
+    met to be included in the filtered feature table. If not provided, all
+    features in `metadata` that are also in the sequences will be retained.
+exclude_ids : Bool, optional
+    If true, the features selected by the `metadata` (with or without the
+    `where` parameter) or `table` parameter will be excluded from the
+    filtered sequences instead of being retained.
+
+Returns
+-------
+filtered_data : FeatureData[Sequence]
+    The resulting filtered sequences.
+    ]]>
+	</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

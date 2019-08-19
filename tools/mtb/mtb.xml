@@ -1,0 +1,39 @@
+<tool id="mtb" name="MTB" version="1.4.5" description="pipeline">
+	<requirements>
+	  <requirement type="package" version="1.8.0">java</requirement>
+	  <requirement type="package" version="2.2.10">jellyfish</requirement>
+	  <requirement type="package" version="07.09.2018">agrep</requirement>
+    	  <requirement type="package">pymodules</requirement>
+    	  <requirement type="package">perlmodules</requirement>
+          <requirement type="package" version="0.10.5-beta">kraken</requirement>
+          <requirement type="package" version="0.7.12">bwa</requirement>
+          <requirement type="package" version="1.129">picard</requirement>
+          <requirement type="package" version="3.3">gatk3</requirement>
+          <requirement type="package" version="0.1.19">samtools</requirement>
+          <requirement type="package" version="v0.2.9">lumpy</requirement>
+	</requirements>
+
+	<description></description>
+
+	<!--parallelism method="basic"></parallelism-->
+
+	<command><![CDATA[
+                mkdir $log.extra_files_path;
+		perl $__tool_directory__/MTB_pipeline_GATK_V2.0_parallel_beta.pl 
+                ##dummy__at__gmail.com 
+                #import glob
+                #set $files = glob.glob("%s/%s*R1*" % ($input_dir.extra_files_path, $sample_name))
+                $files[0]
+                $log
+                $log.extra_files_path
+	]]></command>
+
+	<inputs>
+            <param name="input_dir" type="data" format="txt" label="Directory object containing fastq files"/>
+            <param name="sample_name" type="text" label="Sample name inside Directory object"/>
+	</inputs>
+
+	<outputs>
+		<data name="log" format="txt" label="progress log output" />
+	</outputs>
+</tool>

@@ -1,0 +1,54 @@
+<?xml version="1.0" ?>
+<tool id="qiime_feature-table_rarefy" name="qiime feature-table rarefy" version="022019">
+	<description> - Rarefy table</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command>
+	<![CDATA[
+	qiime feature-table rarefy --i-table=$itable --p-sampling-depth="$psamplingdepth"
+
+	#if str($cmdconfig) != 'None':
+	 --cmd-config=$cmdconfig
+	#end if
+	 --o-rarefied-table=orarefiedtable;
+
+ cp orarefiedtable.qza $orarefiedtable;
+	]]>
+	</command>
+	<inputs>
+		<param format="qza,no_unzip.zip" label="--i-table: FeatureTable[Frequency] The feature table to be rarefied. [required]" name="itable" optional="False" type="data"/>
+		<param label="--p-sampling-depth: The total frequency that each sample should be rarefied to. Samples where the sum of frequencies is less than the sampling depth will be not be included in the resulting table.  [required]" name="psamplingdepth" optional="False" type="text"/>
+		<param label="--cmd-config: Use config file for command options" name="cmdconfig" optional="True" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="qza" label="${tool.name} on ${on_string}: rarefied-table.qza" name="orarefiedtable"/>
+	</outputs>
+	<help>
+		<![CDATA[
+Rarefy table
+-------------
+
+Subsample frequencies from all samples without replacement so that the sum
+of frequencies in each sample is equal to sampling-depth.
+
+Parameters
+----------
+table : FeatureTable[Frequency]
+    The feature table to be rarefied.
+sampling_depth : Int % Range(1, None)
+    The total frequency that each sample should be rarefied to. Samples
+    where the sum of frequencies is less than the sampling depth will be
+    not be included in the resulting table.
+
+Returns
+-------
+rarefied_table : FeatureTable[Frequency]
+    The resulting rarefied feature table.
+    ]]>
+	</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

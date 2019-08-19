@@ -1,0 +1,104 @@
+<tool id="TPP_SpectraST_search_swift" name="SpectraST Search (swift)" version="1.0" force_history_refresh="True">
+<description>spectral library searching</description>
+    <requirements>
+        <requirement type="package">protkgem</requirement>
+        <requirement type="package">tpp</requirement>
+        <requirement type="package">ruby</requirement>
+        <requirement type="package">swift</requirement>
+   </requirements>
+<command interpreter="python">spectra_search_swift.py  
+#if $libType.type=="single":
+  --splibType single
+  --LibraryFile $libType.sptxt
+  --search_database $search_database
+#else
+  --splibType fileSet
+  --LibraryFile $libType.inputLibFileSet
+  --search_database $search_database
+#end if
+
+--queryType single
+#set $mzml_file = ""
+#if str($input_dir_source.input_dir_source_type) == "text"
+    #import os, glob
+    #set $mzml_files = glob.glob(str( $input_dir_source.input_directory_path) + "/*.mzML"  )
+    #for $input_mzml in $mzml_files:
+        #set $mzml_file += $input_mzml + " "
+    #end for
+#else if str($input_dir_source.input_dir_source_type) == "file"
+    #import os, glob
+    #set $fh = open(str($input_dir_source.input_directory_path_file), "r")
+    #set $path = $fh.readline().rstrip("\n")
+    #set $mzml_files = glob.glob(str( $path ) + "/*.mzML"  )
+    #for $input_mzml in $mzml_files:
+        #set $mzml_file += $input_mzml + " "
+    #end for
+#else
+    ## this assumes that all MZML files in your history were transferred using Globus
+    ##  and they are stored in the same directoy with the same mzML file extension
+    #for $input_mzml in $input_dir_source.input_mzmls:
+        #set $mzml_file += str($input_mzml.input_mzml_file) + " "
+    #end for
+#end if
+--input-dir "$mzml_file"
+--output $output
+--output-dir $output.extra_files_path
+</command>
+<inputs>
+
+  <conditional name="libType">
+    <param name="type" type="select" label="select input library type">
+      <option value="single" selected="true">single spectral-library-file(sptxt)</option>
+      <option value="fileSet">spectral-library-fileSet</option>
+    </param>
+    <when value="single">
+      <!--
+      <param name="inputFile" type="data" format="mzXML" label="input file"/>
+      <param name="prettyName" type="text" size="30" value="raw file name" label="Name to use for this data file" help="make sure they are consistent with those used in the searching strategy"/>
+     -->
+      <!--
+      <param name="splib" type="data" format="splib" label="spectral library" />
+      <param name="spidx" type="data" format="spidx" label="spectral library MZ index" />
+      <param name="pepidx" type="data" format="pepidx" label="spectral library PEP index" />
+      -->
+      <param name="sptxt" type="data" format="sptxt" label="spectral library: sptxt"/>
+    </when>
+    <when value="fileSet">
+      <param name="inputLibFileSet" type="data" format="tppfileset" label="input library file set"/>
+    </when>
+  </conditional>
+
+  <param name="search_database" type="data" format="fasta" label="Specify a sequence database file" help="This will not affect the search in any way, but this information will be included in the output for any downstream data processing." />
+
+  <conditional name="input_dir_source">
+      <param name="input_dir_source_type" type="select" label="How will you specify the path to the MZML datasets?" 
+        help="If you choose the file based method, it must contain only one line with the path for your files. You can select an MZML file from your history and it will automatically search for all MZML files located in the same history or directory.">
+        <option value="text">Text Field</option>
+        <option value="file">Text File containing path to BAM files</option>
+        <option value="history">MZML in history</option>
+      </param>
+      <when value="text">
+        <param name="input_directory_path" type="text" label="MZML directory path" 
+          help="Full path of the directory that contains a set of MZML files. All the MZML files will be used as input datasets."/>
+      </when>
+      <when value="file">
+        <param name="input_directory_path_file" type="data" format="txt" 
+          label="File containing path of the directory containing the MZML files" 
+          help="Must contain only one line with the path for your files" />
+      </when>
+      <when value="history">
+        <repeat name="input_mzmls" title="Sample BAM file" min="1">
+          <param name="input_mzml_file" type="data" format="mzml" label="MSMS file" help="An mzML file with MS/MS data. You only need to indicate on mzML file in you rhistory, the rest of the mzML will be taken from the same location" />
+        </repeat>
+      </when>
+  </conditional>
+</inputs>
+<outputs>
+    <data format="tabular" name="output" label="${tool.name} on ${on_string}"/>
+</outputs>
+<tests>
+	<test>
+	</test>
+</tests>
+<help></help>
+</tool>

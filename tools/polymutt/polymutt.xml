@@ -1,0 +1,188 @@
+<?xml version="1.0"?>
+
+<tool name="Polymutt" id="Polymutt_id">
+  <description>
+  </description>
+
+  <command interpreter="python">
+     polymutt.py   
+   $pedfile
+   $datfile
+   $glfIndexFile
+
+    #if str( $cutoff ):
+        $cutoff
+    #else:
+	none
+    #end if
+
+    #if str( $minMapQuality ):
+        $minMapQuality
+    #else:
+	none
+    #end if
+
+    #if str( $minDepth ):
+        $minDepth
+    #else:
+	none
+    #end if
+
+    #if str( $maxDepth ):
+        $maxDepth
+    #else:
+	none
+    #end if
+
+    #if str( $minPercSampleWithData ):
+        $minPercSampleWithData
+    #else:
+	none
+    #end if
+
+    #if str( $theta ):
+        $theta
+    #else:
+	none
+    #end if
+
+    #if str( $poly_tstv ):
+        $poly_tstv
+    #else:
+	none
+    #end if
+
+   #if $de_novo.denovo == "Yes":
+	#if str( $de_novo.rate_denovo ):
+	   $de_novo.rate_denovo
+	#else:
+           none
+        #end if
+	#if str( $de_novo.tstv_denovo ):
+	   $de_novo.tstv_denovo
+	#else:
+           none
+        #end if
+	#if str( $de_novo.minLLR_denovo ):
+	   $de_novo.minLLR_denovo
+	#else:
+           none
+        #end if
+   #else:
+	no
+	no
+	no
+   #end if
+
+    #if str( $prec ):
+        $prec
+    #else:
+	none
+    #end if
+
+    #if str( $nthreads ):
+        $nthreads
+    #else:
+	none
+    #end if
+
+    #if str( $chr2process ):
+        $chr2process
+    #else:
+	none
+    #end if
+
+   $gl_off
+
+   $output
+
+  </command>
+
+  <inputs>
+
+    <param name="pedfile" type="data" format="ped" label="Select a PED file" />
+    <param name="datfile" type="data" label="Select a DAT file" />
+    <param name="glfIndexFile" type="data" label="Select a GLF Index file" />
+
+    <param name="cutoff" type="text"  value="" label="-c, minimum cutoff of posterior probability (optional)"  help="minimum cutoff of posterior probability to output a variant [Default: 0.5]" />
+    <param name="minMapQuality" type="text"  value="" label="--minMapQuality, Map Quality Filter (optional)" />
+    <param name="minDepth" type="text"  value="" label="--minDepth, Depth Filter (optional)" />
+    <param name="maxDepth" type="text"  value="" label="--maxDepth, Depth Filter (optional)" />
+    <param name="minPercSampleWithData" type="text"  value="" label="--minPercSampleWithData, Depth Filter (optional)" />
+
+    <param name="theta" type="text"  value="" label="--theta, Scaled mutation rate (optional)"  help="scaled mutation rate per site [Default: 0.001]" />
+    <param name="poly_tstv" type="text"  value="" label="--poly_tstv, Prior of ts/tv ratio (optional)"  help="[Default: 2.00]" />
+
+    <conditional name="de_novo">
+      <param name="denovo" type="select" label="--denovo, a boolean flag to turn on de novo mutation detection">
+        <option value="Yes" >Yes</option>
+        <option value="No" selected="true">No</option>
+      </param>
+      <when value="No" />
+      <when value="Yes">
+        <param name="rate_denovo" type="text"  value="" label="--rate_denovo, mutation rate per haplotype per generation" help="[Default: 1.5e-08]"/>
+        <param name="tstv_denovo" type="text"  value="" label="--tstv_denovo, the prior ts/tv ratio of de novo mutations" help="[Default: 2.0]"/>
+        <param name="minLLR_denovo" type="text"  value="" label="--minLLR_denovo, minimum value of log10 likelihood ratio of allowing vs. disallowing de novo mutations in the data to output" help="[Default: 1.0]"/>
+      </when>
+    </conditional>
+
+    <param name="prec" type="text"  value="" label="--prec, Optimization precision (optional)"  help="[Default: 1.0e-04]" />
+
+    <param name="nthreads" type="text"  value="" label="--nthreads, number of threads (optional)"  help="number of threads to run and it is recommended to use 4 threads for small number of input files [Default: 1]" />
+
+    <param name="chr2process" type="text"  value="" label="--chr2process, Chromosomes to process (optional)"  help="The chromosome names to process. Default is empty and is to process all chromosomes in the input. If multiple chromosomes are provided, they should be separated by comma, e.g. --chr2process 2,10 or --chr2process chr2,chr10" />
+
+    <param name="gl_off" type="boolean" truevalue="true" falsevalue="false" checked="False" label="If true, will not output genotype likelihood values for each individual." help="--gl_off. Default is to output 3 GLs for polymorphisms and 10 GLs for de novo mutations."/>
+
+  </inputs>
+
+  <outputs>
+    <data name="output" format="vcf" label="Output of Polymutt.vcf" />
+
+  </outputs>
+
+  <help>
+The program polymutt_ implemented a likelihood-based framework for calling single nucleotide variants and detecting de novo point mutation events in families for next-generation sequencing data.
+
+ .. _polymutt: http://genome.sph.umich.edu/wiki/Polymutt
+
+**Usage:**
+
+A command without any input will display the basic usage 
+
+polymutt
+
+The following parameters are in effect:
+
+pedfile :                 (-pname)
+
+datfile :                 (-dname)
+
+glfIndexFile :                 (-gname)
+
+posterior cutoff :           0.500 (-c99.999)
+
+Additional Options:
+
+Map Quality Filter : --minMapQuality
+
+Depth Filter : --minDepth, --maxDepth, --minPercSampleWithData [0.00]
+
+Scaled mutation rate : --theta [1.0e-03]
+
+Prior of ts/tv ratio : --poly_tstv [2.00]
+
+de novo mutation : --denovo, --rate_denovo [1.5e-08], --tstv_denovo [2.00], --minLLR_denovo [1.00]
+
+Optimization precision : --prec [1.0e-04]
+
+Multiple threading : --nthreads [1]
+
+Chromosomes to process : --chr2process []
+
+Output : --vcf [variantCalls.vcf], --gl_off
+
+
+  </help>
+
+</tool>

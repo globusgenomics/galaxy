@@ -1,0 +1,42 @@
+<tool id="conserting_allelicImbalance" name="Allelic Imbalance" version="CONSERTING: v.2015.10.28">
+  <requirements>
+    <requirement type="package">conserting</requirement>
+    <requirement type="package">java</requirement>
+  </requirements>
+  <description>LOH Detection</description>
+  <command>
+    mkdir $output_loh.extra_files_path;
+    java -cp \$JAVA_PATH/ AllelicImbalance -d $output_loh.extra_files_path sample_name $input_snv;
+    mv $output_loh.extra_files_path/sample_name.ai $output_loh;
+    rm -rf $output_loh.extra_files_path
+  </command>
+  <inputs>
+    <param format="tabular" help="" label="SNV Detection input" name="input_snv" type="data"/>
+  </inputs>
+
+  <outputs>
+    <data format="tabular" label="${tool.name} on ${on_string}: AI file" name="output_loh"/>
+  </outputs>
+
+  <tests>
+    <test>
+    </test>
+    <test>
+    </test>
+    <test>
+    </test>
+  </tests>
+  <help>
+
+**What it does**
+
+Create the Loss of Heterogozity (LOH) file
+
+------
+
+**Input formats**
+
+SNV Detection tabular file
+
+  </help>
+</tool>

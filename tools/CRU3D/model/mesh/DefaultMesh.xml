@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<mesh>
+  <parameter>
+    <symbol>meshset_title</symbol>
+    <definition>Title of mesh parameter set</definition>
+    <label>Title</label>
+    <value>DefaultMesh</value>
+    <listable>false</listable>
+  </parameter>
+  <parameter>
+    <symbol>flag_tt</symbol>
+    <definition>Flag to include TT</definition>
+    <label>Include TT</label>
+    <value>true</value>
+    <listable>false</listable>
+  </parameter>
+  <parameter>
+    <symbol>dyad_r</symbol>
+    <definition>Dyad height (distance from TT to jSR [um]</definition>
+    <label>Dyad height (um)</label>
+    <value>0.015</value>
+    <listable>false</listable>
+  </parameter>
+  <parameter>
+    <symbol>jsr_r</symbol>
+    <definition>jSR thickness [um]</definition>
+    <label>jSR Thickness [um]</label>
+    <value>0.040</value>
+    <listable>false</listable>
+  </parameter>
+  <parameter>
+    <symbol>flag_dyad_guide</symbol>
+    <definition>Flag to include guide points below jSR membrane (use when dyad height is at least 30nm)</definition>
+    <label>Use dyad guide points</label>
+    <value>false</value>
+    <listable>false</listable>
+  </parameter>
+  <parameter>
+    <symbol>grid_x</symbol>
+    <definition>Domain size along X axis in microns</definition>
+    <label>Domain size (X) [um]</label>
+    <value>4.0</value>
+    <listable>false</listable>
+  </parameter>
+  <parameter>
+    <symbol>n_jsr_seg_z</symbol>
+    <definition>Number of 31nm sides along jSR height</definition>
+    <label># of jSR segments (Z)</label>
+    <value>15</value>
+    <listable>false</listable>
+  </parameter>
+  <parameter>
+    <symbol>grid_y</symbol>
+    <definition>Domain size along Y axis in microns</definition>
+    <label>Domain size (Y) [um]</label>
+    <value>4.0</value>
+    <listable>false</listable>
+  </parameter>
+  <parameter>
+    <symbol>grid_z</symbol>
+    <definition>Domain size along Z axis in microns</definition>
+    <label>Domain size (Z) [um]</label>
+    <value>4.0</value>
+    <listable>false</listable>
+  </parameter>
+  <parameter>
+    <symbol>r_trpn</symbol>
+    <definition>Radius from center of TT beyond which troponin and SERCa are present [um]</definition>
+    <label>Troponin/SERCA radius [um]</label>
+    <value>0.20</value>
+    <listable>false</listable>
+  </parameter>
+  <parameter>
+    <symbol>description</symbol>
+    <definition>Brief description of mesh parameter set</definition>
+    <label>Description</label>
+    <value>Default mesh settings.</value>
+    <listable>false</listable>
+  </parameter>
+  <parameter>
+    <symbol>n_jsr_seg</symbol>
+    <definition>Number of 31nm sides along jSR arc</definition>
+    <label># of jSR segments (circumference)</label>
+    <value>15</value>
+    <listable>false</listable>
+  </parameter>
+  <parameter>
+    <symbol>cluster_lcc</symbol>
+    <definition>LCC channel placement where 0's indicate empty space and 1's indicate channels on a grid with 31nm x 31nm spacing. Must be rectangular. This grid is centered in the dyadic space.</definition>
+    <label>LCC (0/1-valued rectangle)</label>
+    <value>0000000000000&#13;
+0000000000000&#13;
+0000000000000&#13;
+0000000000000&#13;
+0000100010000&#13;
+0000000000000&#13;
+0000101010000&#13;
+0000000000000&#13;
+0000100010000&#13;
+0000000000000&#13;
+0000000000000&#13;
+0000000000000&#13;
+0000000000000</value>
+    <listable>false</listable>
+  </parameter>
+  <parameter>
+    <symbol>n_tt_seg</symbol>
+    <definition>Number of (~30nm) sides around the TT</definition>
+    <label># of TT segments (circumference)</label>
+    <value>23</value>
+    <listable>false</listable>
+  </parameter>
+  <parameter>
+    <symbol>cluster_ryr</symbol>
+    <definition>RyR channel placement where 0's indicate empty space and 1's indicate channels on a grid with 31nm x 31nm spacing. Must be rectangular. This grid is centered in the dyadic space.</definition>
+    <label>RyR (0/1-valued rectangle)</label>
+    <value>0000000000000&#13;
+0000000000000&#13;
+0000000000000&#13;
+0001111111000&#13;
+0001111111000&#13;
+0001111111000&#13;
+0001111111000&#13;
+0001111111000&#13;
+0001111111000&#13;
+0001111111000&#13;
+0000000000000&#13;
+0000000000000&#13;
+0000000000000</value>
+    <listable>false</listable>
+  </parameter>
+  <parameter>
+    <symbol>n_tt_seg_z</symbol>
+    <definition>Number of 31nm sides along length of the TT</definition>
+    <label># of TT segments (Z)</label>
+    <value>47</value>
+    <listable>false</listable>
+  </parameter>
+</mesh>

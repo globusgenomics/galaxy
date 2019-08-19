@@ -1,0 +1,116 @@
+<tool id="homer_maketagdirectory" name="makeTagDirectory" version="@VERSION@.0">
+  <description>parses through the alignment file and splits the tags into separate files based on their chromosome</description>
+  <macros>
+     <import>macros.xml</import>
+  </macros> 
+  <expand macro="requirements"/>
+  <expand macro="stdio"/>
+  <command interpreter="python">    
+    makeTagDirectory.py
+    -o $output
+    --output-dir $output.extra_files_path
+##    #if $keepone:
+##        -p "-keepOne"
+##    #end if
+##    #if $keepall:
+##        -p "-keepAll"
+##    #end if
+    #if $input_source.input_source_type == "bamfile":
+        #set $bam_file = &quot;&quot;
+        #for $bam_count, $input_bam in enumerate( $input_source.input_bams ):
+              #set $bam_file += str($input_bam.input_bam) + &quot; &quot;
+        #end for
+        --bam &quot;$bam_file&quot;
+    #else if $input_source.input_source_type == "samfile":
+        #set $sam_file = &quot;&quot;
+        #for $sam_count, $input_sam in enumerate( $input_source.input_sams ):
+              #set $sam_file += str($input_sam.input_sam) + &quot; &quot;
+        #end for
+        --sam &quot;$sam_file&quot;
+    #else:
+        #set $bed_file = &quot;&quot;
+        #for $bed_count, $input_bed in enumerate( $input_source.input_beds ):
+              #set $bed_file += str($input_bed.input_bed) + &quot; &quot;
+        #end for
+        --bed &quot;$bed_file&quot;
+    #end if
+  </command>
+
+  <inputs>
+    <conditional name="input_source">
+      <param help="If you choose the file based method, it must contain only one line with the path for your files" label="How will you specify the input file type?" name="input_source_type" type="select">
+        <option value="samfile">SAM</option>
+        <option value="bedfile">BED</option>
+        <option value="bamfile" selected="true">BAM</option>
+      </param>
+      <when selected="true" value="bamfile">
+        <repeat min="1" name="input_bams" title="Sample BAM file">
+          <param format="bam" label="BAM file" name="input_bam" type="data"/>
+        </repeat>
+      </when>
+      <when value="samfile">
+        <repeat min="1" name="input_sams" title="Sample SAM file">
+          <param format="sam" label="SAM file" name="input_sam" type="data"/>
+        </repeat>
+      </when>
+      <when selected="true" value="bedfile">
+        <repeat min="1" name="input_beds" title="Sample BED file">
+          <param format="bed" label="BED file" name="input_bed" type="data"/>
+        </repeat>
+      </when>
+    </conditional>
+    <!--param checked="false" label="keep all primary alignments, regardless of MAPQ score." name="keepone" type="boolean" help="Alignments with the secondary alignment flag set will be discarded."/>
+    <param checked="false" label="keep all primary alignments in the SAM/BAM file" name="keepall" type="boolean"/-->
+  </inputs>
+
+  <outputs>
+    <data format="txt" label="${tool.name} on ${on_string}: (log)" name="output"/>
+  </outputs>
+
+  <help>
+**Creating Tag Directories**
+To make a tag directory, run the following command:
+
+    **makeTagDirectory &lt;Output Directory Name&gt; [options] &lt;alignment file1&gt; [alignment file 2] ...**
+
+Where the first argument must be the output directory (required).  If it does not exist, it will be created.  If it does exist, it will be overwritten.
+An example:
+
+    **makeTagDirectory Macrophage-PU.1-ChIP-Seq/ pu1.lane1.bed pu1.lane2.bed pu1.lane3.bed**
+
+Several additional options exist for **makeTagDirectory**. The program attempts to guess the format of your alignment files, but if it is unsuccessful, you can force the format with "**-format &lt;X&gt;**".  
+
+    **makeTagDirectory Macrophage-PU.1-ChIP-Seq/ pu1.lane1.bed pu1.lane2.bed pu1.lane3.bed -format bed**
+    **makeTagDirectory Macrophage-H3K4me1-ChIP-Seq/ s_1_sequence.align.sam  -format sam**
+
+Sometimes BED file alignments contain stupid values in the 5th column, such as quality information etc.  HOMER will treat this value as the number of reads aligning to the same location.  If this is not how the value is used, add "-forceBED" to ignore the value found int the 5th column of a BED file.
+
+    **makeTagDirectory Macrophage-PU.1-ChIP-Seq/ pu1.lane1.bed pu1.lane2.bed pu1.lane3.bed -format bed -forceBED**
+
+To combine tag directories, for example when combining two separate experiments into one, do the following:
+
+    **makeTagDirectory Combined-PU.1-ChIP-Seq/ -d Exp1-ChIP-Seq/ Exp2-ChIP-Seq/ Exp3-ChIP-Seq/**
+
+------
+
+**Filtering Reads/Selecting Uniquely Alignable Reads from SAM/BAM files**
+The makeTagDirectory program has several specialized options for processing SAM/BAM formatted files.  A quick introduction to SAM/BAM files can be found here_.  Because of the various ways aligner create SAM/BAM files, it is often easiest to have HOMER filter the reads that are not uniquely alignable, etc.  Below is a list of the various options that are available to process SAM/BAM files:
+
+.. _here: http://homer.ucsd.edu/homer/basicTutorial/samfiles.html
+
+**-unique** : selecting this option will cause HOMER to only keep uniquely alignable reads (this is also the default).  For HOMER to consider a read unique, it must NOT have the "secondary alignment" flag set, and it's MAPQ score must be greater than 10.  To change the MAPQ cutoff, use the "**-mapq &lt;#&gt;**" option.  If you set the option to "-mapq -1", HOMER will try to read AS:i:# and XS:i:# flags (if set) to figure out if the secondary alignment score is the same or less than the alignment.
+
+**-keepOne** : selecting this will cause HOMER to keep all primary alignments, regardless of MAPQ score.  Alignments with the "secondary alignment" flag set will be discarded.
+
+**-keepAll** : this will cause HOMER to keep all alignment in the SAM/BAM file.
+
+**-mis &lt;#&gt;** : Maximum allowable mismatches allowed in the read.  Only works if the MD:Z: flag is set.
+
+  </help>
+
+  <tests>
+    <test>
+    </test>
+  </tests>
+
+</tool>

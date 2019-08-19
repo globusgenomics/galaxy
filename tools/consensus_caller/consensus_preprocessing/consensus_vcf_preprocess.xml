@@ -1,0 +1,31 @@
+<tool id="consensus_vcf_preprocess" description="from GATK, Freebayes and more" name="Preprocess Consensus VCF " version="1.0">
+  <description></description>
+ <requirements>
+    <requirement type="package">vt</requirement>
+    <requirement type="package">vcftools</requirement>
+    <requirement type="package">vcflib</requirement>
+  </requirements>
+
+  <command interpreter="bash">
+      consensus_preproc.sh $vcffile $outputvcf $bedfile $samples $refFile
+  </command>
+  <inputs>
+    <param name="vcffile" type="data" format="vcf" label="VCF input file" help=""/>
+    <param name="refFile" type="data" format="fasta" label="Reference fasta file" help=""/>
+    <param name="bedfile" type="data" format="bed" label="Target BED file" help=""/>
+    <param name="samples" type="data" format="tabular" label="Samples file" help=""/>
+  </inputs>
+
+  <outputs> 
+    <data format="vcf" name="outputvcf" />
+  </outputs>
+  <help>
+
+**What it does**
+
+Performs preprocessing on VCF files from GATK Unified Genotyper, GATK Haplotype Caller, Freebayes, Atlas2, Mpileup to prepare for the Consensus Caller.
+
+**Outputs**
+
+  </help>
+</tool>

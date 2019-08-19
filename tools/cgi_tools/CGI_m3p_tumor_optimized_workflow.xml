@@ -1,0 +1,135 @@
+<tool id="CGI_m3p_tumor_optimized" name="CGI MP3 Tumor analysis" version="BWA: 0.7.12; SAMTOOLS: 1.2; SAMBAMBA: v0.5.4" >
+  <description>BWA alignment and CNV sample identification agains normal sample</description>
+  <!--<action class="GlobusOptimizedWorkflows" module="galaxy_ext.globus.tools.actions.globus"/>-->
+  <parallelism method="basic"/>
+  <requirements>
+    <requirement type="package">bwa</requirement>
+    <requirement type="package" version="0.1.19">samtools</requirement>
+    <requirement type="package">sambamba</requirement>
+    <requirement type="package">picard</requirement>
+    <requirement type="package">pymodules</requirement>
+    <requirement type="package">java</requirement>
+    <requirement type="package">cgi_tools</requirement>
+    <requirement type="package">R</requirement>
+  </requirements>
+  <command interpreter="python">
+    CGI_m3p_tumor_optimized_05012016.py 
+      ##use precomputed indexes
+      ##--bwa-ref "${bwa_indices.fields.path}"
+
+      ## input file(s)
+      #if str($input_source_cond.input_source) == "file":
+        ##--fastq $input_source_cond.input1
+        ##--rfastq $input_source_cond.input2
+        --input-bam $input_source_cond.bam_input
+      #else:
+        #if str($input_source_cond.bag_format.bag_format_type) == "text_path":
+          #set $path = "%s/%s" % ($input_source_cond.bag_format.input_path_dir, $input_source_cond.bag_format.sample_name)
+        #else:
+          #import glob
+          #set $path = "%s/%s" % ($input_source_cond.bag_format.input_dir_obj.extra_files_path, $input_source_cond.bag_format.sample_name)
+        #end if
+        #set $files = glob.glob("%s/*.Bam" % $path)
+        #if len($files) == 0:
+          #set $files = glob.glob("%s*.Bam" % $path)
+        #end if
+        #set $file1 = $files[0]
+        --input-bam $file1
+        ##set $file2 = $files[1]
+        ##set $length1 = len($file1)
+        ##set $length2 = len($file2)
+        ##if $length1 == $length2:
+        ##  ## figure out which is read1 and which is read2
+        ##  #set $split_file1 = list($file1)
+        ##  #set $split_file2 = list($file2)
+        ##  #for $i, $j in enumerate($split_file1):
+        ##    #if $split_file1[$i] != $split_file2[$i]:
+        ##      ## assume the difference in fastq files is the 1 and 2 in their name
+        ##      #if $split_file1[$i] == &quot;1&quot;:
+        ##        #set $forward = $file1
+        ##        #set $reverse = $file2
+        ##      #else:
+        ##        #set $forward = $file2
+        ##        #set $reverse = $file1
+        ##      #end if
+        ##      --fastq $forward
+        ##      --rfastq $reverse
+        ##    #end if
+        ##  #end for
+        ###end if
+      #end if
+      --lib-size $lib_size
+      --read-length $read_length
+      --min-pairs $min_pairs
+      --upper $upper
+      $rev_comp
+      --input-normal ${normal_dataset.fields.path}
+
+      ## output dir file
+      --output-dir $output_dir.extra_files_path
+      ##--output-file $output_dir
+      --output-log $output_log
+
+      &gt;  $output_log
+  </command>
+  <inputs>
+    <conditional name="input_source_cond">
+      <param label="Input Source" name="input_source" type="select">
+        <option selected="True" value="file">History</option>
+        <option value="bag">Dataset Bag</option>
+      </param>
+      <when value="file">
+        <param format="bam" help="" label="BAM file" name="bam_input" type="data"/>
+        <!--<param format="fastqsanger,fastqillumina" help="FASTQ with either Sanger-scaled quality values (fastqsanger) or Illumina-scaled quality values (fastqillumina)" label="Forward FASTQ file" name="input1" type="data"/>
+        <param format="fastqsanger,fastqillumina" help="FASTQ with either Sanger-scaled quality values (fastqsanger) or Illumina-scaled quality values (fastqillumina)" label="Reverse FASTQ file" name="input2" type="data"/>-->
+      </when>
+      <when value="bag">
+        <conditional name="bag_format">
+          <param label="How will you specify the dataset object?" name="bag_format_type" type="select">
+            <option selected="True" value="text_path">Specify the path in the filesystem</option>
+            <option value="history_object">Select bag object from history</option>
+          </param>
+          <when value="text_path">
+            <param label="Input directory path of samples" name="input_path_dir" type="text"/>
+            <param label="Sample Name inside the directory" name="sample_name" type="text"/>
+          </when>
+          <when value="history_object">
+            <param format="txt" label="Input directory object of samples" name="input_dir_obj" type="data"/>
+            <param label="Sample Name inside the directory" name="sample_name" type="text"/>
+          </when>
+        </conditional>
+      </when>
+    </conditional>
+    <!--<param label="BWA reference genome" name="bwa_indices" type="select">
+      <options from_data_table="bwa_0710_indexes">
+        <filter column="2" type="sort_by"/>
+        <validator message="No indexes are available" type="no_options"/>
+      </options>
+    </param>-->
+    <param label="Just the hidden name" name="hidden_name" type="hidden" value="OUTPUT_NAME"/>
+    <param label="Distance of two ends on the same chromosome to be considered as SV" name="upper" type="integer" value="50000"/>
+    <param label="Size of the mate pair library" name="lib_size" type="integer" value="350"/>
+    <param label="Read length" name="read_length" type="integer" value="151"/>
+    <param label="Minimum number of pairs to support a SV" name="min_pairs" type="integer" value="2"/>
+    <param label="Are the original fastq files reversed and complimented" name="rev_comp" type="boolean" checked="false" truevalue="--rev-comp 1" falsevalue="--rev-comp 0"/>
+    <param label="Normal sample dataset" name="normal_dataset" type="select">
+      <options from_data_table="normal_data_reference">
+        <filter column="2" type="sort_by"/>
+        <validator message="No indexes are available" type="no_options"/>
+      </options>
+    </param>
+  </inputs>
+  <outputs>
+    <data format="txt" label="${tool.name} on ${$hidden_name}: output DIR object" name="output_dir"/>
+    <data format="txt" label="${tool.name} on ${$hidden_name}.log" name="output_log"/>
+  </outputs>
+  <tests>
+    <test>
+    </test>
+  </tests> 
+  <help>
+
+**What it does**
+
+  </help>
+</tool>

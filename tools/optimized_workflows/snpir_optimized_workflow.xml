@@ -1,0 +1,131 @@
+<tool id="snpir_optimized" name="RNA-Variant Analisys SNPiR Optimized Workflow" version="BWA: 0.7.12; SNPIR: 12-May-2014; SAMTOOLS: 1.2; PICARD: 1.134; GATK3: GenomeAnalysisTK-3.4-46; BEDTOOLS: 2.17.0; JAVA: jre1.7.0_51; UCSC_TOOLS: 20140801; VCFTOOLS: vcftools_0.1.11">
+  <description/>
+  <action class="GlobusOptimizedWorkflows" module="galaxy_ext.globus.tools.actions.globus"/>
+  <parallelism method="basic"/>
+  <requirements>
+    <requirement type="package">bwa</requirement>
+    <requirement type="package">snpir</requirement>
+    <requirement type="package">samtools</requirement>
+    <requirement type="package">picard</requirement>
+    <requirement type="package">gatk3</requirement>
+    <requirement type="package">bedtools</requirement>
+    <requirement type="package">pymodules</requirement>
+    <requirement type="package">R</requirement>
+    <requirement type="package">java</requirement>
+    <requirement type="package">ucsc_tools</requirement>
+    <requirement type="package">vcftools</requirement>
+    <requirement type="package">perlmodules</requirement>
+  </requirements>
+  <command interpreter="python">
+    snpir_optimized_05012015.py 
+      #if $genomeSource.refGenomeSource == &quot;history&quot;:
+        ##build index on the fly
+        --ref &quot;${genomeSource.ownFile}&quot;
+      #else:
+        ##use precomputed indexes
+        --ref &quot;${genomeSource.indices.fields.path}&quot;
+      #end if
+
+      ## input file(s)
+      --fastq $paired.input1
+      #if $paired.sPaired == &quot;paired&quot;:
+        --rfastq $paired.input2
+      #end if
+
+      ## output vcf file
+      --output-bam $output_bam
+      --output-vcf $output_vcf
+      --output-log $output_log
+
+      #if $readGroup.specReadGroup == &quot;yes&quot;
+        --rgid &quot;$readGroup.rgid&quot;
+        --rglb &quot;$readGroup.rglb&quot;
+        --rgpl &quot;$readGroup.rgpl&quot;
+        --rgsm &quot;$readGroup.rgsm&quot;
+      #end if
+      --username $username
+      --goauth-token "$goauth"
+      --source-ep=$from_endpoint
+      --destination-ep="$to_endpoint"
+      --destination-dir="$to_dir"
+      --deadline=1200
+      &gt;  $output_log
+  </command>
+  <inputs>
+    <conditional name="genomeSource">
+      <param label="Will you select a reference genome from your history or use a built-in index?" name="refGenomeSource" type="select">
+        <option value="indexed">Use a built-in index</option>
+        <option value="history">Use one from the history</option>
+      </param>
+      <when value="indexed">
+        <param label="Select a reference genome" name="indices" type="select">
+          <options from_data_table="bwa_0710_indexes">
+            <filter column="2" type="sort_by"/>
+            <validator message="No indexes are available" type="no_options"/>
+          </options>
+        </param>
+      </when>
+      <when value="history">
+        <param format="fasta" label="Select a reference from history" metadata_name="dbkey" name="ownFile" type="data"/>
+      </when>
+    </conditional>
+    <conditional name="paired">
+      <param label="Is this library mate-paired?" name="sPaired" type="select">
+        <option value="single">Single-end</option>
+        <option value="paired">Paired-end</option>
+      </param>
+      <when value="single">
+        <param format="fastqsanger,fastqillumina" help="FASTQ with either Sanger-scaled quality values (fastqsanger) or Illumina-scaled quality values (fastqillumina)" label="FASTQ file" name="input1" type="data"/>
+      </when>
+      <when value="paired">
+        <param format="fastqsanger,fastqillumina" help="FASTQ with either Sanger-scaled quality values (fastqsanger) or Illumina-scaled quality values (fastqillumina)" label="Forward FASTQ file" name="input1" type="data"/>
+        <param format="fastqsanger,fastqillumina" help="FASTQ with either Sanger-scaled quality values (fastqsanger) or Illumina-scaled quality values (fastqillumina)" label="Reverse FASTQ file" name="input2" type="data"/>
+      </when>
+    </conditional>
+    <conditional name="readGroup">
+      <param label="Specify the read group for this file? (samse/sampe -r)" name="specReadGroup" type="select">
+        <option selected="True" value="yes">Yes</option>
+        <option value="no">No</option>
+      </param>
+      <when value="yes">
+        <param help="Required if RG specified. Read group IDs may be modiﬁed when merging SAM ﬁles in order to handle collisions." label="Read group identiﬁer (ID). Each @RG line must have a unique ID. The value of ID is used in the RG tags of alignment records. Must be unique among all read groups in header section." name="rgid" optional="False" size="25" type="text"/>
+        <param help="Required if RG specified" label="Library name (LB)" name="rglb" optional="False" size="25" type="text"/>
+        <param help="Required if RG specified. Valid values : CAPILLARY, LS454, ILLUMINA, SOLID, HELICOS, IONTORRENT and PACBIO" label="Platform/technology used to produce the reads (PL)" name="rgpl" optional="False" size="25" type="text"/>
+        <param help="Required if RG specified. Use pool name where a pool is being sequenced" label="Sample (SM)" name="rgsm" optional="False" size="25" type="text"/>
+      </when>
+      <when value="no"/>
+    </conditional>
+    <param label="Just the hidden name" name="hidden_name" type="hidden" value="OUTPUT_NAME"/>
+    <param name="goauth" type="hidden" size="100" label="Globus Auth Token">
+      <sanitizer>
+        <valid>
+          <add value="|"/>
+        </valid>
+      </sanitizer>
+    </param>
+    <param name="username" type="hidden" size="100" label="Globus Username"/>
+    <param name="from_endpoint" type="hidden" size="100" label="Source Endpoint">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="to_endpoint" type="gdst_endpoint" size="100" label="Destination Endpoint">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="to_dir" type="text" size="100" label="Destination Directory on user's endpoint to store output files">
+      <sanitizer sanitize="False"/>
+    </param>
+  </inputs>
+  <outputs>
+    <data format="bam" label="${tool.name} on ${$hidden_name}.bam" name="output_bam"/>
+    <data format="vcf" label="${tool.name} on ${$hidden_name}.vcf" name="output_vcf"/>
+    <data format="txt" label="${tool.name} on ${$hidden_name}.log" name="output_log"/>
+  </outputs>
+  <tests>
+    <test>
+    </test>
+  </tests> 
+  <help>
+
+**What it does**
+
+  </help>
+</tool>

@@ -1,0 +1,35 @@
+<tool id="create_cga_daataset" name="Create CGA Dataset">
+  <description>Load CGA dataset from local storage.</description>
+  <code file="create_cga_dataset.py"/>
+  <command interpreter="python">create_cga_dataset.py 
+  -o '$out_file1' -p '$out_file1.files_path' 
+  -i '$dir'
+  </command>
+   <inputs>
+    <page>
+      <param format="data" type="select" name="dir" label="input directory"
+             dynamic_options="get_genomes()"
+             help="Select a genome directory from the dropdown."
+             />
+    </page>
+   </inputs>
+   <outputs>
+     <data format="cga" type="data" name="out_file1"
+	   label="${dir}" />
+   </outputs>
+<tests>
+</tests>
+<help>
+
+.. class:: infomark
+
+This tool creates a cgatools composite dataset from a directory on the local filesystem.
+
+-----
+
+.. class:: warningmark
+
+This tool is very experimental.
+
+</help>
+</tool>

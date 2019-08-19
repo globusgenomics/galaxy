@@ -1,0 +1,281 @@
+<?xml version="1.0"?>
+
+<tool name="Atlas Indel2" id="Atlas_Indel2_id">
+  <description>
+  </description>
+
+  <command interpreter="python">
+     Atlas-Indel2.py   
+   $input_BAM
+   $input_FASTA
+   $type
+
+    #if str( $sample ):
+        $sample
+    #else:
+	none
+    #end if
+
+    #if str( $p_cutoff ):
+        $p_cutoff
+    #else:
+	none
+    #end if
+
+    #if str( $p_1bp_cutoff ):
+        $p_1bp_cutoff
+    #else:
+	none
+    #end if
+
+   #if $inputBED.inBED == "bed":
+     $inputBED.input_BED
+   #else:
+     none
+   #end if
+
+   $orig_base_qual
+   $norm_base_qual
+
+    #if str( $min_total_depth ):
+        $min_total_depth
+    #else:
+	none
+    #end if
+
+    #if str( $min_var_reads ):
+        $min_var_reads
+    #else:
+	none
+    #end if
+
+    #if str( $min_var_ratio ):
+        $min_var_ratio
+    #else:
+	none
+    #end if
+
+   $strand_dir_filter
+
+    #if str( $near_read_end_ratio ):
+        $near_read_end_ratio
+    #else:
+	none
+    #end if
+
+    #if str( $homo_var_cutoff ):
+        $homo_var_cutoff
+    #else:
+	none
+    #end if
+
+    #if str( $site_list ):
+        $site_list
+    #else:
+        none
+    #end if
+
+
+   $output
+  </command>
+
+  <inputs>
+
+    <param name="input_BAM" type="data" format="bam" label="Select a BAM file" help="The input BAM file. It must be sorted. It does not need to be indexed. A read mask of 1796 is used on the bitwise flag."/>
+    <param name="input_FASTA" type="data" format="fasta" label="Select a FASTA file as reference" help="The reference sequence to be used in FASTA format. This must be the same version used in mapping the sequence. It does not need to be indexed."/>
+
+    <param name="type" type="select" label="Specify either the Illumina or SOLiD regression model to be used">
+        <option value="-I" selected="true">Illumina</option>
+        <option value="-S">SOLiD</option>
+    </param>
+
+    <param name="sample" type="text"  value="" label="-s,--sample=STRING (optional)"  help="The name of the sample to be listed in the output VCF file." />
+
+    <param name="p_cutoff" type="text"  value="" label="-p,--p-cutoff=FLOAT (optional)"  help="The indel probability (p) cutoff value for the logistic regression model. Defaults: Illumina:0.5, Solid:0.5" />
+
+    <param name="p_1bp_cutoff" type="text"  value="" label="-P,--p-1bp-cutoff (optional)"  help="The indel probability (p) cutoff value for 1bp deletions. Defaults: Illumina:0.5, Solid:0.88" />
+
+    <conditional name="inputBED">
+      <param name="inBED" type="select" label="Specify input BED file (optional)" help="Specify a .bed file which contians the region you wish to limit your indel calling to.">
+        <option value="none">Use pre-set defaults</option>
+        <option value="bed">Set optional arguments</option>
+      </param>
+      <when value="none" />
+      <when value="bed">
+        <param name="input_BED" type="data" format="bed" label="Select a BED file" />
+      </when>
+    </conditional>
+
+
+    <param name="orig_base_qual" type="select" label="-O,--orig-base-qual (optional)" help="If select Yes, the algorithm uses the original base qualities as specified in the OQ tag if included in the BAM file. If the BAM file does not include OQ tags, the normal base quality is used. This is the default for SOLiD, it is not recommended for Illumina data.">
+        <option value="None" selected="true">None</option>
+        <option value="Yes" >Yes</option>
+        <option value="No">No</option>
+    </param>
+
+    <param name="norm_base_qual" type="select" label="-N,--norm-base-qual (optional)" help="If select Yes, the algorithm uses the normal base qualities, as specified in the QUAL column of the BAM file. This is the default for Illumina, it is not recommended for SOLiD data.">
+        <option value="None" selected="true">None</option>
+        <option value="Yes" >Yes</option>
+        <option value="No">No</option>
+    </param>
+
+    <param name="min_total_depth" type="text"  value="" label="-t,--min-total-depth=INT (optional)"  help="The minimum total depth coverage required at an indel site. Suggested range: 2-12. Defaults: Illumina:2, SOLiD:2" />
+
+    <param name="min_var_reads" type="text"  value="" label="-m,--min-var-reads=INT (optional)"  help="The minimum number of variant reads required for an indel to be called. Suggested range: 1-5. Defaults: Illumina:2, SOLiD:2" />
+
+    <param name="min_var_ratio" type="text"  value="" label="-v,--min-var-ratio=FLOAT (optional)"  help="The variant-reads/total-reads cutoff. Suggested range: 0-0.1. Defaults: Illumina:0.06, SOLiD:0.05" />
+
+    <param name="strand_dir_filter" type="select" label="-f,--strand-dir-filter (optional)" help="When included, requires indels to have at least one variant read in each strand direction. Default: Illumina:disabled, SOLiD:disabled">
+        <option value="None" selected="true">None</option>
+        <option value="Yes" >Yes</option>
+        <option value="No">No</option>
+    </param>
+
+    <param name="near_read_end_ratio" type="text"  value="" label="-n,--near-read_end_ratio=FLOAT (optional)"  help="The read end ratio is defined as the number of variant reads where the variant is within 5bp of a read end divided by the total variant read depth. If this ratio is greater than the specified value, the indel is filtered. Suggested range: 0.7-1.0. Default: Illumina:0.8, SOLiD:1.0 (disabled)" />
+
+    <param name="homo_var_cutoff" type="text"  value="" label="-h,--homo-var-cutoff (optional)"  help="The homozygous variant cutoff. This cutoff is used in the preliminary genotyping performed by Atlas-Indel2. If the variant reads divided by the variant reads + the reference reads is greater than this cutoff it will be marked as a homozygote, otherwise it will be marked as a heterozygote. Default: Illumina:0.6, Solid:0.5" />
+
+    <param name="site_list" type="data" format="tabular" label="Select a sites file" help="-a File of sites with annotation to always include in VCF" optional="True" />
+
+  </inputs>
+
+  <outputs>
+    <data name="output" format="vcf" label="Output of Atlas2-Indel2 on ${on_string}.vcf" />
+  </outputs>
+
+  <help>
+Atlas-Indel2_ is designed to evaluate and distinguish true insertions and deletions (indels) from sequencing and mapping errors in whole-exome capture sequencing (WECS) data.
+ .. _Atlas-Indel2: http://www.hgsc.bcm.tmc.edu/cascade-tech-software_atlas2_snp_indel_calling_pipeline-ti.hgsc
+
+**Usage:**
+
+ruby Atlas-Indel2.rb -b [input_bam] -r [reference] -o [outfile] [-S/–I]
+
+**Mandatory arguments:**
+
+-b, --bam=FILE
+
+The input BAM file. It must be sorted. It does not need to be indexed. A read mask of 1796 is used
+on the bitwise flag.
+
+-r, --reference=FILE
+
+The reference sequence to be used in FASTA format. This must be the same version used in
+mapping the sequence. It does not need to be indexed.
+
+-o, --outfile=FILENAME
+
+The name of the output VCF file. Output is a simple VCFv4 file with a single sample. These files can
+be merged into a more complete VCF file using the vcfPrinter (included). If the file already exists, it
+will be overwritten. NOTE: For use with vcfPrinter, you should name your vcf file the same as your
+BAM file, simply replacing ".bam" with ".vcf".
+
+-I or -S
+
+You must include one of these flags to specify either the Illumina or SOLiD regression model to be
+used.
+
+**Optional arguments:**
+
+Note: Different platform modes have different defaults.
+
+-s, --sample=STRING
+
+The name of the sample to be listed in the output VCF file. If not specified the sample name is
+harvested from the input BAM file name, taking the first group of characters before a . (dot) is
+found. For example, with the filename "NA12275.chrom1.bam" the sample name would be
+"NA12275".
+
+-p, --p-cutoff=FLOAT
+
+Defaults: Illumina:0.5, Solid:0.5
+
+The indel probability (p) cutoff value for the logistic regression model. Indels with a p less than this
+cutoff will not be called. Increasing this cutoff will increase specificity, but will lower sensitivity. If
+you adjust this cutoff, you should usually also adjust the p-1bp-cutoff (see below).
+
+-P, --p-1bp-cutoff
+
+Defaults: Illumina:0.5, Solid:0.88
+
+The indel probability (p) cutoff value for 1bp deletions. This may be set to a stricter standard than
+the normal p-cutoff to increase callset specificity. This is very useful for SOLiD data, but should not
+be generally needed for Illumina data.
+
+-B --bed=FILE
+
+Here you may specify a bed file which contians the region you wish to limit your indel calling to.
+Only reads inside the region will be process, which can significantly shorten the runtime.
+
+-O --orig-base-qual
+
+This is the default for SOLiD, it is not recommended for Illumina data. This option has the algorithm
+use the original base qualities as specified in the OQ tag if included in the BAM file. If the BAM file
+does not include OQ tags, the normal base quality is used.
+
+-N --norm-base-qual
+
+This is the default for Illumina, it is not recommended for SOLiD data. This option specifies the
+algorithm should use the normal base qualities, as specified in the QUAL column of the BAM file.
+
+**Heuristic Cutoffs:**
+
+Most of these variables have already been considered by the regression model, so you shouldn 't usually
+need to alter them. However you are free to change them to meet your specific project requirements.
+
+-t, --min-total-depth=INT
+
+Defaults: Illumina:2, SOLiD:2
+
+The minimum total depth coverage required at an indel site. Indels at a site with less depth
+coverage will not be called. Increasing this value will increase specificity, but lower sensitivity.
+
+Suggested range: 2-12
+
+-m, --min-var-reads=INT
+
+Defaults: Illumina:2, SOLiD:2
+
+The minimum number of variant reads required for an indel to be called. Increasing this number
+may increase specificity but will lower sensitivity.
+
+Suggested range: 1-5
+
+-v, --min-var-ratio=FLOAT
+
+Defaults: Illumina:0.06, SOLiD:0.05
+
+The variant-reads/total-reads cutoff. Indels with a ratio less than the specified value will not be
+called. Increasing this value may increase specificity, but will lower sensitivity.
+
+Suggested range: 0-0.1
+
+-f, --strand-dir-filter
+
+Default: Illumina:disabled, SOLiD:disabled
+
+When included, requires indels to have at least one variant read in each strand direction. This filter
+is effective at increasing the specificity, but also carries a heavy sensitivity cost.
+
+-n, --near-read_end_ratio=FLOAT
+
+Default: Illumina:0.8, SOLiD:1.0 (disabled)
+
+The read end ratio is defined as the number of variant reads where the variant is within 5bp of a
+read end divided by the total variant read depth. If this ratio is greater than the specified value, the
+indel is filtered.
+
+Suggested range: 0.7-1.0
+
+-h, --homo-var-cutoff
+
+Default: Illumina:0.6, Solid:0.5
+
+The homozygous variant cutoff. This cutoff is used in the preliminary genotyping performed by
+Atlas-Indel2. If the variant reads divided by the variant reads + the reference reads is greater than
+this cutoff it will be marked as a homozygote, otherwise it will be marked as a heterozygote.
+
+
+  </help>
+
+</tool>

@@ -1,0 +1,128 @@
+<tool id="samtools1.8_filter_bam" name="Filter BAM" version="SAMTOOLS: 1.8">&gt;
+  <requirements>
+    <requirement type="package" version="1.8">samtools</requirement>
+  </requirements>
+  <description>filter BAM</description>
+  <command interpreter="python">
+    samtools_filter_bam.py  
+    #if $input.ext == &quot;sam&quot;
+      -p '-bS'
+    #else
+      -p '-b'
+    #end if
+    #if $qv_cutoff &gt; 0:
+      -p '-q $qv_cutoff'
+    #end if
+    #if str( $filter_by_position ) != &quot;None&quot;:
+        -p '-L str( $filter_by_position )'
+    #end if
+    #if str($filter_by_rg.filter_selector) == &quot;yes&quot;:
+        #if str($filter_by_rg.filter_type_selector.filter_type) == &quot;bed&quot;:
+            -p '-R str ($filter_by_rg.filter_type_selector.rg_file)'
+        #else
+            -p '-r &quot;$filter_by_rg.filter_type_selector.rg_text&quot;'
+        #end if
+    #end if
+    #if str( $filter_library.filter_selector ) == &quot;yes&quot;:
+        -p '-l &quot;$filter_library.library_text&quot;'
+    #end if
+    #if str($cigar.cigar_select) == &quot;yes&quot;:
+      -p '-m $cigar.cigar_cutoff'
+    #end if
+    #if str($bit.bit_select) == &quot;yes&quot;:
+      -p '-f $bit.bit_flag_cutoff'
+    #end if
+    #if str($non_bit.non_bit_select) == &quot;yes&quot;:
+      -p '-F $non_bit.non_bit_flag_cutoff'
+    #end if
+    ###if str($bam_format) != &quot;sorted_bam&quot;:
+    ##  -o $out_file1 
+    ###end if
+    --input $input
+    --output $out_file1
+    #if str($bam_format) == &quot;sorted_bam&quot;:
+      --sorted-bam
+      ##| samtools sort -@16 -m 8g - $out_file1 2&gt; /dev/null
+    #end if
+  </command>
+  <requirements>
+    <requirement type="package">samtools</requirement>
+  </requirements>
+  <inputs>
+    <param format="sam,bam" label="Select BAM or SAM file to filter" name="input" type="data"/>
+    <param help="No variants with quality below this value will be reported" label="Do not consider read bases with quality lower than" name="qv_cutoff" type="integer" value="0"/>
+    <param format="bed" label="Include reads overlapping BED file" name="filter_by_position" optional="true" type="data"/>
+    <conditional name="filter_by_rg">
+      <param label="Do you want to filter by Read Group" name="filter_selector" type="select">
+        <option selected="True" value="no">No</option>
+        <option value="yes">Yes</option>
+      </param>
+      <when value="no"/>
+      <when value="yes">
+        <conditional name="filter_type_selector">
+          <param label="Specify file or enter Read gropu in text field" name="filter_type" type="select">
+            <option selected="True" value="file">BED</option>
+            <option value="text">Enter field</option>
+          </param>
+          <when value="file">
+            <param format="tabular" label="Select file with list of Read Groups to include" name="rg_file" type="data"/>
+          </when>
+          <when value="text">
+            <param label="Enter Read group to include" name="rg_text" type="text"/>
+          </when>
+        </conditional>
+      </when>
+    </conditional>
+    <conditional name="filter_library">
+      <param label="Filter by library" name="filter_selector" type="select">
+        <option value="yes">Yes</option>
+        <option selected="true" value="no">No</option>
+      </param>
+      <when value="no"/>
+      <when value="yes">
+        <param label="Enter library to include" name="library_text" type="text"/>
+      </when>
+    </conditional>
+    <conditional name="cigar">
+      <param label="Set CIGAR threshold" name="cigar_select" type="select">
+        <option value="yes">Yes</option>
+        <option selected="True" value="no">No</option>
+      </param>
+      <when value="no"/>
+      <when value="yes">
+        <param help="" label="Only include reads with number of CIGAR operations consuming query sequence &gt;=" name="cigar_cutoff" type="integer" value="0"/>
+      </when>
+    </conditional>
+    <conditional name="bit">
+      <param label="Set include reads with all bits set in flag" name="bit_select" type="select">
+        <option value="yes">Yes</option>
+        <option selected="True" value="no">No</option>
+      </param>
+      <when value="no"/>
+      <when value="yes">
+        <param help="" label="Only include reads with all bits set in flag" name="bit_flag_cutoff" type="integer" value="0"/>
+      </when>
+    </conditional>
+    <conditional name="non_bit">
+      <param label="Set include reads with all bits set in flag" name="non_bit_select" type="select">
+        <option value="yes">Yes</option>
+        <option selected="True" value="no">No</option>
+      </param>
+      <when value="no"/>
+      <when value="yes">
+        <param help="" label="Only include reads with none of the bits set in flag" name="non_bit_flag_cutoff" type="integer" value="0"/>
+      </when>
+    </conditional>
+    <param checked="true" falsevalue="" help="" label="Output a sorted BAM" name="bam_format" truevalue="sorted_bam" type="boolean"/>
+  </inputs>
+  <outputs>
+    <data format="bam" name="out_file1"/>
+  </outputs>
+<help>
+
+**What it does**
+
+Filter BAM files using samtools view command
+ 
+</help>
+</tool>

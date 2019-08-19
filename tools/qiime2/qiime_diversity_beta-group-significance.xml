@@ -1,0 +1,95 @@
+<?xml version="1.0" ?>
+<tool id="qiime_diversity_beta-group-significance" name="qiime diversity beta-group-significance" version="022019">
+	<description> - Beta diversity group significance</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command><![CDATA[
+  qiime diversity beta-group-significance --i-distance-matrix=$idistancematrix
+  
+  #def list_dict_to_string(list_dict):
+  	#set $file_list = list_dict[0]['additional_input'].__getattr__('file_name')
+  	#for d in list_dict[1:]:
+  		#set $file_list = $file_list + ',' + d['additional_input'].__getattr__('file_name')
+  	#end for
+  	#return $file_list
+  #end def
+  
+   --m-metadata-file=$list_dict_to_string($input_files_mmetadatafile) --m-metadata-column="$mmetadatacolumn"
+   
+  #if $ppairwise:
+   --p-pairwise
+  #else
+    --p-no-pairwise
+  #end if
+  
+   --o-visualization=ovisualization
+   
+  #if str($cmdconfig) != 'None':
+   --cmd-config=$cmdconfig
+  #end if
+  
+  #if str($pmethod) != 'None':
+   --p-method=$pmethod
+  #end if
+  
+  #if $ppermutations:
+   --p-permutations=$ppermutations
+  #end if
+  ;
+  
+  qiime tools export --input-path ovisualization.qzv --output-path out   && mkdir -p '$ovisualization.files_path'
+  && cp -r out/* '$ovisualization.files_path'
+  && mv '$ovisualization.files_path/index.html' '$ovisualization';
+  ]]></command>
+	<inputs>
+		<param format="qza,no_unzip.zip" label="--i-distance-matrix: DistanceMatrix Matrix of distances between pairs of samples.  [required]" name="idistancematrix" optional="False" type="data"/>
+		<repeat name="input_files_mmetadatafile" optional="False" title="--m-metadata-file">
+			<param label="--m-metadata-file: Metadata file or artifact viewable as metadata. This option may be supplied multiple times to merge metadata. [required]" name="additional_input" type="data" format="tabular,qza,no_unzip.zip" />
+		</repeat>
+		<param label="--m-metadata-column: MetadataColumn[Categorical] Column from metadata file or artifact viewable as metadata. Categorical sample metadata column.  [required]" name="mmetadatacolumn" optional="False" type="text"/>
+		<param label="--p-method: " name="pmethod" optional="True" type="select">
+			<option selected="True" value="None">Selection is Optional</option>
+			<option value="anosim">anosim</option>
+			<option value="permanova">permanova</option>
+		</param>
+		<param label="--p-pairwise: --p-no-pairwise  Perform pairwise tests between all pairs of groups in addition to the test across all groups. This can be very slow if there are a lot of groups in the metadata column. [default: False]" name="ppairwise" checked="False" type="boolean"/>
+		<param label="--p-permutations: The number of permutations to be run when computing p-values.  [default: 999]" name="ppermutations" optional="True" type="integer" value="999"/>
+		<param label="--cmd-config: Use config file for command options" name="cmdconfig" optional="True" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="html" label="${tool.name} on ${on_string}: visualization.qzv" name="ovisualization"/>
+	</outputs>
+	<help><![CDATA[
+Beta diversity group significance
+---------------------------------
+
+Determine whether groups of samples are significantly different from one
+another using a permutation-based statistical test.
+
+Parameters
+----------
+distance_matrix : DistanceMatrix
+    Matrix of distances between pairs of samples.
+metadata : MetadataColumn[Categorical]
+    Categorical sample metadata column.
+method : Str % Choices({'anosim', 'permanova'}), optional
+    The group significance test to be applied.
+pairwise : Bool, optional
+    Perform pairwise tests between all pairs of groups in addition to the
+    test across all groups. This can be very slow if there are a lot of
+    groups in the metadata column.
+permutations : Int, optional
+    The number of permutations to be run when computing p-values.
+
+Returns
+-------
+visualization : Visualization
+		\
+   ]]>
+	</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

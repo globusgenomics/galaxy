@@ -1,0 +1,67 @@
+<tool description="Filter a set of VCF files using SWIFT from an input directory" id="swift_filter_vcf" name="Filter VCF with SWIFT" version="SAMTOOLS: 1.2; VCFTOOLS: vcftools_0.1.11; VCFLIB: 07.21.2015">
+  <description/>
+ <requirements>
+    <requirement type="package">swift</requirement>
+    <requirement type="package">samtools</requirement>
+    <requirement type="package">ruby</requirement>
+    <requirement type="package">vcftools</requirement>
+    <requirement type="package">vcflib</requirement>
+  </requirements>
+
+  <command interpreter="python">
+      swift_filter_vcf.py
+
+      --bed $bedfile
+
+      #if $input_source.source_type == &quot;config&quot;:
+        --config $input_source.input_config
+        --vcf-dir $input_source.input_config.extra_files_path
+      #else:
+        --vcf-dir $input_source.vcfdir
+      #end if
+
+      --output-dir $output_config.extra_files_path
+
+      --minQ $minq
+      --filters &quot;$filters&quot;
+      #for $i, $s in enumerate ($extra_filters)
+          --filters &quot;${s.extra_filter}&quot;
+      #end for
+      --dummy $output_config
+  </command>
+  <inputs>
+    <param format="bed" help="" label="Target file" name="bedfile" optional="True" type="data"/>
+    <conditional name="input_source">
+      <param help="" label="Where are input VCF files?" name="source_type" type="select">
+	<option value="config">From Config File</option>
+	<option default="True" value="path">Input path</option>
+      </param>
+      <when value="config">
+	<param format="data" help="Config file containing location VCF directories." label="Config File" name="input_config" type="data"/>
+      </when>
+      <when value="path">
+	<param help="Directory path in server with all VCF files." label="VCF directory path" name="vcfdir" type="text"/>
+      </when>
+    </conditional>
+    <!--<param name="outputdir" type="text" label="Output Directory Path" help=""/>-->
+    
+    <param help="" label="Minimum Quality Threshold" name="minq" type="text" value="10"/>
+    <param label="Additional filters" name="filters" type="text" value="AC &gt; 0"/>
+    <repeat name="extra_filters" title="Additional Filters">
+       <param label="Additional filters" name="extra_filter" type="text"/>
+    </repeat>
+  </inputs>
+
+  <outputs> 
+    <data format="tabular" name="output_config"/>
+  </outputs>
+  <help>
+
+**What it does**
+
+Performs filtering on VCF files using SWIFT to massively parallelize the provess
+
+**Outputs**
+
+  </help>
+</tool>

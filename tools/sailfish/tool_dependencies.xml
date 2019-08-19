@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<tool_dependency>
+    <package name="sailfish" version="0.7.6">
+        <repository changeset_revision="04996d8b8587" name="package_sailfish_0_7_6" owner="iuc" toolshed="https://toolshed.g2.bx.psu.edu" />
+    </package>
+</tool_dependency>

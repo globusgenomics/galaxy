@@ -1,0 +1,27 @@
+<tool id="read_cga_daataset" name="Read CGA Dataset">
+  <description>for testing</description>
+  <command interpreter="python">read_cga_dataset.py 
+  -i '$input' -p '$input.extra_files_path' 
+  -o '$out_file1'
+  </command>
+   <inputs>
+     <param format="cga" type="data" name="input" label="input cgatools dataset"/>
+   </inputs>
+   <outputs>
+    <data format="txt" name="out_file1"/>
+  </outputs>
+<tests>
+</tests>
+<help>
+.. class:: infomark
+
+This tool reads a cgatools composite dataset.
+
+-----
+
+.. class:: warningmark
+
+This tool is very experimental
+
+</help>
+</tool>

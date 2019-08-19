@@ -1,0 +1,754 @@
+<tool id="defuse" name="DeFuse" version="DEFUSE: 0.6.0; SAMTOOLS: 0.1.18; BOWTIE: 0.12.7; GMAP: 2012-07-20; BLAT: 34x10; FATOTWOBIT: 34x10">
+ <description>identify fusion transcripts</description>
+ <requirements>
+  <requirement type="package" version="0.6.0">defuse</requirement>
+  <requirement type="package" version="0.1.18">samtools</requirement>
+  <requirement type="package" version="0.12.7">bowtie</requirement>
+  <requirement type="package" version="2012-07-20">gmap</requirement>
+  <requirement type="package" version="34x10">blat</requirement>
+  <requirement type="package" version="34x10">fatotwobit</requirement>
+ </requirements>
+  <command interpreter="command"> /bin/bash $shscript </command>
+ <inputs>
+  <param format="fastq" help="The left and right reads pairs must be in the same order, and not have any unpaired reads.  (FASTQ interlacer will pair reads and remove the unpaired.   FASTQ de-interlacer will separate the result into left and right reads.)" label="left part of read pairs" name="left_pairendreads" type="data"/>
+  <param format="fastq" help="In the same order as the left reads" label="right part of read pairs" name="right_pairendreads" type="data"/>
+  <conditional name="refGenomeSource">
+      <param help="" label="Will you select a built-in DeFuse Reference Dataset, or supply a configuration from your history" name="genomeSource" type="select">
+        <option value="indexed">Use a built-in DeFuse Reference Dataset</option>
+        <option value="history">Use a configuration from your history that specifies the DeFuse Reference Dataset</option>
+      </param>
+      <when value="indexed">
+        <param help="if your genome of interest is not listed - contact Galaxy team" label="Select a Reference Dataset" name="index" type="select">
+          <options from_file="defuse.loc">
+            <column index="1" name="name"/>
+            <column index="2" name="value"/>
+            <filter column="0" type="sort_by"/>
+            <validator message="No indexes are available" type="no_options"/>
+          </options>
+        </param>
+        <conditional name="defuse_param">
+          <param help="" label="Defuse parameter settings" name="settings" type="select">
+            <option value="preSet">Default settings</option>
+            <option value="full">Full parameter list</option>
+          </param>
+          <when value="preSet"/>
+          <when value="full">
+            <param label="Bowtie max_insert_size" name="max_insert_size" optional="true" type="integer" value="500"/>
+            <param label="Minimum gene fusion range dna_concordant_length" name="dna_concordant_length" optional="true" type="integer" value="2000"/>
+            <param help="(split reads are not trimmed)" label="Trim length for discordant reads discord_read_trim" name="discord_read_trim" optional="true" type="integer" value="50"/>
+            <param label="Filter clustering_precision" name="clustering_precision" optional="true" type="float" value=".95">
+              <validator max="1" message="Choose a value between .1 and 1.0" min=".1" type="in_range"/>
+            </param>
+            <param label="Filter span_count_threshold" name="span_count_threshold" optional="true" type="integer" value="5"/>
+            <param label="Filter split_count_threshold" name="split_count_threshold" optional="true" type="integer" value="3"/>
+            <param label="Filter percent_identity_threshold" name="percent_identity_threshold" optional="true" type="float" value=".90">
+              <validator max="1" message="Choose a value between .1 and 1.0" min=".1" type="in_range"/>
+            </param>
+            <param label="Filter max_dist_pos" name="max_dist_pos" optional="true" type="integer" value="600"/>
+            <param label="Filter num_dist_genes" name="num_dist_genes" optional="true" type="integer" value="500"/>
+            <param label="Filter split_min_anchor" name="split_min_anchor" optional="true" type="integer" value="4"/>
+            <param label="Filter max_concordant_ratio" name="max_concordant_ratio" optional="true" type="float" value="0.1">
+              <validator max="1" message="Choose a value between 0.0 and 1.0" min="0" type="in_range"/>
+            </param>
+            <param label="Filter splice_bias" name="splice_bias" optional="true" type="integer" value="10"/>
+            <param label="Filter probability_threshold" name="probability_threshold" optional="true" type="float" value="0.50">
+              <validator max="1" message="Choose a value between 0.0 and 1.0" min="0" type="in_range"/>
+            </param>
+            <param label="covariance_sampling_density" name="covariance_sampling_density" optional="true" type="float" value="0.01">
+              <help>Position density when calculating covariance</help>
+              <validator max="1" message="Choose a value between 0.0 and 1.0" min="0" type="in_range"/>
+            </param>
+            <param help="" label="denovo_assembly" name="denovo_assembly" type="select">
+              <option value="">Use Default</option>
+              <option value="no">no</option>
+              <option value="yes">yes</option>
+            </param>
+            <!--
+              <param name="positive_controls" type="data" format="txt" optional=true label="Defuse positive_controls" help=""/>
+            -->
+          </when> <!-- full -->
+        </conditional>  <!-- defuse_param -->
+      </when>
+      <when value="history">
+        <param format="txt" help="" label="Defuse Config file" name="config" type="data"/>
+      </when>  <!-- history -->
+  </conditional>  <!-- refGenomeSource -->
+  <param checked="true" falsevalue="no" help="The defuse output working directory can be helpful for determining errors that may have occurred during the run,                 but they require considerable diskspace, and should be deleted and purged when no longer needed." label="Save DeFuse working directory files" name="keep_output" truevalue="yes" type="boolean"/>
+  <param checked="true" falsevalue="no" label="Run get_reads on each cluster" name="do_get_reads" truevalue="yes" type="boolean"/>
+ </inputs>
+ <outputs>
+  <data format="txt" label="${tool.name} on ${on_string}: config.txt" name="config_txt"/>
+  <data format="txt" label="${tool.name} on ${on_string}: defuse.log" name="defuse_log"/>
+  <data format="html" label="${tool.name} on ${on_string}: defuse_output (purge when no longer needed)" name="defuse_out">
+    <filter>keep_output == True</filter>
+  </data>
+  <data format="tabular" label="${tool.name} on ${on_string}: results.tsv" name="results_tsv"/>
+  <data format="tabular" label="${tool.name} on ${on_string}: results.classify.tsv" name="results_classify_tsv"/>
+  <data format="tabular" label="${tool.name} on ${on_string}: results.filtered.tsv" name="results_filtered_tsv"/>
+  <data format="html" label="${tool.name} on ${on_string}: fusion_reads" name="fusion_reads">
+    <filter>do_get_reads == True</filter>
+  </data>
+ </outputs>
+ <configfiles>
+  <configfile name="defuse_config">
+#import ast
+#if $refGenomeSource.genomeSource == &quot;history&quot;:
+#include raw $refGenomeSource.config.__str__
+#else 
+#set $ref_dict = dict($ast.literal_eval($refGenomeSource.index.value))
+#
+# Configuration file for defuse
+#
+# At a minimum, change all values enclused by []
+#
+
+# Directory where the defuse code was unpacked
+## Default location in the tool/defuse directory  
+# source_directory = ${__root_dir__}/tools/defuse
+source_directory = #slurp
+#try
+$ref_dict['source_directory']
+#except
+__DEFUSE_PATH__
+#end try
+
+# Directory where you want your dataset
+dataset_directory = #slurp
+#try
+$ref_dict['dataset_directory']
+#except
+/project/db/genomes/Hsapiens/hg19/defuse
+#end try
+
+# Input genome and gene models
+gene_models = #slurp
+#try
+$ref_dict['gene_models']
+#except
+\$(dataset_directory)/Homo_sapiens.GRCh37.62.gtf
+#end try
+genome_fasta = #slurp
+#try
+$ref_dict['genome_fasta']
+#except
+\$(dataset_directory)/Homo_sapiens.GRCh37.62.dna.chromosome.fa
+#end try
+
+# Repeat table from ucsc genome browser
+repeats_filename = #slurp
+#try
+$ref_dict['repeats_filename']
+#except
+\$(dataset_directory)/rmsk.txt
+#end try
+
+# EST info downloaded from ucsc genome browser
+est_fasta = #slurp
+#try
+$ref_dict['est_fasta']
+#except
+\$(dataset_directory)/est.fa
+#end try
+est_alignments = #slurp
+#try
+$ref_dict['est_alignments']
+#except
+\$(dataset_directory)/intronEst.txt
+#end try
+
+# Unigene clusters downloaded from ncbi
+unigene_fasta = #slurp
+#try
+$ref_dict['unigene_fasta']
+#except
+\$(dataset_directory)/Hs.seq.uniq
+#end try
+
+# Paths to external tools
+bowtie_bin = #slurp
+#try
+$ref_dict['bowtie_bin']
+#except
+__BOWTIE_BIN__
+#end try
+bowtie_build_bin = #slurp
+#try
+$ref_dict['bowtie_build_bin']
+#except
+__BOWTIE_BUILD_BIN__
+#end try
+blat_bin = #slurp
+#try
+$ref_dict['blat_bin']
+#except
+__BLAT_BIN__
+#end try
+fatotwobit_bin = #slurp
+#try
+$ref_dict['fatotwobit_bin']
+#except
+__FATOTWOBIT_BIN__
+#end try
+gmap_bin = #slurp
+#try
+$ref_dict['gmap_bin']
+#except
+__GMAP_BIN__
+#end try
+gmap_bin = #slurp
+#try
+$ref_dict['gmap_bin']
+#except
+__GMAP_BIN__
+#end try
+gmap_setup_bin = #slurp
+#try
+$ref_dict['gmap_setup_bin']
+#except
+__GMAP_SETUP_BIN__
+#end try
+r_bin = #slurp
+#try
+$ref_dict['r_bin']
+#except
+__R_BIN__
+#end try
+rscript_bin = #slurp
+#try
+$ref_dict['rscript_bin']
+#except
+__RSCRIPT_BIN__
+#end try
+
+# Directory where you want your dataset
+gmap_index_directory = #slurp
+#try
+$ref_dict['gmap_index_directory']
+#except
+\$(dataset_directory)/gmap
+#end try
+
+#raw
+# Dataset files
+dataset_prefix       = $(dataset_directory)/defuse
+chromosome_prefix    = $(dataset_prefix).dna.chromosomes
+exons_fasta          = $(dataset_prefix).exons.fa
+cds_fasta            = $(dataset_prefix).cds.fa
+cdna_regions         = $(dataset_prefix).cdna.regions
+cdna_fasta           = $(dataset_prefix).cdna.fa
+reference_fasta      = $(dataset_prefix).reference.fa
+rrna_fasta           = $(dataset_prefix).rrna.fa
+ig_gene_list         = $(dataset_prefix).ig.gene.list
+repeats_regions      = $(dataset_directory)/repeats.regions
+est_split_fasta1     = $(dataset_directory)/est.1.fa
+est_split_fasta2     = $(dataset_directory)/est.2.fa
+est_split_fasta3     = $(dataset_directory)/est.3.fa
+est_split_fasta4     = $(dataset_directory)/est.4.fa
+est_split_fasta5     = $(dataset_directory)/est.5.fa
+est_split_fasta6     = $(dataset_directory)/est.6.fa
+est_split_fasta7     = $(dataset_directory)/est.7.fa
+est_split_fasta8     = $(dataset_directory)/est.8.fa
+est_split_fasta9     = $(dataset_directory)/est.9.fa
+
+# Fasta files with bowtie indices for prefiltering reads for concordantly mapping pairs
+prefilter1           = $(unigene_fasta)
+
+# deFuse scripts and tools
+scripts_directory    = $(source_directory)/scripts
+tools_directory      = $(source_directory)/tools
+data_directory       = $(source_directory)/data
+#end raw
+
+# Path to samtools, 0.1.8 is compiled for you, use other versions at your own risk
+samtools_bin = #slurp 
+#try
+$ref_dict['samtools_bin']
+#except
+\$(source_directory)/external/samtools-0.1.8/samtools
+#end try
+
+# Bowtie parameters
+bowtie_threads = #slurp
+#try
+$ref_dict['bowtie_threads']
+#except
+4
+#end try
+bowtie_quals = #slurp
+#try
+$ref_dict['bowtie_quals']
+#except
+--phred33-quals
+#end try
+max_insert_size = #slurp
+#if $refGenomeSource.defuse_param.settings == &quot;full&quot; and $refGenomeSource.defuse_param.max_insert_size.__str__ != &quot;&quot;:
+$refGenomeSource.defuse_param.max_insert_size
+#else
+#try
+$ref_dict['max_insert_size']
+#except
+500
+#end try
+#end if
+
+# Parameters for building the dataset
+chromosomes = #slurp
+#try 
+$ref_dict.chromosomes
+#except
+1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,X,Y,MT
+#end try
+mt_chromosome = #slurp
+#try 
+$ref_dict['mt_chromosome']
+#except
+MT
+#end try
+gene_sources = #slurp
+#try 
+$ref_dict['gene_sources']
+#except
+IG_C_gene,IG_D_gene,IG_J_gene,IG_V_gene,processed_transcript,protein_coding
+#end try
+ig_gene_sources = #slurp
+#try 
+$ref_dict['ig_gene_sources']
+#except
+IG_C_gene,IG_D_gene,IG_J_gene,IG_V_gene,IG_pseudogene
+#end try
+rrna_gene_sources = #slurp
+#try 
+$ref_dict['rrna_gene_sources']
+#except
+Mt_rRNA,rRNA,rRNA_pseudogene
+#end try
+
+# Blat sequences per job
+num_blat_sequences = #slurp
+#try
+$ref_dict['num_blat_sequences']
+#except
+10000
+#end try
+
+# Minimum gene fusion range
+dna_concordant_length = #slurp
+#if $refGenomeSource.defuse_param.settings == &quot;full&quot; and $refGenomeSource.defuse_param.dna_concordant_length.__str__ != &quot;&quot;:
+$refGenomeSource.defuse_param.dna_concordant_length
+#else
+#try
+$ref_dict['dna_concordant_length']
+#except
+2000
+#end try
+#end if
+
+# Trim length for discordant reads (split reads are not trimmed)
+discord_read_trim = #slurp
+#if $refGenomeSource.defuse_param.settings == &quot;full&quot; and $refGenomeSource.defuse_param.discord_read_trim.__str__ != &quot;&quot;:
+$refGenomeSource.defuse_param.discord_read_trim
+#else
+#try
+$ref_dict['discord_read_trim']
+#except
+50
+#end try
+#end if
+
+# Filtering parameters
+clustering_precision = #slurp
+#if $refGenomeSource.defuse_param.settings == &quot;full&quot; and $refGenomeSource.defuse_param.clustering_precision.__str__ != &quot;&quot;
+$refGenomeSource.defuse_param.clustering_precision
+#else
+#try
+$ref_dict['clustering_precision']
+#except
+0.95
+#end try
+#end if
+span_count_threshold = #slurp
+#if $refGenomeSource.defuse_param.settings == &quot;full&quot; and $refGenomeSource.defuse_param.span_count_threshold.__str__ != &quot;&quot;
+$refGenomeSource.defuse_param.span_count_threshold
+#else
+#try
+$ref_dict['span_count_threshold']
+#except
+5
+#end try
+#end if
+split_count_threshold = #slurp
+#if $refGenomeSource.defuse_param.settings == &quot;full&quot; and $refGenomeSource.defuse_param.split_count_threshold.__str__ != &quot;&quot;
+$refGenomeSource.defuse_param.split_count_threshold
+#else
+#try
+$ref_dict['split_count_threshold']
+#except
+3
+#end try
+#end if
+percent_identity_threshold = #slurp
+#if $refGenomeSource.defuse_param.settings == &quot;full&quot; and $refGenomeSource.defuse_param.percent_identity_threshold.__str__ != &quot;&quot;
+$refGenomeSource.defuse_param.percent_identity_threshold
+#else
+#try
+$ref_dict['percent_identity_threshold']
+#except
+0.90
+#end try
+#end if
+max_dist_pos = #slurp
+#if $refGenomeSource.defuse_param.settings == &quot;full&quot; and $refGenomeSource.defuse_param.max_dist_pos.__str__ != &quot;&quot;
+$refGenomeSource.defuse_param.max_dist_pos
+#else
+#try
+$ref_dict['max_dist_pos']
+#except
+600
+#end try
+#end if
+num_dist_genes = #slurp
+#if $refGenomeSource.defuse_param.settings == &quot;full&quot; and $refGenomeSource.defuse_param.num_dist_genes.__str__ != &quot;&quot;
+$refGenomeSource.defuse_param.num_dist_genes
+#else
+#try
+$ref_dict['num_dist_genes']
+#except
+500
+#end try
+#end if
+split_min_anchor = #slurp
+#if $refGenomeSource.defuse_param.settings == &quot;full&quot; and $refGenomeSource.defuse_param.split_min_anchor.__str__ != &quot;&quot;
+$refGenomeSource.defuse_param.split_min_anchor
+#else
+#try
+$ref_dict['split_min_anchor']
+#except
+4
+#end try
+#end if
+max_concordant_ratio = #slurp
+#if $refGenomeSource.defuse_param.settings == &quot;full&quot; and $refGenomeSource.defuse_param.max_concordant_ratio.__str__ != &quot;&quot;
+$refGenomeSource.defuse_param.max_concordant_ratio
+#else
+#try
+$ref_dict['max_concordant_ratio']
+#except
+0.1
+#end try
+#end if
+splice_bias = #slurp
+#if $refGenomeSource.defuse_param.settings == &quot;full&quot; and $refGenomeSource.defuse_param.splice_bias.__str__ != &quot;&quot;
+$refGenomeSource.defuse_param.splice_bias
+#else
+#try
+$ref_dict['splice_bias']
+#except
+10
+#end try
+#end if
+denovo_assembly = #slurp
+#if $refGenomeSource.defuse_param.settings == &quot;full&quot; and $refGenomeSource.defuse_param.denovo_assembly.__str__ != &quot;&quot;
+$refGenomeSource.defuse_param.denovo_assembly
+#else
+#try
+$ref_dict['denovo_assembly']
+#except
+no
+#end try
+#end if
+probability_threshold = #slurp
+#if $refGenomeSource.defuse_param.settings == &quot;full&quot; and $refGenomeSource.defuse_param.probability_threshold.__str__ != &quot;&quot;
+$refGenomeSource.defuse_param.probability_threshold
+#else
+#try
+$ref_dict['probability_threshold']
+#except
+0.50
+#end try
+#end if
+positive_controls                           = \$(data_directory)/controls.txt
+
+# Position density when calculating covariance
+covariance_sampling_density = #slurp
+#if $refGenomeSource.defuse_param.settings == &quot;full&quot; and $refGenomeSource.defuse_param.covariance_sampling_density.__str__ != &quot;&quot;
+$refGenomeSource.defuse_param.covariance_sampling_density
+#else
+#try
+$ref_dict['covariance_sampling_density']
+#except
+0.01
+#end try
+#end if
+
+
+# Number of reads for each job in split
+reads_per_job                               = 1000000
+
+# Number of regions for each breakpoint sequence job in split
+regions_per_job                             = 20
+
+#raw
+# If you have command line 'mail' and wish to be notified
+# mailto                                      = andrew.mcpherson@gmail.com
+
+# Remove temp files
+remove_job_files                            = yes
+remove_job_temp_files                       = yes
+
+# Converting to fastq
+# Fastq converter config format 1 for reads stored in separate files for each end
+#  data_lane_rexex_N is a perl regex which stores the lane id in $1
+#  data_end_regex_N is a perl regex which stores the end, 1 or 2, in $1
+#  data_compress_regex_N is a perl regex which stores the compression extension in $1
+#  data_convert_N is the associated conversion utility that takes data at stdin and outputs fastq at stdout
+# Fastq converter config format 2 for reads stored in separate files for each end
+#  data_lane_regex_N is a perl regex which stores the lane id in $1
+#  data_compress_regex_N is a perl regex which stores the compression extension in $1
+#  data_end1_converter_N is the associated conversion utility that takes data at stdin and outputs fastq for end 1 at stdout
+#  data_end2_converter_N is the associated conversion utility that takes data at stdin and outputs fastq for end 2 at stdout
+
+data_lane_regex_1                           = ^(.+)_[12]_export\.txt.*$
+data_end_regex_1                            = ^.+_([12])_export\.txt.*$
+data_compress_regex_1                       = ^.+_[12]_export\.txt(.*)$
+data_converter_1                            = $(scripts_directory)/fq_all2std.pl export2std
+
+data_lane_regex_2                           = ^(.+)_[12]_concat_qseq\.txt.*$
+data_end_regex_2                            = ^.+_([12])_concat_qseq\.txt.*$
+data_compress_regex_2                       = ^.+_[12]_concat_qseq\.txt(.*)$
+data_converter_2                            = $(scripts_directory)/qseq2fastq.pl
+
+data_lane_regex_3                           = ^(.+)\.bam.*$
+data_compress_regex_3                       = ^.+\.bam(.*)$
+data_end1_converter_3                       = samtools view - | filter_sam_mate.pl 1 | sam_to_fastq.pl
+data_end2_converter_3                       = samtools view - | filter_sam_mate.pl 2 | sam_to_fastq.pl
+
+data_lane_regex_4                           = ^(.+).[12].fastq.*$
+data_end_regex_4                            = ^.+.([12]).fastq.*$
+data_compress_regex_4                       = ^.+.[12].fastq(.*)$
+data_converter_4                            = cat
+#end raw
+
+#end if
+
+  </configfile>
+  <configfile name="shscript">
+#!/bin/bash
+## define some things for cheetah proccessing
+#set $ds = chr(36)
+#set $amp = chr(38)
+#set $gt = chr(62)
+#set $lt = chr(60)
+#set $echo_cmd = 'echo'
+## Find the defuse.pl in the galaxy tool path
+#import Cheetah.FileUtils
+## declare a bash function for converting a results tsv into html with links to the get_reads output files
+results2html() {
+  rlts=${ds}1
+  rslt_name=`basename ${ds}rlts`
+  html=${ds}2
+  echo '${lt}html${gt}${lt}head${gt}${lt}title${gt}Defuse '${ds}rslt_name'${lt}/title${gt}${lt}/head${gt}${lt}body${gt}' ${gt}  ${ds}html
+  echo '${lt}h2${gt}Defuse '${ds}rslt_name'${lt}/h2${gt}${lt}table${gt}' ${gt}${gt}  ${ds}html
+  if [ -z &quot;${ds}3&quot; ]  
+  then
+    awk '${ds}1 ~ /cluster_id/{printf(&quot;${lt}tr${gt}&quot;);for (i = 1; i ${lt}= NF; i++) {printf(&quot;${lt}th${gt}%s${lt}/th${gt}&quot;, ${ds}i);}; printf(&quot;${lt}/tr${gt}\n&quot;);}\
+         ${ds}1 ~ /[1-9][0-9]*/{printf(&quot;${lt}tr${gt}&quot;);for (i = 1; i ${lt}= NF; i++) {printf(&quot;${lt}td${gt}%s${lt}/td${gt}&quot;, ${ds}i);}; printf(&quot;${lt}/tr${gt}\n&quot;);}' ${ds}rlts ${gt}${gt} ${ds}html
+    echo '${lt}/table${gt}' ${gt}${gt} ${ds}html
+    echo '${lt}/body${gt}${lt}/html${gt}' ${gt}${gt}  ${ds}html
+  else
+    export _EFP=${ds}3
+    mkdir -p ${ds}_EFP
+    awk '${ds}1 ~ /cluster_id/{printf(&quot;${lt}tr${gt}&quot;);for (i = 1; i ${lt}= NF; i++) {printf(&quot;${lt}th${gt}%s${lt}/th${gt}&quot;, ${ds}i);}; printf(&quot;${lt}/tr${gt}\n&quot;);}\
+         ${ds}1 ~ /[1-9][0-9]*/{fn=&quot;cluster_&quot;${ds}1&quot;_reads.txt&quot;; \
+          printf(&quot;${lt}tr${gt}${lt}td${gt}${lt}a href=\&quot;%s\&quot;${gt}%s${lt}/a${gt}${lt}/td${gt}&quot;,fn, ${ds}1);for (i = 2; i ${lt}= NF; i++) {printf(&quot;${lt}td${gt}%s${lt}/td${gt}&quot;, ${ds}i);}; printf(&quot;${lt}/tr${gt}\n&quot;);}' ${ds}rlts ${gt}${gt} ${ds}html
+    echo '${lt}/table${gt}' ${gt}${gt} ${ds}html
+    echo '${lt}/body${gt}${lt}/html${gt}' ${gt}${gt}  ${ds}html
+    for i in `awk '${ds}1 ~ /[1-9][0-9]*/{print ${ds}1}' ${ds}rlts`;
+      do fn=cluster_${ds}{i}_reads.txt;
+      pn=${ds}_EFP/${ds}fn;
+      perl \${DEFUSE_PATH}/scripts/get_reads.pl -c $defuse_config -o output_dir -i ${ds}i ${gt} ${ds}pn;
+    done
+  fi
+}
+## substitute pathnames into config file
+if `grep __DEFUSE_PATH__ $defuse_config ${gt} /dev/null`;then sed -i'.tmp' &quot;s#__DEFUSE_PATH__#\${DEFUSE_PATH}#&quot; $defuse_config; fi
+if `grep __SAMTOOLS_BIN__ $defuse_config ${gt} /dev/null` ${amp}${amp} SAMTOOLS_BIN=`which samtools`;then sed -i'.tmp' &quot;s#__SAMTOOLS_BIN__#\${SAMTOOLS_BIN}#&quot; $defuse_config; fi
+if `grep __BOWTIE_BIN__ $defuse_config ${gt} /dev/null` ${amp}${amp} BOWTIE_BIN=`which bowtie`;then sed -i'.tmp' &quot;s#__BOWTIE_BIN__#\${BOWTIE_BIN}#&quot; $defuse_config; fi
+if `grep __BOWTIE_BUILD_BIN__ $defuse_config ${gt} /dev/null` ${amp}${amp} BOWTIE_BUILD_BIN=`which bowtie-build`;then sed -i'.tmp' &quot;s#__BOWTIE_BUILD_BIN__#\${BOWTIE_BUILD_BIN}#&quot; $defuse_config; fi
+if `grep __BLAT_BIN__ $defuse_config ${gt} /dev/null` ${amp}${amp} BLAT_BIN=`which blat`;then sed -i'.tmp' &quot;s#__BLAT_BIN__#\${BLAT_BIN}#&quot; $defuse_config; fi
+if `grep __FATOTWOBIT_BIN__ $defuse_config ${gt} /dev/null` ${amp}${amp} FATOTWOBIT_BIN=`which faToTwoBit`;then sed -i'.tmp' &quot;s#__FATOTWOBIT_BIN__#\${FATOTWOBIT_BIN}#&quot; $defuse_config; fi
+if `grep __GMAP_BIN__ $defuse_config ${gt} /dev/null` ${amp}${amp} GMAP_BIN=`which gmap`;then sed -i'.tmp' &quot;s#__GMAP_BIN__#\${GMAP_BIN}#&quot; $defuse_config; fi
+if `grep __GMAP_SETUP_BIN__ $defuse_config ${gt} /dev/null` ${amp}${amp} GMAP_SETUP_BIN=`which gmap_setup`;then sed -i'.tmp' &quot;s#__GMAP_SETUP_BIN__#\${GMAP_SETUP_BIN}#&quot; $defuse_config; fi
+if `grep __R_BIN__ $defuse_config ${gt} /dev/null` ${amp}${amp} R_BIN=`which R`;then sed -i'.tmp' &quot;s#__R_BIN__#\${R_BIN}#&quot; $defuse_config; fi
+if `grep __RSCRIPT_BIN__ $defuse_config ${gt} /dev/null` ${amp}${amp} RSCRIPT_BIN=`which Rscript`;then sed -i'.tmp' &quot;s#__RSCRIPT_BIN__#\${RSCRIPT_BIN}#&quot; $defuse_config; fi
+
+
+## copy config to output
+cp $defuse_config $config_txt
+## make a data_dir  and ln -s the input fastq
+mkdir -p data_dir
+ln -s $left_pairendreads data_dir/reads_1.fastq
+ln -s $right_pairendreads data_dir/reads_2.fastq
+## ln to output_dir in from_work_dir
+#if $defuse_out.__str__ != 'None':
+mkdir -p $defuse_out.extra_files_path
+ln -s $defuse_out.extra_files_path  output_dir
+#else
+mkdir -p output_dir
+#end if
+## run defuse.pl
+perl \${DEFUSE_PATH}/scripts/defuse.pl -c $defuse_config -d data_dir -o output_dir  -p 8
+## copy primary results to output datasets
+if [ -e output_dir/log/defuse.log ]; then cp output_dir/log/defuse.log $defuse_log; fi
+if [ -e output_dir/results.tsv ]; then cp output_dir/results.tsv $results_tsv; fi
+if [ -e output_dir/results.filtered.tsv ]; then cp output_dir/results.filtered.tsv $results_filtered_tsv; fi
+if [ -e output_dir/results.classify.tsv ]; then cp output_dir/results.classify.tsv $results_classify_tsv; fi
+## create html with links for output_dir
+#if $defuse_out.__str__ != 'None':
+if [ -e $defuse_out ]
+then
+  echo '${lt}html${gt}${lt}head${gt}${lt}title${gt}Defuse Output${lt}/title${gt}${lt}/head${gt}${lt}body${gt}' ${gt} $defuse_out
+  echo '${lt}h2${gt}Defuse Output Files${lt}/h2${gt}${lt}ul${gt}' ${gt}${gt}  $defuse_out
+  pushd $defuse_out.extra_files_path
+  for f in `find -L . -maxdepth 1 -type f`; 
+   do fn=`basename ${ds}f`; echo '${lt}li${gt}${lt}a href=&quot;'${ds}fn'&quot;${gt}'${ds}fn'${lt}/a${gt}${lt}/li${gt}' ${gt}${gt}  $defuse_out; 
+  done
+  popd
+  echo '${lt}/ul${gt}' ${gt}${gt} $defuse_out
+  echo '${lt}/body${gt}${lt}/html${gt}' ${gt}${gt}  $defuse_out
+fi
+#end if
+## run get_reads.pl on each cluster
+#if $fusion_reads.__str__ != 'None':
+if [ -e output_dir/results.filtered.tsv -a -e $fusion_reads ] 
+then
+  mkdir -p $fusion_reads.extra_files_path
+  results2html output_dir/results.filtered.tsv $fusion_reads $fusion_reads.extra_files_path
+fi
+#end if
+  </configfile>
+ </configfiles>
+
+ <tests>
+ </tests>
+ <help>
+**DeFuse**
+
+DeFuse_ is a software package for gene fusion discovery using RNA-Seq data. The software uses clusters of discordant paired end alignments to inform a split read alignment analysis for finding fusion boundaries. The software also employs a number of heuristic filters in an attempt to reduce the number of false positives and produces a fully annotated output for each predicted fusion.  
+
+Journal reference: http://www.ploscompbiol.org/article/info%3Adoi%2F10.1371%2Fjournal.pcbi.1001138
+
+.. _DeFuse: http://sourceforge.net/apps/mediawiki/defuse/index.php?title=Main_Page
+
+------
+
+**Inputs**
+
+DeFuse requires 2 fastq files for paried reads, one with the left mate of the paired reads, and a second fastq with the the right mate of the paired reads (**with reads in the same order as in the first fastq dataset**).   
+
+If your fastq files have reads in different orders or include unpaired reads,  you can preprocess them with **FASTQ interlacer** to create a single interlaced fastq dataset with only the paired reads and input that to **FASTQ de-interlacer** to separate the reads into a left fastq and right fastq.
+
+DeFuse uses a Reference Dataset to search for gene fusions.  The Reference Dataset is generated from the following sources in DeFuse_Version_0.4_:
+    - genome_fasta from Ensembl 
+    - gene_models from Ensembl 
+    - repeats_filename from UCSC RepeatMasker rmsk.txt
+    - est_fasta from UCSC
+    - est_alignments from UCSC intronEst.txt
+    - unigene_fasta from NCBI
+
+.. _DeFuse_Version_0.4: http://sourceforge.net/apps/mediawiki/defuse/index.php?title=DeFuse_Version_0.4.2
+
+------
+
+**Outputs**
+
+The galaxy history will contain 5 outputs: the config.txt file that provides DeFuse with its parameters,  the defuse.log which details what DeFuse has done and can be useful in determining any errors, and the 3 results files that defuse generates.  
+
+DeFuse generates 3 results files: results.txt, results.filtered.txt, and results.classify.txt. All three files have the same format, though results.classify.txt has a probability column from the application of the classifier to results.txt, and results.filtered.txt has been filtered according to the threshold probability as set in config.txt. 
+
+The file format is tab delimited with one prediction per line, and the following fields per prediction (not necessarily in this order):
+
+ - **Identification**
+    - cluster_id : random identifier assigned to each prediction
+    - library_name : library name given on the command line of defuse
+    - gene1 : ensembl id of gene 1
+    - gene2 : ensembl id of gene 2
+    - gene_name1 : name of gene 1
+    - gene_name2 : name of gene 2
+ - **Evidence**
+    - break_predict : breakpoint prediction method, denovo or splitr, that is considered most reliable
+    - concordant_ratio : proportion of spanning reads considered concordant by blat
+    - denovo_min_count : minimum kmer count across denovo assembled sequence
+    - denovo_sequence : fusion sequence predicted by debruijn based denovo sequence assembly
+    - denovo_span_pvalue : p-value, lower values are evidence the prediction is a false positive
+    - gene_align_strand1 : alignment strand for spanning read alignments to gene 1
+    - gene_align_strand2 : alignment strand for spanning read alignments to gene 2
+    - min_map_count : minimum of the number of genomic mappings for each spanning read
+    - max_map_count : maximum of the number of genomic mappings for each spanning read
+    - mean_map_count : average of the number of genomic mappings for each spanning read
+    - num_multi_map : number of spanning reads that map to more than one genomic location
+    - span_count : number of spanning reads supporting the fusion
+    - span_coverage1 : coverage of spanning reads aligned to gene 1 as a proportion of expected coverage
+    - span_coverage2 : coverage of spanning reads aligned to gene 2 as a proportion of expected coverage
+    - span_coverage_min : minimum of span_coverage1 and span_coverage2
+    - span_coverage_max : maximum of span_coverage1 and span_coverage2
+    - splitr_count : number of split reads supporting the prediction
+    - splitr_min_pvalue : p-value, lower values are evidence the prediction is a false positive
+    - splitr_pos_pvalue : p-value, lower values are evidence the prediction is a false positive
+    - splitr_sequence : fusion sequence predicted by split reads
+    - splitr_span_pvalue : p-value, lower values are evidence the prediction is a false positive
+ - **Annotation**
+    - adjacent : fusion between adjacent genes
+    - altsplice : fusion likely the product of alternative splicing between adjacent genes
+    - break_adj_entropy1 : di-nucleotide entropy of the 40 nucleotides adjacent to the fusion splice in gene 1
+    - break_adj_entropy2 : di-nucleotide entropy of the 40 nucleotides adjacent to the fusion splice in gene 2
+    - break_adj_entropy_min : minimum of break_adj_entropy1 and break_adj_entropy2
+    - breakpoint_homology : number of nucleotides at the fusion splice that align equally well to gene 1 or gene 2
+    - breakseqs_estislands_percident : maximum percent identity of fusion sequence alignments to est islands
+    - cdna_breakseqs_percident : maximum percent identity of fusion sequence alignments to cdna
+    - deletion : fusion produced by a genomic deletion
+    - est_breakseqs_percident : maximum percent identity of fusion sequence alignments to est
+    - eversion : fusion produced by a genomic eversion
+    - exonboundaries : fusion splice at exon boundaries
+    - expression1 : expression of gene 1 as number of concordant pairs aligned to exons
+    - expression2 : expression of gene 2 as number of concordant pairs aligned to exons
+    - gene_chromosome1 : chromosome of gene 1
+    - gene_chromosome2 : chromosome of gene 2
+    - gene_end1 : end position for gene 1
+    - gene_end2 : end position for gene 2
+    - gene_location1 : location of breakpoint in gene 1
+    - gene_location2 : location of breakpoint in gene 2
+    - gene_start1 : start of gene 1
+    - gene_start2 : start of gene 2
+    - gene_strand1 : strand of gene 1
+    - gene_strand2 : strand of gene 2
+    - genome_breakseqs_percident : maximum percent identity of fusion sequence alignments to genome
+    - genomic_break_pos1 : genomic position in gene 1 of fusion splice / breakpoint
+    - genomic_break_pos2 : genomic position in gene 2 of fusion splice / breakpoint
+    - genomic_strand1 : genomic strand in gene 1 of fusion splice / breakpoint, retained sequence upstream on this strand, breakpoint is downstream
+    - genomic_strand2 : genomic strand in gene 2 of fusion splice / breakpoint, retained sequence upstream on this strand, breakpoint is downstream
+    - interchromosomal : fusion produced by an interchromosomal translocation
+    - interrupted_index1 : ratio of coverage before and after the fusion splice / breakpoint in gene 1
+    - interrupted_index2 : ratio of coverage before and after the fusion splice / breakpoint in gene 2
+    - inversion : fusion produced by genomic inversion
+    - orf : fusion combines genes in a way that preserves a reading frame
+    - probability : probability produced by classification using adaboost and example positives/negatives (only given in results.classified.txt)
+    - read_through : fusion involving adjacent potentially resulting from co-transcription rather than genome rearrangement
+    - repeat_proportion1 : proportion of the spanning reads in gene 1 that span a repeat region
+    - repeat_proportion2 : proportion of the spanning reads in gene 2 that span a repeat region
+    - max_repeat_proportion : max of repeat_proportion1 and repeat_proportion2
+    - splice_score : number of nucleotides similar to GTAG at fusion splice
+    - num_splice_variants : number of potential splice variants for this gene pair
+    - splicing_index1 : number of concordant pairs in gene 1 spanning the fusion splice / breakpoint, divided by number of spanning reads supporting the fusion with gene 2
+    - splicing_index2 : number of concordant pairs in gene 2 spanning the fusion splice / breakpoint, divided by number of spanning reads supporting the fusion with gene 1
+
+
+**Example**
+
+results.tsv::
+
+  cluster_id	splitr_sequence	splitr_count	splitr_span_pvalue	splitr_pos_pvalue	splitr_min_pvalue	adjacent	altsplice	break_adj_entropy1	break_adj_entropy2	break_adj_entropy_min	break_predict	breakpoint_homology	breakseqs_estislands_percident	cdna_breakseqs_percident	concordant_ratio	deletion	est_breakseqs_percident	eversion	exonboundaries	expression1	expression2	gene1	gene2	gene_align_strand1	gene_align_strand2	gene_chromosome1	gene_chromosome2	gene_end1	gene_end2	gene_location1	gene_location2	gene_name1	gene_name2	gene_start1	gene_start2	gene_strand1	gene_strand2	genome_breakseqs_percident	genomic_break_pos1	genomic_break_pos2	genomic_strand1	genomic_strand2	interchromosomal	interrupted_index1	interrupted_index2	inversion	library_name	max_map_count	max_repeat_proportion	mean_map_count	min_map_count	num_multi_map	num_splice_variants	orf	read_through	repeat_proportion1	repeat_proportion2	span_count	span_coverage1	span_coverage2	span_coverage_max	span_coverage_min	splice_score	splicing_index1	splicing_index2	
+  1169	GCTTACTGTATGCCAGGCCCCAGAGGGGCAACCACCCTCTAAAGAGAGCGGCTCCTGCCTCCCAGAAAGCTCACAGACTGTGGGAGGGAAACAGGCAGCAGGTGAAGATGCCAAATGCCAGGATATCTGCCCTGTCCTTGCTTGATGCAGCTGCTGGCTCCCACGTTCTCCCCAGAATCCCCTCACACTCCTGCTGTTTTCTCTGCAGGTTGGCAGAGCCCCATGAGGGCAGGGCAGCCACTTTGTTCTTGGGCGGCAAACCTCCCTGGGCGGCACGGAAACCACGGTGAGAAGGGGGCAGGTCGGGCACGTGCAGGGACCACGCTGCAGG|TGTACCCAACAGCTCCGAAGAGACAGCGACCATCGAGAACGGGCCATGATGACGATGGCGGTTTTGTCGAAAAGAAAAGGGGGAAATGTGGGGAAAAGCAAGAGAGATCAGATTGTTACTGTGTCTGTGTAGAAAGAAGTAGACATGGGAGACTCCATTTTGTTCTGTACTAAGAAAAATTCTTCTGCCTTGAGATTCGGTGACCCCACCCCCAACCCCGTGCTCTCTGAAACATGTGCTGTGTCCACTCAGGGTTGAATGGATTAAGGGCGGTGCGAGACGTGCTTT	2	0.000436307890680442	0.110748295953850	0.0880671602973091	N	Y	3.19872427442695	3.48337348351473	3.19872427442695	splitr	0	0	0	0	Y	0	N	N	0	0	ENSG00000105549	ENSG00000213753	+	-	19	19	376013	59111168	intron	upstream	THEG	AC016629.2	361750	59084870	-	+	0	375099	386594	+	-	N	8.34107429512245	-	N	output_dir	82	0.677852348993289	40.6666666666667	1	11	1	N	N	0.361271676300578	0.677852348993289	12	0.758602776578432	0.569678713445872	0.758602776578432	0.569678713445872	2	0.416666666666667	-	
+  3596	TGGGGGTTGAGGCTTCTGTTCCCAGGTTCCATGACCTCAGAGGTGGCTGGTGAGGTTATGACCTTTGCCCTCCAGCCCTGGCTTAAAACCTCAGCCCTAGGACCTGGTTAAAGGAAGGGGAGATGGAGCTTTGCCCCGACCCCCCCCCGTTCCCCTCACCTGTCAGCCCGAGCTGGGCCAGGGCCCCTAGGTGGGGAACTGGGCCGGGGGGCGGGCACAAGCGGAGGTGGTGCCCCCAAAAGGGCTCCCGGTGGGGTCTTGCTGAGAAGGTGAGGGGTTCCCGGGGCCGCAGCAGGTGGTGGTGGAGGAGCCAAGCGGCTGTAGAGCAAGGGGTGAGCAGGTTCCAGACCGTAGAGGCGGGCAGCGGCCACGGCCCCGGGTCCAGTTAGCTCCTCACCCGCCTCATAGAAGCGGGGTGGCCTTGCCAGGCGTGGGGGTGCTGCC|TTCCTTGGATGTGGTAGCCGTTTCTCAGGCTCCCTCTCCGGAATCGAACCCTGATTCCCCGTCACCCGTGGTCACCATGGTAGGCACGGCGACTACCATCGAAAGTTGATAGGGCAGACGTTCGAATGGGTCGTCGCCGCCACGGGGGGCGTGCGATCAGCCCGAGGTTATCTAGAGTCACCAAAGCCGCCGGCGCCCGCCCCCCGGCCGGGGCCGGAGAGGGGCTGACCGGGTTGGTTTTGATCTGATAAATGCACGCATCCCCCCCGCGAAGGGGGTCAGCGCCCGTCGGCATGTATTAGCTCTAGAATTACCACAGTTATCCAAGTAGGAGAGGAGCGAGCGACCAAAGGAACCATAACTGATTTAATGAGCCATTCGCAGTTTCACTGTACCGGCCGTGCGTACTTAGACATGCATGGCTTAATCTTTGAGACAAGCATATGCTACTGGCAGG	250	7.00711162298275e-72	0.00912124762512338	0.00684237452309549	N	N	3.31745197152461	3.47233119514066	3.31745197152461	splitr	7	0.0157657657657656	0	0	N	0.0135135135135136	N	N	0	0	ENSG00000156860	ENSG00000212932	-	+	16	21	30682131	48111157	coding	upstream	FBRS	RPL23AP4	30670289	48110676	+	+	0.0157657657657656	30680678	9827473	-	+	Y	-	-	N	output_dir	2	1	1.11111111111111	1	1	1	N	N	0	1	9	0.325530693397641	0.296465452915709	0.325530693397641	0.296465452915709	2	-	-	
+
+ </help>
+</tool>

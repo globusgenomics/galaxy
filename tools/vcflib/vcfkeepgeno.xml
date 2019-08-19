@@ -1,0 +1,38 @@
+<tool id="vcfkeepgeno" description="Keep only specified genotypes from VCF (vcfkeepgeno)" name="VCF Keep Genotypes" version="VCFLIB: 07.21.2015">
+  <requirements>
+    <requirement type="package">vcflib</requirement>
+  </requirements>
+  <command>
+    vcfkeepgeno $input_vcf
+      #if $genotypes and $genotypes.__str__ != '':
+          #echo ' '.join($genotypes.__str__.split(','))    
+      #end if
+    > $output_vcf
+  </command>
+  <inputs>
+    <param name="input_vcf" type="data" label="Input VCF"/>
+    <param name="genotypes" type="select" label="Select genotypes to keep in VCF" multiple="true" display="checkboxes">
+      <option value="GT">GT</option>
+      <option value="DP">DP</option>
+      <option value="FT">FT</option>
+      <option value="GL">GL</option>
+      <option value="GLE">GLE</option>
+      <option value="PL">PL</option>
+      <option value="GP">GP</option>
+      <option value="GQ">GQ</option>
+      <option value="HQ">HQ</option>
+      <option value="PS">PS</option>
+      <option value="PQ">PQ</option>
+      <option value="EC">EC</option>
+      <option value="MQ">MQ</option>
+    </param>
+  </inputs>
+  <outputs>
+    <data format="vcf" name="output_vcf"/>
+  </outputs>
+
+  <help>
+  Uses VCFLIB vcfkeepgeno
+  </help>
+</tool>
+

@@ -1,0 +1,83 @@
+<tool id="baseline_tool" name="Baseline" version="BEDTOOLS: 2.17.0; SAMTOOLS: 0.1.18; CONTRA: CONTRA.v2.0.4">
+  <description>: Control files for Contra</description>
+  <requirements>
+	<requirement type="package" version="2.17.0">bedtools</requirement>
+	<requirement name="samtools" type="package" version="0.1.18">samtools</requirement>
+	<requirement name="contra" type="package">contra</requirement>
+        <requirement type="package">pymodules</requirement>
+  </requirements>
+  <command interpreter="perl">
+    
+	baseline_wrapper.pl
+	
+	##Required files
+	&quot;PLAYEROPTION::-t=$target_file&quot;
+	
+        #if str($input_format_cond.input_format) == "bam":
+	  #for $group in $input_format_cond.file_group
+		"BAMLISTENTRY::${group.bam}"
+	  #end for
+        #else:
+          "BAMLISTFILE::${input_format_cond.file_list}"
+        #end if	
+ 
+	&quot;PLAYEROPTION::--name=$sampleName&quot;
+	&quot;PLAYEROPTION::--trim=$trim&quot;
+	
+	##File to generate the bam list
+	&quot;BASELINEOUTPUT::$baseline_output&quot;
+  </command>
+    <inputs>
+      <param format="bed" help="" name="target_file" optional="false" type="data"/>		
+      <conditional name="input_format_cond">
+        <param name="input_format" type="select" label="Input format" >
+          <option value="bam" selected="True">BAM file</option>
+          <option value="bam_list">BAM list</option>
+        </param>
+        <when value="bam">
+          <repeat name="file_group" title="Bam file">
+            <param format="bam" help="" label="BAM File" name="bam" type="data"/>
+          </repeat>
+        </when>
+        <when value="bam_list">
+          <param name="file_list" type="data" format="tabular,txt" label="BAM list" help="A single file containing a list of all BAM files to use as input" />
+        </when>
+      </conditional>
+      <param name="sampleName" optional="true" type="text" value="baseline"/>
+      <param name="trim" optional="true" type="float" value="0.2"/>
+    </inputs>
+    <outputs>
+      <data format="tabular" label="Baseline_Control.txt" name="baseline_output" title="Baseline Output" type="data"/>
+    </outputs>
+    <help>
+|
+
+**Reference**
+	http://contra-cnv.sourceforge.net/
+
+-----
+
+**What it does**
+
+Creating a baseline control from multiple samples is can be useful when a matched control is not available. In the CONTRA download page, we have provided several baseline files for some of the platforms that we have tried. Alternatively, the “baseline.py” script that comes with CONTRA can be used to generate a custom baseline file. 
+
+-----
+ 
+**Parameters**
+
+::
+
+  -t, --target          Target region definition file [REQUIRED] [BED format] 
+
+  -f, --files           Files to be converted to baselines [REQUIRED] [BAM] 
+
+  -o, --output          Output folder [REQUIRED] 
+
+  -c, --trim            Portion of outliers to be removed before calculating 
+                        average [Default: 0.2]
+                        
+  -n, --name            Output baseline file name [Default: baseline] 
+
+
+    </help>
+</tool>

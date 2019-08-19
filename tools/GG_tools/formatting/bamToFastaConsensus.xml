@@ -1,0 +1,54 @@
+<tool id="bamToFastaConsensus" name="BAM to FASTA Consensus">
+	<description>Create FASTA consensus files from a BAM file</description>
+	<requirements>
+           <requirement type="package">samtools</requirement>
+           <requirement type="package">bcftools</requirement>
+           <requirement type="package">seqtk</requirement>
+           <requirement type="package">picard</requirement>
+        </requirements>
+	<command interpreter="python">bamToFastaConsensus.py -b $inputBam -r $inputRef
+            #if $inputBamIndex:
+                --indexBam $inputBamIndex
+            #end if
+            #if str( $splitChr ) == "nosplit":
+                --no-split
+            #end if
+            -o $outputFile --files_path $outputFile.extra_files_path
+	</command>
+
+	<inputs>
+		<param format="bam" name="inputBam" type="data" label="BAM file to convert" />
+                <param format="bai" name="inputBamIndex" type="data" optional="true" label="BAM index file" help="If one is not available, it will be generated for you. In workflows where several tools need the same Index file, it might be useful in the interest of time to produce an index file separately and provide as input to those tools." />
+                <param format="fasta" name="inputRef" type="data" label="Reference Fasta File" />
+                <param name="splitChr" type="select" label="Create consensus files per chromosome" help="Files will be stored in a shared library object">
+                        <option value="split">yes</option>
+                        <option value="nosplit">no</option>
+                </param>
+
+<!--
+		<param name="SKIPN" type="select" label="Discard sequences with unknown (N) bases ">
+			<option value="">yes</option>
+			<option value="-n">no</option>
+		</param>
+		<param name="RENAMESEQ" type="select" label="Rename sequence names in output file (reduces file size)">
+			<option value="-r">yes</option>
+			<option value="">no</option>
+		</param>
+-->
+	</inputs>
+
+	<outputs>
+		<data format="fasta" name="outputFile" metadata_source="inputBam" label="Consensus FASTA: ${tool.name} on ${on_string} " >
+                     <change_format>
+                         <when input="splitChr" value="split" format="html" label="HTML for Consensus results per chromosome: ${tool.name} on ${on_string}"/>
+                     </change_format>
+                </data>
+	</outputs>
+
+<help>
+
+**What it does**
+
+This tool converts data from BAM format to consensus FASTA format.
+</help>
+</tool>

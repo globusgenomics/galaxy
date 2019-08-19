@@ -1,0 +1,225 @@
+<tool id="fastq_mcf" name="FastqMcf" version="EA-UTILS: 1.1.2-484">
+  <description>sequence quality filtering and clipping</description>
+  <requirements>
+    <requirement type="package">ea-utils</requirement>
+  </requirements>
+  <version_string>fastq-mcf -V</version_string>
+  <command>fastq-mcf 
+    #if $trimming.choice == 'disable':
+      -0
+    #elif $trimming.choice == 'user_set':
+      #if str($trimming.scale) != "2.5"
+        -s $trimming.scale
+      #end if
+      #if str($trimming.minpct) != "0.25"
+        -t $trimming.minpct
+      #end if
+      #if str($trimming.nmin) != "1"
+        -m $trimming.nmin
+      #end if
+      #if str($trimming.pctdiff) != "20"
+        -p $trimming.pctdiff
+      #end if
+      #if str($trimming.nmax) != "0"
+        -L $trimming.nmax
+      #end if
+      #if str($trimming.nkeep) != "15"
+        -l $trimming.nkeep
+      #end if
+      #if str($trimming.skewpct) != "2"
+        -k $trimming.skewpct
+      #end if
+      #if str($trimming.qthr) != "7"
+        -q $trimming.qthr
+      #end if
+      #if str($trimming.qwin) != "1"
+        -w $trimming.qwin
+      #end if
+      #if str($trimming.pctns) != "10"
+        -x $trimming.pctns
+      #end if
+
+      #if str($trimming.sampcnt) != "100000"
+        -C $trimming.sampcnt
+      #end if
+
+      #if str($trimming.ilv3) != ""
+        -$trimming.ilv3
+      #end if
+      $trimming.rmns
+    #end if
+    #if $noclip == "True":
+      $noclip
+    #else:
+      -o $reads_out
+      #if $mates.__str__ != 'None' :
+        -o $mates_out
+      #end if
+    #end if
+    $adpaters 
+    $reads
+    #if $mates.__str__ != 'None' :
+      $mates
+    #end if
+    &gt; $log
+  </command>
+  <inputs>
+    <param format="fasta" label="A fasta formatted adapter list" name="adpaters" type="data"/>
+    <param format="fastqsanger,fastqillumina" label="Reads: single or Left-hand of Paired End Reads" name="reads" type="data"/>
+    <param format="fastqsanger,fastqillumina" label="Right-hand mates for Paired End Reads" name="mates" optional="true" type="data"/>
+    <!--
+ -s N.N Log scale for clip pct to threshold (2.5)
+ -t N % occurance threshold before clipping (0.25)
+ -m N Minimum clip length, overrides scaled auto (1)
+ -p N Maximum adapter difference percentage (20)
+ -l N Minimum remaining sequence length (15)
+ -L N   Maximum sequence length (none)
+ -k N sKew percentage causing trimming (2)
+ -q N quality threshold causing trimming (10)
+ -f force output, even if not much will be done
+ -0     Set all trimming parameters to zero
+ -U|u   Force disable/enable illumina PF filtering
+ -P N phred-scale (64)
+ -x N 'N' (Bad read) percentage causing trimming (10)
+ -R      Don't remove N's from the fronts/ends of reads
+ -n Don't clip, just output what would be done
+ -C N   Number of reads to use for subsampling (200000)
+ -d     Output lots of random debugging stuff
+    -->
+
+
+    <conditional name="trimming">
+        <param label="Trimming Options" name="choice" type="select">
+           <option value="defaults">Use Defaults</option>
+           <option value="user_set">Set Values</option>
+           <option value="disable">Set all trimming parameters to zero</option>
+        </param>
+      <when value="defaults"/>
+      <when value="disable"/>
+      <when value="user_set">
+        <param label="-C Number of reads to use for subsampling (100000)" name="sampcnt" optional="true" type="integer" value="100000"> 
+        </param>
+        <param label="-s N.N Log scale for clip pct to threshold (2.5)" name="scale" optional="true" type="float" value="2.5"> 
+        </param>
+        <param label="-t % occurance threshold before clipping (0.25)" name="minpct" optional="true" type="float" value="0.25"> 
+        </param>
+        <param label="-m Minimum clip length, overrides scaled auto (1)" name="nmin" optional="true" type="integer" value="1"> 
+        </param>
+        <param label="-p Maximum adapter difference percentage (20)" name="pctdiff" optional="true" type="integer" value="20"> 
+        </param>
+
+        <param label="-L Maximum sequence length (0)" name="nmax" optional="true" type="integer" value="0" help="Null value is 0"> 
+        </param>
+        <param label="-l  Minimum remaining sequence length (15)" name="nkeep" optional="true" type="integer" value="15"> 
+        </param>
+        <param label="-k sKew percentage causing trimming (2)" name="skewpct" optional="true" type="float" value="2.0"> 
+        </param>
+        <param help="remove end of-read with quality &lt; threshold" label="-q quality threshold causing trimming (7)" name="qthr" optional="true" type="integer" value="7"> 
+        </param>
+        <param help="remove end of read with mean quality &lt; threshold" label="-w mean quality threshold causing trimming (1)" name="qwin" optional="true" type="integer" value="1"> 
+        </param>
+        <param label="-x  'N' (Bad read) percentage causing trimming (10)" name="pctns" optional="true" type="float" value="10.0"> 
+        </param>
+        <param checked="false" falsevalue="" label="-R Don't remove N's from the fronts/ends of reads" name="rmns" truevalue="-R" type="boolean"/>
+        <param label="illumina PF filtering" name="ilv3" type="select">
+           <option value="">Default</option>
+           <option value="U">Disable illumina PF filtering</option>
+           <option value="u">Enable illumina PF filtering</option>
+        </param>
+      </when>
+    </conditional>
+
+    
+    <param help="Default is to determine automatically" label="-P phred-scale (64)" name="phred" optional="true" type="integer" value="64"> 
+    </param>
+
+    <param checked="false" falsevalue="" label="Don't clip, just output what would be done (-n)" name="noclip" truevalue="-n" type="boolean"/>
+
+  </inputs>
+  <outputs>
+    <data format="txt" label="${tool.name} on ${on_string}: log" name="log"/>
+    <data format_source="reads" label="${tool.name} on ${on_string}: reads" name="reads_out">
+      <filter>noclip == False</filter>
+    </data>
+    <data format_source="mates" label="${tool.name} on ${on_string}: mates" name="mates_out">
+      <filter>(noclip == False and mates != None)</filter>
+    </data>
+  </outputs>
+  <stdio>
+    <exit_code description="Error" level="fatal" range="1:"/>
+  </stdio>
+  <tests>
+    <test>
+      <param ftype="fasta" name="adpaters" value="adapters.fa"/>
+      <param ftype="fastqillumina" name="reads" value="test_mcf_reads.fq"/>
+      <param ftype="fastqillumina" name="mates" value="test_mcf_mates.fq"/>
+      <param name="choice" value="user_set"/>
+      <param name="nkeep" value="16"/>
+      <param name="qthr" value="15"/>
+      <param name="qwin" value="5"/>
+      <param name="pctns" value="10"/>
+      <param name="ilv3" value="u"/>
+      <param name="phred" value="33"/>
+      <output file="testout_mcf_reads.fq" name="reads_out"/>
+      <output file="testout_mcf_mates.fq" name="mates_out"/>
+    </test>
+  </tests>
+  <help>
+**What it does**
+
+fastq-mcf_ attempts to:
+
+  Detect and remove sequencing adapters and primers
+  Detect limited skewing at the ends of reads and clip
+  Detect poor quality at the ends of reads and clip
+  Detect N's, and remove from ends
+  Remove reads with CASAVA 'Y' flag (purity filtering)
+  Discard sequences that are too short after all of the above
+
+
+  Keep multiple mate-reads in sync while doing all of the above
+
+.. _fastq-mcf: http://code.google.com/p/ea-utils/wiki/FastqMcf
+
+-----
+
+**Input**
+
+Fasta file of adapter sequences, for example::
+
+    &gt; Genomic_DNA_oligonucleotide_sequences_Adapters_F
+    GATCGGAAGAGCTCGTATGCCGTCTTCTGCTTG
+    &gt; Genomic_DNA_oligonucleotide_sequences_Adapters_R
+    ACACTCTTTCCCTACACGACGCTCTTCCGATCT
+    &gt; Genomic_DNA_Sequencing_Primer
+    ACACTCTTTCCCTACACGACGCTCTTCCGATCT
+
+
+
+Reads or Left-hand mates, for example::
+
+    @1539:931/1
+    ACTTCCCGCGCGTGAAGGCGCCGGCAAACGAGGCTCGGGAAGGGGCTCCCG
+    +1539:931/1
+    BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
+
+Right-hand mates, for example::
+
+    @1539:931/2
+    CGCCATTCCGAATCGTAGTTGTCGGCGTCTTCCAGTGCGGCAAGGCATCGT
+    +1539:931/2
+    WNUUZ\P^`BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
+
+-----
+
+**Output**
+
+A log file
+
+A trimmed fastq of the reads
+
+A trimmed fastq of the mates
+
+
+  </help>
+</tool>

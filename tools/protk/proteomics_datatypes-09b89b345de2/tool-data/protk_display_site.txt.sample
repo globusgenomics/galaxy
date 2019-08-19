@@ -1,0 +1,3 @@
+#Proteomic Visualization application should be hosted on the same server as galaxy
+#Entries in this file are of the format "site_id" site_url
+Proteomics Visualize	http://127.0.0.1:8500

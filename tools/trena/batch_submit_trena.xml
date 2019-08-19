@@ -1,0 +1,142 @@
+<tool id="batch_submit_trena" name="Workflow batch submit for TRENA replicates">
+   <action module="galaxy_ext.globus.tools.actions.globus" class="BatchSubmit"/>
+   <description>Submit workflows multiple times</description>
+   <requirements>
+     <requirement type="package">pymodules</requirement>
+   </requirements>
+   <command >
+     python /opt/galaxy/tools/batch_submit/batch_submit_globus_genomics.py
+      -t "$goauth"
+      -k $userapi
+      -u "$url"
+      -i $input.extra_files_path/$sample_id > $log
+   </command>
+
+   <inputs>
+    <param name="goauth" type="hidden" size="100" value="None" label="Globus Auth Token">
+      <sanitizer>
+	<valid>
+	  <add value="|"/>
+	</valid>
+      </sanitizer>
+    </param>
+    <param name="userapi" type="hidden" size="100" value="None" label="Galaxy API Key"/>
+    <param name="url" type="hidden" size="100" value="None" label="GG URL"/>
+
+      <param format="txt" name="input" type="data" label="Batch object"/>
+      <param type="text" name="sample_id" label="Sample id of the batch to run in the object" />
+   </inputs>
+
+   <outputs>
+     <data format="txt" name="log" label="Log for batch submission ${on_string}"/>
+   </outputs>
+
+   <help>
+
+.. class:: infomark
+
+**Workflow Batch Submission**
+
+The Globus Genomics Galaxy API allows submission of a user defined workflow multiple times.
+
+.. _apikey: http://wiki.galaxyproject.org/Learn/API#Enabling_the_API
+.. _apiWorkflow: http://dev.globusgenomics.org/u/arodri7/w/api-batch-test-worfklow
+
+You will need the following:
+
+1. API key, apikey_; - You will need to generate an API key to identify yourself with the Galaxy server. 
+   If you don't have an API key, please generate one by following the instructions, apikey_.
+2. Worklfow Parameters Table - You can create a workflow through the workflow generator. 
+   You can set which parameters should be set at run time. You can download a skeleton of the table 
+   structure you will need to fill out with your input files and parameters that are specific to your 
+   workflow. Please don't modify any of the header rows or non-commented lines.
+
+-----
+
+.. class:: infomark
+
+**Workflow Parameters Table Format**
+
+The table you have downloaded will help you submit a workflow in batch mode. 
+A workflow can be as simple as running one tool (one process), to having hundreds of tools (hundreds of processes).
+The structure of the table file downloaded is shown in a figure below. 
+The contents of the file can be separated into three section:
+
+1. General instructions: how you should modify the file.
+2. Workflow metadata: The only parameter the user should modify here is the "project name".
+   All other items in the metadata section should be left alone or the 
+   submission process will not work.
+3. Table data: the header will be supplied in the file. It's important to note that the header
+   row cannot be modified by the user. If so, this will cause errors when submitting 
+   the workflow. After the header row, the user should feel free to input the necessary
+   file location, names and parameters for their workflow. The items in the header that 
+   will be allowed to be modified are for:
+
+   A) Input files required for a tool
+   B) Parameter values for tools which have been previously set by the user to be filled out at runtime
+
+-----
+
+.. class:: infomark
+
+**Example**
+
+The following example should explain what is needed to run workflows in batch mode.
+
+1. Create an API key. If you don't have one yet, follow instruction here, apikey_; 
+
+   1. My API key on my local instance is: 3ab0cce215d049b1a1a2bdfa1eaf6b6b.
+      NOTE: This API key will not work on your instance, thus you will need to 
+      generate one so that it identifies you and creates the histories under your user account.
+2. Create a workflow you wish to submit in batch mode.
+
+   1. My example is a simple workflow, apiWorkflow_; that takes two VCF fles, cuts a few columns, 
+      adds a column with a user specified text, then concatenates the two VCF files.
+   2. This workflow in available in the "Shared Data" and "Published Workflows" links in the main menu.
+      You should be able to import it to your user accoutn by clicking on the "Import workflow" link.
+   3. For each tool's input file you will need to create an "Input Dataset" box by searching for the 
+      label "Inputs" in the tool panel and selecting "Input Datasets". If this is not specified, you 
+      will not be able to specify an input file for that tool.
+   4. Notice that the workflow has two inputs labeled as Ref1 and Ref2. Adding the "Input Dataset" 
+      box tool allowed this to happen.
+
+   .. image:: ../../static/images/API-test-workflow.png   
+
+   5. In addition, the "add column" tool has the "Add this value" parameter which has been set to 
+      be filled out at runtime. This allows the user to see the column in the batch mode table you 
+      will soon download.
+
+.. image:: ../../static/images/API-test-workflow-runtime.png
+
+3. On the "Workflows" page click on the workflow you wish to submit in batch mode. A sub-menu will appear. 
+   Click on the "Submit via API batch mode" link. The link will take you to a page showing the same 
+   instructions you are following.
+
+.. image:: ../../static/images/API-test-workflow-menu.png 
+
+   
+4. Clicking the "Export Workflow Parameters for Batch Submission" button to download the file you will need to edit.
+5. Open the tab-delimited file you have downloaded. It should look similar to the figure below.
+
+.. image:: ../../images/API-test-workflow-tabfile.png
+   
+6. Modify the file similar to the figure above by adding the new rows shown. Each row represents a
+   different submission of the workflow. Each submission will be run in parallel. Make sure the 
+   columns are separated by a tab character.
+
+.. image:: ../../images/API-test-workflow-data.png
+
+7. Save the file as a text file. Any other type of file will not work.
+8. Upload the file back to your Globus Genomics instance.
+9. Towards the bottom of the tool panel, click on the "Batch Submit" tool and select the Table file for the workflow
+   you want to submit.
+10. Click on "Execute".
+11. If you go to the instance and look at your saved histories, you will see one new history for each row you are submitting.
+    The histories are named using a timestamp to make sure they have unique names.
+
+.. image:: ../../images/API-test-workflow-history.png
+
+   </help>
+
+</tool>
+

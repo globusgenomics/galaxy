@@ -1,0 +1,62 @@
+PROGRAM: vcfPrinter
+
+DESCRIPTION: Generates multi-sample Variant Call Format (VCF) file from single sample VCF files.
+
+AUTHOR: Uday Evani, Danny Challis, Jin Yu, Fuli Yu
+
+CONTACT: evani@bcm.edu
+
+Date: 30 Dec, 2010 
+
+COMPILATION: None needed.
+
+SYSTEM REQUIREMENTS: 
+
+	* Unix-like operation systems
+	* Ruby 1.8.5: http://www.ruby-lang.org/en/downloads/
+	* SAMtools must be installed and runnable by invoking the "samtools" command
+      -SAMtools may be obtained at http://samtools.sourceforge.net/
+
+	Note: The vcfPrinter has been tested on ruby 1.8.5 and samtools version: 0.1.12a (r862) 
+
+LICENSE: 
+
+This software is free for all uses with the following restrictions:
+    * No part of this software, or modifications thereof, may be redistributed for
+        any purpose to any other company, person, or individual, without prior written
+        permission from the author.
+    * This software is provided AS IS. Baylor College of Medicine assumes no
+        responsibility or liability for damages of any kind that may result, directly
+        or indirectly, from the use of this software.
+    * The above copyright notice must be preserved in the executable About dialog or
+        made visible to users in some other way.
+
+USAGE: Type "ruby vcfPrinter.rb"  from the command line followed by "--usage" or "-h" to show the command line argument options.
+
+	ruby vcfPrinter.rb 
+		-i "<Location of your VCF files>" 
+		-o <output file name> 
+		-b "<Location of Bam files associated with VCF files>" 
+		-r <Reference fasta file> 
+		
+		-n <Will not run pileup, hence will only merge data from single sample VCF. Samples without at a site will not have read level information gathered from samtools pileup making it significantly faster> 
+		
+		-p <Will not merge non-PASS variants, based on the PASS tag in filter field>
+	
+	Example command line:
+	ruby vcfPrinter.rb -i "/home/user/data/*.vcf" -o /home/user/data/outfile.vcf -b "/home/user/data/*.bam" -r /home/user/ref/human_b36_male.fa
+	
+	Note: 
+		* The VCF and BAM file arguments have to be wrapped in quotes ("). This is because of how glob are executed in Ruby. 
+		* The BAM files need to be indexed.
+		*The individual sample VCF filenames must follow the convention:
+	 [sample_name].vcf and corresponding BAM files should be named [sample_name].bam
+
+Note:
+	* Rite now vcfPrinter has been designed only to work with Atlas Indel and Atlas SNP generated VCF files.
+
+	* vcfPrinter requires single sample VCF files in v4.0 format. A description of the format can be found at:
+http://www.1000genomes.org/wiki/doku.php?id=1000_genomes:analysis:vcf4.0
+
+Changes:
+1. Added the -p and -n options, which correspond to filter nonPASS variants and running vcfPrinter without the pileup option respectively.

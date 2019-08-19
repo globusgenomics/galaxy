@@ -1,0 +1,125 @@
+<?xml version="1.0" ?>
+<tool id="qiime_deblur_denoise-16S" name="qiime deblur denoise-16S" version="022019">
+	<description>- Deblur sequences using a 16S positive filter.</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command><![CDATA[
+  qiime deblur denoise-16S --p-trim-length="$ptrimlength" --i-demultiplexed-seqs=$idemultiplexedseqs --o-representative-sequences=orepresentativesequences
+
+  #if $pmeanerror:
+   --p-mean-error=$pmeanerror
+  #end if
+  
+  #if str($cmdconfig) != 'None':
+   --cmd-config=$cmdconfig
+  #end if
+  
+  #if $pminreads:
+   --p-min-reads=$pminreads
+  #end if
+  
+  #if $pindelprob:
+   --p-indel-prob=$pindelprob
+  #end if
+  
+  #set $pjobstostart = '${GALAXY_SLOTS:-4}'
+  
+  #if str($pjobstostart):
+   --p-jobs-to-start="$pjobstostart"
+  #end if
+  
+   --o-stats=ostats
+   
+  #if $pindelmax:
+   --p-indel-max=$pindelmax
+  #end if
+  
+  #if $pminsize:
+   --p-min-size=$pminsize
+  #end if
+  
+  #if $phashedfeatureids:
+   --p-hashed-feature-ids
+  #else 
+  --p-no-hashed-feature-ids
+  #end if
+  
+   --o-table=otable
+  
+   --p-sample-stats 
+  
+  ;
+  cp orepresentativesequences.qza $orepresentativesequences;
+  cp ostats.qza $ostats;
+  cp otable.qza $otable;
+  ]]></command>
+	<inputs>
+		<param format="qza,no_unzip.zip" label="--i-demultiplexed-seqs: SampleData[JoinedSequencesWithQuality | PairedEndSequencesWithQuality | SequencesWithQuality] The demultiplexed sequences to be denoised. [required]" name="idemultiplexedseqs" optional="False" type="data"/>
+		<param label="--p-trim-length: Sequence trim length, specify -1 to disable trimming.  [required]" name="ptrimlength" optional="False" type="text"/>		
+		<param label="--p-mean-error: The mean per nucleotide error, used for original sequence estimate.  [default: 0.005]" name="pmeanerror" optional="True" type="float" value="0.005"/>
+		<param label="--p-indel-prob: Insertion/deletion (indel) probability (same for N indels).  [default: 0.01]" name="pindelprob" optional="True" type="float" value="0.01"/>
+		<param label="--p-indel-max: Maximum number of insertion/deletions. [default: 3]" name="pindelmax" optional="True" type="integer" value="3"/>
+		<param label="--p-min-reads: Retain only features appearing at least min_reads times across all samples in the resulting feature table.  [default: 10]" name="pminreads" optional="True" type="integer" value="10"/>
+		<param label="--p-min-size: In each sample, discard all features with an abundance less than min_size.  [default: 2]" name="pminsize" optional="True" type="integer" value="2"/>
+		<param label="--p-hashed-feature-ids: --p-no-hashed-feature-ids If true, hash the feature IDs.  [default: True]" name="phashedfeatureids" checked="True" type="boolean"/>
+		<param label="--cmd-config: Use config file for command options" name="cmdconfig" optional="True" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="qza" label="${tool.name} on ${on_string}: representative-sequences.qza" name="orepresentativesequences"/>
+		<data format="qza" label="${tool.name} on ${on_string}: stats.qza" name="ostats"/>
+		<data format="qza" label="${tool.name} on ${on_string}: table.qza" name="otable"/>
+	</outputs>
+	<help><![CDATA[
+Deblur sequences using a 16S positive filter.
+----------------------------------------------
+
+Perform sequence quality control for Illumina data using the Deblur
+workflow with a 16S reference as a positive filter. Only forward reads are
+supported at this time. The specific reference used is the 88% OTUs from
+Greengenes 13_8. This mode of operation should only be used when data were
+generated from a 16S amplicon protocol on an Illumina platform. The
+reference is only used to assess whether each sequence is likely to be 16S
+by a local alignment using SortMeRNA with a permissive e-value; the
+reference is not used to characterize the sequences.
+
+Parameters
+----------
+demultiplexed_seqs : SampleData[JoinedSequencesWithQuality | PairedEndSequencesWithQuality | SequencesWithQuality]
+    The demultiplexed sequences to be denoised.
+trim_length : Int
+    Sequence trim length, specify -1 to disable trimming.
+sample_stats : Bool, optional
+    If true, gather stats per sample.
+mean_error : Float, optional
+    The mean per nucleotide error, used for original sequence estimate.
+indel_prob : Float, optional
+    Insertion/deletion (indel) probability (same for N indels).
+indel_max : Int, optional
+    Maximum number of insertion/deletions.
+min_reads : Int, optional
+    Retain only features appearing at least min_reads times across all
+    samples in the resulting feature table.
+min_size : Int, optional
+    In each sample, discard all features with an abundance less than
+    min_size.
+jobs_to_start : Int, optional
+    Number of jobs to start (if to run in parallel).
+hashed_feature_ids : Bool, optional
+    If true, hash the feature IDs.
+
+Returns
+-------
+table : FeatureTable[Frequency]
+    The resulting denoised feature table.
+representative_sequences : FeatureData[Sequence]
+    The resulting feature sequences.
+stats : DeblurStats
+    Per-sample stats if requested.
+     ]]>
+	</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

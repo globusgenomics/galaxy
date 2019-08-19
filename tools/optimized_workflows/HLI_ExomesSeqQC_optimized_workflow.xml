@@ -1,0 +1,173 @@
+<tool id="HLI_ExomeseqQC_optimized" name="Exome-Seq QC Optimized Workflow" version="SAMTOOLS: 1.2; BWA: 0.7.12; PICARD: 1.134; JAVA: jre1.7.0_51; GATK: GenomeAnalysisTK-3.4-46">
+  <description/>
+  <!--<action class="GlobusOptimizedWorkflows" module="galaxy_ext.globus.tools.actions.globus"/>-->
+  <parallelism method="basic"/>
+  <requirements>
+    <requirement type="package">bwa</requirement>
+    <requirement type="package">samtools</requirement>
+    <requirement type="package">sambamba</requirement>
+    <requirement type="package">gatk3</requirement>
+    <requirement type="package">qualimap</requirement>
+    <requirement type="package">picard</requirement>
+    <requirement type="package">pymodules</requirement>
+    <requirement type="package">java</requirement>
+    <requirement type="package">ucsc_tools</requirement>
+  </requirements>
+  <command interpreter="python">
+    ## get the file names
+    #import os, glob
+    #set $path = ""
+    #if os.path.exists(str($input_type_selector.input1.extra_files_path)):
+      #set $path = $input_type_selector.input1.extra_files_path
+    #else:
+      #set $fh = open(str($input_type_selector.input1), "r")
+      #set $path = $fh.readline().rstrip("\n")
+    #end if
+
+    HLI_ExomesSeqQC_optimized_08312015.py --sample-name $sample 
+      #if str($input_type_selector.input_format) == "single_input":
+        --inputDir $path
+      #else:
+        --inputDir $path/$input_type_selector.input_sample_name
+      #end if
+
+      ##use precomputed indexes
+      --bwa-ref "${bwa_indices.fields.path}"
+      #if $readGroup.specReadGroup == &quot;yes&quot;
+        --rgid &quot;$readGroup.rgid&quot;
+        --rglb &quot;$readGroup.rglb&quot;
+        --rgpl &quot;$readGroup.rgpl&quot;
+        --rgsm &quot;$readGroup.rgsm&quot;
+      #end if
+
+      --picard-ref "${picard_index.fields.path}"
+
+      ## Annotation files
+      ##--bait-file $bait_file
+      ##--target-file $target_file
+      --gene-targets $gene_targets_file
+      --refseq-file $refseq_file
+      --vendor $vendor
+
+      ## output vcf file
+      --output-bwa-bam $output_bwa_bam
+      --output-picard-markDuplicates-html $output_picard_markDuplicates_html
+      --output-picard-markDuplicates-directory $output_picard_markDuplicates_html.extra_files_path
+      --output-picard-shortReadGCBias $output_picard_shortReadGCBias
+      --output-picard-shortReadGCBias-directory $output_picard_shortReadGCBias.extra_files_path
+      --output-picard-insertSize $output_picard_insertSize
+      --output-picard-insertSize-directory $output_picard_insertSize.extra_files_path
+      --output-picard-alignmentSummary $output_picard_alignmentSummary
+      --output-picard-alignmentSummary-directory $output_picard_alignmentSummary.extra_files_path
+      --output-picard-HSMetrics $output_picard_HSMetrics
+      --output-picard-HSMetrics-directory $output_picard_HSMetrics.extra_files_path
+      --output-gatk-depthOfCoverage-geneSummary $output_gatk_depthOfCoverage_geneSummary
+      --output-gatk-depthOfCoverage-intervalSummary $output_gatk_depthOfCoverage_intervalSummary
+      --output-gatk-diagnoseTargets-vcf $output_gatk_diagnoseTargets_vcf
+      --output-log $output_log
+
+      ## globus parameters
+      ##--username $username
+      ##--goauth-token "$goauth"
+      ##--source-ep=$from_endpoint
+      ##--destination-ep="$to_endpoint"
+      ##--destination-dir="$to_dir"
+      ##--deadline=1200
+      >  $output_log
+  </command>
+  <inputs>
+    <param name="sample" type="text" format="txt" label="Sample label" />
+    <conditional name="input_type_selector">
+      <param help="" label="Format of the input dataset object file" name="input_format" type="select">
+        <option value="single_input">Single Sample Object: Specify Input Dataset Object containting single sample</option>
+        <option value="multiple_input">Multiple Sample Object: Specify Sample in Dataset Object</option>
+      </param>
+      <when value="single_input">
+        <param name="input1" type="data" label="Input Fastq Data Object for single sample" help="Must contain Fastq Files in a Dataset object (i.e. All fastq files must be in the same directory. One sample per object"/>
+      </when>
+      <when value="multiple_input">
+          <param format="tabular,text" help="The dataset object should create the multiple samples inside the directory." label="Input Fastq Data Object for multiple samples" name="input1" type="data"/>
+          <param label="Sample Name inside the Fastq output directory" name="input_sample_name" optional="False" type="text"/>
+      </when>
+    </conditional>
+
+    <param label="BWA reference genome" name="bwa_indices" type="select">
+      <options from_data_table="bwa_0710_indexes">
+        <filter column="2" type="sort_by"/>
+        <validator message="No indexes are available" type="no_options"/>
+      </options>
+    </param>
+    <conditional name="readGroup">
+      <param label="Specify the read group for this file? (samse/sampe -r)" name="specReadGroup" type="select">
+        <option selected="True" value="yes">Yes</option>
+        <option value="no">No</option>
+      </param>
+      <when value="yes">
+        <param help="Required if RG specified. Read group IDs may be modiﬁed when merging SAM ﬁles in order to handle collisions." label="Read group identiﬁer (ID). Each @RG line must have a unique ID. The value of ID is used in the RG tags of alignment records. Must be unique among all read groups in header section." name="rgid" optional="False" size="25" type="text"/>
+        <param help="Required if RG specified" label="Library name (LB)" name="rglb" optional="False" size="25" type="text"/>
+        <param help="Required if RG specified. Valid values : CAPILLARY, LS454, ILLUMINA, SOLID, HELICOS, IONTORRENT and PACBIO" label="Platform/technology used to produce the reads (PL)" name="rgpl" optional="False" size="25" type="text"/>
+        <param help="Required if RG specified. Use pool name where a pool is being sequenced" label="Sample (SM)" name="rgsm" optional="False" size="25" type="text"/>
+      </when>
+      <when value="no"/>
+    </conditional>
+
+    <param help="Should be the similar to the reference genome chosen for Tophat" label="Select a Picard built-in reference genome" name="picard_index" type="select">
+      <options from_data_table="all_fasta">
+      </options>
+    </param>
+ 
+    <param name="vendor" label="Vendor exome-capture used for sample" type="select">
+        <option value="IDT">IDT Xgen</option>
+        <option value="Illumina">Illumina Nextera</option>
+        <option value="Roche">Roche MedExome</option>
+        <option value="Agilent">Agilent SureSelect</option>
+    </param>
+    <!--
+    <param format="tabular,bed" label="Picard HSMetrics Bait file" name="bait_file" type="data"/>
+    <param format="tabular,bed" label="Picard HSMetrics Target file" name="target_file" type="data"/>
+    -->
+    <param format="tabular,bed" label="Gene Targets BED file" name="gene_targets_file" type="data"/>
+    <param format="tabular,bed" label="Refseq Annotation file" name="refseq_file" type="data"/>
+    <!--<param label="Just the hidden name" name="hidden_name" type="hidden" value="OUTPUT_NAME"/>
+    <param name="goauth" type="hidden" size="100" label="Globus Auth Token">
+      <sanitizer>
+        <valid>
+          <add value="|"/>
+        </valid>
+      </sanitizer>
+    </param>
+    <param name="username" type="hidden" size="100" label="Globus Username"/>
+    <param name="from_endpoint" type="hidden" size="100" label="Source Endpoint">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="to_endpoint" type="gdst_endpoint" size="100" label="Destination Endpoint">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="to_dir" type="text" size="100" label="Destination Directory on user's endpoint to store output files">
+      <sanitizer sanitize="False"/>
+    </param>
+    -->
+  </inputs>
+  <outputs>
+    <data format="bam" label="${tool.name}: BWA BAM" name="output_bwa_bam"/>
+    <data format="html" label="${tool.name}: Picard MarkDups Metrics" name="output_picard_markDuplicates_html"/>
+    <data format="html" label="${tool.name}: Picard ShortReadGCBias Metrics" name="output_picard_shortReadGCBias"/>
+    <data format="html" label="${tool.name}: Picard InsertionSize Metrics" name="output_picard_insertSize"/>
+    <data format="html" label="${tool.name}: Picard AlignmentSummary Metrics" name="output_picard_alignmentSummary"/>
+    <data format="html" label="${tool.name}: Picard HS Metrics" name="output_picard_HSMetrics"/>
+    <data format="html" label="${tool.name}: Picard HS Metrics" name="output_picard_HSMetrics"/>
+    <data format="tabular" label="${tool.name}: GATK DepthOfCoverage GeneSummary" name="output_gatk_depthOfCoverage_geneSummary"/>
+    <data format="tabular" label="${tool.name}: GATK DepthOfCoverage IntervalSummary" name="output_gatk_depthOfCoverage_intervalSummary"/>
+    <data format="vcf" label="${tool.name}: GATK DiagnoseTargets (VCF)" name="output_gatk_diagnoseTargets_vcf"/>
+    <data format="txt" label="${tool.name}: Log" name="output_log"/>
+  </outputs>
+  <tests>
+    <test>
+    </test>
+  </tests> 
+  <help>
+
+**What it does**
+
+  </help>
+</tool>

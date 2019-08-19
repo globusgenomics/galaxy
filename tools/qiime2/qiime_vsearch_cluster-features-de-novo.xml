@@ -1,0 +1,78 @@
+<?xml version="1.0" ?>
+<tool id="qiime_vsearch_cluster-features-de-novo" name="qiime vsearch cluster-features-de-novo" version="022019">
+	<description> - De novo clustering of features.</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command>
+		<![CDATA[
+		qiime vsearch cluster-features-de-novo --p-perc-identity="$ppercidentity" --i-table=$itable --i-sequences=$isequences
+
+	#if str($cmdconfig) != 'None':
+	 --cmd-config=$cmdconfig
+	#end if
+	 --o-clustered-table=oclusteredtable --o-clustered-sequences=oclusteredsequences
+	#set $pthreads = '${GALAXY_SLOTS:-4}'
+
+	#if str($pthreads):
+	 --p-threads="$pthreads"
+	#end if
+
+	;
+	cp oclusteredtable.qza $oclusteredtable;
+	cp oclusteredsequences.qza $oclusteredsequences
+	]]>
+	</command>
+	<inputs>
+		<param format="qza,no_unzip.zip" label="--i-sequences: FeatureData[Sequence] The sequences corresponding to the features in table.  [required]" name="isequences" optional="False" type="data"/>
+		<param format="qza,no_unzip.zip" label="--i-table: FeatureTable[Frequency] The feature table to be clustered. [required]" name="itable" optional="False" type="data"/>
+
+		<param label="--p-perc-identity: The percent identity at which clustering should be performed. This parameter maps to vsearch's --id parameter.  [required]" name="ppercidentity" optional="False" type="text"/>
+
+		<param label="--cmd-config: Use config file for command options" name="cmdconfig" optional="True" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="qza" label="${tool.name} on ${on_string}: clustered-table.qza" name="oclusteredtable"/>
+		<data format="qza" label="${tool.name} on ${on_string}: clustered-sequences.qza" name="oclusteredsequences"/>
+	</outputs>
+	<help>
+		<![CDATA[
+De novo clustering of features.
+--------------------------------
+
+Given a feature table and the associated feature sequences, cluster the
+features based on user-specified percent identity threshold of their
+sequences. This is not a general-purpose de novo clustering method, but
+rather is intended to be used for clustering the results of quality-
+filtering/dereplication methods, such as DADA2, or for re-clustering a
+FeatureTable at a lower percent identity than it was originally clustered
+at. When a group of features in the input table are clustered into a single
+feature, the frequency of that single feature in a given sample is the sum
+of the frequencies of the features that were clustered in that sample.
+Feature identifiers and sequences will be inherited from the centroid
+feature of each cluster. See the vsearch documentation for details on how
+sequence clustering is performed.
+
+Parameters
+----------
+sequences : FeatureData[Sequence]
+    The sequences corresponding to the features in table.
+table : FeatureTable[Frequency]
+    The feature table to be clustered.
+perc_identity : Float % Range(0, 1, inclusive_start=False, inclusive_end=True)
+    The percent identity at which clustering should be performed. This
+    parameter maps to vsearch's --id parameter.
+
+Returns
+-------
+clustered_table : FeatureTable[Frequency]
+    The table following clustering of features.
+clustered_sequences : FeatureData[Sequence]
+    Sequences representing clustered features.
+    ]]>
+	</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

@@ -1,0 +1,291 @@
+<tool id="bwa_mem_0.7.15" name="Map with BWA-MEM (0.7.15)" version="BWA: 0.7.5; SAMTOOLS: 1.3.1">
+  <requirements>
+    <requirement type="package" version="0.7.15">bwa</requirement>
+    <requirement type="package" version="1.3.1">samtools</requirement>
+    <requirement type="package">sambamba</requirement>
+  </requirements>
+  <description/>
+  <version_command>bwa 2&gt;&amp;1 | grep &quot;Version: &quot; | sed -e 's/Version: //'</version_command>
+  <command interpreter="python">
+    bwa_mem.py
+      --threads=28
+      --fileSource=&quot;${genomeSource.refGenomeSource}&quot;
+      #if $genomeSource.refGenomeSource == &quot;history&quot;
+        ##build index on the fly
+        --ref=&quot;${genomeSource.ownFile}&quot;
+        --dbkey=&quot;${dbkey}&quot;
+      #else
+        ##use precomputed indexes
+        --ref=&quot;${genomeSource.indices.fields.path}&quot;
+      #end if
+
+      ## input file(s)
+      --fastq=&quot;${paired.fastq}&quot;
+      #if $paired.sPaired == &quot;single&quot;
+        #if $paired.interPairEnd
+          --interPairEnd
+        #end if
+      #else
+        --rfastq=&quot;${paired.rfastq}&quot;
+      #end if
+
+      ## output file
+      --output=&quot;${output}&quot;
+
+      ## run parameters
+      --genAlignType=&quot;${paired.sPaired}&quot;
+      --params=&quot;${params.source_select}&quot;
+      #if $params.source_select != &quot;pre_set&quot;
+        #if str($params.minEditDistSeed)
+          --minSeedLength ${params.minEditDistSeed}
+        #end if
+        #if str($params.bandWidth)
+          --bandWidth ${params.bandWidth}
+        #end if
+        #if str($params.offDiagonal)
+          --offDiagonal ${params.offDiagonal}
+        #end if
+        #if str($params.internalSeeds)
+          --internalSeeds ${params.internalSeeds}
+        #end if
+        #if str($params.seedsOccurrence)
+          --seedsOccurrence ${params.seedsOccurrence}
+        #end if
+        #if $params.mateRescue
+          --mateRescue
+        #end if
+        #if $params.skipPairing
+          --skipPairing
+        #end if
+        #if str($params.seqMatch)
+          --seqMatch ${params.seqMatch}
+        #end if
+        #if str($params.mismatch)
+          --mismatch ${params.mismatch}
+        #end if
+        #if str($params.gapOpen)
+          --gapOpen &quot;${params.gapOpen}&quot;
+        #end if
+        #if str($params.gapExtension)
+          --gapExtension &quot;${params.gapExtension}&quot;
+        #end if
+        #if $params.clipping
+          --clipping &quot;${params.clipping}&quot;
+        #end if
+        #if str($params.unpairedReadpair)
+          --unpairedReadpair ${params.unpairedReadpair}
+        #end if
+        #if str($params.minScore)
+          --minScore ${params.minScore}
+        #end if
+        #if $params.outputAll
+          --outputAll
+        #end if
+      #end if
+      #if $readGroup.specReadGroup == &quot;yes&quot;
+        #if $readGroup.specReadGroup == &quot;yes&quot;
+          #if str($readGroup.rgid) != &quot;None&quot;
+          --rgid=&quot;${readGroup.rgid}&quot;
+          #end if
+          #if str($readGroup.rgsm) != &quot;None&quot;
+          --rgsm=&quot;${readGroup.rgsm}&quot;
+          #end if
+          #if str($readGroup.rgpl) != &quot;None&quot;
+          --rgpl ${readGroup.rgpl}
+          #end if
+          #if str($readGroup.rglb) != &quot;None&quot;
+          --rglb=&quot;${readGroup.rglb}&quot;
+          #end if
+          #if str($readGroup.rgpu) != &quot;None&quot;
+          --rgpu=&quot;${readGroup.rgpu}&quot;
+          #end if
+          #if str($readGroup.rgcn) != &quot;None&quot;
+          --rgcn=&quot;${readGroup.rgcn}&quot;
+          #end if
+          #if str($readGroup.rgds) != &quot;None&quot;
+          --rgds=&quot;${readGroup.rgds}&quot;
+          #end if
+          #if str($readGroup.rgdt) != &quot;None&quot;
+          --rgdt=&quot;${readGroup.rgdt}&quot;
+          #end if
+          #if str($readGroup.rgfo) != &quot;None&quot;
+          --rgfo=&quot;${readGroup.rgfo}&quot;
+          #end if
+          #if str($readGroup.rgks) != &quot;None&quot;
+          --rgks=&quot;${readGroup.rgks}&quot;
+          #end if
+          #if str($readGroup.rgpg) != &quot;None&quot;
+          --rgpg=&quot;${readGroup.rgpg}&quot;
+          #end if
+          #if str($readGroup.rgpi) != &quot;None&quot;
+          --rgpi=&quot;${readGroup.rgpi}&quot;
+          #end if
+        #end if
+      #end if
+
+      ## suppress output SAM header
+      $suppressHeader
+      $mark
+      #if str($bam_format )== &quot;bam&quot;
+        --bam
+      #end if
+  </command>
+
+  <inputs>
+    <conditional name="genomeSource">
+      <param label="Will you select a reference genome from your history or use a built-in index?" name="refGenomeSource" type="select">
+        <option value="indexed">Use a built-in index</option>
+        <option value="history">Use one from the history</option>
+      </param>
+      <when value="indexed">
+        <param label="Select a reference genome" name="indices" type="select">
+          <options from_data_table="bwa_indexes">
+            <filter column="2" type="sort_by"/>
+            <validator message="No indexes are available" type="no_options"/>
+          </options>
+        </param>
+      </when>
+      <when value="history">
+        <param format="fasta" label="Select a reference from history" metadata_name="dbkey" name="ownFile" type="data"/>
+      </when>
+    </conditional>
+    <conditional name="paired">
+      <param label="Is this library mate-paired?" name="sPaired" type="select">
+        <option value="single">Single-end or interleaved paired-end</option>
+        <option value="paired">Paired-end</option>
+      </param>
+      <when value="single">
+        <param format="fastqsanger,fastqillumina" help="FASTQ with either Sanger-scaled quality values (fastqsanger) or Illumina-scaled quality values (fastqillumina)" label="FASTQ file" name="fastq" type="data"/>
+        <param checked="false" label="FASTQ file consists of interleaved paired-end sequences (-p)" name="interPairEnd" type="boolean"/>
+      </when>
+      <when value="paired">
+        <param format="fastqsanger,fastqillumina" help="FASTQ with either Sanger-scaled quality values (fastqsanger) or Illumina-scaled quality values (fastqillumina)" label="Forward FASTQ file" name="fastq" type="data"/>
+        <param format="fastqsanger,fastqillumina" help="FASTQ with either Sanger-scaled quality values (fastqsanger) or Illumina-scaled quality values (fastqillumina)" label="Reverse FASTQ file" name="rfastq" type="data"/>
+      </when>
+    </conditional>
+    <param checked="false" falsevalue="" help="BWA produces SAM with several lines of header information" label="Suppress the header in the output SAM file" name="suppressHeader" truevalue="--suppressHeader" type="boolean"/>
+    <param checked="true" falsevalue="" help="For Picard/GATK compatibility" label="Mark shorter split hits as secondary (-M)" name="mark" truevalue="-M" type="boolean"/>
+    <param help="" label="Output format" name="bam_format" type="select">
+      <option selected="True" value="bam">Sorted BAM</option>
+      <option value="sam">Sorted SAM</option>
+    </param>
+    <conditional name="params">
+      <param help="For most mapping needs use Commonly Used settings. If you want full control use Full Parameter List" label="BWA settings to use" name="source_select" type="select">
+        <option value="pre_set">Commonly Used</option>
+        <option value="full">Full Parameter List</option>
+      </param>
+      <when value="pre_set"/>
+      <when value="full">
+        <param label="Minimum seed length (-k)" name="minEditDistSeed" optional="true" type="integer" value="19"/>
+        <param label="Band width for banded alignment (-w)" name="bandWidth" optional="true" type="integer" value="100"/>
+        <param label="Off-diagonal X-dropoff (-d)" name="offDiagonal" optional="true" type="integer" value="100"/>
+        <param help="This is a key heuristic parameter for tuning the performance. Larger value yields fewer seeds, which leads to faster alignment speed but lower accuracy" label="Look for internal seeds inside a seed longer than the minimum seed length times this value (-r)" name="internalSeeds" optional="true" type="float" value="1.5"/>
+        <param label="Skip seeds with more occurrences than this value (-c)" name="seedsOccurrence" optional="true" type="integer" value="10000"/>
+        <param checked="false" label="Skip mate rescue (-S)" name="mateRescue" type="boolean"/>
+        <param checked="False" falsevalue="False" help="In the paired-end mode, perform Smith-Waterman to rescue missing hits only, but do not try to find hits that fit a proper pair" label="Skip pairing (-P)" name="skipPairing" truevalue="True" type="boolean"/>
+        <param label="Score for a sequence match (-A)" name="seqMatch" optional="true" type="integer" value="1"/>
+        <param label="Penalty for a mismatch (-B)" name="mismatch" optional="true" type="integer" value="4"/>
+        <param label="Gap open penalty for deletions and insertions [6](-O)" name="gapOpen" optional="true" type="text" value="6"/>
+        <param help="A gap of length k costs {gap open penalty} + k*{this value} for deletions and insertions [1]" label="Gap extension penalty (-E)" name="gapExtension" optional="true" type="text" value="1"/>
+        <param help="When performing Smith-Waterman extension, BWA-MEM keeps track of the best score reaching the end of query. If this score is larger than the best Smith-Waterman score minus the clipping penalty, clipping will not be applied. Note that in this case, the SAM AS tag reports the best Smith-Waterman score; clipping penalty is not deduced. If two comma-separated numbers are provided, the first is for 5'-end clipping and second for 3'-end clipping" label="Penalty for clipping for 5' and 3' (-L)" name="clipping" optional="true" type="text" value="5">
+          <validator message="Invalid clipping, format is INT[,INT]" type="regex">\d+(,\d+)?$</validator>
+        </param>
+        <param help="" label="Penalty for an unpaired read pair (-U)" name="unpairedReadpair" optional="true" type="integer" value="17"/>
+        <param label="Minimum score to output (-T)" name="minScore" optional="true" type="integer" value="30"/>
+        <param checked="false" help="These alignments will be flagged as secondary alignments" label="Output all found alignments for single-end or unpaired paired-end reads (-a)" name="outputAll" type="boolean"/>
+      </when>
+    </conditional>
+    <conditional name="readGroup">
+      <param label="Specify the read group for this file? (-R)" name="specReadGroup" type="select">
+        <option value="yes">Yes</option>
+        <option selected="True" value="no">No</option>
+      </param>
+      <when value="yes">
+        <param help="Required if RG specified. Read group IDs may be modified when merging SAM files in order to handle collisions." label="Read group identifier (ID). Each @RG line must have a unique ID. The value of ID is used in the RG tags of alignment records. Must be unique among all read groups in header section." name="rgid" size="25" type="text">
+          <validator type="empty_field"/>
+        </param>
+        <param label="Platform/technology used to produce the reads (PL)" name="rgpl" type="select">
+          <option value="CAPILLARY">CAPILLARY</option>
+          <option value="LS454">LS454</option>
+          <option value="ILLUMINA">ILLUMINA</option>
+          <option value="SOLID">SOLID</option>
+          <option value="HELICOS">HELICOS</option>
+          <option value="IONTORRENT">IONTORRENT</option>
+          <option value="PACBIO">PACBIO</option>
+        </param>
+        <param help="Required if RG specified" label="Library name (LB)" name="rglb" size="25" type="text">
+          <validator type="empty_field"/>
+        </param>
+        <param help="Required if RG specified. Use pool name where a pool is being sequenced" label="Sample (SM)" name="rgsm" size="25" type="text">
+          <validator type="empty_field"/>
+        </param>
+        <param help="Optional. Unique identifier (e.g. flowcell-barcode.lane for Illumina or slide for SOLiD)" label="Platform unit (PU)" name="rgpu" size="25" type="text"/>
+        <param help="Optional" label="Sequencing center that produced the read (CN)" name="rgcn" size="25" type="text"/>
+        <param help="Optional" label="Description (DS)" name="rgds" size="25" type="text"/>
+        <param help="Optional. ISO8601 format date or date/time, like YYYY-MM-DD" label="Date that run was produced (DT)" name="rgdt" size="25" type="text"/>
+        <param help="Optional. Multi-base flows are encoded in IUPAC format, and non-nucleotide flows by various other characters. Format: /\*|[ACMGRSVTWYHKDBN]+/" label="Flow order (FO). The array of nucleotide bases that correspond to the nucleotides used for each flow of each read" name="rgfo" optional="true" size="25" type="text">
+          <validator type="regex">\*|[ACMGRSVTWYHKDBN]+$</validator>
+        </param>
+        <param help="Optional" label="The array of nucleotide bases that correspond to the key sequence of each read (KS)" name="rgks" size="25" type="text"/>
+        <param help="Optional" label="Programs used for processing the read group (PG)" name="rgpg" size="25" type="text"/>
+        <param help="Optional" label="Predicted median insert size (PI)" name="rgpi" size="25" type="text"/>
+      </when>
+      <when value="no"/>
+    </conditional>
+  </inputs>
+
+  <outputs>
+    <data format="sam" label="${tool.name} on ${on_string}: mapped reads" name="output">
+      <actions>
+        <conditional name="genomeSource.refGenomeSource">
+          <when value="indexed">
+            <action name="dbkey" type="metadata">
+              <option column="1" name="bwa_indexes" type="from_data_table">
+                <filter column="0" compare="startswith" keep="False" type="param_value" value="#"/>
+                <filter column="0" ref="genomeSource.indices" type="param_value"/>
+              </option>
+            </action>
+          </when>
+          <when value="history">
+            <action name="dbkey" type="metadata">
+              <option name="genomeSource.ownFile" param_attribute="dbkey" type="from_param"/>
+            </action>
+          </when>
+        </conditional>
+      </actions>
+      <change_format>
+        <when format="bam" input="bam_format" value="bam"/>
+      </change_format>
+    </data>
+  </outputs>
+
+  <tests>
+    <test>
+    </test>
+    <test>
+    </test>
+    <test>
+    </test>
+  </tests>
+  <help>
+**What it does**
+
+BWA is a software package for mapping low-divergent sequences against a large reference genome, such as the human genome. BWA-MEM, which is the latest algorithm, is generally recommended for high-quality queries as it is faster and more accurate. BWA-MEM also has better performance than BWA-backtrack for 70-100bp Illumina reads.
+
+------
+
+**Input formats**
+
+BWA accepts files in either Sanger FASTQ format (galaxy type *fastqsanger*) or Illumina FASTQ format (galaxy type *fastqillumina*). Use the FASTQ Groomer to prepare your files.
+
+------
+
+**License and citation**
+
+This tool uses `BWA`_, which is licensed separately. Please cite |Li2013|_.
+
+.. _BWA: http://bio-bwa.sourceforge.net/
+.. |Li2013| replace:: Li, H. (2013) Aligning sequence reads, clone sequences and assembly contigs with BWA-MEM. arXiv:1303.3997 [q-bio.GN]
+.. _Li2013: http://arxiv.org/abs/1303.3997
+  </help>
+</tool>

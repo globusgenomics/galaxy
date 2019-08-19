@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<analysis>
+  <parameter>
+    <symbol>scan_padding_res</symbol>
+    <definition>Spacing between padding points [um]</definition>
+    <label>Padding Spacing [um]</label>
+    <value>0.30</value>
+    <listable>false</listable>
+  </parameter>
+  <parameter>
+    <symbol>scan_padding_max</symbol>
+    <definition>Upper-bound coordinate for domain padding</definition>
+    <label>Upper-bound Domain Padding</label>
+    <value>-4</value>
+    <listable>false</listable>
+  </parameter>
+  <parameter>
+    <symbol>scan_var_x</symbol>
+    <definition>Variance of point spread function in X direction</definition>
+    <label>PSF X Variance</label>
+    <value>0.0289</value>
+    <listable>false</listable>
+  </parameter>
+  <parameter>
+    <symbol>vis_type</symbol>
+    <definition>Type of visualization</definition>
+    <label>Visualization Type</label>
+    <value>linescan</value>
+    <listable>false</listable>
+  </parameter>
+  <parameter>
+    <symbol>scan_var_y</symbol>
+    <definition>Variance of point spread function inY direction</definition>
+    <label>PSF Y Variance</label>
+    <value>0.1154</value>
+    <listable>false</listable>
+  </parameter>
+  <parameter>
+    <symbol>scan_offset_2</symbol>
+    <definition>Second scan line offset parameter (Y if scan axis is Z, Z if scan axis is X or Y) [um]</definition>
+    <label>Offset #2 [um]</label>
+    <value>0</value>
+    <listable>false</listable>
+  </parameter>
+  <parameter>
+    <symbol>scan_domain_x</symbol>
+    <definition>Size of mesh domain in X direction [um]</definition>
+    <label>Mesh domain size (X) [um]</label>
+    <value>4</value>
+    <listable>false</listable>
+  </parameter>
+  <parameter>
+    <symbol>description</symbol>
+    <definition>Brief description of the visualization</definition>
+    <label>Description</label>
+    <value/>
+    <listable>false</listable>
+  </parameter>
+  <parameter>
+    <symbol>scan_c0</symbol>
+    <definition>Resting Ca2+ concentration [uM]</definition>
+    <label>Resting Ca2+ [uM]</label>
+    <value>0.10</value>
+    <listable>false</listable>
+  </parameter>
+  <parameter>
+    <symbol>scan_n</symbol>
+    <definition>Total number of scans to simulate</definition>
+    <label>Number of scans</label>
+    <value>26</value>
+    <listable>false</listable>
+  </parameter>
+  <parameter>
+    <symbol>scan_offset_1</symbol>
+    <definition>First scan line offset parameter (Y if scan axis is X, X if scan axis is Y or Z) [um]</definition>
+    <label>Offset #1 [um]</label>
+    <value>0.1075</value>
+    <listable>false</listable>
+  </parameter>
+  <parameter>
+    <symbol>scan_axis</symbol>
+    <definition>Axis along which to perform line scans</definition>
+    <label>Scan Line Axis</label>
+    <value>Z</value>
+    <listable>false</listable>
+  </parameter>
+  <parameter>
+    <symbol>job_file</symbol>
+    <definition>Target job file</definition>
+    <label>Job File</label>
+    <value>job_DefaultSpark_2013-08-06_11_56_27.396.xml</value>
+    <listable>false</listable>
+  </parameter>
+  <parameter>
+    <symbol>scan_gridfile_base</symbol>
+    <definition>Simulation's grid output file base path/name</definition>
+    <label>Grid file base</label>
+    <value>/home/mwalker/downloads/apache-tomcat-7.0.42/cru3d_files/jobs/DefaultSpark/2013-08-06_11_56_27.396/output/grid_0_0</value>
+    <listable>false</listable>
+  </parameter>
+  <parameter>
+    <symbol>scan_x_res_f</symbol>
+    <definition>Length per pixel for fluorescence scans [um]</definition>
+    <label>Spatial Fluorescence Resolution [um]</label>
+    <value>0.15</value>
+    <listable>false</listable>
+  </parameter>
+  <parameter>
+    <symbol>scan_padding_min</symbol>
+    <definition>Lower-bound coordinate for domain padding</definition>
+    <label>Lower-bound Domain Padding</label>
+    <value>-4</value>
+    <listable>false</listable>
+  </parameter>
+  <parameter>
+    <symbol>scan_x_min</symbol>
+    <definition>Starting coordinate for scan</definition>
+    <label>Scan Start Position</label>
+    <value>-3.0</value>
+    <listable>false</listable>
+  </parameter>
+  <parameter>
+    <symbol>scan_x_max</symbol>
+    <definition>Ending coordinate for scan</definition>
+    <label>Scan End Position</label>
+    <value>3.0</value>
+    <listable>false</listable>
+  </parameter>
+  <parameter>
+    <symbol>scan_x_res_ca</symbol>
+    <definition>Length per pixel for Ca2+ concentration profile [um]</definition>
+    <label>Spatial Ca2+ Resolution [um]</label>
+    <value>0.01</value>
+    <listable>false</listable>
+  </parameter>
+  <parameter>
+    <symbol>scan_domain_y</symbol>
+    <definition>Size of mesh domain in Y direction [um]</definition>
+    <label>Mesh domain size (Y) [um]</label>
+    <value>4</value>
+    <listable>false</listable>
+  </parameter>
+  <parameter>
+    <symbol>scan_domain_z</symbol>
+    <definition>Size of mesh domain in Z direction [um]</definition>
+    <label>Mesh domain size (Z) [um]</label>
+    <value>4</value>
+    <listable>false</listable>
+  </parameter>
+  <parameter>
+    <symbol>scan_var_z</symbol>
+    <definition>Variance of point spread function in Z direction</definition>
+    <label>PSF Z Variance</label>
+    <value>0.0289</value>
+    <listable>false</listable>
+  </parameter>
+  <parameter>
+    <symbol>vis_title</symbol>
+    <definition>Title of visualization</definition>
+    <label>Title</label>
+    <value>DefaultScan</value>
+    <listable>false</listable>
+  </parameter>
+  <parameter>
+    <symbol>scan_n_per_line</symbol>
+    <definition>Number of grid files that correspond to a single scan (determines temporal resolution, e.g. if grid output interval is 1.0ms and files per scan is 2, then each scan will correspond to 2.0ms)</definition>
+    <label>Grid files per scan</label>
+    <value>2</value>
+    <listable>false</listable>
+  </parameter>
+  <parameter>
+    <symbol>scan_f0</symbol>
+    <definition>Baseline fluorescence signal (resting Ca-Fluo4n concentration)</definition>
+    <label>F0</label>
+    <value>4.1667</value>
+    <listable>false</listable>
+  </parameter>
+</analysis>

@@ -1,0 +1,128 @@
+<tool id="clustalw" name="ClustalW" version="CLUSTALW2: clustalw-2.1">
+   <requirements><requirement type="package">clustalw2</requirement></requirements>
+   <description>multiple sequence alignment program for DNA or proteins</description>
+   <command interpreter="python"> 
+    rgClustalw.py -i &quot;$input&quot; -o &quot;$output&quot; -s &quot;$out_order&quot; -l &quot;$outlog&quot; -t &quot;$outname&quot; -d &quot;$dnarna&quot;
+    #if   ($range.mode==&quot;part&quot;)
+-b &quot;$range.seq_range_start&quot; -e &quot;$range.seq_range_end&quot;
+    #end if
+    #if ($outcontrol.outform==&quot;clustal&quot;)
+-f &quot;CLUSTAL&quot;
+    #if ($outcontrol.out_seqnos==&quot;ON&quot;)
+-q &quot;ON&quot;
+    #end if
+    #end if
+    #if ($outcontrol.outform==&quot;phylip&quot;)
+-f &quot;PHYLIP&quot;
+    #end if
+    #if ($outcontrol.outform==&quot;fasta&quot;)
+-f &quot;FASTA&quot;
+    #end if
+   </command>
+  <inputs>
+   <page>
+    <param format="fasta" label="Fasta File" name="input" type="data"/>
+    <param label="Name for output files to make it easy to remember what you did" name="outname" size="50" type="text" value="Clustal_run"/>
+    <param label="Data Type" name="dnarna" type="select">
+      <option selected="True" value="DNA">DNA nucleotide sequences</option>
+      <option value="PROTEIN">Protein sequences</option>
+    </param>
+    <conditional name="outcontrol">
+      <param label="Output alignment format" name="outform" type="select">
+        <option selected="True" value="clustal">Native Clustal output format</option>
+        <option value="phylip">Phylip format</option>
+        <option value="fasta">Fasta format</option>
+      </param>
+      <when value="fasta"/>
+      <when value="phylip"/>
+      <when value="clustal">
+       <param label="Show residue numbers in clustal format output" name="out_seqnos" type="select">
+         <option value="ON">yes</option>
+         <option selected="true" value="OFF">no</option>
+       </param>
+      </when>
+    </conditional>
+    <param label="Output Order" name="out_order" type="select">
+      <option value="ALIGNED">aligned</option>
+      <option value="INPUT">same order as input file</option>
+    </param>
+
+    <conditional name="range">
+        <param label="Output complete alignment (or specify part to output)" name="mode" type="select">
+          <option value="complete">complete alignment</option>
+          <option value="part">only part of the alignment</option>
+        </param>
+        <when value="complete">
+        </when>
+        <when value="part">    
+           <param help="sequence range to write" label="start point" name="seq_range_start" size="5" type="integer" value="1">
+           </param>
+           <param label="end point" name="seq_range_end" size="5" type="integer" value="99999">
+           </param> 
+        </when>
+    </conditional>
+   </page>
+  </inputs>
+  <outputs>
+    <data format="clustal" label="${outname}_output.${outcontrol.outform}" name="output">
+       <change_format>
+           <when format="phylip" input="outcontrol.outform" value="phylip"/>
+           <when format="fasta" input="outcontrol.outform" value="fasta"/>
+       </change_format>
+    </data>
+    <data format="txt" label="${outname}_clustal_log.txt" name="outlog"/>
+  </outputs>
+  <tests>
+     <test>
+        <param name="input" value="rgClustal_testin.fasta"/>
+      <param name="outname" value=""/>
+      <param name="outform" value="fasta"/>
+      <param name="dnarna" value="DNA"/>
+      <param name="mode" value="complete"/>
+      <param name="out_order" value="ALIGNED"/>
+      <output file="rgClustal_testout.fasta" ftype="fasta" name="output"/>
+      <output file="rgClustal_testout.log" ftype="txt" lines_diff="5" name="outlog"/>
+     </test>
+  </tests>
+  <help>
+
+**Note**
+
+This tool allows you to run a multiple sequence alignment with ClustalW2 (see Clustsrc_) using the default options.
+ 
+For a tutorial introduction, see ClustalW2_
+
+You can align DNA or protein sequences in the input file which should be multiple sequences to be aligned in a fasta file
+
+A log will be output to your history showing the output Clustal would normally write to standard output.
+
+The alignments will appear as a clustal format file or optionally, as phylip or fasta format files in your history. If you choose fasta as 
+the output format, you can create a 'Logo' image using the Sequence Logo tool.
+
+If Clustal format is chosen, you have the option of adding basepair counts to the output
+
+A subsequence of the alignment can be output by setting the Output complete parameter to &quot;Partial&quot; and defining the offset and end of the subsequence to be output 
+
+----
+
+**Attribution**
+
+Clustal attribution and associated documentation are available at Clustsrc_
+
+The first iteration of this Galaxy wrapper was written by Hans-Rudolf Hotz - see Clustfirst_
+
+It was modified by Ross Lazarus for the rgenetics project - tests and some additional parameters were added
+
+This wrapper is released licensed under the LGPL_
+
+.. _ClustalW2: http://www.ebi.ac.uk/2can/tutorials/protein/clustalw.html  
+
+.. _Clustsrc: http://www.clustal.org
+
+.. _Clustfirst: http://lists.bx.psu.edu/pipermail/galaxy-dev/2010-November/003732.html
+
+.. _LGPL: http://www.gnu.org/copyleft/lesser.html
+
+  </help>
+
+</tool>

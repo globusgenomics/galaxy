@@ -1,0 +1,47 @@
+<tool id="conserting_snv_detection" name="SNV Detection" version="CONSERTING: v.2015.10.28">
+  <requirements>
+    <requirement type="package">conserting</requirement>
+    <requirement type="package">java</requirement>
+  </requirements>
+  <description>for germline and tumore BAMs</description>
+  <command>
+    snv_conserting.sh $reference.fields.path $tumor_bam $germline_bam $output_snv
+  </command>
+  <stdio>
+    <exit_code range="1:" level="fatal" description="Error" />
+  </stdio>
+  <inputs>
+    <param label="Select a reference genome" name="reference" type="select">
+      <options from_data_table="all_fasta"/>
+    </param>
+    <param format="bam" help="" label="Tumor BAM file" name="tumor_bam" type="data"/>
+    <param format="bam" help="" label="Germline BAM file" name="germline_bam" type="data"/>
+
+    <param type="integer" label="Window Size" value="100" name="size"/>
+  </inputs>
+
+  <outputs>
+    <data format="tabular" label="${tool.name} on ${on_string}: SNV " name="output_snv"/>
+  </outputs>
+
+  <tests>
+    <test>
+    </test>
+    <test>
+    </test>
+    <test>
+    </test>
+  </tests>
+  <help>
+**What it does**
+
+Run putative SNV detection in the paired sample by the variation detection module of Bambino
+
+------
+
+**Input formats**
+
+The code will read the reference genome information from PATH/NIB and the tumor BAM from BAMS/SAMPLE_D.bam and germline BAM from BAMS/SAMPLE_G.bam.
+
+  </help>
+</tool>

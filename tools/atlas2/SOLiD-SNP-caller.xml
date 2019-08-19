@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+
+<tool name="SOLiD SNP caller" id="SOLiD-SNP-caller_id">
+  <description>
+  </description>
+
+  <command interpreter="python">
+     SOLiD-SNP-caller.py   
+   $input_BAM
+   $input_FASTA
+
+   #if $inputBED.inBED == "bed"
+     $inputBED.input_BED
+   #else:
+     none
+   #end if
+
+   $output
+
+  </command>
+
+  <inputs>
+
+    <param name="input_BAM" type="data" format="bam" label="Select a BAM file" help="BAM format alignment file (Required to be sorted by start position)."/>
+    <param name="input_FASTA" type="data" format="fasta" label="Select a FASTA file as reference" help="FASTA format reference sequence file (Required)."/>
+
+    <conditional name="inputBED">
+      <param name="inBED" type="select" label="Specify input BED file (optional)" help="Only call SNP on given regions defined in bed format.">
+        <option value="none">Use pre-set defaults</option>
+        <option value="bed">Set optional arguments</option>
+      </param>
+      <when value="none" />
+      <when value="bed">
+        <param name="input_BED" type="data" format="bed" label="Select a BED file" />
+      </when>
+    </conditional>
+
+
+  </inputs>
+
+  <outputs>
+    <data name="output" format="vcf" label="Output of SOLiD-SNP-caller on ${on_string}.vcf" />
+  </outputs>
+
+  <help>
+SOLiD-SNP-caller_ is used for SOLiD data.
+ .. _SOLiD-SNP-caller: http://www.hgsc.bcm.tmc.edu/cascade-tech-software_atlas2_snp_indel_calling_pipeline-ti.hgsc
+
+**Usage:**
+
+SOLiD-SNP-caller [in.bam] [ref.fa] [.bed region] > [output.vcf]
+
+
+**Arguments:**
+
+[in.bam]
+
+BAM format alignment file (Required to be sorted by start position)
+
+[ref.fa] 
+
+FASTA format reference sequence file (Required)
+
+[.bed] 
+
+Only call SNP on given regions defined in bed format [optional]
+
+
+
+  </help>
+
+</tool>

@@ -1,0 +1,25 @@
+<tool id="vcfconvert" name="VCF Convert version" version="0.0.1">
+  <description>from VCFv4.2 to VCFv4.1</description>
+  <command interpreter="python">
+    vcfconvert.py -i $vcf_input -o $vcf_output
+  </command>
+  <inputs>
+    <param format="vcf" name="vcf_input" type="data" label="Select VCF dataset to convert"/>
+  </inputs>
+  <outputs>
+    <data format="vcf" name="vcf_output" />
+  </outputs>
+  <tests>
+    <test>
+      <param name="vcf_input" value="vcfsort-test1-input.vcf"/>
+      <output name="vcf_output" file="vcfsort-test1.vcf"/>
+    </test>
+    </tests>
+  <help>
+
+This tool uses native UNIX commands to convert VCFv4.2 dataset to VCFv4.1 if necessary
+
+
+
+</help>
+</tool>

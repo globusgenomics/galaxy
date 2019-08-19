@@ -1,0 +1,92 @@
+<tool id="snvdetect" name="SNVdetect" version="BGISOAP: default">
+    <description>- detect single nucleotide variants from data set pairs</description>
+    <requirements>
+        <requirement type="package">bgisoap</requirement>
+    </requirements>
+    <command interpreter="python">
+        snvdetect.py
+
+        ## Inputs
+        --chr_length=$chr_length
+        --input1_alleleqc=$input1_alleleqc
+        --input2_alleleqc=$input2_alleleqc
+        --snvtest=$snvtest
+
+        ## Check if using default or custom parameters
+        --default_full_settings_type=$default_full_settings.settings_type
+        #if $default_full_settings.settings_type == &quot;full&quot;
+        --min_depth=$default_full_settings.min_depth
+        --max_depth=$default_full_settings.max_depth
+        --max_copy_num=$default_full_settings.max_copy_num
+        --pvalue_rank_sum=$default_full_settings.pvalue_rank_sum
+        --pvalue_mismatch_enrichment_repetitive_hits=$default_full_settings.pvalue_mismatch_enrichment_repetitive_hits
+        --pvalue_mismatch_enrichment_read_ends=$default_full_settings.pvalue_mismatch_enrichment_read_ends
+        --relax_depth_requirement=$default_full_settings.relax_depth_requirement
+        --min_allele_freq=$default_full_settings.min_allele_freq
+        --allele_freq_requirement=$default_full_settings.allele_freq_requirement
+        --max_allele_freq=$default_full_settings.max_allele_freq
+        --pvalue_somatic_mut_detection=$default_full_settings.pvalue_somatic_mut_detection
+        #end if
+
+        ## Output file
+        --output=$output
+
+    </command>
+    <inputs>
+        <param format="input" label="Chromosome length info file" name="chr_length" type="data"/>
+        <param format="input" label="First alleleQC file" name="input1_alleleqc" type="data"/>
+        <param format="input" label="Second alleleQC file" name="input2_alleleqc" type="data"/>
+        <param format="input" label="SNVtest file" name="snvtest" type="data"/>
+        <conditional name="default_full_settings">
+            <param help="Default settings are suitable for most analyses. If you want full control, use Full parameter list" label="SNVdetect settings to use" name="settings_type" type="select">
+                <option value="default">Default</option>
+                <option value="full">Full parameter list</option>
+            </param>
+            <when value="default"/>
+            <when value="full">
+                <param label="Minimum depth requirement" name="min_depth" type="integer" value="10"/>
+                <param label="Maximum depth requirement" name="max_depth" type="integer" value="1000"/>
+                <param label="Maximum copy number" name="max_copy_num" type="float" value="1.5"/>
+                <param label="p-value cutoff for mismatch enrichment test on repetitive hits" name="pvalue_mismatch_enrichment_repetitive_hits" type="float" value="0.01"/>
+                <param label="p-value cutoff for quality rank sum test" name="pvalue_rank_sum" type="float" value="0.01"/>
+                <param label="p-value cutoff for mismatch enrichment test on 5' or 3' end of reads" name="pvalue_mismatch_enrichment_read_ends" type="float" value="0.01"/>
+                <param help="If this parameter was not given, sites which unique aligned reads less than minimum depth requirement would be filtered" label="Relax the depth requirement" name="relax_depth_requirement" type="select" value="off">
+                    <option value="off">Off</option>
+                    <option value="on">On</option>
+                </param>
+                <param label="Minimum allele frequency requirement" name="min_allele_freq" type="integer" value="10"/>
+                <param label="Allele frequency requirement for confident genotype call" name="allele_freq_requirement" type="integer" value="20"/>
+                <param label="Maximum allowed mutant allele frequency in normal for somatic mutation detection" name="max_allele_freq" type="integer" value="2"/>
+                <param label="p-value cutoff for somatic mutation detection" name="pvalue_somatic_mut_detection" type="float" value="0.01"/>
+            </when>
+        </conditional>
+    </inputs>
+    <outputs>
+        <data format="gz" label="gz zipped snvdetect file" name="output" type="data"/>
+    </outputs>
+    <tests>
+        <test>
+            <!--
+                soapPopIndel -i all.txt -v all.vcf -p 2
+            -->
+            <param name="depth" value="indexed"/>
+            <param name="ploidy" value="2"/>
+            <output file="bwa_wrapper_out1.sam" ftype="sam" name="output" sort="True"/>
+        </test>
+    </tests>
+    <help>
+
+**What it does**
+
+SNVdetect detects single nucleotide variants from pairs of data sets. The results of this tool is the final result of the
+SOAPsnv process to detect single nucleotide variants.
+
+
+**More information**
+
+For test data and more detailed information, click here_.
+
+.. _here: http://soap.genomics.org.cn/SOAPsnv.html
+
+    </help>
+</tool>

@@ -1,0 +1,51 @@
+<tool id="create_output_bdbag_and_minid2" name="Create BDBag and MINID2" hidden="false">
+   <action module="galaxy_ext.globus.tools.actions.globus" class="HistoryManagement"/>
+   <description>for current history</description>
+   <requirements>
+     <requirement type="package">pymodules</requirement>
+   </requirements>
+   <command interpreter="python">
+     ##create_output_bdbag_and_minid2.py 
+     create_output_collections_bdbag_and_minid_gcep.py
+     -k $userapi
+     --history $historyid
+     -u "$url"
+     -t "$goauth_token"
+     ##-s "$identifier_token"
+     > $minid
+   </command>
+   <stdio>
+     <exit_code range="1:"  level="warning"   description="Bad input dataset" />
+   </stdio>
+   <inputs>
+    <param name="goauth_token" type="hidden" value= "**" size="100" label="Globus Auth Token">
+	<sanitizer>
+        <valid>
+          <add value="|"/>
+        </valid>
+      </sanitizer>
+    </param>
+    <!--<param name="identifier_token" type="hidden" value= "**" size="100" label="Globus Identifier Token">
+        <sanitizer>
+        <valid>
+          <add value="|"/>
+        </valid>
+      </sanitizer>
+    </param>-->
+      <param format="txt" name="input" type="data" label="History file" help="This should be any file in the history"/>
+      <param name="userapi" type="hidden" size="100" value="**" label="Galaxy API Key"/>
+      <param name="url" type="hidden" value="**" size="100" label="GG URL"/>
+      <param name="historyid" type="hidden" value="**" size="100" label="History id"/>
+   </inputs>
+
+   <outputs>
+     <data format="txt" name="minid" label="Minid for history ${historyid}"/>
+   </outputs>
+
+   <help>
+
+
+   </help>
+
+</tool>
+

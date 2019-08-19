@@ -1,0 +1,25 @@
+<flow name="qc-core" serializer="json">
+
+	<title>Quality control</title>
+	<desc>Generate indicators to view if the analysis performed well</desc>
+
+	<in name="projects_in" />
+
+	<module name="variants">
+		<in name="projects_in" link="projects_in" />
+
+		<run>variants.py</run>
+	</module>
+
+	<module name="oncodrivefm">
+		<in name="projects_in" link="projects_in" />
+
+		<run>oncodrivefm.py</run>
+	</module>
+
+	<module name="oncodriveclust">
+		<in name="projects_in" link="projects_in" />
+
+		<run>oncodriveclust.py</run>
+	</module>
+</flow>

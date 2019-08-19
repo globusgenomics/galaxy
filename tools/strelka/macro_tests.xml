@@ -1,0 +1,16 @@
+﻿<macros>
+  <macro name="tests">
+    <tests>
+      <test>
+        <param name="normalBam" ftype="bam" value="NA12891_dupmark_chr20_region.bam"/>
+        <param name="tumorBam" ftype="bam" value="NA12892_dupmark_chr20_region.bam"/>
+        <param name="refFile" ftype="fasta" value="chr20_860k_only.fa"/>
+        <param name="configuration_switch" value="Default"/>
+        <output name="output1_vcf" file="passed.somatic.snvs.vcf"/>
+        <output name="output2_vcf" file="passed.somatic.indels.vcf"/>
+        <output name="output3_vcf" file="all.somatic.snvs.vcf"/>
+        <output name="output4_vcf" file="all.somatic.indels.vcf"/>
+      </test>
+    </tests>
+  </macro>
+</macros>

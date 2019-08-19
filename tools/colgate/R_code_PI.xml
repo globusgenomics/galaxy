@@ -1,0 +1,50 @@
+<tool id="r_code_pi" name="r_code_pi" version="R_CODE_PI: 0.1">
+    <description> Customerized visualization tool for Colgate </description>
+    <requirements>
+      <requirement type="package">pymodules</requirement>
+      <requirement type="package" version="3.4.4">R</requirement>
+      <requirement type="package" version="0.1">colgate</requirement>
+    </requirements>
+    <command interpreter="python">
+      R_code_PI_wrapper.py
+      --otu_table $otu_table
+      --map $map_file
+      --plot1 $plot1
+      --plot2 $plot2
+      --plot3 $plot3
+      --plot4 $plot4
+      --plot5 $plot5
+      --plot6 $plot6
+      --plot7 $plot7
+      --plot8 $plot8
+      --plot9 $plot9
+      --plot10 $plot10
+      --plot11 $plot11
+      --plot12 $plot12
+      --table1 $table1
+      --table2 $table2
+      --out-dir $plot1.extra_files_path
+    </command>
+      <inputs>
+         <param format="biom, biom1" help="" name="otu_table" optional="false" type="data" label="Input OTU Table"/>
+         <param format="txt, tabular" help="" name="map_file" optional="false" type="data" label="Input MAP File"/>
+      </inputs>
+      <outputs>
+         <data format="png" label="ent10 on ${on_string}" name="plot1"/>
+         <data format="png" label="Phylum Composition on ${on_string}" name="plot2"/>
+         <data format="png" label="Genus Composition on ${on_string}" name="plot3"/>
+         <data format="png" label="Species Composition on ${on_string}" name="plot4"/>
+         <data format="png" label="Alpha Diversitya on ${on_string}" name="plot5"/>
+         <data format="png" label="PI_ordinate on ${on_string}" name="plot6"/>
+         <data format="png" label="PI_GP.r on ${on_string}" name="plot11"/>
+         <data format="png" label="PCoA of Biofilm on ${on_string}" name="plot7"/>
+         <data format="png" label="DESeq Genus on ${on_string}" name="plot8"/>
+         <data format="png" label="DESeq Species on ${on_string}" name="plot9"/>
+         <data format="png" label="A large fraction of OTUs and variance on ${on_string}" name="plot10"/>
+         <data format="png" label="EdgeR Genus on ${on_string}" name="plot12"/>
+         <data format="tabular" label="PI Genus on ${on_string}" name="table1"/>
+         <data format="tabular" label="PI Species on ${on_string}" name="table2"/>
+      </outputs>
+      <help>
+      </help>
+</tool>

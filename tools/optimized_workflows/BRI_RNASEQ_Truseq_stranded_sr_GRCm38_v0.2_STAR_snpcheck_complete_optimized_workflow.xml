@@ -1,0 +1,120 @@
+<tool id="BRI_RNAseq_truseq_stranded_star_snpcheck_optimized" name="RNA-Seq TruSeq Stranded STAR SNPCheck Optimized Workflow" version="SAMTOOLS: 1.2; BWA: 0.7.12; PICARD: 1.134; JAVA: jre1.7.0_51; GATK: GenomeAnalysisTK-3.4-46">
+  <description>BRI_RNASEQ_Truseq_stranded_sr_GRCm38_v0.2_STAR_snpcheck_complete_optimized</description>
+  <!--<action class="GlobusOptimizedWorkflows" module="galaxy_ext.globus.tools.actions.globus"/>-->
+  <requirements>
+    <requirement type="package">FastQC</requirement>
+    <requirement type="package" version="2.4.2a">star</requirement>
+    <requirement type="package" version="1.2">samtools</requirement>
+    <requirement type="package" version="0.12.7">bowtie</requirement>
+    <requirement type="package" version="1.56">picard</requirement>
+    <requirement type="package">pymodules</requirement>
+    <requirement type="package" version="1.8.0">java</requirement>
+    <requirement type="package">R</requirement>
+  </requirements>
+  <command interpreter="python">
+    BRI_RNASEQ_Truseq_stranded_sr_GRCm38_v0.2_STAR_snpcheck_complete_optimized_20180420.py --sample-name $sample 
+      --lane1 $input_lane_1 --lane2 $input_lane_2 --lane3 $input_lane_3 --lane4 $input_lane_4
+      --lane5 $input_lane_5 --lane6 $input_lane_6 --lane7 $input_lane_7 --lane8 $input_lane_8
+
+      ##use precomputed indexes
+      --star-ref "${star_index.fields.path}"
+      --picard-ref "${picard_index.fields.path}"
+
+      --bed-file $bed_file
+      --gtf $gtf_file
+      --refflat-file $refflat_file
+      --ribosomal-file $ribosomal_list
+
+      ## output vcf file
+      --output-concatenated-fastq $output_contatenate_fastq
+      --output-star-bam $output_star_bam
+      --output-picard-markDuplicates-html $output_picard_markDuplicates_html
+      --output-picard-markDuplicates-directory $output_picard_markDuplicates_html.extra_files_path
+      --output-picard-alignmentSummary $output_picard_alignmentSummary
+      --output-picard-alignmentSummary-directory $output_picard_alignmentSummary.extra_files_path
+      --output-picard-collectRnaSeqSummary $output_picard_collectRnaSeqSummary
+      --output-picard-collectRnaSeqSummary-directory $output_picard_collectRnaSeqSummary.extra_files_path
+      --output-tophatStats $output_tophatStats
+      --output-htseq-counts $output_htseqcount_counts
+      --output-htseq-log $output_htseqcount_log
+      --output-fastqc-html $output_fastqc_html
+      --output-fastqc-text $output_fastqc_text
+      --output-snpcheck-vcf $output_snpcheck_vcf
+      --output-log $output_log
+
+      ## globus parameters
+      ##--username $username
+      ##--goauth-token "$goauth"
+      ##--source-ep=$from_endpoint
+      ##--destination-ep="$to_endpoint"
+      ##--destination-dir="$to_dir"
+      ##--deadline=1200
+      >  $output_log
+  </command>
+  <inputs>
+    <param name="sample" type="text" label="Sample label" />
+    <param name="input_lane_1" type="data" format="fastq,fastqsanger" label="Input Fastq lane 1"/>
+    <param name="input_lane_2" type="data" format="fastq,fastqsanger" label="Input Fastq lane 2"/>
+    <param name="input_lane_3" type="data" format="fastq,fastqsanger" label="Input Fastq lane 3"/>
+    <param name="input_lane_4" type="data" format="fastq,fastqsanger" label="Input Fastq lane 4"/>
+    <param name="input_lane_5" type="data" format="fastq,fastqsanger" label="Input Fastq lane 5"/>
+    <param name="input_lane_6" type="data" format="fastq,fastqsanger" label="Input Fastq lane 6"/>
+    <param name="input_lane_7" type="data" format="fastq,fastqsanger" label="Input Fastq lane 7"/>
+    <param name="input_lane_8" type="data" format="fastq,fastqsanger" label="Input Fastq lane 8"/>
+
+    <param help="If your genome of interest is not listed, contact the GlobusGenomics team" label="Select a Starreference genome" name="star_index" type="select">
+      <options from_data_table="star_indexes"/>
+    </param>
+    <param format="bed" label="Target BED file" name="bed_file" type="data"/>
+    <param format="gtf" label="Gene Model Annotation file" name="gtf_file" type="data"/>
+    <param format="tabular,txt" label="RefFlat file" name="refflat_file" type="data"/>    
+    <param format="picard_interval_list" label="Location of rRNA sequences in genome, in interval_list format" name="ribosomal_list" type="data"/>    
+
+    <param help="Should be the similar to the reference genome chosen for Star" label="Select a Picard built-in reference genome" name="picard_index" type="select">
+      <options from_data_table="all_fasta">
+      </options>
+    </param>
+    <!-- 
+    <param name="goauth" type="hidden" size="100" label="Globus Auth Token">
+      <sanitizer>
+        <valid>
+          <add value="|"/>
+        </valid>
+      </sanitizer>
+    </param>
+    <param name="username" type="hidden" size="100" label="Globus Username"/>
+    <param name="from_endpoint" type="hidden" size="100" label="Source Endpoint">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="to_endpoint" type="gdst_endpoint" size="100" label="Destination Endpoint">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="to_dir" type="text" size="100" label="Destination Directory on user's endpoint to store output files">
+      <sanitizer sanitize="False"/>
+    </param>
+   -->
+  </inputs>
+  <outputs>
+    <data format="fastqsanger" label="${tool.name}: Concatenated fastq" name="output_contatenate_fastq"/>
+    <data format="bam" label="${tool.name}: STAR BAM" name="output_star_bam"/>
+    <data format="html" label="${tool.name}: Picard MarkDups Metrics" name="output_picard_markDuplicates_html"/>
+    <data format="html" label="${tool.name}: Picard CollectRnaSeqSummary Metrics" name="output_picard_collectRnaSeqSummary"/>
+    <data format="txt" label="${tool.name}: TophatStatsPE Metrics" name="output_tophatStats"/>
+    <data format="html" label="${tool.name}: Picard AlignmentSummary Metrics" name="output_picard_alignmentSummary"/>
+    <data format="html" label="${tool.name}: FastQC Webpage" name="output_fastqc_html"/>
+    <data format="txt" label="${tool.name}: FastQC RawData" name="output_fastqc_text"/>
+    <data format="tabular" label="${tool.name}: HTSeqCount counts" name="output_htseqcount_counts" />
+    <data format="tabular" label="${tool.name}: HTSeqCount log" name="output_htseqcount_log"/>
+    <data format="vcf" label="${tool.name}: SNPCheck VCF" name="output_snpcheck_vcf"/>
+    <data format="txt" label="${tool.name}: Log" name="output_log"/>
+  </outputs>
+  <tests>
+    <test>
+    </test>
+  </tests> 
+  <help>
+
+**What it does**
+
+  </help>
+</tool>

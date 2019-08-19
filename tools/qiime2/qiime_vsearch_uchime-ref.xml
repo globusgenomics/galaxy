@@ -1,0 +1,113 @@
+<?xml version="1.0" ?>
+<tool id="qiime_vsearch_uchime-ref" name="qiime vsearch uchime-ref" version="022019">
+	<description> - Reference-based chimera filtering with vsearch.</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command>
+		<![CDATA[
+		qiime vsearch uchime-ref --i-table=$itable --i-sequences=$isequences --i-reference-sequences=$ireferencesequences --o-nonchimeras=ononchimeras --o-stats=ostats
+
+#if $pmindiffs:
+ --p-mindiffs=$pmindiffs
+#end if
+
+#set $pthreads = '${GALAXY_SLOTS:-4}'
+
+#if str($pthreads):
+ --p-threads="$pthreads"
+#end if
+
+
+#if $pdn:
+ --p-dn=$pdn
+#end if
+ --o-chimeras=ochimeras
+#if str($cmdconfig) != 'None':
+ --cmd-config=$cmdconfig
+#end if
+
+#if $pminh:
+ --p-minh=$pminh
+#end if
+
+#if $pmindiv:
+ --p-mindiv=$pmindiv
+#end if
+
+#if $pxn:
+ --p-xn=$pxn
+#end if
+;
+cp ononchimeras.qza $ononchimeras;
+cp ostats.qza $ostats;
+cp ochimeras.qza $ochimeras
+	]]>
+	</command>
+	<inputs>
+		<param format="qza,no_unzip.zip" label="--i-sequences: FeatureData[Sequence] The feature sequences to be chimera-checked. [required]" name="isequences" optional="False" type="data"/>
+		<param format="qza,no_unzip.zip" label="--i-table: FeatureTable[Frequency] Feature table (used for computing total feature abundances).  [required]" name="itable" optional="False" type="data"/>
+		<param format="qza,no_unzip.zip" label="--i-reference-sequences: FeatureData[Sequence] The non-chimeric reference sequences. [required]" name="ireferencesequences" optional="False" type="data"/>
+
+		<param label="--p-dn: No vote pseudo-count, corresponding to the parameter n in the chimera scoring function. [default: 1.4]" name="pdn" optional="True" type="float" value="1.4"/>
+
+		<param label="--p-mindiffs: Minimum number of differences per segment. [default: 3]" name="pmindiffs" optional="True" type="integer" value="3"/>
+		<param label="--p-mindiv: Minimum divergence from closest parent. [default: 0.8]" name="pmindiv" optional="True" type="float" value="0.8"/>
+		<param label="--p-minh: Minimum score (h). Increasing this value tends to reduce the number of false positives and to decrease sensitivity. [default: 0.28]" name="pminh" optional="True" type="float" value="0.28"/>
+
+		<param label="--p-xn: No vote weight, corresponding to the parameter beta in the scoring function. [default: 8.0]" name="pxn" optional="True" type="float" value="8.0"/>
+
+		<param label="--cmd-config: Use config file for command options" name="cmdconfig" optional="True" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="qza" label="${tool.name} on ${on_string}: non-chimeras.qza" name="ononchimeras"/>
+		<data format="qza" label="${tool.name} on ${on_string}: stats.qza" name="ostats"/>
+		<data format="qza" label="${tool.name} on ${on_string}: chimeras.qza" name="ochimeras"/>
+	</outputs>
+	<help>
+		<![CDATA[
+Reference-based chimera filtering with vsearch.
+------------------------------------------------
+
+Apply the vsearch uchime_ref method to identify chimeric feature sequences.
+The results of this method can be used to filter chimeric features from the
+corresponding feature table. For additional details, please refer to the
+vsearch documentation.
+
+Parameters
+----------
+sequences : FeatureData[Sequence]
+    The feature sequences to be chimera-checked.
+table : FeatureTable[Frequency]
+    Feature table (used for computing total feature abundances).
+reference_sequences : FeatureData[Sequence]
+    The non-chimeric reference sequences.
+dn : Float % Range(0.0, None), optional
+    No vote pseudo-count, corresponding to the parameter n in the chimera
+    scoring function.
+mindiffs : Int % Range(1, None), optional
+    Minimum number of differences per segment.
+mindiv : Float % Range(0.0, None), optional
+    Minimum divergence from closest parent.
+minh : Float % Range(0.0, 1.0, inclusive_end=True), optional
+    Minimum score (h). Increasing this value tends to reduce the number of
+    false positives and to decrease sensitivity.
+xn : Float % Range(1.0, None, inclusive_start=False), optional
+    No vote weight, corresponding to the parameter beta in the scoring
+    function.
+
+Returns
+-------
+chimeras : FeatureData[Sequence]
+    The chimeric sequences.
+nonchimeras : FeatureData[Sequence]
+    The non-chimeric sequences.
+stats : UchimeStats
+    Summary statistics from chimera checking.
+		]]>
+	</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

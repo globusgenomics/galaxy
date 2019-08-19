@@ -1,0 +1,21 @@
+<tool id="oncofuse_reduce" name="Compress Oncofuse output" version="1.0">
+  <requirements>
+  </requirements>
+  <description>to show one single fusion for multiple lines of the same fusion in the genomic region</description>
+  <command interpreter="python">
+    compress_fusions.py $inputFile > $outFile
+  </command>
+  <inputs>
+    <param format="tabular" help="A tab-delimited file in which each line represents a fusion gene" label="Input fusion gene list file with coordinates" name="inputFile" type="data"/>
+  </inputs>
+  <outputs>
+    <data format="tabular" label="${tool.name} on ${on_string}" name="outFile"/>
+  </outputs>
+  <tests>
+    <test>
+    </test>
+  </tests>
+  <help>
+
+  </help>
+</tool>

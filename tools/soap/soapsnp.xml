@@ -1,0 +1,262 @@
+<tool id="soapsnp" name="SOAPsnp" version="BGISOAP: default">
+    <requirements>
+        <requirement type="package">bgisoap</requirement>
+    </requirements>
+    <description>- assemble a consensus sequence and identify SNPs
+    </description>
+    <command interpreter="python">
+        soapsnp.py
+
+        ## Mandatory inputs
+        --soap_alignment=$soap_alignment
+
+        ##Ref Genome
+        #if $genomeSource.refGenomeSource == &quot;history&quot;:
+          --ref_seq=${genomeSource.ref_seq}
+        #else:
+        ##use precomputed indexes
+          --ref_seq=${genomeSource.indices.fields.path}
+        #end if
+
+        ## A parameter to check if doing diploid or monoploid genome resequencing
+        --genome_type=$analysis_settings.genome_type
+        --novel_althom_prior_probability=$analysis_settings.novel_althom_prior_probability
+        --novel_het_prior_probability=$analysis_settings.novel_het_prior_probability
+        --enable_monoploid_calling=$analysis_settings.enable_monoploid_calling
+
+        ## Output
+        --consensus_out=$consensus_out
+        --quality_calibration_matrix_out=$quality_calibration_matrix_out
+
+        ##Have one set of custom params but the soapsnp.py will need to have separate commands
+        ##for diploid and monoploid analyses
+
+        ## Check if using default or custom parameters
+        --default_full_settings_type=$default_full_settings.settings_type
+        #if $default_full_settings.settings_type == &quot;full&quot;
+            ## Need to ask user how they want to run SOAPsnp
+            --quality_calibration_matrix_setting=$default_full_settings.quality_calibration_matrix_setting.include_calibration_matrix
+            ## modified by Huayan, still not working. 
+	    --output_calibration_matrix_setting=&quot;no&quot;
+	    #if $default_full_settings.quality_calibration_matrix_setting.include_calibration_matrix == &quot;yes&quot;:
+                --quality_calibration_matrix = $default_full_settings.quality_calibration_matrix_setting.quality_calibration_matrix
+            #elif $default_full_settings.quality_calibration_matrix_setting.include_calibration_matrix == &quot;no&quot; and $default_full_settings.quality_calibration_matrix_setting.output_calibration_matrix_setting == &quot;yes&quot;:
+                --output_calibration_matrix_setting=&quot;yes&quot;
+            #end if
+
+            --include_snp_info=$default_full_settings.snp_setting.include_snp_info
+            #if $default_full_settings.snp_setting.include_snp_info == &quot;yes&quot;
+                --snp_info=$default_full_settings.snp_setting..include_snp_info.snp_info
+            #end if
+
+            --call_consensus_setting=$default_full_settings.call_consensus_setting.use_specific_regions
+            #if $default_full_settings.call_consensus_setting.use_specific_regions == &quot;yes&quot;
+                --specific_regions=$default_full_settings.call_consensus_setting.specific_regions
+            #end if
+
+            --quality_score_char=$default_full_settings.quality_score_char
+            --global_error_dependency_coefficient=$default_full_settings.global_error_dependency_coefficient
+            --pcr_error_dependency_coefficient=$default_full_settings.pcr_error
+            --ratio=$default_full_settings.ratio
+            --refine_snp_calling=$default_full_settings.refine_snp_calling
+            --validated_het_prior=$default_full_settings.validated_het_prior
+            --validated_althom_prior=$default_full_settings.validated_althom_prior
+            --unvalidated_het_prior=$default_full_settings.unvalidated_het_prior
+            --unvalidated_althom_rate=$default_full_settings.unvalidated_althom_rate
+            --enable_rank_sum=$default_full_settings.enable_rank_sum
+            --enable_binom_calc=$default_full_settings.enable_binom_calc
+            --output_potential_snps=$default_full_settings.output_potential_snps
+            --max_length_short_read=$default_full_settings.max_length_short_read
+            --max_fastq_score=$default_full_settings.max_fastq_score
+            --output_format=$default_full_settings.output_format<!--extra_headers=$extra_headers--><!--call_specific_consensus_regions=$call_specific_consensus_regions-->
+        #end if
+
+    </command>
+    <inputs>
+        <param format="input" help="Sequence alignments must be sorted by chromosome name in alphabetical order and then by coordinates in numerical order on each chromosome." label="Sorted short read alignment" name="soap_alignment" optional="false" type="data"/>
+        <conditional name="genomeSource">
+          <param label="Will you select a reference from your history or use a built-in fasta file?" name="refGenomeSource" type="select">
+            <option value="indexed">Use a built-in index</option>
+            <option value="history">Use one from the history</option>
+          </param>
+          <when value="indexed">
+            <param label="Select a reference genome" name="indices" type="select">
+              <options from_data_table="all_fasta">
+                <filter column="2" type="sort_by"/>
+                <validator message="No indexes are available" type="no_options"/>
+              </options>
+            </param>
+          </when>
+          <when value="history">
+            <param format="fasta" label="Reference genome in FASTA format" name="ref_seq" optional="false" type="data"/>
+          </when>
+        </conditional>
+
+        <conditional name="analysis_settings">
+            <param label="Are you re-sequencing a monoploid or diploid genome?" name="genome_type" type="select">
+                <option value="diploid">Diploid</option>
+                <option value="monoploid">Monoploid</option>
+            </param>
+            <when value="diploid">
+                <param label="Novel altHOM prior probability" name="novel_althom_prior_probability" optional="true" type="float" value="0.00005"/>
+                <param help="The two above parameters define the prior probabilities of homozygous SNPs (altHOM) and heterozygous SNPs (HET), which are used in the Bayes formula calculation. Note these are prior probabilities of a new SNP and are expected to be stringent. For different species, these two values should be modified accordingly." label="Novel HET prior probability" name="novel_het_prior_probability" optional="true" type="float" value="0.0001"/>
+                <param help="This will ensure all consensus as HOM and you probably should SPECIFY higher altHOM rate" label="Enable monoploid calling mode" name="enable_monoploid_calling" type="text" value="Off"/>
+            </when>
+            <when value="monoploid">
+                <param label="Novel altHOM prior probability" name="novel_althom_prior_probability" optional="true" type="float" value="0.0001"/>
+                <param help="The two above parameters define the prior probabilities of homozygous SNPs (altHOM) and heterozygous SNPs (HET), which are used in the Bayes formula calculation. Note these are prior probabilities of a new SNP and are expected to be stringent. For different species, these two values should be modified accordingly." label="Novel HET prior probability" name="novel_het_prior_probability" optional="true" type="float" value="0.0010"/>
+                 <param help="This will ensure all consensus as HOM and you probably should SPECIFY higher altHOM rate" label="Enable monoploid calling mode" name="enable_monoploid_calling" type="text" value="On"/>
+            </when>
+        </conditional>
+
+        <!-- Rest of the SOAPsnp parameters -->
+        <conditional name="default_full_settings">
+            <param help="Default settings is suitable for most mapping needs. If you want full control, use Full parameter list" label="SOAPsnp settings to use" name="settings_type" type="select">
+                <option value="default">Default</option>
+                <option value="full">Full parameter list</option>
+            </param>
+            <when value="default"/>
+            <when value="full">
+            <!-- Optional parameters -->
+            <conditional name="quality_calibration_matrix_setting">
+                <param label="Do you want to use a quality calibration matrix in your analysis?" name="include_calibration_matrix" type="select">
+                           <option value="no">No</option>
+                           <option value="yes">Yes</option>
+                </param>
+                <when value="yes">
+                    <param help="This parameter cannot be used simultaneously with -M" label="Input previous quality calibration matrix" name="quality_calibration_matrix" type="data">
+                    </param>
+                </when>
+                <when value="no">
+                    <param label="Do you want to output the quality calibration matrix in your results?" name="output_calibration_matrix_setting" type="select">
+                           <option value="no">No</option>
+                           <option value="yes">Yes</option>
+                    </param>
+                </when>
+            </conditional>
+
+            <conditional name="snp_setting">
+                <param label="Do you want to include SNP information in your analysis?" name="include_snp_info" type="select">
+                   <option value="no">No</option>
+                   <option value="yes">Yes</option>
+                </param>
+                <when value="yes">
+                    <param help="This information should be in the format: chr1    201979756       1       1       0       0.161   0       0       0.839   rs568. The columns from left to right are: chromosome name, chromosome co-ordinate, SNP allele frequency information (1 = true, 0 = false), whether SNP is validated by experiment (1 is true, 0 is false), whether the SNP is actually an indel (1 is true, 0 is false), frequency of A, frequency of C, frequency of T, frequency of G, SNP ID. For known SNP sites that do not have allele frequency information, the frequency information can be arbitrarily determined as any positive values, which implies what alleles have already been deposited in the database." label="Pre-formatted known SNP information" name="snp_info" type="data"/>
+                </when>
+            </conditional>
+
+            <conditional name="call_consensus_setting">
+                <param label="Do you want to call consensus on specific chromosomal regions?" name="use_specific_regions" type="select">
+                           <option value="no">No</option>
+                           <option value="yes">Yes</option>
+                </param>
+                <when value="yes">
+                       <param help="Format of this file is: ChrName\tStart\tEnd\nChrName\tStart\tEnd" label="Chromosome locations" name="specific_regions" type="data">
+                        </param>
+                </when>
+            </conditional>
+                <param help="A character defining the quality score for a base call. FASTQ files generated by the Illumina base-calling pipeline use ‘@’ as 0. Some organisations use ‘!’ as 0." label="Quality score" name="quality_score_char" type="text" value="0"/>
+                <param label="Global error dependency coefficient" name="global_error_dependency_coefficient" type="float" value="0.9"/>
+                <param help="Sequencing errors maybe repetitive in nature and are not complete independent of each other. The main source of repeatable errors is believed to be PCR amplification in the sequencing process. The proper values of the above two parameters rely on the wetlab process. Nonetheless, the default value generally works most of time." label="PCR error dependency coefficient" name="pcr_error" optional="true" type="float" value="0.5"/>
+                <param checked="true" label="Set transition/transversion ratio to 2:1 in prior probability" name="ratio" optional="true" type="select" value="On">
+                         <option value="On">On</option>
+                         <option value="Off">Off</option>
+                </param>
+                <param help="Refine SNP calling using known SNP information" label="Refine SNP" name="refine_snp_calling" type="select" value="Off">
+                        <option value="Off">Off</option>
+                        <option value="On">On</option>
+                </param>
+                <param help="Validated HET prior, if no allele frequency known" label="Validated HET prior" name="validated_het_prior" optional="true" type="float" value="0.1"/>
+                <param help="Validated altHOM prior, if no allele frequency known" label="Validated altHOM prior" name="validated_althom_prior" optional="true" type="float" value="0.05"/>
+                <param help="Unvalidated HET prior, if no allele frequency known" label="Validated altHOM prior" name="unvalidated_het_prior" optional="true" type="float" value="0.02"/>
+                <param help="The above four parameters are related to using external SNP information to alter prior probabilities for SNP calling. SOAPsnp will use allele frequency information as prior probability in calling genotypes for each site. If the allele frequency information is absent, it will use the above 4 parameters as prior probability." label="Unvalidated altHOM rate, if no allele frequency known" name="unvalidated_althom_rate" optional="true" type="float" value="0.01"/>
+                <param help="Checks whether the two alleles of a possible HET call can have the same sequencing quality to give HET a further penalty for better accuracy." label="Enable rank sum test" name="enable_rank_sum" type="select" value="Off">
+                        <option value="Off">Off</option>
+                        <option value="On">On</option>
+                </param>
+                <param help="Checks whether two alleles are observed equally to give HET a further penalty for better accuracy." label="Enable binomial probability calculation" name="enable_binom_calc" type="select" value="Off">
+                        <option value="Off">Off</option>
+                        <option value="On">On</option>
+                </param>
+                <param help="Useful in Text output mode." label="Output only potential SNPs" name="output_potential_snps" type="select" value="Off">
+                        <option value="Off">Off</option>
+                        <option value="On">On</option>
+                </param>
+                <param help="Please note that once length of some reads exceeds the parameter, it will probably crash the program" label="Maximum length of read" name="max_length_short_read" optional="true" type="integer" value="45"/>
+                <param label="Maximum FASTQ quality score" name="max_fastq_score" optional="true" type="integer" value="40"/>
+                <param label="Output format" name="output_format" optional="true" type="select" value="0">
+                        <option value="0">Text</option>
+                        <option value="1">GLFv2</option>
+                        <option value="2">GPFv2</option>
+                </param>
+                <!-- Not implemented as I'm not sure what it does -->
+                <!--
+                <param name="extra_headers"
+                       type="text"
+                       label="Extra headers EXCEPT CHROMOSOME FIELD specified in GLFv2 output. Format is TypeName1:DataName1:TypeName2:DataName2"
+                       value="0"
+                       optional="true"/>
+                -->
+                 </when>
+        </conditional>
+    </inputs>
+    <outputs>
+        <data format="tabular" label="Output consensus file" name="consensus_out" type="data">
+        </data>
+        <!-- Optional output -->
+        <data help="This matrix can be reused with the -I parameter if you rerun the program" label="Output quality calibration matrix" name="quality_calibration_matrix_out" type="data">
+            <filter>quality_calibration_matrix_setting['include_calibration_matrix.output_calibration_matrix'] == &quot;yes&quot;</filter>
+         </data>
+    </outputs>
+    <tests>
+        <test>
+            <param name="alignment" value="bgisoap/test.soap.sorted"/>
+            <param name="refgenome" value="bgisoap/ref.fa"/>
+            <output file="bgisoap/test.consensus" name="output"/>
+        </test>
+    </tests>
+    <help>
+
+**What it does**
+
+SOAPsnp is a resequencing utility that assembles a consensus sequence for the genome of a newly sequenced
+organism based on the alignment of the raw sequencing reads on the known reference genome. The SNPs can then be
+identified on the consensus sequence through comparison with the reference. SOAPsnp uses a method based on
+Bayes’ theorem (the reverse probability model) to call consensus genotype by carefully considering the data
+quality, alignment, and recurring experimental errors. All these kinds of information was integrated into a
+single quality score for each base in PHRED scale to measure the accuracy of consensus calling. Currently, it
+supports the alignment format of SOAPaligner.
+
+**Output format**
+
+The result of SOAPsnp has 17 columns::
+
+      Column  Description
+  ----------  --------------------------------------------------------
+       1      Chromosome ID
+       2      Coordinate on chromosome, start from 1
+       3      Reference genotype
+       4      Consensus genotype
+       5      Quality score of consensus genotype
+       6      Best base
+       7      Average quality score of best base
+       8      Count of uniquely mapped best base
+       9      Count of all mapped best base
+      10      Second best bases
+      11      Average quality score of second best base
+      12      Count of uniquely mapped second best base
+      13      Count of all mapped second best base
+      14      Sequencing depth of the site
+      15      Rank sum test p_value
+      16      Average copy number of nearby region
+      17      Whether the site is a dbSNP
+
+
+**More information**
+
+For test data and more detailed information, click here_.
+
+.. _here: http://soap.genomics.org.cn/soapsnp.html
+
+    </help>
+</tool>

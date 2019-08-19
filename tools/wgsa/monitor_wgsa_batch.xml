@@ -1,0 +1,40 @@
+<tool id="monitor_wgsa_batch" name="Monitor WGSA Annotations">
+  <description></description>
+  <action module="galaxy_ext.globus.tools.actions.globus" class="HistoryManagement"/>
+  <command> 
+    python $__tool_directory__/monitor_wgsa_batch.py
+    -k $userapi
+    -u "$url"
+    --input $input
+    -t "$goauth_token" > $output
+  </command>
+  <requirements>
+    <requirement type="package">pymodules</requirement>
+  </requirements>
+  <inputs>
+    <param format="txt" name="input" type="data" label="Monitor file" help="This should be the output from the batch submit job"/>
+    <param name="userapi" type="hidden" size="100" value="None" label="Galaxy API Key"/>
+    <param name="url" type="hidden" value="**" size="100" label="GG URL"/>
+    <param name="goauth_token" type="hidden" value= "**" size="100" label="Globus Auth Token">
+        <sanitizer>
+        <valid>
+          <add value="|"/>
+        </valid>
+      </sanitizer>
+    </param>
+  </inputs>
+  <outputs>
+    <data name="output" type="data" format="txt" label="Monitor GTEX WGSA Annotations"/>
+    <!--<data name="stdout_output" type="data" format="txt" label="WGSA run stdout"/>-->
+    <!--<data name="stderr_output" type="data" format="txt" label="WGSA run stderr"/>-->
+  </outputs>
+  <stdio>
+    <regex match=".*" source="both" level="log" description="tool progress"/>
+  </stdio>
+  <help>
+
+**What it does**
+Runs annotation using WGSA tool on VCFs
+
+  </help>
+</tool>

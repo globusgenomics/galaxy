@@ -1,0 +1,25 @@
+<tool id="globus_swift_cga" name="Swift - CGA Conversion">
+  <description>Swift - CGA Conversion</description>
+  <command interpreter="bash">
+     ./swift_cga.sh -log $log_file -level $level -template $template -jobthrottle $jobthrottle -i=$input -p=$input.extra_files_path -relative=/nfs/home/davidkelly999/galaxy-globus/swift_scripts/cga/ -o=$out_file1
+  </command>
+  <inputs>
+    <param name="jobthrottle" type="text" value="1000" label="Job Throttle"/>
+    <param name="template" type="select" label="Execution">
+       <option value="galaxy-cga-condor">Condor</option>
+       <option value="galaxy-cga-local">Local</option>
+    </param>
+    <param format="cga" type="data" name="input" label="Cgatools Dataset"/>
+    <param name="level" type="select" label="Run Level">
+       <option value="0">Mock</option>
+       <option value="1">1 Part</option>
+       <option value="2">10 Parts</option>
+       <option value="3">Full Dataset</option>
+    </param>
+  </inputs>
+  <outputs>
+     <data format="cga" type="data" name="out_file1"/>
+     <data format="txt" type="data" name="log_file"/>
+  </outputs>
+</tool>
+

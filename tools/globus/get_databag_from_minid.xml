@@ -1,0 +1,25 @@
+<tool id="get_bdbag_from_minid" name="Get BDBag from MINID">
+  <description>transfer data given a MINID to a bag dataset object</description>
+  <requirements>
+    <requirement type="package">pymodules</requirement>
+  </requirements>
+  <command interpreter="python">encode-bag-client-minid.py 
+  $minid $output1.extra_files_path;
+  ##import glob, os, sys
+  ##set $metaF = glob.glob("$output1.extra_files_path/*/*/data/metadata.tsv")
+  ##cat $metaF > $output1
+  cat $output1.extra_files_path/*/*/data/*-* > $output1
+  </command>
+   <stdio>
+     <exit_code range="1:"  level="warning"   description="Bad input dataset" />
+   </stdio>
+   <inputs>
+    <param name="minid" type="text" label="MINID" />
+   </inputs>
+   <outputs>
+     <data format="txt" name="output1" label="${tool.name} on ${minid}"/>
+   </outputs>
+<help>
+
+</help>
+</tool>

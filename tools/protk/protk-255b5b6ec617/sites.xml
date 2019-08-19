@@ -1,0 +1,17 @@
+<config>
+   <pool handle="condor">
+     <execution provider="coaster" url="none" jobmanager="local:condor"/>
+     <gridftp url="local://localhost"/>
+     <workdirectory>/scratch/proteomics/swiftwork</workdirectory>
+     <profile namespace="karajan" key="jobThrottle">1000</profile>
+     <profile namespace="karajan" key="initialScore">10000</profile>
+     <profile namespace="globus" key="condor.+Tenant">"sam"</profile>
+     <profile namespace="globus" key="condor.request_cpus">1</profile>
+     <!-- <profile namespace="globus" key="condor.+GlobusOnline">false</profile> -->
+     <profile namespace="globus" key="jobsPerNode">1</profile>
+     <profile namespace="globus" key="maxwalltime">1000:00:00</profile>
+     <profile namespace="globus" key="maxnodes">1000</profile>
+     <profile namespace="globus" key="nodeGranularity">1</profile>
+     <profile namespace="globus" key="slots">100</profile>
+   </pool>
+</config>

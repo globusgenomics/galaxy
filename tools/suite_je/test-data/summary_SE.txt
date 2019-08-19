@@ -1,0 +1,10 @@
+##
+##
+Processed Reads (pairs)	25
+Assigned Reads (pairs)	25
+Unassigned Reads (pairs)	0
+# Individual sample read (pair) counts :
+sample1	6
+sample4	6
+sample3	6
+sample2	7

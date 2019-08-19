@@ -1,0 +1,52 @@
+<tool id="fastq-multx" name="fastq multx">
+	<description>Fastq-mutlx</description>
+	<requirements>
+		<requirement type="package">ea-utils</requirement>
+
+	</requirements>
+	<command>
+          mkdir $output1.extra_files_path;
+	  fastq-multx  $barcode_file 
+          #if $input_type.type == 'directory_object':
+            #import os, glob
+            #set $files = glob.glob("%s/*.fastq*" % $input_type.dir_object.extra_files_path)
+            #set $files = sorted($files)
+            #set $file1 = $files[0]
+            #set $file2 = $files[1]
+            $file1 $file2 
+            -o $output1.extra_files_path/%s_R1_001.fastq.gz $output1.extra_files_path/%s_R2_001.fastq.gz
+          #else:
+            $input_type.input1 $input_type.input2
+            -o $output1.extra_files_path/%s_R1_001.fastq.gz $output1.extra_files_path/%s_R2_001.fastq.gz
+          #end if
+          ; ls -l $output1.extra_files_path > $output1
+	</command>
+    <stdio>
+        <regex description="generic stdout/err chatter" level="warning" match=".*" source="both"/>
+    </stdio>        
+	<inputs>
+          <conditional name="input_type">
+            <param name="type" type="select" label="Select a way to provide forward and reverse fastq files ?" help="">
+              <option value="regular" selected="true">Two simple fastq files (forward and reverse)</option>
+              <option value="directory_object">Directory object - Fastq files in a directory (via Globus Transfer)</option>
+            </param>
+            <when value="regular">
+              <param name="input1" type="data" format="fastq,fastqsanger" label="Source file 1"/>
+              <param name="input2" type="data" format="fastq,fastqsanter" label="Source file 2"/>
+            </when>
+            <when value="directory_object">
+                <param name="dir_object" type="data" format="txt" label="Directory object containing fastq files"/>
+            </when>
+          </conditional>
+          <param name="barcode_file" type="data" format="tabular" label="Barcode file"/>
+	</inputs>
+
+	<outputs>
+    		<data format="fastq" name="output1" label="${tool.name} on ${on_string} - Directory Object" />
+	</outputs>
+
+  <help>
+This tool computes GC content from a FASTA file.
+  </help>
+
+</tool>

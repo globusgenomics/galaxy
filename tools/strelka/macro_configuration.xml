@@ -1,0 +1,23 @@
+﻿<macros>
+  <import>macro_customConfiguration.xml</import>
+  <macro name="configuration">
+      <conditional name="configuration">
+        <param name="configuration_switch" type="select" label="how do you want to configure strelka">
+          <option value="Default for Bwa" selected="true">Default for Bwa</option>
+          <option value="Default for Eland">Default for Eland</option>
+          <option value="Default for Isaac">Default for Isaac</option>
+          <option value="Path">Use a config file</option>
+          <option value="Custom">Custom</option>
+        </param>
+        <when value="Default">
+          <!-- do nothing -->
+        </when>
+        <when value="Path">
+          <param format="ini" name="configFile" type="data" label="config file"/>
+        </when>
+        <when value="Custom">
+          <expand macro="customConfiguration"/>
+        </when>
+      </conditional>
+  </macro>
+</macros>

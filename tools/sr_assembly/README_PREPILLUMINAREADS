@@ -1,0 +1,12 @@
+#Created 07/01/2011
+#Konrad Paszkiewicz, Exeter Sequencing Service, University of Exeter
+
+The enclosed tools are designed to prepare paired-end Illumina reads for use with the galaxy velvet or velvetoptimiser tools. After sequencing Illumina forward and reverse read files are always in the correct order. However after filtering and other QC steps these can quite often become out of sync. These tools operate on either fasta or fastq data sets and output two files. One contains the paired reads in Velvet's required order (i.e. read 1 followed by read 2), the other contains the reads which have lost their partner. Both files can be input to Velvet using the -shortPaired and -short2 flags respectively.
+
+Prerequisites:
+
+
+
+Improvements:
+
+1. Integration of fastq and fasta into a single tool.

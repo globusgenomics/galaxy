@@ -1,0 +1,100 @@
+<tool id="metaxcan" name="MetaXcan" version="09-07-2016">
+  <description> Summary Statistics Based Gene-Level Association Method Infers Accurate PrediXcan Results </description>
+  <requirements>
+      <requirement type="package">pymodules</requirement>
+      <requirement type="package">metaxcan</requirement> 
+      <requirement type="package">tabix</requirement>     
+      <requirement type="package">samtools</requirement>
+  </requirements>
+  <command>
+    #set $cov_folder_path = $output.extra_files_path + "/cov";
+    #set $gwas_folder_path = $output.extra_files_path + "/gwas";
+    mkdir $output.extra_files_path; 
+    mkdir $cov_folder_path;
+    mkdir $gwas_folder_path;
+    #for $i, $s in enumerate( $gwas_list )
+            ln -s ${s.file_name} input_${i}.txt; bgzip input_${i}.txt; mv input_${i}.txt.gz $gwas_folder_path; 
+    #end for
+    
+    #if $cov.source == "history"
+      sed 's/\t/ /g' $cov.covar > "covariance.txt";
+      bgzip "covariance.txt"; mv covariance.txt.gz $cov_folder_path;
+      #set $covar_link = $cov_folder_path + "/covariance.txt.gz";
+    #end if
+
+    python /opt/galaxy/tools/metaxcan/metaxcan_wrapper.py
+    --output_file $output
+    --out-dir $output.extra_files_path 
+
+    #if $cov.source == "history"
+      --covariance $covar_link
+    #else
+      --covariance $cov.models.fields.path
+    #end if
+
+    --beta_column $beta_column
+    --pvalue_column $pval_column
+    --gwas_folder $gwas_folder_path
+    #if $transcriptome.source == &quot;history&quot;
+      --weight_db_path ${transcriptome.ownFile}
+    #else
+      --weight_db_path ${transcriptome.models.fields.path}
+    #end if
+    
+  </command>
+
+  <stdio>
+    <exit_code range="1:" level="fatal" description="Error" />
+  </stdio>
+
+  <inputs>
+    <conditional name="transcriptome">
+      <param label="Will you select a tissue transriptome model from your history or use a built-in model?" name="source" type="select">
+        <option value="indexed">Use a built-in tissue transriptome model</option>
+        <option value="history">Use one from the history</option>
+      </param>
+      <when value="indexed">
+        <param label="Select a tissue transriptome model" name="models" type="select">
+          <options from_data_table="all_transcriptome_model">
+            <filter column="2" type="sort_by"/>
+            <validator message="No indexes are available" type="no_options"/>
+          </options>
+        </param>
+      </when>
+      <when value="history">
+        <param label="Select a tissue transriptome model from history" metadata_name="dbkey" name="ownFile" type="data"/>
+      </when>
+    </conditional>
+
+    <conditional name="cov">
+      <param label="Will you select a covariance file from your history or use a built-in file?" name="source" type="select">
+        <option value="indexed">Use a built-in covariance model</option>
+        <option value="history">Use one from the history</option>
+      </param>
+      <when value="indexed">
+        <param label="Select a covariance file" name="models" type="select">
+          <options from_data_table="all_covariance_model">
+            <filter column="2" type="sort_by"/>
+            <validator message="No indexes are available" type="no_options"/>
+          </options>
+        </param>
+      </when>
+      <when value="history">
+        <param format="txt" help="Covariance file should have information related to the tissue transcriptome model" label="File containing covariance information" name="covar" type="data"/>
+      </when>
+    </conditional>
+
+     <param help="A folder compressed in the tar.gz format containing GWAS summary statistics." label="list of GWAS summary statistics data" format="txt" multiple="true" name="gwas_list" type="data"/>
+     <param help="Name of a column containing phenotype beta data for each SNP" label="beta column name" name="beta_column" type="text" value="BETA" optional="true"/>
+    <param help="Name of a column containing p-value for each SNP" label="p-value column name" name="pval_column" type="text" value="P" optional="true"/>
+  </inputs>
+
+  <outputs>
+    <data format="csv" label="${tool.name} on ${on_string}" name="output"/>
+  </outputs>
+
+  <tests>
+  </tests>
+  <help>
+  </help>
+</tool>

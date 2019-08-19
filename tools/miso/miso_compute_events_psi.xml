@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+
+<tool name="Compute Psi values for all events" id="compute_events_psi_id">
+  <description>
+  </description>
+
+  <command interpreter="python">
+     miso_compute_events_psi.py   
+   $labelname
+
+   #for $count_file in $countfile:
+       ${count_file.count_file}
+   #end for
+   flag
+
+   $event_type
+   $read_len
+   $overhang_len
+
+    #if str( $events_file ):
+        $events_file
+    #else:
+	none
+    #end if
+
+    #if $settings_file.InputSource == "default":
+      false "$settings_file.default_input"
+    #else:
+      true  "$settings_file.upload_input"
+    #end if
+
+    #if str( $job_name ):
+        $job_name
+    #else:
+	none
+    #end if
+
+   $htmlfile
+
+  </command>
+
+  <inputs>
+    <param name="labelname" type="text"  area="True" value="count" size="1x20" label="Label Name"  help="a comma-separated set of sample labels" />
+
+    <repeat name="countfile" title="Count Files" min="1" help="a set of counts filenames">
+        <param name="count_file" type="data" label="count file" />
+    </repeat>
+
+    <param name="event_type" type="select" label="Input type of event">
+        <option value="SE" selected="true">SE</option>
+        <option value="TandemUTR">TandemUTR</option>
+        <option value="RI">RI</option>
+    </param>
+
+    <param name="read_len" type="text"  area="True" value="35" size="1x20" label="READ_LEN"  help="Length of sequenced reads." />
+
+    <param name="overhang_len" type="text"  area="True" value="4" size="1x20" label="OVERHANG_LEN"  help="Length of overhang constraints imposed on junctions." />
+
+    <param name="events_file" type="text"  area="True" value="" size="1x20" label="EVENTS_INFO_FILENAME(optional)"  help="Filename with all the events and their coordinates. This is used to compute the length of the alternative regions in each event." />
+
+    <conditional name="settings_file">
+      <param name="InputSource" type="select" label="SETTINGS_FILENAME" help="Will you use default setting file or your uploaded setting file? ">
+        <option value="default" selected="true">Default setting file</option>
+        <option value="upload">Uploaded setting file</option>
+      </param>
+
+      <when value="default">
+        <param name="default_input" type="hidden" value=""/>
+      </when>
+      <when value="upload">
+        <param name="upload_input" type="data" label="Filename specifying MISO settings."/>
+      </when>
+    </conditional>
+
+
+    <param name="job_name" type="text"  area="True" value="misojob" size="1x20" label="JOB_NAME(optional)"  help="Name for jobs submitted to queue for SGE jobs." />
+
+  </inputs>
+
+  <outputs>
+    <data format="html" name="htmlfile" label="Output of Compute Psi values for all events.html" />
+  </outputs>
+
+  <help>
+Compute Psi values for all events. Expects two arguments: a set of labels and a set of filenames with associated read counts.
+
+  </help>
+
+</tool>

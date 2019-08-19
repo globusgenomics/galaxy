@@ -1,0 +1,80 @@
+<tool id="cshl_fastx_trimmer" name="Trim sequences" version="FASTX_TOOLKIT: 0.0.13">
+	<description/>
+	<requirements><requirement type="package">fastx_toolkit</requirement></requirements>
+	<command>zcat -f '$input' | fastx_trimmer -v -f $first -l $last -o $output
+#if $input.ext == &quot;fastqsanger&quot;:
+-Q 33
+#end if
+	</command>
+
+	<inputs>
+		<param format="fasta,fastqsolexa,fastqsanger" label="Library to clip" name="input" type="data"/>
+
+		<param name="first" size="4" type="integer" value="1">
+			<label>First base to keep</label>
+		</param>
+
+		<param name="last" size="4" type="integer" value="21">
+			<label>Last base to keep</label>
+		</param>
+	</inputs>
+
+	<tests>
+		<test>
+			<!-- Trim a FASTA file - remove first four bases (e.g. a barcode) -->
+			<param name="input" value="fastx_trimmer1.fasta"/>
+			<param name="first" value="5"/>
+			<param name="last" value="36"/>
+			<output file="fastx_trimmer1.out" name="output"/>
+		</test>
+		<test>
+			<!-- Trim a FASTQ file - remove last 9 bases (e.g. keep only miRNA length sequences) -->
+			<param ftype="fastqsolexa" name="input" value="fastx_trimmer2.fastq"/>
+			<param name="first" value="1"/>
+			<param name="last" value="27"/>
+			<output file="fastx_trimmer2.out" name="output"/>
+		</test>
+	</tests>
+
+	<outputs>
+		<data format="input" metadata_source="input" name="output"/>
+	</outputs>
+	<help>
+**What it does**
+
+This tool trims (cut bases from) sequences in a FASTA/Q file.
+  
+--------
+
+**Example**
+
+Input Fasta file (with 36 bases in each sequences)::
+
+    &gt;1-1
+    TATGGTCAGAAACCATATGCAGAGCCTGTAGGCACC
+    &gt;2-1
+    CAGCGAGGCTTTAATGCCATTTGGCTGTAGGCACCA
+    
+
+Trimming with First=1 and Last=21, we get a FASTA file with 21 bases in each sequences (starting from the first base)::
+
+    &gt;1-1
+    TATGGTCAGAAACCATATGCA
+    &gt;2-1
+    CAGCGAGGCTTTAATGCCATT
+
+Trimming with First=6 and Last=10, will generate a FASTA file with 5 bases (bases 6,7,8,9,10) in each sequences::
+
+    &gt;1-1
+    TCAGA
+    &gt;2-1
+    AGGCT
+    
+    ------
+
+This tool is based on `FASTX-toolkit`__ by Assaf Gordon.
+
+ .. __: http://hannonlab.cshl.edu/fastx_toolkit/
+    
+</help>
+</tool>

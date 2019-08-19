@@ -1,0 +1,92 @@
+<tool id="rmapq_wrapper" name="RMAPQ" version="RMAPQ: default">
+    <description>for Solexa Short Reads Alignment with Quality Scores</description>
+    <command interpreter="python">
+    #if $trim.choice==&quot;No&quot;: #rmapq_wrapper.py $database $input_seq $input_score $high_score $high_len 0 $align_len $mismatch $output1
+    #else: #rmapq_wrapper.py $database $input_seq $input_score $high_score $high_len $trim.read_len $align_len $mismatch $output1
+    #end if
+    </command>
+    <inputs>
+        <param display="radio" label="Target database" name="database" type="select">
+			<options from_file="faseq.loc">
+			  <column index="0" name="name"/>
+			  <column index="0" name="value"/>
+			</options>
+        </param>
+        <param format="fasta" label="Sequence file" name="input_seq" type="data"/>
+        <param format="qualsolexa" label="Quality score file" name="input_score" type="data"/>
+        <param label="Minimum score for high-quality base (-q)" name="high_score" size="15" type="float" value="40"/>
+        <param label="Minimal high-quality bases (-M)" name="high_len" size="15" type="integer" value="36"/>
+        <param help="seed" label="Minimal length of a hit (-h)" name="align_len" size="15" type="integer" value="11"/>
+        <param label="Number of mismatches allowed (-m)" name="mismatch" type="select">
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="3">3</option>
+            <option value="5">5</option>
+        </param>
+        <conditional name="trim">
+            <param label="To trim the reads" name="choice" type="select">
+                <option value="No">No</option>
+                <option value="Yes">Yes</option>
+            </param>
+            <when value="No">
+            </when>
+            <when value="Yes">
+                <param label="Read length (-w)" name="read_len" size="15" type="integer" value="36"/> 
+            </when>
+        </conditional>
+    </inputs>
+    <outputs>
+        <data format="bed" name="output1"/>
+    </outputs>
+    <requirements>
+      <requirement type="binary">rmapq</requirement>
+    </requirements>
+    <!-- 
+    <tests>
+        <test>
+            <param name="database" value="/galaxy/data/faseq/test" />
+            <param name="input_seq" value="rmapq_wrapper_test1.fasta" ftype="fasta"/>
+            <param name="input_score" value="rmapq_wrapper_test1.qual" ftype="qualsolexa" />
+            <param name="high_score" value="40" />
+            <param name="high_len" value="36" />
+            <param name="read_len" value="36" />
+            <param name="align_len" value="36" />
+            <param name="mismatch" value="3" />
+            <output name="output1" file="rmapq_wrapper_test1.bed"/> 
+        </test>
+    </tests>
+    -->
+    <help>
+    
+.. class:: warningmark
+
+ RMAPQ was developed for **Solexa** reads. 
+
+.. class:: infomark
+
+**TIP**. The tool will guess the length of the reads, however, if you select to trim the reads, the *Maximal Length of the Reads* must be between 20 and 64. Reads with lengths longer than the specified value will be trimmed at the 3'end. 
+
+-----
+
+**What it does**
+
+This tool runs **rmapq** (for more information, please see the reference below), searching against a genome build with sequence qualities.   
+
+-----
+
+**Parameters**
+
+- *Minimal High-quality Bases* (**-M**): the minimal length of the high quality score bases
+- *Minimum Score for High-quality Base* (**-q**) : the minimal quality score 
+- *Minimal Length of a Hit* (**-h**) : the minimal length of an exact match or seed  
+- *Number of Mismatches Allowed* (**-m**) : the maximal number of mismatches allowed in an alignment
+- *Read Length* (**-w**) : maximal length of the reads; reads longer than the threshold will be truncated at 3' end.
+
+-----
+
+**Reference**
+
+ **RMAP** is developed by Dr. Andrew D Smith and Dr. Zhenyu Xuan at the Cold Spring Harbor Laboratory. Please see http://rulai.cshl.edu/rmap/
+
+    </help>
+</tool>

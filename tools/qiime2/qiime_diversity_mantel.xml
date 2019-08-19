@@ -1,0 +1,103 @@
+<?xml version="1.0" ?>
+<tool id="qiime_diversity_mantel" name="qiime diversity mantel" version="022019">
+	<description> - Apply the Mantel test to two distance matrices</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command><![CDATA[
+  qiime diversity mantel --i-dm2=$idm2 --i-dm1=$idm1
+  
+  #if $pintersectids:
+   --p-intersect-ids
+  #else
+  --p-no-intersect-ids
+  #end if
+  
+  #if str($cmdconfig) != 'None':
+   --cmd-config=$cmdconfig
+  #end if
+  
+  #if str($plabel2):
+   --p-label2="$plabel2"
+  #end if
+  
+  #if str($plabel1):
+   --p-label1="$plabel1"
+  #end if
+  
+   --o-visualization=ovisualization
+   
+  #if str($pmethod) != 'None':
+   --p-method=$pmethod
+  #end if
+  
+  #if $ppermutations:
+   --p-permutations=$ppermutations
+  #end if
+  ;
+  qiime tools export --input-path ovisualization.qzv --output-path out   && mkdir -p '$ovisualization.files_path'
+  && cp -r out/* '$ovisualization.files_path'
+  && mv '$ovisualization.files_path/index.html' '$ovisualization';
+  ]]></command>
+	<inputs>
+		<param format="qza,no_unzip.zip" label="--i-dm1: DistanceMatrix Matrix of distances between pairs of samples.  [required]" name="idm1" optional="False" type="data"/>
+		<param format="qza,no_unzip.zip" label="--i-dm2: DistanceMatrix Matrix of distances between pairs of samples.  [required]" name="idm2" optional="False" type="data"/>
+		<param label="--p-method: " name="pmethod" optional="True" type="select">			
+			<option selected="True" value="spearman">spearman</option>
+			<option value="pearson">pearson</option>
+		</param>
+		<param label="--p-permutations: The number of permutations to be run when computing p-values. Supplying a value of zero will disable permutation testing and p-values will not be calculated (this results in *much* quicker execution time if p-values are not desired).  [default: 999]" name="ppermutations" optional="True" type="integer" value="999"/>
+		<param label="--p-intersect-ids: --p-no-intersect-ids If supplied, IDs that are not found in both distance matrices will be discarded before applying the Mantel test. Default behavior is to error on any mismatched IDs. [default: False]" name="pintersectids" checked="False" type="boolean"/>
+		<param label="--p-label1: Label for \`dm1\` in the output visualization. [default: Distance Matrix 1]" name="plabel1" optional="True" type="text" value="Distance Matrix 1"/>
+		<param label="--p-label2: Label for \`dm2\` in the output visualization. [default: Distance Matrix 2]" name="plabel2" optional="True" type="text" value="Distance Matrix 2"/>
+		<param label="--cmd-config: Use config file for command options" name="cmdconfig" optional="True" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="html" label="${tool.name} on ${on_string}: visualization.qzv" name="ovisualization"/>
+	</outputs>
+	<help><![CDATA[
+Apply the Mantel test to two distance matrices
+----------------------------------------------
+
+Apply a two-sided Mantel test to identify correlation between two distance
+matrices.  Note: the directionality of the comparison has no bearing on the
+results. Thus, comparing distance matrix X to distance matrix Y is
+equivalent to comparing Y to X.  Note: the order of samples within the two
+distance matrices does not need to be the same; the distance matrices will
+be reordered before applying the Mantel test.  See the scikit-bio docs for
+more details about the Mantel test:  http://scikit-
+bio.org/docs/latest/generated/generated/skbio.stats.distance.mantel.html
+
+Parameters
+----------
+dm1 : DistanceMatrix
+    Matrix of distances between pairs of samples.
+dm2 : DistanceMatrix
+    Matrix of distances between pairs of samples.
+method : Str % Choices({'pearson', 'spearman'}), optional
+    The correlation test to be applied in the Mantel test.
+permutations : Int % Range(0, None), optional
+    The number of permutations to be run when computing p-values. Supplying
+    a value of zero will disable permutation testing and p-values will not
+    be calculated (this results in *much* quicker execution time if
+    p-values are not desired).
+intersect_ids : Bool, optional
+    If supplied, IDs that are not found in both distance matrices will be
+    discarded before applying the Mantel test. Default behavior is to error
+    on any mismatched IDs.
+label1 : Str, optional
+    Label for \`dm1\` in the output visualization.
+label2 : Str, optional
+    Label for \`dm2\` in the output visualization.
+
+Returns
+-------
+visualization : Visualization
+		\
+   ]]>
+	</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

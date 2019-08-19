@@ -1,0 +1,59 @@
+<flow name="combination" serializer="json">
+
+	<module name="scan_projects">
+		<title>Search for projects</title>
+		<desc>Search for projects</desc>
+
+		<out name="projects_out" />
+
+		<run>common/scan_projects.py</run>
+	</module>
+
+	<module name="classify" maxpar="1">
+		<title>Classify projects</title>
+		<desc>Classify projects by a set of criteria</desc>
+
+		<in name="projects_in" link="scan_projects.projects_out" />
+		<out name="project_sets" />
+
+		<run>combination/classify.py</run>
+	</module>
+
+	<module name="summary" maxpar="1">
+		<title>Summaries</title>
+
+		<in name="projects_in" link="classify.project_sets" />
+
+		<run>combination/summary.py</run>
+	</module>
+
+	<module name="recurrences">
+		<title>Combine recurrences</title>
+		<desc>Combine recurrences between project sets</desc>
+
+		<in name="project_sets_in" link="classify.project_sets" />
+		<out name="project_sets_out" />
+
+		<run>combination/recurrences.py</run>
+	</module>
+
+	<module name="oncodrivefm">
+		<title>Combine OncodriveFM results</title>
+		<desc>Combine OncodriveFM results between project sets</desc>
+
+		<in name="project_sets_in" link="classify.project_sets" />
+		<out name="project_sets_out" />
+
+		<run>combination/oncodrivefm.py</run>
+	</module>
+
+	<module name="oncodriveclust">
+		<title>Combine OncodriveCLUST results</title>
+		<desc>Combine OncodriveCLUST results between project sets</desc>
+
+		<in name="project_sets_in" link="classify.project_sets" />
+		<out name="project_sets_out" />
+
+		<run>combination/oncodriveclust.py</run>
+	</module>
+</flow>

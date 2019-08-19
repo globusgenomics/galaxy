@@ -1,0 +1,39 @@
+<tool id="globus_s3_get_data" name="Get Data via Amazon S3"  tool_type="globus_datasource">
+  <description>
+    Transfer a file from Amazon S3 to Galaxy
+  </description>
+  <action module="galaxy_ext.globus.tools.actions.globus" class="S3Transfer"/>
+  <command interpreter="python">
+    transfer_from_s3.py 
+       --session $sess
+       --token $token 
+       --host $hostname
+   #if $ext.value != ''
+       --ext $ext
+   #end if
+       $bucket
+       $path 
+       $output
+  </command>
+  <inputs>
+    <param name="token" type="hidden" value="" />
+    <param name="hostname" type="hidden" value="" />
+    <param name="ext" type="hidden" value="" />
+    <param name="sess" type="hidden"/>
+    <param name="credentials" type="aws_credentials" />
+    <param name="bucket" type="text" size="30" label="Bucket ID" />
+    <param name="path" type="hidden" label="File" size="40" />
+  </inputs>
+  <configfiles>
+    <configfile name="parametersfile">
+      
+    </configfile>
+  </configfiles>
+  
+  <outputs>
+    <data name="output"  format="data" />
+  </outputs>
+  <help>
+    Tranfer data from Amazon S3 to Globus Genomics.
+  </help>
+</tool>

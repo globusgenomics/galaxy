@@ -1,0 +1,106 @@
+#!/usr/bin/perl
+
+use strict;
+
+my $blastFile = shift(@ARGV);
+my $taxonAbbrev = shift(@ARGV);
+my $outputFile = shift(@ARGV);
+
+usage() unless $blastFile && $taxonAbbrev && $outputFile;
+
+open(F,$blastFile) || die "can't open BLAST file '$blastFile'\n";
+open(OUT, ">$outputFile") || die "can't open output file '$blastFile' for writing\n";
+
+while(<F>) {
+    chomp;
+    my @columns = split;
+    my ($queryId, $subjectId, $percentIdentity, $length, $dontcare1, $dontcare2, $queryStart, $queryEnd, $subjectStart, $subjectEnd, $evalue, $dontcare3, $qLength, $sLength) = @columns;
+
+    my $row = {}; 
+    $row->{queryId} = $queryId;
+    $row->{subjectId} = $subjectId;
+    $row->{percentIdentity} = $percentIdentity;
+    $row->{queryShorter} = $qLength < $sLength;
+    $row->{queryLength} = $qLength;
+    $row->{subjectLength} = $sLength;
+    $row->{queryMatchLength} = $queryEnd - $queryStart + 1;
+    $row->{subjectMatchLength} = $subjectEnd - $subjectStart + 1;
+    $row->{queryTaxon} = $taxonAbbrev;
+    $row->{subjectTaxon} = $taxonAbbrev;
+    ($row->{evalueMant}, $row->{evalueExp})
+	= formatEvalue($evalue); # from first hsp
+
+    printRow($row);
+}
+
+
+########################################################################################
+
+sub printRow {
+    my ($row) = @_;
+
+    my $shorterMatchLength = $row->{queryMatchLength} < $row->{subjectMatchLength}?
+	$row->{queryMatchLength} : $row->{queryMatchLength};
+    
+    my $shorterLength = $row->{queryShorter}? $row->{queryLength} : $row->{subjectLength};
+
+    my $percentMatch = int($shorterMatchLength / $shorterLength * 1000 + .5) / 10;
+    
+    print OUT "$row->{queryId}\t$row->{subjectId}\t$row->{queryTaxon}\t$row->{subjectTaxon}\t$row->{evalueMant}\t$row->{evalueExp}\t$row->{percentIdentity}\t$percentMatch\n";
+}
+
+# this (corrected) version of formatEvalue provided by Robson de Souza
+sub formatEvalue {
+    my ($evalue) = @_;
+    $evalue = '1' . $evalue if ($evalue =~ /^e/);
+    $evalue = sprintf("%.3e",$evalue);
+    my ($evalue_mant, $evalue_exp) = split(/e/, $evalue);
+    $evalue_mant = sprintf("%.2f",$evalue_mant);
+    $evalue_mant =~ s/\.0+$//;
+    $evalue_exp =~ s/\+//;
+    $evalue_exp = 0 if ($evalue_exp eq '00');
+    return ($evalue_mant, $evalue_exp);
+}
+
+sub usage {
+  print STDERR "
+
+Parse an NCBI tabular BLAST output file in the Similar Sequences format orthomcl requires.
+
+Usage: orthomclBlastParserTabluar blast_file taxon_abbrev
+
+where:
+  blast_file:         BLAST output in tabular format (as provided in Galaxy) (see below)
+  taxon_abbrev:       A single taxon abbreviation placeholder to use in the two taxon columns in the output (query and subject).  this parser assumes that 
+                      the subject and query are from the same taxon.
+
+  
+output:
+  tab delimited text file, with one row per query-subject match. the columns are:
+
+     query_id, subject_id, query_taxon, subject_taxon, evalue_mant, evalue_exp, percent_ident, percent_match
+
+(percent_match is computed by counting the number of bases or amino acids in the shorter sequence that are matched in any hsp, and dividing by the length of that shorter sequence)
+
+Blast file columns:
+
+1 qaccver Query accession dot version
+2 saccver Subject accession dot version (database hit)
+3 pident Percentage of identical matches
+4 length Alignment length
+5 mismatch Number of mismatches
+6 gapopen Number of gap openings
+7 qstart Start of alignment in query
+8 qend End of alignment in query
+9 sstart Start of alignment in subject (database hit)
+10 send End of alignment in subject (database hit)
+11 evalue Expectation value (E-value)
+12 bitscore Bit score
+18 ppos Percentage of positive-scoring matches
+23 qlen Query sequence length
+24 slen Subject sequence length
+";
+
+
+  exit(1);
+}

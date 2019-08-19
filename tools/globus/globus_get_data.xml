@@ -1,0 +1,71 @@
+<tool id="globus_get_data_text" name="Get Data via Globus">
+  <description>High speed file upload</description>
+  <action module="galaxy_ext.globus.tools" class="GlobusTransferInAction"/>
+  <command interpreter="python"> 
+    globus_transfer.py
+    --transfer-info "$transfer_info"
+    --transfer-direction "$transfer_direction"
+  </command>
+  <inputs>
+    <param name="from_endpoint" type="text" size="100" label="Source Endpoint">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="from_path" type="text" size="100" label="Source Path">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="username" type="hidden" value="**" label="Globus Username"/>
+    <param name="goauth" type="hidden" value="**" label="Globus Auth Token">
+      <sanitizer sanitize="False"/>
+    </param>
+  </inputs>
+  <outputs>
+    <data name="out_file1" type="data" format="txt"/>
+  </outputs>
+  <help>
+
+**What it does**
+
+Performs high speed file uploads to Galaxy, from your computer or from (supported) institutional servers.  It is especially useful with large files (> 1G).
+
+This tool uses the Globus high speed file transfer system. Globus is transfer system in extensive use by the scientific community.  Transfer speeds can be as much as ten times faster.
+
+To use this tool to upload files from your computer:
+
+1. Install the Globus Personal Connect Endpoint (GPC).  Doing so is easy.  Follow these `instructions &lt;https://www.globus.org/globus-connect-personal&gt;`_.
+
+2. Activate the GPC program installed on your computer.
+
+3. The Source Endpoint (for the first box above) can be found by clicking on the GPC icon on your machine.
+
+4. The Source Path (for the second box above) can be found by browsing through your machine for the file you are interested in transferring.
+
+To use this tool for files on institutional servers (such as sequencing centers): Contact your sequencing center to verify that they have an active Globus Endpoint and their name and path to the files of interest.
+
+-----
+
+**Example**
+
+Specify your endpoint, and path within those endpoints.
+
+
+For Linux/OS:
+
+Source Endpoint: username-mylocal-endpoint
+
+Source Path: /Users/username/my-path/local.txt
+
+
+For Windows Users:
+
+Source Endpoint: username-mylocal-endpoint
+
+Source Path: /C/Documents/my-path/local.txt
+
+You will need to modify the forward slashes in your Windows path to backward slashes.
+In addition, your drive name should be preceded and followed by a backward slash.
+Do not use any colon characters after the drive name. Instead use a backward slash.
+
+For additional questions follow this `link &lt;https://docs.globus.org/faq/globus-connect-endpoints&gt;`_.
+
+  </help>
+</tool>

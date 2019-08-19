@@ -1,0 +1,46 @@
+<tool id="globus_get_bioproject_data_from_ebi" name="Get Data with BioProject ID from the EBI server">
+  <description>using SRA ID</description>
+  <action module="galaxy_ext.globus.tools" class="GlobusTransferInAction"/>
+  <command >
+    ##mkdir $out_file1.extra_files_path; 
+    python $__tool_directory__/globus_transfer.py
+    --transfer-info "$transfer_info"
+    --transfer-direction "$transfer_direction"
+   ##; ls -l $symlink > $out_file1
+  </command>
+  <inputs>
+    <param name="accession" type="text" size="100" label="Enter your BioProject id" help=" i.e. PRJNA378660">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="globuscert" type="hidden" value="**" label="Detailded Transfer Info">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="from_endpoint" type="hidden" value="ebi#public" label="Source Endpoint">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="symlink" type="hidden" value="**" label="symlink to output">
+    </param>
+  </inputs>
+  <outputs>
+    <data name="out_file1" type="data" format="txt"/>
+  </outputs>
+  <help>
+.. class:: warningmark
+    
+  **WARNING:** Be careful not to exceed disk quotas!
+    
+-----
+    
+**What it does**
+    
+  Transfers data between EBI repository using Globus Transfer to your Cloud installation
+  and creates a galaxy dataset from transfered file.
+
+-----
+    
+**Example**
+    
+  Specify your BioProject of interest.
+
+  </help>
+</tool>

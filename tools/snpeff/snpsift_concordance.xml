@@ -1,0 +1,33 @@
+<tool id="snpsift_concordance" name="SNPSift concordance" version="4.1">
+  <description>Calculate concordance between two VCF files</description>
+  <command>ln -s $input1 sample1.vcf; ln -s $input2 sample2.vcf; java -Xmx6G -jar \$SNPEFF_JAR_PATH/SnpSift.jar concordance -v sample1.vcf sample2.vcf > $out_file1</command>
+    <stdio>
+        <regex description="tool progress" level="log" match=".*" source="both"/>
+    </stdio>
+  <requirements>
+    <requirement type="package">java</requirement>
+    <requirement type="package">snpeff</requirement>
+  </requirements>
+  <inputs>
+    <param format="vcf" name="input1" type="data" label="Select first VCF dataset"/>
+    <param format="vcf" name="input2" type="data" label="Select VCF dataset to find concordance with"/>
+  </inputs>
+  <outputs>
+    <data format="tabular" name="out_file1" label="${tool.name} on ${on_string}: stdout"/>
+    <data format="tabular" name="out_file2" from_work_dir="concordance_sample1_sample2.by_sample.txt" label="${tool.name} on ${on_string} (By sample)" />
+    <data format="tabular" name="out_file3" from_work_dir="concordance_sample1_sample2.summary.txt" label="${tool.name} on ${on_string} (Summary)" />
+  </outputs>
+  <tests>
+    <test>
+      <param name="input1" value="vcfsort-test1-input.vcf"/>
+      <param name="input2" value="vcfsort-test1-input.vcf"/>
+      <output name="out_file1" file="vcfsort-test1.vcf"/>
+    </test>
+  </tests>
+  <help>
+
+This is typically used when you want to calculate concordance between a genotyping experiment and a sequencing experiment. 
+
+
+  </help>
+</tool>

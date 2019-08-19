@@ -1,0 +1,88 @@
+<tool id="bedtools_intersectbed" name="Bedtools-intersectBed" version="BEDTOOLS: 2.17.0">
+<description>Intersect two bed files
+</description>
+    
+<requirements>
+        <requirement type="package">bedtools</requirement>
+</requirements>
+
+<command>
+    intersectBed
+    -a '$inputA'
+    -b '$inputB'
+    $split
+    $strand
+    #if str($fraction):
+      -f      $fraction
+    #end if
+    $reciprocal
+    $invert
+    $wo
+    $wa
+    $wb
+    $u
+    &gt; '$output'
+</command>
+
+<inputs>
+    <param format="bed,vcf,gff" label="Select a input BED file" name="inputA" type="data">
+          <validator type="unspecified_build"/>
+    </param>
+    <param format="bed,vcf,gff" label="overlap intervals in this BED file?" name="inputB" type="data">
+          <validator type="unspecified_build"/>
+    </param>
+    <param checked="true" falsevalue="" help="If set, the coverage will be calculated based the spliced intervals only. For BAM files, this inspects the CIGAR N operation to infer the blocks for computing coverage. For BED12 files, this inspects the BlockCount, BlockStarts, and BlockEnds fields (i.e., columns 10,11,12). If this option is not set, coverage will be calculated based on the interval's START/END coordinates, and would include introns in the case of RNAseq data." label="Treat split/spliced BAM or BED12 entries as distinct BED intervals when computing coverage." name="split" truevalue="-split" type="boolean"/>
+    
+    <param label="Calculate coverage based on" name="strand" type="select">
+        <option value="">Overlaps on either strand</option>
+        <option value="-s">Only overlaps occurring on the **same** strand.</option>
+        <option value="-S">Only overlaps occurring on the **opposite** strand.</option>
+    </param>
+    
+    <param help="Alignments are only retained if the overlap with the an interval in the BED file comprises at least this fraction of the BAM alignment's length.  For example, to require that the overlap affects 50% of the BAM alignment, use 0.50" label="-f, Minimum overlap required as a fraction of the BAM alignment" name="fraction" optional="true" type="text"/>
+    
+    <param checked="false" falsevalue="" help="If set, the overlap between the BAM alignment and the BED interval must affect the above fraction of both the alignment and the BED interval." label="-r, Require reciprocal overlap." name="reciprocal" truevalue="-r" type="boolean"/>
+    
+    <param checked="false" falsevalue="" label="-v, Report only those alignments that **do not** overlap the BED file." name="invert" truevalue="-v" type="boolean"/>
+    
+    <param checked="false" falsevalue="" label="-wo, Write the original A and B entries plus the number of base pairs of overlap between the two features." name="wo" truevalue="-wo" type="boolean"/>
+
+    <param checked="false" falsevalue="" label="-wa, Write the original entry in A for each overlap." name="wa" truevalue="-wa" type="boolean"/>
+
+    <param checked="false" falsevalue="" label="-wb, Write the original entry in B for each overlap." name="wb" truevalue="-wb" type="boolean"/>
+    <param checked="false" falsevalue="" label="-u, Write the original A entry _once_ if _any_ overlaps found in B." name="u" truevalue="-u" type="boolean"/>
+</inputs>
+
+<outputs>
+    <data format="bed" label="Intersection of ${inputA.name} and ${inputB.name}" name="output"/>
+</outputs>
+
+<help>
+
+**What it does**
+
+This tool creates a new BAM alignment file based on alignments that overlap (or optionally, those that do not overlap) intervals in another BED file.  Example usage would be to cull a BAM file from an exome capture experiment to include on the &quot;on-target&quot; alignments. 
+
+.. class:: infomark
+
+Note that each BAM alignment is treated individually.  Therefore, if one end of a paired-end alignment overlaps an interval in the BED file, yet the other end does not, the output file will only include the overlapping end.
+
+.. class:: infomark
+
+Note that a BAM alignment will be sent to the output file **once** even if it overlaps more than one interval in the BED file.
+
+.. class:: warningmark
+
+This tool requires that `bedtools`__ has been installed on your system.
+
+------
+
+This tool is part of the `bedtools package`__ from the `Quinlan laboratory`__. If you use this tool, please cite `Quinlan AR, and Hall I.M. BEDTools: A flexible framework for comparing genomic features. Bioinformatics, 2010, 26, 6.`__
+
+    .. __: http://code.google.com/p/bedtools/
+    .. __: http://code.google.com/p/bedtools/
+    .. __: http://cphg.virginia.edu/quinlan/
+    .. __: http://bioinformatics.oxfordjournals.org/content/26/6/841.short
+
+</help>
+</tool>

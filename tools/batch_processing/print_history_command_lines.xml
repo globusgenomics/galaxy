@@ -1,0 +1,35 @@
+<tool id="print_history_cl" name="Print Command Lines">
+   <action module="galaxy.tools.actions.globus" class="HistoryManagement"/>
+   <description>for all items in current history</description>
+   <requirements>
+     <requirement type="package">pymodules</requirement>
+   </requirements>
+   <command interpreter="python">
+     print_history_command_lines.py 
+     --userkey $userkey
+     --history_id $history_id
+     --url "$url" 
+     --output $log > $log 
+   </command>
+
+   <inputs>
+     <param name="url" type="hidden" label="URL"/>
+     <param name="userkey" type="hidden" size="100" label="Key"/>
+     <param name="history_id" type="hidden" size="100" label="History id"/>
+   </inputs>
+
+   <outputs>
+     <data format="txt" name="log" label="Log for deleting history"/>
+   </outputs>
+
+   <help>
+
+.. class:: infomark
+
+**Print history Command lines**
+   This tool will print out the command lines for all completed jobs in the history.
+
+   </help>
+
+</tool>
+

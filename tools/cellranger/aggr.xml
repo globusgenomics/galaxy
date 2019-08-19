@@ -1,0 +1,48 @@
+<tool id="aggr" name="cellranger aggr" version="CELL RANGER: 2.2.0">
+<description> command takes a CSV file specifying a list of cellranger count output files (specifically the molecule_info.h5 from each run), and produces a single gene-barcode matrix containing all the data</description>
+    <requirements>
+      <requirement type="package" version="2.2.0">cellranger</requirement>
+      <requirement type="package" version="v2.19.1">illumina</requirement>
+      <requirement type="package">pymodules</requirement>
+    </requirements>
+
+<command>
+    #set $csv_file =  str($output.extra_files_path) + "/libraries.csv"
+    mkdir $output.extra_files_path;
+    ln -s $output $csv_file;
+
+    python $__tool_directory__/aggr.py
+    --id $id
+    --output $csv_file
+    --output-dir $output.extra_files_path
+    --normalize $normalize
+
+    #for $i, $s in enumerate( $aggregation ):
+    --aggregation
+        "$i" "${s.matrix}"
+    #end for
+
+</command>
+
+<inputs>
+    <param name="id" type="text" label="A unique run ID string: e.g. AGG123 (--id)" help=""/>
+    <param name="normalize" type="select" label="Normalize depth across the input libraries (--normalize)" help="">
+      <option value="mapped" selected="true">mapped (default)</option>
+      <option value="raw">raw</option>
+      <option value="none">none</option>
+    </param>
+    <repeat name="aggregation" title="count output" label="" min="2">
+      <param name="matrix" type="data" format="h5" label="matrix (--matrix)" help="Path to a filtered_gene_bc_matrices_h5.h5 or raw_gene_bc_matrices_h5.h5 from a completed pipestance"/>
+    </repeat>
+
+</inputs>
+
+<outputs>
+    <data format="tabular" name="output" label="${tool.name} on ${on_string} main output"/>
+</outputs>
+
+<help>
+
+</help>
+
+</tool>

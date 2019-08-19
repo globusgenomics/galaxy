@@ -1,0 +1,13 @@
+<tool id="coverageStats" name="Calculate coverage stats">
+	<description>Calculates a histogram of cumulative fold coverage and non-cumulative fold coverage</description>
+	<command interpreter="perl">coverageStats.pl $input > $output</command>
+	<inputs>
+		<param name="input" type="data" format="bed" label="Bed file" help="Bed file containing coverage" optional="false"/>
+	</inputs>
+	<outputs>
+		<data name="output" type="data" format="tabular" label="Coverage histogram on ${on_string}"/>
+	</outputs>
+        <help>
+        </help>
+
+</tool>

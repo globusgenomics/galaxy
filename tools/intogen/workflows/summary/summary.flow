@@ -1,0 +1,11 @@
+<flow name="summary-core" serializer="json">
+
+	<title>Summary</title>
+	<desc>Summarize information: drivers, ...</desc>
+
+	<in name="projects_in" />
+
+	<module name="drivers">
+		<run>drivers.py</run>
+	</module>
+</flow>

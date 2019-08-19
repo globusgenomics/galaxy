@@ -1,0 +1,13 @@
+<tool id="footprint_filter" name="footprinting filter">
+  <description>groups together lines of the same motif with slightly different footprint coordinates</description>
+  <requirements>
+    <requirement type="package">pymodules</requirement>
+  </requirements>
+  <command interpreter="python">bdds-footprint-filter3.py -i $input -o $output</command>
+  <inputs>
+    <param format="bed, tabular" name="input" type="data" label="sorted unique footprint data"/>
+  </inputs>
+  <outputs>
+    <data format="bed" name="output" label="${tool.name} on ${on_string}"/>
+  </outputs>
+</tool>  

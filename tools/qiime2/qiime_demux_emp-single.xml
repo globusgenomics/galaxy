@@ -1,0 +1,83 @@
+<?xml version="1.0" ?>
+<tool id="qiime_demux_emp-single" name="qiime demux emp-single" version="022019">
+	<description>- Demultiplex sequence data generated with the EMP protocol.</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command><![CDATA[
+  qiime demux emp-single --m-barcodes-column="$mbarcodescolumn" --i-seqs=$iseqs
+  
+  #def list_dict_to_string(list_dict):
+  	#set $file_list = list_dict[0]['additional_input'].__getattr__('file_name')
+  	#for d in list_dict[1:]:
+  		#set $file_list = $file_list + ',' + d['additional_input'].__getattr__('file_name')
+  	#end for
+  	#return $file_list
+  #end def
+  
+   --m-barcodes-file=$list_dict_to_string($input_files_mbarcodesfile) --o-per-sample-sequences=opersamplesequences
+   
+  #if $prevcompbarcodes:
+   --p-rev-comp-barcodes
+  #else
+    --p-no-rev-comp-barcodes
+  #end if
+  
+  #if $prevcompmappingbarcodes:
+   --p-rev-comp-mapping-barcodes
+  #else
+    --p-no-rev-comp-mapping-barcodes
+  #end if
+  
+  #if str($cmdconfig) != 'None':
+   --cmd-config=$cmdconfig
+  #end if
+  ;
+  cp opersamplesequences.qza $opersamplesequences;
+  ]]></command>
+	<inputs>
+		<param format="qza,no_unzip.zip" label="--i-seqs: EMPPairedEndSequences | EMPSingleEndSequences | RawSequences The single-end sequences to be demultiplexed.  [required]" name="iseqs" optional="False" type="data"/>
+		<repeat name="input_files_mbarcodesfile" optional="False" title="--m-barcodes-file">
+			<param label="--m-barcodes-file: Metadata file or artifact viewable as metadata. This option may be supplied multiple times to merge metadata. [required]" name="additional_input" type="data" format="tabular,qza,no_unzip.zip"/>
+		</repeat>
+		<param label="--m-barcodes-column: MetadataColumn[Categorical] Column from metadata file or artifact viewable as metadata. The sample metadata column containing the per-sample barcodes. [required]" name="mbarcodescolumn" optional="False" type="text"/>
+		<param label="--p-rev-comp-barcodes: --p-no-rev-comp-barcodes If provided, the barcode sequence reads will be reverse complemented prior to demultiplexing.  [default: False]" name="prevcompbarcodes" checked="False" type="boolean"/>
+		<param label="--p-rev-comp-mapping-barcodes: --p-no-rev-comp-mapping-barcodes If provided, the barcode sequences in the sample metadata will be reverse complemented prior to demultiplexing.  [default: False]" name="prevcompmappingbarcodes" checked="False" type="boolean"/>
+		<param label="--cmd-config: Use config file for command options" name="cmdconfig" optional="True" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="qza" label="${tool.name} on ${on_string}: per-sample-sequences.qza" name="opersamplesequences"/>
+	</outputs>
+	<help><![CDATA[
+Demultiplex sequence data generated with the EMP protocol.
+----------------------------------------------------------
+
+Demultiplex sequence data (i.e., map barcode reads to sample ids) for data
+generated with the Earth Microbiome Project (EMP) amplicon sequencing
+protocol. Details about this protocol can be found at
+http://www.earthmicrobiome.org/protocols-and-standards/
+
+Parameters
+----------
+seqs : EMPPairedEndSequences | EMPSingleEndSequences | RawSequences
+    The single-end sequences to be demultiplexed.
+barcodes : MetadataColumn[Categorical]
+    The sample metadata column containing the per-sample barcodes.
+rev_comp_barcodes : Bool, optional
+    If provided, the barcode sequence reads will be reverse complemented
+    prior to demultiplexing.
+rev_comp_mapping_barcodes : Bool, optional
+    If provided, the barcode sequences in the sample metadata will be
+    reverse complemented prior to demultiplexing.
+
+Returns
+-------
+per_sample_sequences : SampleData[SequencesWithQuality]
+    The resulting demultiplexed sequences.
+      ]]>
+	</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

@@ -1,0 +1,69 @@
+<tool id="impute2" name="impute2" version="IMPUTE2: 2.3.2">
+<description>is a genotype imputation and haplotype phasing program</description>
+    <requirements>
+      <requirement type="package" version="2.3.2">impute2</requirement>
+      <requirement type="package">pymodules</requirement>
+    </requirements>
+
+<command interpreter="python">
+    impute_wrapper.py 
+    #if $gen_or_hap.phased_or_not == "unphased":
+        -p '-prephase_g'
+        --genotype $gen_or_hap.gen
+    #else:
+        -p '-use_prephased_g'
+        --known-haps-g $gen_or_hap.known_hap
+        #if $haplotype:
+            --haplotype $haplotype
+        #end if
+        #if $legend:
+            --legend $legend
+        #end if
+    #end if
+    -p '-int $start_pos $end_pos'
+    -p '-Ne $ne' 
+    -p '-buffer $buffer_size'
+    --map $map
+    --output-dir $output.extra_files_path
+    --output $output
+    --output2 $output_info
+    --output3 $output_summary
+</command>
+
+<inputs>
+    <conditional name="gen_or_hap">
+        <param name="phased_or_not" type="select" label="Haplotypes pre-phased or unphased?" help="" >
+            <option selected="true" value="unphased">Unphased </option>
+            <option value="phased" help="Partially phased also counts">Pre-Phased</option>
+        </param>
+        <when value="unphased">
+            <param name="gen" type="data" format="tabular, csv" label="Unphased file (.gens)" />
+        </when>
+        <when value="phased">
+            <param name="known_hap" type="data" format="tabular, gg" label="Pre-phased Known file (._haps)" />
+            <param name="haplotype" type="data" format="tabular, gg" label="Reference haplotype file (.hap)" />
+            <param name="legend" type="data" format="tabular, csv" label="Reference legend file (.legend)" />            
+        </when>
+    </conditional>
+    <param name="map" type="data" format="tabular, gg" label="Fine-scale recombination map (.map)" help="This file should have three columns: physical position (in base pairs), recombination rate between current position and next position in map (in cM/Mb), and genetic map position (in cM)."/>
+    <!--param name="chromosome" type="text" label="Chromosome number" value="chrX" help=""/-->
+    <param name="start_pos" type="integer" value="0" label="Lower boundary" help="Lower genomic interval to use for inference"/>
+    <param name="end_pos" type="integer" value="0" label="Upper boundary" help=" Upper genomic interval to use for inference"/>
+    <param name="ne" type="integer" value="20000" label="Effective size of population" help="This parameter scales the recombination rates to guide its model of linkage disequilibrium patterns" />
+    <param name="buffer_size" type="integer" value="250" label="Buffer size (kb)" help="Length of buffer region (in kb) to include on each side of the analysis interval." />
+</inputs>
+
+<outputs>
+    <data format="tabular" name="output" label="${tool.name} on ${on_string} main output"/>
+    <data format="tabular" name="output_summary" label="${tool.name} on ${on_string} summary (_summary)"/>
+    <data format="tabular" name="output_info" label="${tool.name} on ${on_string} additional info (_info)"/>
+
+</outputs>
+
+<help>
+This tool uses IMPUTE2 a program for imputation. It can accept pre-phased data (e.g. from ShapeIT) or unphased data which is recommended for smaller regions. 
+
+More information can be found here http://mathgen.stats.ox.ac.uk/impute/impute_v2.html
+</help>
+
+</tool>

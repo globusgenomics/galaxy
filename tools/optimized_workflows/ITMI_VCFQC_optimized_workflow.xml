@@ -1,0 +1,57 @@
+<tool id="itmi_vcfqc_optimized" name="ITMI VCF QC Optimized Workflow" version="FastQC: 0.11.3; VCFLIB: 03.08.2016; PICARD: 1.134; VCFTOOLS: vcftools_0.1.14">
+  <description>quality control for BAM and VCF</description>
+  <requirements>
+    <requirement type="package" version="0.11.3">FastQC</requirement>
+    <requirement type="package" version="03.08.2016">vcflib</requirement>
+    <requirement type="package" version="1.134">picard</requirement>
+    <requirement type="package" version="vcftools_0.1.14">vcftools</requirement>
+    <requirement type="package">pymodules</requirement>
+    <requirement type="package" version="jre1.7.0_5">java</requirement>
+  </requirements>
+  <command interpreter="python">
+    ITMI_VCFQC_optimized_03092016.py
+      --input-bam $input_bam
+      --input-vcf $input_vcf
+      --input-tabix $input_tabix
+
+      ##use precomputed indexes
+      --picard-ref "${picard_index.fields.path}"
+
+      ## output vcf file
+      --output-picard-alignmentSummary $output_picard_alignmentSummary
+      --output-picard-alignmentSummary-directory $output_picard_alignmentSummary.extra_files_path
+      --output-vcflib-hethomratio $output_vcflib_hethomratio
+      --output-vcftools-tstvstats $output_vcftools_tstvstats
+      --output-fastqc-html $output_fastqc_html
+      --output-fastqc-text $output_fastqc_text
+      --output-log $output_log
+      >  $output_log
+  </command>
+  <inputs>
+    <param name="sample" type="text" label="Sample label" />
+    <param name="input_bam" type="data" format="bam" label="Input BAM"/>
+    <param name="input_vcf" type="data" format="vcf" label="Input VCF"/>
+    <param name="input_tabix" type="data" format="tabix,tbi" label="Input Tabix"/>
+    <param help="" label="Select a Picard built-in reference genome" name="picard_index" type="select">
+      <options from_data_table="all_fasta">
+      </options>
+    </param>
+  </inputs>
+  <outputs>
+    <data format="html" label="${tool.name}: FastQC Webpage" name="output_fastqc_html"/>
+    <data format="txt" label="${tool.name}: FastQC RawData" name="output_fastqc_text"/>
+    <data format="txt" label="${tool.name}: Picard AlignmentSummary Metrics" name="output_picard_alignmentSummary"/>
+    <data format="tabular" label="${tool.name}: VCFLIB HetHom ratio" name="output_vcflib_hethomratio" />
+    <data format="tabular" label="${tool.name}: VCFTOOLS TsTv stats" name="output_vcftools_tstvstats" />
+    <data format="txt" label="${tool.name}: Log" name="output_log"/>
+  </outputs>
+  <tests>
+    <test>
+    </test>
+  </tests> 
+  <help>
+
+**What it does**
+
+  </help>
+</tool>

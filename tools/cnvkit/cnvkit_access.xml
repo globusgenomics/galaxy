@@ -1,0 +1,55 @@
+<tool id="cnvkit_access" name="cnvkit access" version="CNVKIT: v0.7.5">
+  <description> Sequencing-accessible regions </description>
+  <requirements>
+    <requirement type="package">pymodules</requirement>
+  </requirements>
+
+  <command >
+  cnvkit.py access 
+  #if $genomeSource.refGenomeSource == "history":
+    ${genomeSource.ownFile}
+  #else:
+    ${genomeSource.indices.fields.path}
+  #end if
+  -s $line -o $out_file
+  <!--cnvkit.py $input $line $out_file-->
+  </command>
+  <stdio>
+    <exit_code range="1:"  level="fatal" description="Error in job execution" />
+  </stdio>
+  <inputs>
+    <conditional name="genomeSource">
+      <param label="Will you select a reference genome from your history or use a built-in fasta file?" name="refGenomeSource" type="select">
+        <option value="indexed">Use a built-in index</option>
+        <option value="history">Use one from the history</option>
+      </param>
+      <when value="indexed">
+        <param label="Select a reference genome" name="indices" type="select">
+          <options from_data_table="all_fasta_short">
+          </options>
+        </param>
+      </when>
+      <when value="history">
+        <param format="fasta" label="Select a reference from history" name="ownFile" type="data"/>
+      </when>
+    </conditional>
+
+    <param name="line" size="5" type="integer" value="10000" label="sequencing-accessible chromosomal regions (i.e., 5k, 10k)"/>
+  </inputs>
+  <outputs>
+    <data format="bed" name="out_file" label="${tool.name} on ${on_string}: sequencing region bed"/>
+  </outputs>
+
+  <tests>
+    <test>
+      <param name="input" value="test.fasta"/>
+      <param name="line" value="10000"/>
+      <output name="out_file" file="test_access_output.txt"/>
+    </test>
+  </tests>
+
+  <help>
+This tool runs segmentation on a CNVkit CNR file.
+  </help>
+
+</tool>

@@ -1,0 +1,10 @@
+div.container-fluid {
+	background-image: url("logo-small.png");
+	background-repeat: no-repeat;
+	background-position: right top;
+}
+
+#beta-ribbon {
+    display: none;
+}
+

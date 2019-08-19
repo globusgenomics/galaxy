@@ -1,0 +1,57 @@
+<tool id="tangram_scan_for_dataset" name="Tangram scan using Swift" version="TANGRAM: default">
+  <requirements>
+    <requirement type="package">tangram</requirement>
+    <requirement type="package">swift</requirement>
+  </requirements>
+  <description>Calculate the fragment length distribution for a dataset</description>
+  <command interpreter="python">
+    tangram_scan.py
+      --swift 
+      --input-dataset $input
+      --lib-table $lib_table
+      --lib-table-extra $lib_table.extra_files_path
+      --hist $hist
+      --hist-extra $hist.extra_files_path
+      #if $advanced.advanced_select == &quot;yes&quot;:
+          #if $advanced.cf != 0.01:
+              --cf-threshold $advanced.cf
+          #end if
+          #if $advanced.tr != 0.02:
+              --tr-fragment $advanced.tr
+          #end if
+          #if $advanced.mq != 20:
+              --mq-reads $advanced.mq
+          #end if
+          #if $advanced.mf != 10000:
+              --mf-normal $advanced.mf
+          #end if
+      #end if
+  </command>
+  <inputs>
+      <param format="html" label="input a Mosaik BAM File" name="input" type="data"/>
+      <conditional name="advanced">
+          <param label="Advanced options" name="advanced_select" type="select">
+              <option value="yes">Advanced options</option>
+              <option selected="true" value="no">No</option>
+          </param>
+          <when value="yes">
+              <param help="0.01 total for both side" label="Threshold for normal read pair in the fragment length distribution" name="cf" type="float" value="0.01"/>
+              <param help="0.02 total for both side" label="Trim rate for the fragment length distribution" name="tr" type="float" value="0.02"/>
+              <param help="" label="Minimum mapping quality for a normal read pair" name="mq" type="integer" value="20"/>
+              <param help="" label="Minimum number of nomral fragments in a library" name="mf" type="integer" value="10000"/>
+          </when>
+          <when value="no"/>
+      </conditional>
+  </inputs>
+  <outputs>
+    <data format="html" label="${tool.name} on ${on_string}: lib table dataset" name="lib_table"/>
+    <data format="html" label="${tool.name} on ${on_string}: hist dataset" name="hist"/>
+  </outputs>
+  <help>
+
+**What it does**
+
+Besides indexing the reference file, there is another important preprocess step in Tangram, calculating the fragment length distribution. Fragment length distribution plays an important role in SV detection with pair-end sequencing data. For a better accuracy, Tangram will calculate the empirical fragment length distribution for every read group in the BAM files.
+
+  </help>
+</tool>

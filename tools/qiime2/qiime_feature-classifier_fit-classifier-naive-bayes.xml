@@ -1,0 +1,270 @@
+<?xml version="1.0" ?>
+<tool id="qiime_feature-classifier_fit-classifier-naive-bayes" name="qiime feature-classifier fit-classifier-naive-bayes" version="022019">
+	<description>- Train the naive_bayes classifier</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command>
+		<![CDATA[
+	qiime feature-classifier fit-classifier-naive-bayes
+
+	#if str( $id_to_taxonomy_fp.selector ) == 'history'
+		#set $tax = $id_to_taxonomy_fp.taxonomy_fp
+		--i-reference-taxonomy '$tax'
+	#else:
+		#set $tax = $id_to_taxonomy_fp.taxonomy_fp.fields.path
+		--i-reference-taxonomy '$tax'
+	#end if
+
+
+		--i-reference-reads=$ireferencereads
+
+	#if $pfeatextnonnegative:
+	 --p-feat-ext--non-negative
+	#else
+		--p-no-feat-ext--non-negative
+	#end if
+
+	#if str($pfeatexttokenpattern):
+		#if '__ob__' in str($pfeatexttokenpattern):
+		  #set $pfeatexttokenpattern_temp = $pfeatexttokenpattern.replace('__ob__', '[')
+		  #set $pfeatexttokenpattern = $pfeatexttokenpattern_temp
+		#end if
+		#if 'X' in str($pfeatexttokenpattern):
+		  #set $pfeatexttokenpattern_temp = $pfeatexttokenpattern.replace('X', '\\')
+		  #set $pfeatexttokenpattern = $pfeatexttokenpattern_temp
+		#end if
+		--p-feat-ext--token-pattern="$pfeatexttokenpattern"
+	#end if
+
+	#if str($pfeatextencoding):
+	 --p-feat-ext--encoding="$pfeatextencoding"
+	#end if
+
+	#if $pfeatextnfeatures:
+	 --p-feat-ext--n-features=$pfeatextnfeatures
+	#end if
+
+	#if str($pfeatextstopwords):
+	 --p-feat-ext--stop-words="$pfeatextstopwords"
+	#end if
+
+	#if str($pfeatextngramrange):
+		#if '__ob__' in str($pfeatextngramrange):
+		  #set $pfeatextngramrange_temp = $pfeatextngramrange.replace('__ob__', '[')
+		  #set $pfeatextngramrange = $pfeatextngramrange_temp
+		#end if
+		#if 'X' in str($pfeatextngramrange):
+		  #set $pfeatextngramrange_temp = $pfeatextngramrange.replace('X', '\\')
+		  #set $pfeatextngramrange = $pfeatextngramrange_temp
+		#end if
+		 --p-feat-ext--ngram-range="$pfeatextngramrange"
+	#end if
+
+	#if str($pfeatextanalyzer):
+	 --p-feat-ext--analyzer="$pfeatextanalyzer"
+	#end if
+
+	#if $pclassifyalpha:
+	 --p-classify--alpha=$pclassifyalpha
+	#end if
+
+	#if str($cmdconfig) != 'None':
+	 --cmd-config=$cmdconfig
+	#end if
+
+	#if $pclassifyfitprior:
+	 --p-classify--fit-prior
+	#else
+		--p-no-classify--fit-prior
+	#end if
+
+	#if $pfeatextbinary:
+	 --p-feat-ext--binary
+	#else
+		--p-no-feat-ext--binary
+	#end if
+
+	#if str($iclassweight) != 'None':
+	 --i-class-weight=$iclassweight
+	#end if
+
+	#if str($pfeatextpreprocessor):
+	 --p-feat-ext--preprocessor="$pfeatextpreprocessor"
+	#end if
+
+	#if $pfeatextalternatesign:
+	 --p-feat-ext--alternate-sign
+	#else
+		--p-no-feat-ext--alternate-sign
+	#end if
+
+	#if $pclassifychunksize:
+	 --p-classify--chunk-size=$pclassifychunksize
+	#end if
+
+	#if str($pclassifyclassprior):
+	 --p-classify--class-prior="$pclassifyclassprior"
+	#end if
+
+	#if str($pmemory):
+	 --p-memory="$pmemory"
+	#end if
+
+	#if $pfeatextlowercase:
+		--p-feat-ext--lowercase
+	#else
+		--p-no-feat-ext--lowercase
+	#end if
+
+	#if str($pfeatextinput):
+	 --p-feat-ext--input="$pfeatextinput"
+	#end if
+
+	#if str($pfeatexttokenizer):
+	 --p-feat-ext--tokenizer="$pfeatexttokenizer"
+	#end if
+	 --o-classifier=oclassifier
+	#if str($pfeatextnorm):
+	 --p-feat-ext--norm="$pfeatextnorm"
+	#end if
+
+	#if str($pfeatextdecodeerror):
+	 --p-feat-ext--decode-error="$pfeatextdecodeerror"
+	#end if
+
+	#if str($pfeatextstripaccents):
+	 --p-feat-ext--strip-accents="$pfeatextstripaccents"
+	#end if
+	;
+	cp oclassifier.qza $oclassifier;
+	]]>
+	</command>
+	<inputs>
+		<param format="qza,no_unzip.zip" label="--i-reference-reads: FeatureData[Sequence] [required]" name="ireferencereads" optional="False" type="data"/>
+
+		<conditional name="id_to_taxonomy_fp" optional="True">
+		   <param name="selector" type="select" label="Reference taxonomy to query">
+			  <option value="cached">Public databases</option>
+			  <option value="history">Databases from your history</option>
+		   </param>
+		   <when value="cached">
+			  <param argument="--taxonomy_fp" label="Reference taxonomy" type="select" optional="True">
+				 <options from_data_table="qiime_taxonomy" />
+			  </param>
+		   </when>
+		   <when value="history">
+			  <param argument="--taxonomy_fp" type="data" format="qza,no_unzip.zip" label="Reference databases" optional="True" />
+		   </when>
+		</conditional>
+
+		<param format="qza,no_unzip.zip" label="--i-class-weight: FeatureTable[RelativeFrequency] [optional]" name="iclassweight" optional="True" type="data"/>
+
+		<param label="--p-classify--alpha: [default: 0.01]" name="pclassifyalpha" optional="True" type="float" value="0.01"/>
+		<param label="--p-classify--chunk-size: [default: 20000]" name="pclassifychunksize" optional="True" type="integer" value="20000"/>
+
+		<param label="--p-classify--class-prior: [default: null]" name="pclassifyclassprior" optional="True" type="text" value="null"/>
+		<param label="--p-classify--fit-prior: --p-no-classify--fit-prior [default: False]" name="pclassifyfitprior" checked="False" type="boolean"/>
+
+		<param label="--p-feat-ext--alternate-sign: --p-no-feat-ext--alternate-sign [default: False]" name="pfeatextalternatesign" checked="False" type="boolean"/>
+
+		<param label="--p-feat-ext--analyzer: [default: char_wb]" name="pfeatextanalyzer" optional="True" type="text" value="char_wb"/>
+		<param label="--p-feat-ext--binary: --p-no-feat-ext--binary [default: False]" name="pfeatextbinary" checked="False" type="boolean"/>
+
+		<param label="--p-feat-ext--decode-error: [default: strict]" name="pfeatextdecodeerror" optional="True" type="text" value="strict"/>
+
+		<param label="--p-feat-ext--encoding: [default: utf-8]" name="pfeatextencoding" optional="True" type="text" value="utf-8"/>
+		<param label="--p-feat-ext--input: [default: content]" name="pfeatextinput" optional="True" type="text" value="content"/>
+		<param label="--p-feat-ext--lowercase: --p-no-feat-ext--lowercase [default: True]" name="pfeatextlowercase" checked="True" type="boolean"/>
+
+		<param label="--p-feat-ext--n-features: [default: 8192]" name="pfeatextnfeatures" optional="True" type="integer" value="8192"/>
+
+		<param label="--p-feat-ext--ngram-range: [default: [8, 8]]" name="pfeatextngramrange" optional="True" type="text" value="[8, 8]"/>
+		<param label="--p-feat-ext--non-negative: --p-no-feat-ext--non-negative [default: False]" name="pfeatextnonnegative" checked="False" type="boolean"/>
+
+		<param label="--p-feat-ext--norm: [default: l2]" name="pfeatextnorm" optional="True" type="text" value="l2"/>
+		<param label="--p-feat-ext--preprocessor: [default: null]" name="pfeatextpreprocessor" optional="True" type="text" value="null"/>
+
+		<param label="--p-feat-ext--stop-words: [default: null]" name="pfeatextstopwords" optional="True" type="text" value="null"/>
+		<param label="--p-feat-ext--strip-accents: [default: null]" name="pfeatextstripaccents" optional="True" type="text" value="null"/>
+
+		<param label="--p-feat-ext--token-pattern: [default: (?u)\b\w\w+\b]" name="pfeatexttokenpattern" optional="True" type="text" value="(?u)\b\w\w+\b"/>
+
+		<param label="--p-feat-ext--tokenizer: [default: null]" name="pfeatexttokenizer" optional="True" type="text" value="null"/>
+
+		<param label="--p-memory: [default: null]" name="pmemory" optional="True" type="text" value="null"/>
+
+		<param label="--cmd-config: Use config file for command options" name="cmdconfig" optional="True" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="qza" label="${tool.name} on ${on_string}: classifier.qza" name="oclassifier"/>
+	</outputs>
+	<help>
+		<![CDATA[
+Train the naive_bayes classifier
+--------------------------------
+
+Create a scikit-learn naive_bayes classifier for reads
+
+Parameters
+----------
+reference_reads : FeatureData[Sequence]
+		\
+reference_taxonomy : FeatureData[Taxonomy]
+		\
+class_weight : FeatureTable[RelativeFrequency], optional
+		\
+classify__alpha : Float, optional
+		\
+classify__chunk_size : Int, optional
+		\
+classify__class_prior : Str, optional
+		\
+classify__fit_prior : Bool, optional
+		\
+feat_ext__alternate_sign : Bool, optional
+		\
+feat_ext__analyzer : Str, optional
+		\
+feat_ext__binary : Bool, optional
+		\
+feat_ext__decode_error : Str, optional
+		\
+feat_ext__encoding : Str, optional
+		\
+feat_ext__input : Str, optional
+		\
+feat_ext__lowercase : Bool, optional
+		\
+feat_ext__n_features : Int, optional
+		\
+feat_ext__ngram_range : Str, optional
+		\
+feat_ext__non_negative : Bool, optional
+		\
+feat_ext__norm : Str, optional
+		\
+feat_ext__preprocessor : Str, optional
+		\
+feat_ext__stop_words : Str, optional
+		\
+feat_ext__strip_accents : Str, optional
+		\
+feat_ext__token_pattern : Str, optional
+		\
+feat_ext__tokenizer : Str, optional
+		\
+memory : Str, optional
+		\
+
+Returns
+-------
+classifier : TaxonomicClassifier
+		\
+	]]>
+	</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

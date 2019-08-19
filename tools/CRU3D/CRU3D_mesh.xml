@@ -1,0 +1,133 @@
+<tool id="cru3d_mesh" name="Mesh">
+	<description></description>
+<requirements>
+  <requirement type="package">pymodules</requirement>
+</requirements>
+<command interpreter="python">
+    #if $usingTT.bTT=="true"
+	    CRU3D_mesh.py --root_dir $__root_dir__ --size_x $size_x --size_y $size_y --size_z $size_z --bTT $usingTT.bTT --tt_seg_circ $usingTT.tt_seg_circ --tt_seg_z $usingTT.tt_seg_z --jsr_seg_circ $jsr_seg_circ --jsr_seg_z $jsr_seg_z --jsr_r $jsr_r --subspace_r $usingTT.subspace_r --trp_r $trp_r --ryr "$ryr" --lcc "$lcc" --html_file $html_file --files_path $html_file.extra_files_path
+    #else
+   	    CRU3D_mesh.py --size_x $size_x --size_y $size_y --size_z $size_z --bTT $usingTT.bTT --jsr_seg_circ $jsr_seg_circ --jsr_seg_z $jsr_seg_z --jsr_r $jsr_r --trp_r $trp_r --ryr "$ryr" --lcc "$lcc" --html_file $html_file --files_path $html_file.extra_files_path
+    #end if
+</command>
+<inputs>
+    <param name="size_x" type="float" value="4" min="0" label="Domain Size (X) [um]" optional="False" />
+    <param name="size_y" type="float" value="4" min="0" label="Domain Size (Y) [um]" optional="False" />
+    <param name="size_z" type="float" value="4" min="0" label="Domain Size (Z) [um]" optional="False" />
+<conditional name="usingTT">
+    <param name="bTT" type="select" label="Include TT">
+        <option value="true">True</option>
+        <option value="false">False</option>
+    </param>
+    <when value="true">
+        <param name="tt_seg_circ" type="integer" value="23" min="3" label="Number of TT segments (circumferential)" optional="False" />
+        <param name="tt_seg_z" type="integer" value="47" min="1" label="Number of TT segments (Z)" optional="False" />
+        <param name="subspace_r" type="float" value="0.015" min="0" label="Subspace Height [um]" optional="False" help="Distance separating TT and JSR membranes." />
+    </when>
+</conditional>
+    <param name="jsr_seg_circ" type="integer" value="15" min="1" label="Number of JSR segments (circumferential)" optional="False" />
+    <param name="jsr_seg_z" type="integer" value="15" min="1" label="Number of JSR segments (Z)" optional="False" />
+    <param name="jsr_r" type="float" value="0.040" min="0.001" label="JSR Thickness [um]" optional="False" />
+    <param name="trp_r" type="float" value="0.20" min="0" label="Troponin/SERCA Radius [um]" optional="False" help="Distance from the center of the TT beyond which troponin and SERCA are present." />
+    <param name="ryr" type="text" area="true" size="15" value="0000000000000
+0000000000000
+0000000000000
+0001111111000
+0001111111000
+0001111111000
+0001111111000
+0001111111000
+0001111111000
+0001111111000
+0000000000000
+0000000000000
+0000000000000" label="RyR Channels" optional="false" help="RyR positions on a lattice with 31nm spacing, centered in the subspace with TT oriented vertically. 1=RyR position; 0=Empty space. (Default: 7x7 array of RyRs)" >
+        <sanitizer invalid_char="">
+            <valid initial=""><add value="0"/><add value="1"/><add value="
+"/></valid>
+        </sanitizer>
+    </param>
+    <param name="lcc" type="text" area="true" size="15" value="0000000000000
+0000000000000
+0000000000000
+0000000000000
+0000100010000
+0000000000000
+0000101010000
+0000000000000
+0000100010000
+0000000000000
+0000000000000
+0000000000000
+0000000000000" label="LCC Channels" optional="false" help="LCC positions that will be superposed on the RyR lattice. 1=LCC position; 0=Empty space." >
+        <sanitizer invalid_char="">
+            <valid initial=""><add value="0"/><add value="1"/><add value="
+"/></valid>
+        </sanitizer>
+    </param>
+    </inputs>
+	<outputs>
+		<data format="html" name="html_file" label="CRU3DMeshOutput.html" />
+	</outputs>
+	<help>
+
+          This tool generates a mesh for the CRU3D model.
+
+**Description**
+
+*Domain boundaries*
+
+A rectangular box forms the boundary of the simulation domain. The boundaries should be sufficiently large so that Ca2+ remains at the resting concentration during a spark.
+
+*T-Tubule (TT)*
+
+The TT is represented as an N-sided cylinder that is oriented longitudinally along the Z axis. Each side of the cylinder is approximately 30nm. The number of circumferential segments determines the radius, which is approximately 100nm with 23 segments. The number of Z segments determines the height of the TT, and each segment is 31nm.
+
+.. class:: warningmark
+
+Mesh generation will fail if the TT is longer than the Z dimension of the domain, i.e. Domain Size (Z) must be greater than (31nm)x(Number of TT Z segments). Also, it is recommended to make the TT at least 500nm shorter than the domain Z size to prevent unnecessary high mesh resolution at the TT ends.
+
+*Subspace and JSR*
+
+The subspace height is defined as the distance from the TT to the JSR membrane. The number of circumferential and Z JSR segments defines the number of 31nm sides along the arc and length of the JSR, respectively. The number of segments limits the valid size of RyR clusters. The JSR thickness is the distance from the front to back face of the JSR.
+
+*Troponin and SERCA*
+
+Troponin and SERCA are localized to all elements beyond the given radius from the Z axis of the domain.
+
+*RyRs and LCCs*
+
+RyR and LCC cluster arrangements are specified using a rectangular grid of 0/1 values. The axis of the TT (Z direction) is oriented top-to-bottom, and the cluster is mapped to the curvature of the JSR/TT left-to-right.
+
+**Example Mesh Renderings**
+
+-----
+
+.. image:: ${static_path}/images/mesh_perspective.png
+        :width: 300
+
+*Perspective rendering of mesh showing domain boundaries (light blue), TT (dark blue), JSR (red), and RyRs (green). Axes are indicated for X (red), Y (yellow), and Z (green).*
+
+-----
+
+.. image:: ${static_path}/images/cru3d_jsr_1.png
+        :width: 300
+
+*Default JSR mesh.*
+
+-----
+
+.. image:: ${static_path}/images/cru3d_jsr_2.png
+        :width: 300
+
+*Default JSR mesh with RyRs (green spheres).*
+
+-----
+
+.. image:: ${static_path}/images/cru3d_top_down.png
+        :width: 300
+
+*Top-down rendering of the CRU. JSR: red, TT: blue, RyRs: green.*
+
+	</help>
+</tool>

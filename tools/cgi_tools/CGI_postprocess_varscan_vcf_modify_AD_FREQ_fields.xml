@@ -1,0 +1,31 @@
+<tool id="CGI_postprocess_varscan_vcf_modify_AD_FREQ_fields" name="Post-process VCF AD field"  version="1.0.0">
+  <description>Add AD frequency field from INFO to FORMAT column</description>
+  <requirements>
+    <requirement type="package">pymodules</requirement>
+    <!--<requirement type="package">java</requirement>-->
+  </requirements>
+  <command interpreter="python">
+    CGI_postprocess_varscan_vcf_modify_AD_FREQ_fields.py $input_vcf $sample_name $variant_caller &gt; $output
+  </command>
+  <inputs>
+    <param name="input_vcf" type="data" format="vcf" label="Input VCF" help="" />
+    <param label="Sample Name" name="sample_name" type="text"/>
+    <param label="Select Variant Caller used" name="variant_caller" type="select" >
+      <option value="mutect2">GATK Mutect2</option>
+      <option value="varscan">Varscan</option>
+      <option value="freebayes">Freebayes</option>
+    </param> 
+  </inputs>
+  <outputs>
+    <data format="vcf" label="${tool.name} on ${input_vcf.name}: VCF" name="output"/>
+  </outputs>
+  <tests>
+    <test>
+    </test>
+  </tests>
+  <help>
+
+**What it does**
+
+  </help>
+</tool>

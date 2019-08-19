@@ -1,0 +1,279 @@
+<tool id="bbduk" name="BBduk" version="BBMAP: bbmap_34.94">
+  <requirements>
+    <requirement type="package">bbmap</requirement>
+  </requirements>
+  <description>Adapter/Quality Trimming and Filtering</description>
+  <command interpreter="python">
+    bbtools.py --command bbduk.sh -p '-Xmx28G overwrite=t threads=16'
+      #set $ref_var = &quot;&quot;
+      #for $i, $input_ref in enumerate( $input_refs ):
+        #if $i &gt; 0:
+          #set $ref_var += &quot;,&quot;
+        #end if
+        #if $input_ref.genomeSource.refGenomeSource == &quot;history&quot;
+          #set $ref_var += str($input_ref.genomeSource.ownFile)
+        #else
+          #set $ref_var += str($input_ref.genomeSource.indices.fields.path)
+        #end if
+      #end for
+      -p &quot;ref=\&quot;$ref_var\&quot;&quot;
+
+      ## input file(s)
+      --in &quot;${paired.in}&quot;
+      #if $paired.sPaired == &quot;single&quot;
+        --p &quot;$paired.interleaved&quot;
+      #else
+        --in2 &quot;${paired.in2}&quot;
+      #end if
+
+      #if $k != &quot;27&quot;
+        -p &quot;k=$k&quot;
+      #end if
+      #if $maxlength != &quot;1000&quot;
+        -p &quot;maxlength=$maxlength&quot;
+      #end if
+      #if $minlength != &quot;10&quot;
+        -p &quot;minlength=$minlength&quot;
+      #end if
+      #if $trimq != &quot;6&quot;
+        -p &quot;trimq=$trimq&quot;
+      #end if
+      #if str($qtrim) != &quot;f&quot;
+        -p &quot;$qtrim&quot;
+      #end if
+      #if str($ktrim_cond.ktrim) != &quot;f&quot;
+        -p &quot;$ktrim_cond.ktrim&quot;
+        #if str($ktrim_cond.ktrim) == &quot;ktrim=r&quot;
+          -p &quot;$ktrim_cond.tpe-p &quot;
+        #end if
+      #end if
+
+      ## run parameters
+      #if $params.source_select != &quot;pre_set&quot;
+        -p &quot;$params.rcomp&quot;
+        -p &quot;maxbadkmers=$params.maxbadkmers&quot;
+        -p &quot;hammingdistance=$params.hammingdistance&quot;
+        -p &quot;qhdist=$params.qhdist&quot;
+        -p &quot;editdistance=$params.editdistance&quot;
+        -p &quot;$params.forbidn&quot;
+        -p &quot;$params.findbestmatch&quot;
+
+        #if str($params.short_kmers.useshortkmers) == &quot;f&quot;
+          -p &quot;$params.short_kmers.maskmiddle&quot;
+        #else
+          -p &quot;$params.short_kmers.useshortkmers&quot;
+          -p &quot;$params.short_kmers.mink&quot;
+        #end if
+
+        -p &quot;minavgquality=$params.minavgquality&quot;
+        -p &quot;maxns=$params.maxns&quot;
+        -p &quot;tp=$params.tp&quot;
+        -p &quot;$params.tbo&quot;
+        -p &quot;minoverlap=$params.minoverlap&quot;
+        -p &quot;mininsert=$params.mininsert&quot;
+        #if str($params.gcbins_cond.gcbins_selects) == &quot;integer&quot;
+          -p &quot;gcbins=$params.gcbins_cond.gcbins&quot;
+        #else
+          -p &quot;$params.gcbins_cond.gcbins_selects&quot;
+        #end if
+        #if str($params.idbins_cond.idbins_selects) == &quot;integer&quot;
+          -p &quot;idbins=$params.idbins_cond.idbins&quot;
+        #else
+          -p &quot;$params.idbins_cond.idbins_selects&quot;
+        #end if
+        
+      #end if
+ 
+      -p &quot;out=$out&quot;
+      -p &quot;out2=$out2&quot;
+      -p &quot;outm=$outm&quot;
+      -p &quot;outm2=$outm2&quot;
+      -p &quot;outs=$outs&quot;
+      -p &quot;stats=$stats&quot;
+      -p &quot;refstats=$refstats&quot;
+      -p &quot;rpkm=$rpkm&quot;
+      -p &quot;bhist=$bhist&quot;
+      -p &quot;qhist=$qhist&quot;
+      -p &quot;aqhist=$aqhist&quot;
+      -p &quot;bqhist=$bqhist&quot;
+      -p &quot;lhist=$lhist&quot;
+      -p &quot;gchist=$gchist&quot;
+      -p &quot;indelhist=$indelhist&quot;
+      -p &quot;mhist=$mhist&quot;
+      -p &quot;idhist=$idhist&quot;
+      --log $output_log
+
+  </command>
+
+  <inputs>
+    <repeat help="" min="1" name="input_refs" title="Input References">
+      <conditional name="genomeSource">
+        <param label="Will you select a reference genome from your history or use a built-in index?" name="refGenomeSource" type="select">
+          <option value="indexed">Use a built-in index</option>
+          <option value="history">Use one from the history</option>
+        </param>
+        <when value="indexed">
+          <param label="Select a reference genome" name="indices" type="select">
+            <options from_data_table="all_adapters">
+              <filter column="2" type="sort_by"/>
+              <validator message="No indexes are available" type="no_options"/>
+            </options>
+          </param>
+        </when>
+        <when value="history">
+          <param format="fasta" label="Select a reference from history" metadata_name="dbkey" name="ownFile" type="data"/>
+        </when>
+      </conditional>
+    </repeat>
+    <conditional name="paired">
+      <param label="Is this library mate-paired?" name="sPaired" type="select">
+        <option value="single">Single-end or interleaved paired-end</option>
+        <option value="paired">Paired-end</option>
+      </param>
+      <when value="single">
+        <param format="fastqsanger,fastqillumina" help="FASTQ with either Sanger-scaled quality values (fastqsanger) or Illumina-scaled quality values (fastqillumina)" label="FASTQ file" name="in" type="data"/>
+        <param checked="false" falsevalue="" label="FASTQ file consists of interleaved paired-end sequences (-p)" name="interleaved" truevalue="interleaved=t" type="boolean"/>
+      </when>
+      <when value="paired">
+        <param format="fastqsanger,fastqillumina" help="FASTQ with either Sanger-scaled quality values (fastqsanger) or Illumina-scaled quality values (fastqillumina)" label="Forward FASTQ file" name="in" type="data"/>
+        <param format="fastqsanger,fastqillumina" help="FASTQ with either Sanger-scaled quality values (fastqsanger) or Illumina-scaled quality values (fastqillumina)" label="Reverse FASTQ file" name="in2" type="data"/>
+      </when>
+    </conditional>
+
+    <param help="(k)" label="Kmer length used for finding contaminants" name="k" type="integer" value="27"/>
+    <param help="Reads longer than this after trimming will be discarded. Pairs will be discarded if both are shorter. (maxlength)" label="Maximum read length" name="maxlength" type="integer" value="1000"/>
+    <param help="Reads shorter than this after trimming will be discarded. Pairs will be discarded if both are shorter. (minlength)" label="Minimum read length" name="minlength" type="integer" value="10"/>
+    <param help="(trimq)" label="Treshold average quality value to trim sequences" name="trimq" type="integer" value="6"/>
+    <param help="(qtrim)" label="Trim read ends to remove bases with quality below threshold quality value" name="qtrim" type="select">
+      <option selected="True" value="f">Neither end</option>
+      <option value="qtrim=l">left end</option>
+      <option value="qtrim=r">right end</option>
+      <option value="qtrim=t">both ends</option>
+    </param>
+
+    <conditional name="ktrim_cond">
+      <param help="(ktrim)" label="Trim reads to remove bases matching reference kmers" name="ktrim" type="select">
+        <option selected="True" value="f">No Trim</option>
+        <option value="ktrim=t">Trim</option>
+        <option value="ktrim=r">Trim right end</option>
+        <option value="ktrim=l">Trim left end</option>
+        <option value="ktrim=n">Convert to N instead of trimming</option>
+      </param>
+      <when value="ktrim=r">
+        <param checked="false" falsevalue="" help="(tpe)" label="Trim both reads to the minimum length of either" name="tpe" truevalue="tpe=t" type="boolean"/>
+      </when>
+      <when value="f"/>
+      <when value="ktrim=t"/>
+      <when value="ktrim=l"/>
+      <when value="ktrim=n"/>
+    </conditional>
+    <conditional name="params">
+      <param help="For most cases use Commonly Used settings. If you want full control use Full Parameter List" label="BBduk settings to use" name="source_select" type="select">
+        <option value="pre_set">Commonly Used</option>
+        <option value="full">Full Parameter List</option>
+      </param>
+      <when value="pre_set"/>
+      <when value="full">
+        <param checked="false" falsevalue="" help="(rcomp)" label="Look for reverse-complements of kmers in addition to forward kmers" name="rcomp" truevalue="rcomp=t" type="boolean"/>
+        <param help="(maxbadkmers)" label="Max allowed contaminated kmers in read" name="maxbadkmers" type="integer" value="0"/>
+        <param help="(hammingdistance, hdist)" label="Maximum Hamming distance for ref kmers" name="hammingdistance" type="integer" value="0"/>
+        <param help="(qhdist)" label="Hamming distance for query kmers" name="qhdist" type="integer" value="0"/>
+        <param help="(editdistance, edist)" label="Maximum edit distance from ref kmers" name="editdistance" type="integer" value="0"/>
+        <param checked="false" falsevalue="forbidn=f" help="(forbidn)" label="Forbid matching of read kmers containing N" name="forbidn" truevalue="forbidn=t" type="boolean"/>
+        <param checked="false" falsevalue="findbestmatch=f" help="(findbestmatch)" label="If multiple matches, associate read with sequence sharing most kmers" name="findbestmatch" truevalue="findbestmatch=t" type="boolean"/>
+
+        <conditional name="short_kmers">
+          <param help="" label="Look for shorter kmers at read tips" name="useshortkmers" type="select">
+            <option selected="true" value="f">no</option>
+            <option value="useshortkmers=t">yes</option>
+          </param>
+          <when value="f">
+            <param checked="false" falsevalue="maskmiddle=f" help="(maskmiddle)" label="Treat the middle base of a kmer as a wildcard, to increase sensitivity in the presence of errors" name="maskmiddle" truevalue="maskmiddle=t" type="boolean"/>
+          </when>
+          <when value="useshortkmers=t">
+            <param help="(mink)" label="Minimum length of short kmer" name="mink" type="integer" value="6"/>
+          </when>
+        </conditional>
+        <param help="Reads with lower value than this will be discarded. (minavgquality, maq)" label="Minimum average quality value" name="minavgquality" type="integer" value="0"/>
+        <param help="If non-negative reads with more Ns than this will be discarded. (maxn)" label="Max number of Ns allowed in reads" name="maxns" type="integer" value="-1"/>
+        <param help="(tp, trimpad)" label="Trim this much extra around matching kmers" name="tp" type="integer" value="0"/>
+        <param checked="false" falsevalue="tbo=f" help="(tbo, trimbyoverlap)" label="Trim adapters based on where paired reads overlap" name="tbo" truevalue="tbo=t" type="boolean"/>
+        <param help="(minoverlap)" label="Require this many bases of overlap for overlap detection" name="minoverlap" type="integer" value="24"/>
+        <param help="(mininsert)" label="Require insert size of at least this much for overlap" name="mininsert" type="integer" value="25"/>
+
+        <conditional name="gcbins_cond">
+          <param help="" label="Set gchist bins" name="gcbins_selects" type="select">
+            <option selected="true" value="gcbins=auto">auto</option>
+            <option value="integer">set integer</option>
+          </param>
+          <when value="gcbins=auto"/>
+          <when value="integer">
+            <param help="(gcbins)" label="Number gchist bins" name="gcbins" type="integer" value="100"/>
+          </when>
+        </conditional>
+        <conditional name="idbins_cond">
+          <param help="" label="Set idhist bins" name="idbins_selects" type="select">
+            <option selected="true" value="idbins=auto">auto</option>
+            <option value="integer">set integer</option>
+          </param>
+          <when value="idbins=auto"/>
+          <when value="integer">
+            <param help="(idbins)" label="Number idhist bins" name="idbins" type="integer" value="100"/>
+          </when>
+        </conditional>
+
+      </when>
+    </conditional>
+  </inputs>
+
+  <outputs>
+    <data format="fastqsanger" label="${tool.name} on ${on_string}: Forward fastq" name="out"/>
+    <data format="fastqsanger" label="${tool.name} on ${on_string}: Reverse fastq" name="out2"/>
+    <data format="fastqsanger" label="${tool.name} on ${on_string}: Forward outm" name="outm"/>
+    <data format="fastqsanger" label="${tool.name} on ${on_string}: Reverse outm2" name="outm2"/>
+    <data format="fastqsanger" label="${tool.name} on ${on_string}: Singletons outs" name="outs"/>
+    <data format="tabular" label="${tool.name} on ${on_string}: stats" name="stats"/>
+    <data format="tabular" label="${tool.name} on ${on_string}: refstats" name="refstats"/>
+    <data format="tabular" label="${tool.name} on ${on_string}: rpkm" name="rpkm"/>
+    <data format="tabular" label="${tool.name} on ${on_string}: bhist" name="bhist"/>
+    <data format="tabular" label="${tool.name} on ${on_string}: qhist" name="qhist"/>
+    <data format="tabular" label="${tool.name} on ${on_string}: aqhist" name="aqhist"/>
+    <data format="tabular" label="${tool.name} on ${on_string}: bqhist" name="bqhist"/>
+    <data format="tabular" label="${tool.name} on ${on_string}: lhist" name="lhist"/>
+    <data format="tabular" label="${tool.name} on ${on_string}: gchist" name="gchist"/>
+    <data format="tabular" label="${tool.name} on ${on_string}: indelhist" name="indelhist"/>
+    <data format="tabular" label="${tool.name} on ${on_string}: mhist" name="mhist"/>
+    <data format="tabular" label="${tool.name} on ${on_string}: idhist" name="idhist"/>
+    <data format="tabular" label="${tool.name} on ${on_string}: log" name="output_log"/>
+
+  </outputs>
+
+  <tests>
+    <test>
+    </test>
+    <test>
+    </test>
+    <test>
+    </test>
+  </tests>
+  <help>
+**What it does**
+
+Compares reads to the kmers in a reference dataset, optionally
+allowing an edit distance. Splits the reads into two outputs - those that
+match the reference, and those that don't. Can also trim (remove) the matching
+parts of the reads rather than binning the reads.
+
+------
+
+**Input formats**
+
+BBDuk Input may be stdin or a fasta, fastq, or sam file, compressed or uncompressed
+
+------
+
+**License and citation**
+
+
+  </help>
+</tool>

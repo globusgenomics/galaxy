@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+
+<tool name="sqrs" id="sqrs_id1">
+  <description>
+    single-channel QRS detector based on length transform
+  </description>
+
+  <command interpreter="python">
+     wfdb_wrapper.py   
+   --program sqrs
+   --record $record
+   #if $data_location.selectLocation == "history":
+     --data $datafile
+   #end if
+   #if $data_location.selectLocation == "library":
+     --data "colocated"
+   #end if
+   --output $outputfile
+   #if $options.selectOptions == "advanced":
+     --begintime $options.begintime
+     --stoptime $options.stoptime
+     --resolution $options.resolution
+     --threshold $options.threshold
+     --signal $options.signal
+   #end if
+
+  </command>
+
+  <inputs>
+    <param name="record" type="data" format="hea" label="Record ID"/>
+    <conditional name="data_location">
+      <param name="selectLocation" type="select" label="Location of data file">
+        <option value="history" selected="true">History</option>
+        <option value="library">Co-located with Record file</option>
+      </param>
+      <when value="history">
+	<param name="datafile" type="data" format="dat" label="Data File (*.dat)"/>
+      </when>
+      <when value="library"/>
+    </conditional>
+    <conditional name="options">
+      <param name="selectOptions" type="select" label="Modify Options?">
+        <option value="default" selected="true">Default options</option>
+        <option value="advanced">Modify options</option>
+      </param>
+
+      <when value="default" />
+      <when value="advanced">
+        <param name="begintime" type="text" label="Start Time" value="0" help="Begin at the specified time in record (default: start of the record)."/>
+        <param name="stoptime" type="text" label="Stop Time" value="e" help="Process until the specified time in record (default: the end of the record)."/>
+	<param name="resolution" type="boolean" checked="False" truevalue="true" falsevalue="false" label="High-Resolution" help="Read the signal files in high-resolution mode (default: standard mode). These modes are identical for ordinary records. For multifrequency records, the standard decimation of oversampled signals to the frame rate is suppressed in high-resolution mode (rather, all other signals are resampled at the highest sampling frequency)." />
+        <param name="threshold" type="integer" value="500" label="Specify the detection threshold" help="use higher values to reduce false detections, or lower values to reduce the number of missed beats (default: 500)" />
+        <param name="signal" type="integer" value="0" label="Signal for QRS detection" help="Specify the signal (number or name) to be used for QRS detection (default: 0)." />
+	
+      </when>
+    </conditional>
+  </inputs>
+
+  <outputs>
+    <data format="qrs" name="outputfile" label="${tool.name} on ${on_string}: Reference annotation file" />
+  </outputs>
+
+  <help>
+
+::
+
+   sqrs attempts to locate QRS complexes in an ECG signal in the specified record.
+   The detector algorithm is based on example 10 in the WFDB Programmer’s Guide, 
+   which in turn is based on a Pascal program written by W.A.H. Engelse and 
+   C. Zeelenberg, ‘‘A single scan algorithm for QRS-detection and feature
+   extraction’’, Computers in Cardiology 6:37-42 (1979). sqrs does not include the
+   feature extraction capability of the Pascal program. The output of sqrs is an
+   annotation file (with annotator name qrs) in which all detected beats are
+   labelled normal; the annotation file may also contain ‘artifact’ annotations at
+   locations that sqrs believes are noise-corrupted.
+
+::
+
+  usage: sqrs -r RECORD [OPTIONS ...]
+  where RECORD is the name of the record to be analyzed, and OPTIONS may include any of::
+
+   -f TIME     begin at specified time
+   -h          print this usage summary
+   -H          read multifrequency signals in high resolution mode
+   -m THRESH   set detector threshold to THRESH (default: 500)
+   -s SIGNAL   analyze specified signal (default: 0)
+   -t TIME     stop at specified time
+
+::
+
+  If too many beats are missed, decrease THRESH;  if there are too many extra
+  detections, increase THRESH.
+
+  </help>
+
+</tool>

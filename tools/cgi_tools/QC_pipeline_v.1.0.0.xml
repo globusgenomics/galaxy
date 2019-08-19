@@ -1,0 +1,53 @@
+<tool id="CGI_QC_optimized" name="CGI QC analysis" version="1.0.1" >
+  <description></description>
+  <!--<action class="GlobusOptimizedWorkflows" module="galaxy_ext.globus.tools.actions.globus"/>-->
+  <requirements>
+    <requirement type="package">picard</requirement>
+    <requirement type="package">pymodules</requirement>
+    <requirement type="package" version="1.8.0">java</requirement>
+    <requirement type="package">bedtools</requirement>
+  </requirements>
+  <command>
+    #set $interval_file =  "./sample.interval_list"
+    #set $bed_file =  "./sample.bed"
+    ##mkdir $output_dir.extra_files_path;
+    ln -s $target_interval $interval_file;
+    ln -s $target_bed $bed_file;
+    ln -s $input_bam sample1.bam;
+    python /opt/galaxy/tools/cgi_tools/run_qc_pipeline.py
+      -w ./
+      -s sample_name
+      --reference ${fasta_reference.fields.path}
+      -i sample1.bam
+      -t $interval_file 
+      -b $bed_file
+      &gt;  $output_log;
+    gunzip sample_name_sorted_dedup.bed.gz;
+    gunzip sample_name_coverage.tsv.gz
+  </command>
+  <inputs>
+    <param label="Sample Name" name="sample_name" type="hidden" value="sample1"/>
+    <param help="" label="Picard reference genome" name="fasta_reference" type="select">
+      <options from_data_table="gatk3_picard_indexes">
+      </options>
+    </param>
+    <param format="bam" label="Input BAM" name="input_bam" type="data"/>
+    <param format="interval,tabular" label="Interval target file" name="target_interval" type="data"/>
+    <param format="bed,tabular" label="Target bed file" name="target_bed" type="data"/>
+  </inputs>
+  <outputs>
+    <data format="txt" label="${tool.name} on ${sample_name}.summary" name="output_summary" from_work_dir="sample1_QC_metrics.txt"/>
+    <data format="txt" label="${tool.name} on ${sample_name}.bed" name="output_bed" from_work_dir="sample_name_sorted_dedup.bed"/>
+    <data format="txt" label="${tool.name} on ${sample_name}.bed" name="output_bed" from_work_dir="sample_name_coverage.tsv"/>
+    <data format="txt" label="${tool.name} on ${$sample_name}.log" name="output_log"/>
+  </outputs>
+  <tests>
+    <test>
+    </test>
+  </tests> 
+  <help>
+
+**What it does**
+
+  </help>
+</tool>

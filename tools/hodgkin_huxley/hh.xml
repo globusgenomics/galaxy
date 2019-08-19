@@ -1,0 +1,44 @@
+<tool id="hh_simulation" name="Cell Simulation">
+	<description></description>
+        <requirements>
+          <requiement type="package">pymodules</requirement>
+        </requirements>
+	<command interpreter="python">
+		
+		hh.py $output_file $tf $tabulationStep $t_delay $t_stim $C_m $I_stim
+		#for $i, $s in enumerate( $channels )
+		${s.filename}
+		#end for
+	
+	</command>	
+	<inputs>
+		<param name="tf" type="float" value="100" min="0" label="Output End Time (ms)"  />
+		<param name="tabulationStep" type="float" value="0.01" min="0" label="Tabulation Step (ms)" help="Output time interval size" />
+		<param name="t_delay" type="float" value="50" min="0" label="Stimulus Start Time (ms)"  />
+		<param name="t_stim" type="float" value="20" min="0" label="Stimulus Duration (ms)"  />
+		<param name="C_m" type="float" value="1" min="0" label="C_m (uFd/cm^2)" help="Membrane capacitance"  />
+		<param name="I_stim" type="float" value="-10" label="I_stim (uA/cm^2)"  />
+		<repeat name="channels" title="Channel">
+			<param name="filename" type="data" format="txt" label="File" />
+		</repeat>
+	</inputs>
+	<outputs>
+		<data format="tabular" name="output_file" label="output.txt" />
+	</outputs>
+	<help>
+**Description** 
+
+This tool runs a model of a cell using Hodgkin-Huxley type channel specifications, which are created using the "Create Channel" tool. 
+
+**Tool Use** 
+
+The simulation requires the end time and output step size. A stimulus current of specified duration and amplitude (I_stim) will be applied at the stimulus start time. In addition, the cell's membrane capacitance C_m should be given.
+
+Ion channels created using the "Create Channel" tool can be added to the model by clicking the "Add new Channel" button. The user should then select the file corresponding to the desired channel.
+
+**Output** 
+
+The tool produces a time series data file in tabular format. The first column contains the time (ms) and the second column contains the membrane potential (mV). Any additional columns contain channel currents in the order they were added to the "Channels" list (in uA/cm^2).
+
+	</help>
+</tool>

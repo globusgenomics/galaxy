@@ -1,0 +1,49 @@
+<tool id="post_metasv" name="Post-processing for metasv" version="GATK3: GenomeAnalysisTK-3.3.0; SAMTOOLS: 0.1.18">
+  <description></description>
+  <requirements>
+      <!--requirement type="package" version="3.3">gatk3</requirement-->
+      <requirement type="package" version="0.1.18">samtools</requirement>
+      <requirement type="package" version="1.8.0">java</requirement>
+  </requirements>
+  <command interpreter="python"> post_metasv.py
+    --inputbampath $input_bams_path
+    --inputbed $input_bed
+    ## reference genome
+    #if $in_type.input_type == "built-in":
+        --reference $in_type.genome.fields.path
+    #else:
+        --reference $in_type.input1
+    #end if
+    --output $output
+    --output-dir $output.extra_files_path
+  </command>
+  <inputs>
+    <param area="True" help="Please input the full path of the directory that contains a set of BAM files. All the BAM files will be used as input datasets." label=
+"BAM directory path" name="input_bams_path" size="2x40" type="text"/>
+    <conditional name="in_type">
+      <param name="input_type" type="select" label="Use a built-in FASTA file or one from the history?">
+        <option value="built-in">Built-in</option>
+        <option value="history">History file</option>
+      </param>
+      <when value="built-in">
+        <param name="genome" type="select" label="Select a built-in genome" help="if your genome of interest is not listed - please contact globus genomics team">
+          <options from_data_table="gatk3_picard_indexes" />
+        </param>
+      </when>
+      <when value="history">
+        <param name="input1" type="data" format="fasta" label="Input genome (FASTA format)" />
+      </when>
+    </conditional>
+
+    <param format="bed" label="Genomic intervals (bed)" name="input_bed" type="data"/>
+  </inputs>
+  <outputs>
+    <data format="html" label="${tool.name} on ${on_string} (log)" name="output"/>
+  </outputs>
+  <tests>
+     <test>
+     </test>
+   </tests>
+   <help>
+   </help>
+</tool>

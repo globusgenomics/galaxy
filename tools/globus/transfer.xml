@@ -1,0 +1,73 @@
+<tool id="globus_transfer" name="GO Transfer">
+  <description>Perform a globus online transfer.</description>
+  <action module="galaxy_ext.globus.tools.actions.globus" class="GlobusTransfer"/>
+  <command interpreter="python">
+    transfer.py
+    $username
+    -k $userkey
+    -c $usercert
+    -o $out_file1
+    --goauth-token "$goauth"
+    --source-ep=$from_endpoint
+    --source-path=$from_path
+    --destination-ep=$to_endpoint
+    --destination-path=$to_path
+    --deadline=$deadline
+    #set $output = $getVar('out_file1')
+    --galaxy-dataset-id=${output.dataset.dataset.id}
+  </command>
+  <inputs>
+    <param name="goauth" type="hidden" size="100" label="Globus Auth Token">
+      <sanitizer>
+	<valid>
+	  <add value="|"/>
+	</valid>
+      </sanitizer>
+    </param>
+    <param name="username" type="hidden" size="100" label="Globus Username"/>
+    <param name="userkey" type="hidden" size="100" label="Globus User Key"/>
+    <param name="usercert" type="hidden" size="100" label="Globus User Certificate"/>
+    <param name="globuscert" type="hidden" size="100" label="Globus Certificate"/>
+    <param name="from_endpoint" type="gsrc_endpoint" size="100" label="Source Endpoint">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="from_path" type="text" size="100" label="Source Path">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="to_endpoint" type="gdst_endpoint" size="100" label="Destination Endpoint">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="to_path" type="text" size="100" label="Destination Path">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="deadline" type="text" size="10" label="Deadline (In minutes)"/>
+  </inputs>
+  <outputs>
+    <data name="out_file1" type="data" format="txt"/>
+  </outputs>
+  <tests>
+    <test>
+      <!-- TODO: UPDATE TEST CASE -->
+      <param name="namefield" value="Bob"/>
+      <output name="out_file1" file="helloworld_out.txt"/>
+    </test>
+  </tests>
+  <help>
+.. class:: warningmark
+    
+  **WARNING:** Be careful not to exceed disk quotas!
+    
+-----
+    
+**What it does**
+    
+  Transfers data between globus endpoints.
+    
+-----
+    
+**Example**
+    
+  Specify your certs, your endpoints, and some paths within those endpoints.
+
+  </help>
+</tool>

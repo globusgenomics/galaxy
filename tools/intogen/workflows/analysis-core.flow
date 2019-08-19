@@ -1,0 +1,127 @@
+<flow name="analysis-core" serializer="json">
+	<title>IntOGenSM</title>
+	<desc>To interpret catalogs of cancer somatic mutations</desc>
+
+	<in name="projects_in" />
+	<out name="projects_out" link="projects_in" />
+
+	<module name="route" maxpar="1">
+		<in name="projects_in" link="projects_in" />
+
+		<out name="projects_out" />
+		<out name="recurrences_projects" />
+		<out name="oncodrivefm_projects" />
+		<out name="oncodriveclust_projects" />
+
+		<run>common/route_analysis.py</run>
+	</module>
+
+	<module name="combination_classify" maxpar="1">
+		<title>Classify projects</title>
+		<desc>Classify projects by a set of criteria</desc>
+
+		<in name="projects_in" link="route.projects_out" />
+		<out name="project_sets" />
+
+		<run>combination/classify.py</run>
+	</module>
+
+	<module name="combination_summary" maxpar="1">
+		<title>Combination summaries</title>
+
+		<in name="projects_in" link="combination_classify.project_sets" />
+
+		<run>combination/summary.py</run>
+	</module>
+
+	<module name="oncodrivefm_prepare">
+		<title>Prepare files for OncodriveFM</title>
+		<desc>Prepare input files for OncodriveFM</desc>
+
+		<in name="projects_in" link="route.oncodrivefm_projects" />
+		<out name="projects_out" />
+
+		<run>oncodrivefm/prepare_files.py</run>
+	</module>
+
+	<module name="oncodriveclust_prepare">
+		<in name="projects_in" link="route.oncodriveclust_projects" />
+		<out name="projects_out" />
+
+		<run>oncodriveclust/prepare_files.py</run>
+	</module>
+
+	<module name="recurrences" depends="oncodrivefm_prepare, oncodriveclust_prepare">
+		<title>Calculate projects recurrences</title>
+		<desc>Calculates projects recurrences and stores results in the internal database</desc>
+
+		<in name="projects_in" link="route.recurrences_projects" />
+		<out name="projects_out" />
+
+		<run>recurrences/project.py</run>
+	</module>
+
+	<module name="combination_recurrences" depends="recurrences">
+		<title>Combine recurrences</title>
+		<desc>Combine recurrences between project sets</desc>
+
+		<in name="project_sets_in" link="combination_classify.project_sets" />
+		<out name="project_sets_out" />
+
+		<run>combination/recurrences.py</run>
+	</module>
+
+	<module name="oncodrivefm">
+		<in name="projects_in" link="oncodrivefm_prepare.projects_out" />
+		<out name="projects_out" />
+
+		<flow>oncodrivefm</flow>
+	</module>
+
+	<module name="oncodriveclust_compute">
+		<in name="projects_in" link="oncodriveclust_prepare.projects_out" />
+		<out name="projects_out" />
+
+		<run>oncodriveclust/compute.py</run>
+	</module>
+
+	<module name="oncodriveclust_update_db" depends="combination_recurrences">
+		<title>Update project db with OncodriveCLUST</title>
+		<desc>Update the project database with OncodriveCLUST results</desc>
+
+		<in name="projects" link="oncodriveclust_compute.projects_out" />
+		<out name="projects_out" />
+
+		<run>oncodriveclust/update_db.py</run>
+	</module>
+
+	<module name="combination_oncodriveclust" depends="oncodriveclust_update_db">
+		<title>Combine OncodriveCLUST results</title>
+		<desc>Combine OncodriveCLUST results between project sets</desc>
+
+		<in name="project_sets_in" link="combination_classify.project_sets" />
+		<out name="project_sets_out" />
+
+		<run>combination/oncodriveclust.py</run>
+	</module>
+
+	<module name="oncodrivefm_update_db" depends="oncodriveclust_update_db">
+		<title>Update project db with OncodriveFM</title>
+		<desc>Update the project database with OncodriveFM results</desc>
+
+		<in name="projects" link="oncodrivefm.projects_out" />
+		<out name="projects_out" />
+
+		<run>oncodrivefm/update_db.py</run>
+	</module>
+
+	<module name="combination_oncodrivefm" depends="oncodrivefm_update_db">
+		<title>Combine OncodriveFM results</title>
+		<desc>Combine OncodriveFM results between project sets</desc>
+
+		<in name="project_sets_in" link="combination_classify.project_sets" />
+		<out name="project_sets_out" />
+
+		<run>combination/oncodrivefm.py</run>
+	</module>
+</flow>

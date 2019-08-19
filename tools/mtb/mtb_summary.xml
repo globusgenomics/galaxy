@@ -1,0 +1,36 @@
+<tool id="mtb_summary" name="MTB summary" hidden="false">
+   <action module="galaxy_ext.globus.tools.actions.globus" class="BatchSubmit"/>
+   <description>from individual sample runs</description>
+   <requirements>
+     <requirement type="package">pymodules</requirement>
+   </requirements>
+   <command interpreter="python">
+     Parallel_TB_runner_v2.0_beta.py
+     -k $userapi
+     -u "$url"
+     --input $input
+     --out $summary
+     --out-dir $summary.extra_files_path
+     --access-log $access_log
+     --clims-log $clims_log
+   </command>
+
+   <inputs>
+      <param format="txt" name="input" type="data" label="Monitor file" help="This should be the output from the batch submit job"/>
+      <param name="userapi" type="hidden" size="100" value="None" label="Galaxy API Key"/>
+      <param name="url" type="hidden" value="**" size="100" label="GG URL"/>
+   </inputs>
+
+   <outputs>
+     <data format="txt" name="summary" label="MTB Log for ${on_string}"/>
+     <data format="tabular" name="access_log" label="MTB access log for ${on_string}"/>
+     <data format="tabular" name="clims_log" label="MTB CLIMS report for ${on_string}"/>
+   </outputs>
+
+   <help>
+
+
+   </help>
+
+</tool>
+

@@ -1,0 +1,83 @@
+<tool id="svdetect_preprocessing" name="BAM preprocessing" version="SVDETECT: SVDetect_r0.8b; SAMTOOLS: 1.2; BEDTOOLS: 2.17.0">
+
+  <description>to get abnormal pairs</description>
+  <requirements>
+     <requirement type="package">svdetect</requirement>
+     <requirement type="package">perlmodules</requirement>
+     <requirement type="package">samtools</requirement>
+     <requirement type="package">bedtools</requirement>
+  </requirements>
+
+  <command interpreter="perl"> BAM_preprocessingPairs.pl -t '$readType' -p '$pairType' -n '$nbrePair' -s '$isizeMin' -S '$isizeMax' -f '$foldPair' -o $__new_file_path__/svdetect -b '$abBAM' -l '$log' -N $sample_name
+	#if $newBam.pairNormal==&quot;yes&quot; 
+	-d -x '$normBAM'
+	#end if
+	'$inputBam'
+  </command>
+
+  <inputs>
+    <param label="Sample Name" name="sample_name" type="text" value="sample"/>
+    <param format="bam" label="BAM input file" name="inputBam" type="data"/>
+    <param label="Read type" name="readType" type="select">
+	<option value="1">Illumina</option>
+	<option value="0">SOLiD</option>
+   </param>
+   <param label="Library type" name="pairType" type="select">
+	<option value="1">Paired-end</option>
+	<option value="0">Mate-Pair</option>
+   </param>
+   <conditional name="newBam">
+   <param help="Dump normal pairs into a file sample_name.norm.bam/sam" label="Do you want an additional bam file listing concordant mapped pairs?" name="pairNormal" type="select">
+	<option value="no">No</option>
+	<option value="yes">Yes</option>
+   </param>
+    <when value="yes">
+	  <!-- do nothing here -->
+    </when>
+    <when value="no">
+	 <!-- do nothing here -->
+    </when>
+   </conditional>
+   <param label="Number of pairs for calculating mu (µ) and sigma (σ) lengths" name="nbrePair" size="30" type="integer" value="1000000"/>
+   <param label="Minimum value of ISIZE for calculating mu (µ) and sigma (σ) lengths" name="isizeMin" size="30" type="integer" value="0"/>
+   <param label="Maximum value of ISIZE for calculating mu (µ)and sigma( σ) lengths" name="isizeMax" size="30" type="integer" value="10000"/>
+   <param label="Minimal number of sigma (σ) fold for filtering pairs" name="foldPair" size="30" type="float" value="3"/>
+  </inputs>
+
+  <outputs>
+    <data format="bam" label="${$sample_name}.ab.bam" name="abBAM"/> 
+    <data format="txt" label="${$sample_name}.svdetect_preprocessing.log" name="log"/>
+    <data format="bam" label="${$sample_name}.norm.bam" name="normBAM">
+    <filter>newBam['pairNormal'] == 'yes'</filter>
+    </data> 
+  </outputs>
+
+  <help>
+
+**What it does**
+
+Bam_preprocessingPairs - Version 0.5
+
+Preprocessing of mates to get anomalously mapped mate-pair/paired-end reads as input for SVDetect.
+
+From all pairs mapped onto the reference genome, this script outputs abnormal pairs:
+
+	* mapped on two different chromosomes
+	* with an incorrect strand orientation and/or pair order
+	* with an insert size distance +- sigma threshold
+
+into a file prefix.ab.bam/sam sorted by read names
+    
+-BAM/SAM File input format only.
+  
+SAMtools required for BAM files
+
+-----
+
+.. class:: infomark
+
+Contact Bruno Zeitouni (svdetect@curie.fr) for any questions or concerns about the Galaxy implementation of SVDetect.
+
+  </help>
+
+</tool>

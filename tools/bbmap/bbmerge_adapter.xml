@@ -1,0 +1,65 @@
+<tool id="bbmerge_adapter" name="BBMerge Discover Adapter" version="BBMAP: bbmap_34.94">
+  <requirements>
+    <requirement type="package">bbmap</requirement>
+  </requirements>
+  <description>sequences</description>
+  <command>
+    bbmerge.sh -Xmx28G  
+      ## input file(s)
+      in=&quot;${paired.in}&quot;
+      #if $paired.sPaired == &quot;single&quot;
+        interleaved=t
+      #else
+        in2=&quot;${paired.in2}&quot;
+      #end if
+     
+      outadapter=$outadapter
+
+  </command>
+
+  <inputs>
+    <conditional name="paired">
+      <param label="Is this library mate-paired?" name="sPaired" type="select">
+        <option value="single">Interleaved paired-end</option>
+        <option value="paired">Paired-end</option>
+      </param>
+      <when value="single">
+        <param format="fastqsanger,fastqillumina" help="FASTQ with either Sanger-scaled quality values (fastqsanger) or Illumina-scaled quality values (fastqillumina)" label="FASTQ file" name="in" type="data"/>
+      </when>
+      <when value="paired">
+        <param format="fastqsanger,fastqillumina" help="FASTQ with either Sanger-scaled quality values (fastqsanger) or Illumina-scaled quality values (fastqillumina)" label="Forward FASTQ file" name="in" type="data"/>
+        <param format="fastqsanger,fastqillumina" help="FASTQ with either Sanger-scaled quality values (fastqsanger) or Illumina-scaled quality values (fastqillumina)" label="Reverse FASTQ file" name="in2" type="data"/>
+      </when>
+    </conditional>
+  </inputs>
+
+  <outputs>
+    <data format="fasta" label="${tool.name} on ${on_string}: Consensus adapter seqs" name="outadapter"/>
+  </outputs>
+
+  <tests>
+    <test>
+    </test>
+    <test>
+    </test>
+    <test>
+    </test>
+  </tests>
+  <help>
+**What it does**
+
+This will report the consensus adapter sequences of pairs with insert size shorter than read length. The adapter sequences can then be used for trimming with BBDuk or fed back into BBMerge to improve merging accuracy.
+
+------
+
+**Input formats**
+
+Input may be fastq raw or gzipped.
+
+------
+
+**License and citation**
+
+
+  </help>
+</tool>

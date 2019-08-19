@@ -1,0 +1,35 @@
+<flow name="website-core" serializer="json">
+	<title>Website</title>
+	<desc>Prepare the website</desc>
+
+	<in name="projects_in" />
+
+	<module name="create">
+		<title>Create website</title>
+		<desc>Create website from templates</desc>
+
+		<in name="projects_in" link="projects_in" />
+		<out name="projects_out" />
+
+		<run>create.py</run>
+	</module>
+
+	<module name="datasets" depends="create">
+		<title>Generate datasets</title>
+		<desc>Create datasets from the internal database</desc>
+
+		<in name="projects_in" link="create.projects_out" />
+		<out name="projects_out" />
+
+		<run>datasets.py</run>
+	</module>
+
+	<module name="update_server" maxpar="1">
+		<title>Update website server</title>
+		<desc>Update the Onexus server with the new project</desc>
+
+		<in name="projects_in" link="datasets.projects_out" />
+
+		<run>update_server.py</run>
+	</module>
+</flow>

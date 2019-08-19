@@ -1,0 +1,188 @@
+<tool force_history_refresh="True" id="corrector_ha" name="Corrector HA" version="r240">
+    <description>- corrects sequencing errors in short reads</description>
+    <requirements>
+        <requirement type="package">bgisoap</requirement>
+    </requirements>
+    <command interpreter="python">
+        corrector_ha_2.0.py
+        ##Needs to re-use read.lst file created by KmerFreq to define input short read files
+
+        ##Inputs
+        --filelist=$filelist
+        --freq_gz=$freq_gz
+
+        ## Check if using default or custom parameters
+        --default_full_settings_type=$default_full_settings.settings_type
+        #if $default_full_settings.settings_type == &quot;full&quot;
+          --kmer_size=$default_full_settings.kmer_size
+          --low_freq_cutoff=$default_full_settings.low_freq_cutoff
+          --min_length_high_freq_region=$default_full_settings.min_length_high_freq_region
+          --max_read_change=$default_full_settings.max_read_change
+          --max_node_num=$default_full_settings.max_node_num
+          --remove_suspicious_data=$default_full_settings.remove_suspicious_data
+          --ascii_shift_quality_value=$default_full_settings.ascii_shift_quality_value
+          --trim_suspicious_end_regions_Q=$default_full_settings.trim_suspicious_end_regions_Q
+          --trim_error_bases_Q=$default_full_settings.trim_error_bases_Q
+          --qual_threshold_error_bases=$default_full_settings.qual_threshold_error_bases
+          --length_trim_low_qual_ends=$default_full_settings.length_trim_low_qual_ends
+          --min_length_trimmed_read=$default_full_settings.min_length_trimmed_read
+          --thread_num=$default_full_settings.thread_num
+          --convert_reads_into_paired_end_file=$default_full_settings.convert_reads_into_paired_end_file
+          --output_format=$default_full_settings.output_format
+        #end if
+
+        ##Multiple outputs are produced depending on the number of read libraries in read.lst
+        ##--xls=$xls
+        ##--cor_stat_forward=$cor_stat_forward
+        ##--cor_stat_reverse=$cor_stat_reverse
+        ##--cor_pair_forward_gz=$cor_pair_forward_gz
+        ##--cor_pair_reverse_gz=$cor_pair_reverse_gz
+        ##--cor_single_gz=$cor_single_gz
+        ##--cor_single_stat=$cor_single_stat
+
+        ##For unknown number of output files
+        ##Excel file
+        --output1=$output1
+        ##Unique identifier for naming and associating files to a galaxy job
+        --output1.id=$output1.id
+        ##Temp directory to store multiple files
+        --__new_file_path__=$__new_file_path__
+
+    </command>
+    <inputs>
+        <param format="input" label="List of input files" name="filelist" type="data"/>
+        <param format="input" label="Gzipped file containing Kmer frequency data" name="freq_gz" type="data"/>
+        <conditional name="default_full_settings">
+            <param help="Default settings are suitable for most analyses. If you want full control, use Full parameter list" label="Correction HA settings to use" name="settings_type" type="select">
+                <option value="default">Default</option>
+                <option value="full">Full parameter list</option>
+            </param>
+            <when value="default"/>
+            <when value="full">
+                <param help="This value must be the same as that used in KmerFreq!" label="Kmer size" name="kmer_size" type="integer" value="17"/>
+                <param help="Kmers with lower frequency values will be considered as suspicious." label="Cutoff threshold for low frequency Kmers" name="low_freq_cutoff" type="integer" value="3"/>
+                <param help="This functionality uses the branch and bounding tree method. Needs a continuous high frequency region as a starting point." label="Minimum length of a continuous high frequency Kmer region" name="min_length_high_freq_region" type="integer" value="10"/>
+                <param help="When this number is reached, Correction will trim data rather than adjust it." label="Maximum number of bases that can be changed in a single read" name="max_read_change" type="integer" value="2"/>
+                <param help="This parameter affects the maximum memory used by Correction" label="Maximum number of bases that will be allowed in a branch and bound tree" name="max_node_num" type="integer" value="15000000"/>
+                <param label="Remove low quality or suspicious data" name="remove_suspicious_data" type="select" value="0">
+                        <option value="0">No</option>
+                <option value="1">Yes</option>
+                </param>
+                <param label="ASCII shift for the quality value" name="ascii_shift_quality_value" type="select" value="64">
+                        <option value="64">64</option>
+                        <option value="33">33</option>
+                </param>
+                <param label="Trim read ends according to Q value" name="trim_suspicious_end_regions_Q" type="select" value="0">
+                    <option value="0">No, trim low quality and suspicious data directly</option>
+                    <option value="1">Yes, trim only Q value only</option>
+                </param>
+                <param label="Trim error bases with Q value until it is less than or equal to 2 instead of correcting it" name="trim_error_bases_Q" type="select" value="0">
+                    <option value="0">No, correct this base</option>
+                    <option value="1">Yes, trim ends of reads</option>
+                </param>
+                <param help="Bases with a higher quality value will not be corrected when using the BBT method" label="Set quality threshold of error bases" name="qual_threshold_error_bases" type="integer" value="40"/>
+                <param help="Sequencing errors tend to accumulate at the ends of rea6ds. Trimming these regions provides more accurate results." label="Number of bases to trim from low quality read ends. Defaults to Kmer size/2" name="length_trim_low_qual_ends" optional="true" type="integer"/>
+                <param help="This parameter sets the minimum length of final reads in the output" label="Minimum length of trimmed reads" name="min_length_trimmed_read" type="integer" value="50"/>
+                <param help="The processing speed can be increased by using a higher number of threads. This value should be less than the number of CPU cores" label="Number of threads to be used by Corrector" name="thread_num" type="integer" value="1"/>
+                <param help="Some low quality reads may be discarded in the corrected file. Set this parameter to No if you are only processing single-end read data" label="Convert read1 and read2 corrected files into paired-end files" name="convert_reads_into_paired_end_file" type="select" value="1">
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </param>
+                <param help="If input read files are in fasta format and ouput in fastq format, program will output all quality char=40+Quality_shift." label="Output file format" name="output_format" type="select" value="3">
+                    <option value="0">FASTA compressed file</option>
+                    <option value="1">FASTQ compressed file</option>
+                    <option value="2">FASTA text file</option>
+                    <option value="3">FASTQ text file</option>
+                </param>
+            </when>
+        </conditional>
+    </inputs>
+    <outputs>
+        <!-- Unknown number of multiple outputs -->
+        <!-- The Excel file -->
+        <data format="xls" label="SOAPec" name="output1"/>
+        <!--<data name="xls"-->
+              <!--format="xls"-->
+              <!--label="Quality control information"/>-->
+        <!--<data name="cor_stat_forward"-->
+              <!--format="Tabular"-->
+              <!--label="Statistics for corrected forward reads"/>-->
+        <!--<data name="cor_stat_reverse"-->
+              <!--format="Tabular"-->
+              <!--label="Statistics for corrected reverse reads"/>-->
+        <!--<data name="cor_pair_forward_gz"-->
+              <!--format="Tabular"-->
+              <!--label="Corrected forward reads"/>-->
+        <!--<data name="cor_pair_reverse_gz"-->
+              <!--format="Tabular"-->
+              <!--label="Corrected reverse reads"/>-->
+        <!--<data name="cor_single_gz"-->
+              <!--format="Tabular"-->
+              <!--label="Corrected single reads"/>-->
+        <!--<data name="cor_single_stat"-->
+              <!--format="Tabular"-->
+              <!--label="Statistics for corrected single reads"/>-->
+    </outputs>
+    <tests>
+        <test>
+            <!--
+                GapCloser –b config_file –a scaffold_file –o output_file
+            -->
+            <param name="refGenomeSource" value="indexed"/>
+            <param name="indices" value="phiX"/>
+            <param name="sPaired" value="single"/>
+            <param ftype="fastqsanger" name="input1" value="bwa_wrapper_in1.fastqsanger"/>
+            <param name="source_select" value="pre_set"/>
+            <param name="suppressHeader" value="true"/>
+            <output file="bwa_wrapper_out1.sam" ftype="sam" name="output" sort="True"/>
+        </test>
+    </tests>
+    <help>
+**What it does**
+
+This program corrects sequencing errors for short reads from the Illumina Genome Analyzer based on the kmer
+frequency spectrum (KFS). Since it assumes that most low-frequency Kmers have been generated by sequencing
+errors, this tool performs error correction by distinguishing the rate of low-frequency and high-frequency
+Kmers. Larger Kmer size allows Corrector to perform better but is more computationally demanding. In order to
+produce a highly accurate result, the trimmed length and delete ratio is balanced with the accuracy level. The
+practical Kmer size should be selected on the basis of the genome characteristic.
+
+When kmer sizes larger than 17bp are to be processed, the HA version of Corrector should be used since less
+memory is needed for KFS construction.
+
+-----
+
+**Outputs**
+
+Each lane will generate two pair.fq files containing pair-end reads and one single.fq file containing
+single-end reads. If Corrector HA has been configured not to process single-end reads, this file will not be
+present. Finally, one pair.single.stat file containing statistic information will be produced.
+
+For each read file, there is one cor.stat file, containing statistical information for each file.
+
+For each reads list file, there is one QC.xls file, containing quality control information.
+
+-----
+
+**Memory usage**
+
+Memory usage is related to the number of high frequency (greater than low frequence cutoff) kmer species. The
+peak value of memory usage can be estimated roughly by this formula: HighFreqKmerSpeciesNumber * 8 Byte.
+
+-----
+
+**Further information**
+
+When calculating the KFS, 30X data is preferred.
+
+Remember that the ASCII shift of quality default value (Quality_shift -Q) is 64. You should check the file
+and make sure this option set suitably.
+
+Low-frequency kmers regions will be considered as sequencing errors, and will be corrected or removed in the
+final result. However, the whole genome shotgun sequencing will generate random reads across the genome, and
+some regions will have very low coverage. These regions will be removed. You should remember consider this have
+done to your data when interpreting the final assembly.
+
+
+    </help>
+</tool>

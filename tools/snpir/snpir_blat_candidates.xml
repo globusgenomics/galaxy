@@ -1,0 +1,88 @@
+<tool id="blat_candidates" name="SNPiR BLAT candidates" version="SNPIR: 12-May-2014; SAMTOOLS: 1.2; UCSC_TOOLS: 20140801; BEDTOOLS: 2.17.0">
+  <requirements>
+    <requirement type="package">snpir</requirement>
+    <requirement type="package">samtools</requirement>
+    <requirement type="package">ucsc_tools</requirement>
+    <requirement type="package">bedtools</requirement>
+  </requirements>
+  <description>
+    filters all variants that were erroneously called from potentially mismapped reads
+  </description>
+
+  <command>
+    ln -s $inputBAM input.bam; samtools index -b input.bam; 
+    BLAT_candidates.pl 
+    -infile $inputVCF -outfile $outputVCF -bamfile input.bam $fastqFormat -minbasequal $qualityThreshold -minmismatch $minmismatch -scorelimit $scorelimit
+    #if $genomeSource.refGenomeSource == &quot;history&quot;:
+        -refgenome $genomeSource.ownFile
+    #else
+        -refgenome ${genomeSource.index.fields.path}
+    #end if
+
+  </command>
+
+  <inputs>
+    <param format="vcf" label="Select an input VCF file" name="inputVCF" type="data"/>
+    <param format="bam" label="Select an input BAM file" name="inputBAM" type="data"/>
+    <param checked="false" falsevalue="" label="Reads in the bam file are in Illumina 1.3+ FASTQ-like format" name="fastqFormat" truevalue="-illumina " type="boolean"/>
+    <conditional name="genomeSource">
+      <param label="Select Reference Genome" name="refGenomeSource" type="select">
+        <option value="indexed">Select built-in genome</option>
+        <option value="history">Use a genome (fasta format) from my history</option>
+      </param>
+      <when value="indexed">
+        <param help="This list contains genomes cached at this Galaxy instance. If your genome of interest is not present here request it by using 'Help' link at the top of Galaxy interface or use the 'Use a genome (fasta format) from my history' option of the 'Select Reference Genome' dropdown." label="Select a built-in reference genome" name="index" type="select">
+          <options from_data_table="all_fasta">
+          </options>
+        </param>
+      </when>
+      <when value="history">
+        <param format="fasta" help="This option works best for relatively small genomes. If you are working with large human-sized genomes, send request to Galaxy team for adding your reference to this Galaxy instance by using 'Help' link at the top of Galaxy interface." label="Select a reference genome from history" name="ownFile" type="data"/>
+      </when>
+    </conditional>
+
+    <param help="default is 25" label="Minimum base quality for mismaches to be taken into account" min="0" name="qualityThreshold" type="integer" value="25"/>
+    <param help="default is 1" label="Minimum number of mismatches that are supported by correctly mapped reads" min="0" name="minmismatch" type="integer" value="1"/>
+    <param help="default is 0.95" label="Fraction of a max read score at which other mapping locations of the same read are considered duplicates" max="1" min="0" name="scorelimit" type="float" value="0.95"/>
+  </inputs>
+
+  <outputs>
+    <data format="vcf" label="${tool.name} on ${on_string}" name="outputVCF"/>
+  </outputs>
+
+  <help>
+
+.. class:: infomark
+
+**Purpose**
+
+BLAT filter, by Robert Piskol (piskol@stanford.edu) Gokul Ramaswami (gokulr@stanford.edu) 07/25/2013
+
+This program takes a variant file, bamfile with mapped reads (that were used for variant calling)
+and reference genome and filters all variants that were erroneously called from potentially mismapped reads.
+
+**Settings**::
+
+  Arguments:
+  infile FILE	- File containing a list of variants to be filtered
+  outfile FILE	- Output file for filtered variants
+  bamfile FILE	- File containing mapped short reads that were used for variant calling
+  refgenome FILE	- File in FASTA format containing the reference genome of the species
+  minbasequal N	- minimum basequality of a mismatch to be taken into account (default: 25)
+  minmismatch N	- minimum number of mismatches that are supported by correctly mapped reads (default: 1)
+  scorelimit N	- fraction of a max read score at which other mapping locations of the same read are considered duplicates (default: 0.95) (e.g. if the scond best mapping of a read has a score&gt;0.95*bestMapping, the read mapping is considered unsafe and the read removed)
+  illumina	- reads in the bam file are in Illumina 1.3+ FASTQ-like format
+  help		- Show this help screen                 
+
+
+------
+
+.. class:: infomark
+
+**Inputs, outputs, and parameters**
+
+
+
+  </help>
+
+</tool>

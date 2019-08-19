@@ -1,0 +1,48 @@
+<tool id="clc2vcf" name="CLC2VCF" version="clc-1.0.0">
+  <description>Convert CLC annotated files to a standard VCF file</description>
+  <requirements>
+    <requirement type="package">pymodules</requirement>
+  </requirements>
+  <command>
+    #if str($input_dir_source.input_dir_source_type) == "history":
+      #for $in_count, $input_file in enumerate( $input_dir_source.input_files ):
+        ln -s "${input_file.input_file}" "localbam_${in_count}.txt";
+      #end for
+    #end if
+    mkdir $output.extra_files_path;
+    $__tool_directory__/clc2vcf.py
+      --dir $output.extra_files_path
+      #if $input_dir_source.input_dir_source_type == "directory_object":
+        --variant-annotations-directory ${input_dir_source.input_directory.extra_files_path}
+      #else:
+        --variant-annotations-directory ./
+      #end if
+  > $output
+  </command>
+    <inputs>
+      <conditional name="input_dir_source">
+        <param label="Input type" name="input_dir_source_type" type="select">
+          <option selected="True" value="directory_object">Directory Object</option>
+          <option value="file">History</option>
+        </param>
+        <when value="directory_object">
+          <param help="Should be html file" label="CLC Annotation files directory object" name="input_directory" type="data" format="txt,html"/>
+        </when>
+        <when selected="true" value="history">
+          <repeat min="1" name="input_files" title="Input annotations">
+            <param format="txt,vcf,tabular" label="CLC annotation file" name="input_file" type="data"/>
+          </repeat>
+        </when>
+      </conditional>
+    </inputs>
+    <outputs>
+      <data format="html" label="${tool.name} on ${on_string}" name="output"/>
+    </outputs>
+    <help>
+
+**What it does**
+
+Converts CLC generated annotated VCF files to a regular VCF file. Files are generated in an object directory
+
+    </help>
+</tool>

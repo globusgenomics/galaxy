@@ -1,0 +1,131 @@
+<?xml version="1.0" ?>
+<tool id="qiime_gneiss_balance-taxonomy" name="qiime gneiss balance-taxonomy" version="022019">
+	<description>- Balance Summary</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command>
+	<![CDATA[
+	qiime gneiss balance-taxonomy --i-tree=$itree --p-balance-name="$pbalancename"
+
+	#if str( $id_to_taxonomy_fp.selector ) == 'history'
+		#set $tax = $id_to_taxonomy_fp.taxonomy_fp
+		--i-taxonomy '$tax'
+	#else:
+		#set $tax = $id_to_taxonomy_fp.taxonomy_fp.fields.path
+		--i-taxonomy '$tax'
+	#end if
+
+		--i-table=$itable
+	#if $pnfeatures:
+	 --p-n-features=$pnfeatures
+	#end if
+
+	#if str($mmetadatacolumn):
+	 --m-metadata-column="$mmetadatacolumn"
+	#end if
+
+	#if str($cmdconfig) != 'None':
+	 --cmd-config=$cmdconfig
+	#end if
+
+	#if $ptaxalevel:
+	 --p-taxa-level=$ptaxalevel
+	#end if
+	 --o-visualization=ovisualization
+	#if $input_files_mmetadatafile:
+
+	#def list_dict_to_string(list_dict):
+		#set $file_list = list_dict[0]['additional_input'].__getattr__('file_name')
+		#for d in list_dict[1:]:
+			#set $file_list = $file_list + ',' + d['additional_input'].__getattr__('file_name')
+		#end for
+		#return $file_list
+	#end def
+	 --m-metadata-file=$list_dict_to_string($input_files_mmetadatafile)
+	#end if
+
+	#if str($pthreshold):
+	 --p-threshold="$pthreshold"
+	#end if
+	;
+	qiime tools export --input-path ovisualization.qzv --output-path out   && mkdir -p '$ovisualization.files_path'
+	&& cp -r out/* '$ovisualization.files_path'
+	&& mv '$ovisualization.files_path/index.html' '$ovisualization'
+	]]>
+	</command>
+	<inputs>
+		<param format="qza,no_unzip.zip" label="--i-table: FeatureTable[Composition] A table of compositions.  [required]" name="itable" optional="False" type="data"/>
+		<param format="qza,no_unzip.zip" label="--i-tree: Hierarchy The tree used to calculate the balances. [required]" name="itree" optional="False" type="data"/>
+
+		<conditional name="id_to_taxonomy_fp" optional="True">
+		   <param name="selector" type="select" label="Reference taxonomy to query">
+			  <option value="cached">Public databases</option>
+			  <option value="history">Databases from your history</option>
+		   </param>
+		   <when value="cached">
+			  <param argument="--taxonomy_fp" label="Reference taxonomy" type="select" optional="True">
+				 <options from_data_table="qiime_taxonomy" />
+			  </param>
+		   </when>
+		   <when value="history">
+			  <param argument="--taxonomy_fp" type="data" format="qza,no_unzip.zip" label="Reference databases" optional="True" />
+		   </when>
+		</conditional>
+
+		<param label="--p-balance-name: Name of the balance to summarize. [required]" name="pbalancename" optional="False" type="text"/>
+		<param label="--p-taxa-level: Level of taxonomy to summarize.  [default: 0]" name="ptaxalevel" optional="True" type="integer" value="0"/>
+		<param label="--p-n-features: The number of features to plot in the proportion plot.  [default: 10]" name="pnfeatures" optional="True" type="integer" value="10"/>
+		<param label="--p-threshold: A threshold to designate discrete categories for a numerical metadata column. This will split the numerical column values into two categories, values below the threshold, and values above the threshold. If not specified, this threshold will default to the mean.  [optional]" name="pthreshold" optional="True" type="text"/>
+
+		<repeat name="input_files_mmetadatafile" optional="True" title="--m-metadata-file">
+			<param label="--m-metadata-file: Metadata file or artifact viewable as metadata. This option may be supplied multiple times to merge metadata. [optional]" name="additional_input" type="data" format="tabular,qza,no_unzip.zip" />
+		</repeat>
+		<param label="--m-metadata-column: MetadataColumn[Categorical | Numeric] Column from metadata file or artifact viewable as metadata. Metadata column for plotting the balance (optional).  [optional]" name="mmetadatacolumn" optional="True" type="text"/>
+
+		<param label="--cmd-config: Use config file for command options" name="cmdconfig" optional="True" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="html" label="${tool.name} on ${on_string}: visualization.qzv" name="ovisualization"/>
+	</outputs>
+	<help>
+		<![CDATA[
+Balance Summary
+----------------
+
+Visualize the distribution of a single balance and summarize its numerator
+and denominator components.
+
+Parameters
+----------
+table : FeatureTable[Composition]
+    A table of compositions.
+tree : Hierarchy
+    The tree used to calculate the balances.
+taxonomy : FeatureData[Taxonomy]
+    Taxonomy information for the OTUs.
+balance_name : Str
+    Name of the balance to summarize.
+taxa_level : Int, optional
+    Level of taxonomy to summarize.
+n_features : Int, optional
+    The number of features to plot in the proportion plot.
+threshold : Float, optional
+    A threshold to designate discrete categories for a numerical metadata
+    column. This will split the numerical column values into two
+    categories, values below the threshold, and values above the threshold.
+    If not specified, this threshold will default to the mean.
+metadata : MetadataColumn[Categorical | Numeric], optional
+    Metadata column for plotting the balance (optional).
+
+Returns
+-------
+visualization : Visualization
+		\
+		]]>
+	</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

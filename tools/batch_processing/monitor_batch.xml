@@ -1,0 +1,32 @@
+<tool id="monitor_batch" name="Monitor batch jobs" hidden="false">
+   <action module="galaxy_ext.globus.tools.actions.globus" class="BatchSubmit"/>
+   <description>in multiple histories</description>
+   <requirements>
+     <requirement type="package">pymodules</requirement>
+   </requirements>
+   <command interpreter="python">
+     monitor_batch_wrapper.py 
+     -k $userapi
+     -u "$url"
+     --input $input
+     --out $summary
+     --out-dir $summary.extra_files_path
+   </command>
+
+   <inputs>
+      <param format="txt" name="input" type="data" label="Monitor file" help="This should be the output from the batch submit job"/>
+      <param name="userapi" type="hidden" size="100" value="None" label="Galaxy API Key"/>
+      <param name="url" type="hidden" value="**" size="100" label="GG URL"/>
+   </inputs>
+
+   <outputs>
+     <data format="html" name="summary" label="Monitor for batch submission ${on_string}"/>
+   </outputs>
+
+   <help>
+
+
+   </help>
+
+</tool>
+

@@ -1,0 +1,37 @@
+<tool id="samtools1.8_fixmate" name="samtools fixmate" version="SAMTOOLS: 1.8">
+  <requirements>
+    <requirement type="package" version="1.8">samtools</requirement>
+  </requirements>
+  <description>fixmate</description>
+  <command>samtools fixmate 
+  &quot;$input1&quot; &quot;$output1&quot;
+  2&gt;&amp;1 || echo &quot;Error running samtools fixmate.&quot; &gt;&amp;2
+  </command>
+  <inputs>
+    <param format="bam" label="BAM File" name="input1" type="data"/>
+  </inputs>
+  <outputs>
+    <data format="bam" name="output1"/>
+  </outputs>
+  <tests>
+    <test>
+      <param ftype="bam" name="input1" value="1.bam"/>
+      <output file="1.bam" ftype="bam" name="output1" sort="True"/>
+    </test>
+  </tests>
+  <help>
+
+**What it does**
+
+Fill in mate coordinates, ISIZE and mate related flags from a name-sorted alignment.
+
+------
+
+**Citation**
+
+For the underlying tool, please cite `Li H, Handsaker B, Wysoker A, Fennell T, Ruan J, Homer N, Marth G, Abecasis G, Durbin R; 1000 Genome Project Data Processing Subgroup. The Sequence Alignment/Map format and SAMtools. Bioinformatics. 2009 Aug 15;25(16):2078-9. &lt;http://www.ncbi.nlm.nih.gov/pubmed/19505943&gt;`_
+
+If you use this tool in Galaxy, please cite Blankenberg D, et al. *In preparation.*
+
+  </help>
+</tool>

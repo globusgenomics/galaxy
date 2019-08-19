@@ -1,0 +1,39 @@
+#Data Export for Workflow Batch Submission Through the APII
+
+
+### INSTRUCTIONS
+#######################################
+#The following data can be used to input the parameters you have previously determined to be
+#set at runtime. Please specify the library or history where the input data can be found.
+#Once you have filled out the table you can run the API script to submit the jobs through Galaxy
+#via the API.
+
+#NOTE: If you make any changes to the workflow or edit the name of the workflow, you will need
+#to recreate the table before submitting the job via the API since some metadata parameters will
+#be modified.
+
+#NOTE: It is up to the user to make sure the input files are in the correct format for each
+#parameter being filled out.
+
+#NOTE: You will need to specify three items for input files to an application.
+#The format for an input file should be [SourceType::SourceName::file_name]:
+#1. Source Type - which can be library or history
+#2. Source Name - the name of the library or history.
+#3. Filename - specify the name of the file as it exists in the library or history.
+
+
+########################################
+
+
+### METADATA
+#######################################
+Workflow Name	WGSA_db_annotation_medium
+Workflow id	62ca2cd7d707ae3f
+Project Name	<Your_project_name>
+#######################################
+
+
+###TABLE DATA
+#######################################
+SampleName	##Param::0::wgsa_wrapper_with_download_minid_output::input_minid	##Param::0::wgsa_wrapper_with_download_minid_output::variant_type	##Param::0::wgsa_wrapper_with_download_minid_output::db_type
+ark:/57799/b989Nsg8j0Vv9I.indels.GenoCanyon	ark:/57799/b989Nsg8j0Vv9I	indels	GenoCanyon

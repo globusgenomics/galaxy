@@ -1,0 +1,120 @@
+<?xml version="1.0"?>
+
+<tool name="vcfPrinter" id="vcfPrinter_id">
+  <requirements>
+    <requirement>ruby</requirement>
+  </requirements>
+  <description>
+  </description>
+
+  <command interpreter="python">
+    vcfPrinter.py
+    
+    ## source of input entries
+    #if $input_source.source_type == "history":
+      --inputVCF=$input_source.inputVCF
+      --inputBAM=$input_source.inputBAM
+
+      #for $input_file in $input_files:
+        --inputVCF=${input_file.additional_inputVCF}
+        --inputBAM=${input_file.additional_inputBAM}
+      #end for
+
+    #elif $input_source.source_type == "config":
+      --config=$input_source.input_config
+    #else:
+      --bamdir=$input_source.input_bamdir
+      --vcfdir=$input_source.input_vcfdir
+    #end if
+
+    ### reference data
+    #if $reference.ref_source == "index"
+      --reference=$reference.index
+      --ownfile="None"
+      --refconfig="None"
+    #elif $reference.ref_source == "history":
+      --reference="None"
+      --ownfile=$reference.ownFile
+      --refconfig="None"
+    #elif $reference.ref_source == "config":
+      --reference="None"
+      --ownfile="None"
+      --refconfig=$input_source.input_config
+    #end if
+
+    #if $n:
+	-n 
+    #end if
+
+    #if $p:
+	-p
+    #end if
+
+   --outputVCF=$outputVCF
+
+  </command>
+
+  <inputs>
+    <conditional name="input_source">
+      <param name="source_type" type="select" label="Where are input BAM and VCF files?" help="">
+	<option value="history">From History</option>
+	<option value="config">From Config File</option>
+	<option value="manual">Specify Input Directories</option>
+      </param>
+      <when value="history">
+	<param name="inputVCF" type="data" format="vcf" label="Select a input VCF file" />
+	<param name="inputBAM" type="data" format="bam" label="Select a input BAM file" help="The BAM files need to be indexed."/>
+	<repeat name="input_files" title="Additional VCF and BAM Input Files">
+	  <param format="vcf" name="additional_inputVCF" type="data" label="VCF file" />
+	  <param format="bam" name="additional_inputBAM" type="data" label="BAM file" />
+	</repeat>
+      </when>
+      <when value="config">
+	<param format="tabular" name="input_config" type="data" label="Config File" help="Config file containing location of BAM and VCF directories." />
+      </when>
+      <when value="manual">
+	<param type="text" name="input_bamdir" label="Input BAM directory path" help="Directory path in server with all BAM files."/>
+	<param type="text" name="input_vcfdir" label="Input VCF directory path" help="Directory path in server with all VCF files."/>
+      </when>
+    </conditional>
+
+    <conditional name="reference">
+      <param name="ref_source" type="select" label="Reference source" help="If you choose From Config you must use the same config as above">
+   	<option value="index">From Built-in Index</option>
+	<option value="history">From History</option>
+	<option value="config">From Config</option>
+      </param>
+      <when value="index">
+	<param name="index" type="select" label="Select a reference genome" help="If your genome of interest is not listed, contact the Galaxy team">
+	  <options from_file="all_fasta.loc">
+	    <column name="value" index="3" />
+	    <column name="name" index="2" />
+	  </options>
+	</param>
+      </when>
+      <when value="history">
+	<param name="ownFile" type="data" format="fasta" metadata_name="dbkey" label="Select the reference genome" />
+      </when>
+      <when value="config"/>
+    </conditional>
+    <param name="n" type="boolean" checked="false" label="Skip pileup" help="if checked, will not run pileup, hence will only merge data from single sample VCF. Samples without at a site will not have read level information gathered from samtools pileup making it significantly faster."/>
+    <param name="p" type="boolean" checked="false" label="Ignore non-Pass variants" help="if checked, will not merge non-PASS variants, based on the PASS tag in filter field"/>
+
+  </inputs>
+
+  <outputs>
+    <data name="outputVCF" format="vcf" label="Output of vcfPrinter on ${on_string}.vcf" />
+  </outputs>
+
+  <help>
+vcfPrinter_ is used to generate multi-sample Variant Call Format (VCF) file from single sample VCF files.
+ .. _vcfPrinter: http://www.hgsc.bcm.tmc.edu/cascade-tech-software_atlas2_snp_indel_calling_pipeline-ti.hgsc
+
+**Usage:**
+
+ruby vcfPrinter.rb -i "/home/user/data/file.vcf" -o /home/user/data/outfile.vcf -b "/home/user/data/file.bam" -r /home/user/ref/human_b36_male.fa
+
+
+  </help>
+
+</tool>

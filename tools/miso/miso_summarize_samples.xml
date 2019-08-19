@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+
+<tool name="Summarize Samples" id="summarize_samples_id">
+  <description>
+  </description>
+  <requirements>
+        <requirement type="package">pymodules</requirement>
+  </requirements>
+
+  <command interpreter="python">
+     miso_summarize_samples.py
+   $input_gene
+   $htmlfile
+  </command>
+
+  <inputs>
+    <param name="input_gene" type="data" label="Select an output of 'Compute Psi values for genes'"/>
+
+  </inputs>
+
+  <outputs>
+    <data format="html" name="htmlfile" label="Output of Summarize Samples.html" />
+  </outputs>
+
+  <help>
+Compute summary statistics of the given set of samples. 
+Expects a directory with MISO output and a directory to output summary file to.
+
+
+  </help>
+
+</tool>

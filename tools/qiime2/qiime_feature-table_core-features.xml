@@ -1,0 +1,80 @@
+<?xml version="1.0" ?>
+<tool id="qiime_feature-table_core-features" name="qiime feature-table core-features" version="022019">
+	<description> - Identify core features in table</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command>
+		<![CDATA[
+	qiime feature-table core-features --i-table=$itable
+
+	#if str($cmdconfig) != 'None':
+	 --cmd-config=$cmdconfig
+	#end if
+
+	#if $pminfraction:
+	 --p-min-fraction=$pminfraction
+	#end if
+
+	#if $pmaxfraction:
+	 --p-max-fraction=$pmaxfraction
+	#end if
+	 --o-visualization=ovisualization
+	#if $psteps:
+	 --p-steps=$psteps
+	#end if
+	;
+	qiime tools export --input-path ovisualization.qzv --output-path out   && mkdir -p '$ovisualization.files_path'
+	&& cp -r out/* '$ovisualization.files_path'
+	&& mv '$ovisualization.files_path/index.html' '$ovisualization';
+]]></command>
+	<inputs>
+		<param format="qza,no_unzip.zip" label="--i-table: FeatureTable[Frequency] The feature table to use in core features calculations.  [required]" name="itable" optional="False" type="data"/>
+
+		<param label="--p-min-fraction: The minimum fraction of samples that a feature must be observed in for that feature to be considered a core feature.  [default: 0.5]" name="pminfraction" optional="True" type="float" value="0.5"/>
+		<param label="--p-max-fraction: The maximum fraction of samples that a feature must be observed in for that feature to be considered a core feature.  [default: 1.0]" name="pmaxfraction" optional="True" type="float" value="1.0"/>
+
+		<param label="--p-steps: The number of steps to take between `min_fraction` and `max_fraction` for core features calculations. This parameter has no effect if `min_fraction` and `max_fraction` are the same value.  [default: 11]" name="psteps" optional="True" type="integer" value="11"/>
+
+		<param label="--cmd-config: Use config file for command options" name="cmdconfig" optional="True" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="html" label="${tool.name} on ${on_string}: visualization.qzv" name="ovisualization"/>
+	</outputs>
+	<help>
+		<![CDATA[
+Identify core features in table
+--------------------------------
+
+Identify "core" features, which are features observed in a user-defined
+fraction of the samples. Since the core features are a function of the
+fraction of samples that the feature must be observed in to be considered
+core, this is computed over a range of fractions defined by the
+`min_fraction`, `max_fraction`, and `steps` parameters.
+
+Parameters
+----------
+table : FeatureTable[Frequency]
+    The feature table to use in core features calculations.
+min_fraction : Float % Range(0.0, 1.0, inclusive_start=False), optional
+    The minimum fraction of samples that a feature must be observed in for
+    that feature to be considered a core feature.
+max_fraction : Float % Range(0.0, 1.0, inclusive_end=True), optional
+    The maximum fraction of samples that a feature must be observed in for
+    that feature to be considered a core feature.
+steps : Int % Range(2, None), optional
+    The number of steps to take between `min_fraction` and `max_fraction`
+    for core features calculations. This parameter has no effect if
+    `min_fraction` and `max_fraction` are the same value.
+
+Returns
+-------
+visualization : Visualization
+		\
+		]]>
+	</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

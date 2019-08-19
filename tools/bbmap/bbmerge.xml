@@ -1,0 +1,173 @@
+<tool id="bbmerge" name="BBMerge" version="BBMAP: bbmap_34.94">
+  <requirements>
+    <requirement type="package">bbmap</requirement>
+  </requirements>
+  <description>Merges paired reads into single reads by overlap detection</description>
+  <command>
+    bbmerge.sh -Xmx28G  
+      ## input file(s)
+      in=&quot;${paired.in}&quot;
+      #if $paired.sPaired == &quot;single&quot;
+        interleaved=t
+      #else
+        in2=&quot;${paired.in2}&quot;
+      #end if
+
+      #if str($adapter_in) != "None":
+          adapter=${adapter_in}
+      #end if
+
+      #if str($adapter_in2) != "None":
+          adapter2=${adapter_in2}
+      #end if
+
+      #if $maxlength != &quot;1&quot;
+        maxlength=${maxlength}
+      #end if
+      #if $minlength != &quot;0&quot;
+        minlength=${minlength}
+      #end if
+      trimq=${trimq}
+
+      #if str($qtrim) != &quot;f&quot;
+        ${qtrim}
+      #end if
+
+      ## run parameters
+      #if $params.source_select != &quot;pre_set&quot;
+        ${params.trimonfailure}
+        ${params.tbo}
+        minavgquality=${params.minavgquality}
+        maxexpectederrors=${params.maxexpectederrors}
+        ${params.join}
+        ${params.useoverlap}
+        minoverlap=${params.minoverlap}
+        minoverlap0=${params.minoverlap0}
+        minoverlapinsert=${params.minoverlapinsert}
+        mininsert=${params.mininsert}
+        minq=${params.short_kmers.minq}
+        maxq=${params.maxq}
+        margin=${params.margin}
+        mismatches=${params.mismatches}
+        ${params.entropy}
+        ${params.modes_cond.processing_modes}
+        ${params.modes_cond.efilter}
+        ${params.nzo}
+      #end if
+ 
+      out=$out
+      outu=$outu
+      outinsert=$outinsert
+
+  </command>
+
+  <inputs>
+    <conditional name="paired">
+      <param label="Is this library mate-paired?" name="sPaired" type="select">
+        <option value="single">Interleaved paired-end</option>
+        <option value="paired">Paired-end</option>
+      </param>
+      <when value="single">
+        <param format="fastqsanger,fastqillumina" help="FASTQ with either Sanger-scaled quality values (fastqsanger) or Illumina-scaled quality values (fastqillumina)" label="FASTQ file" name="in" type="data"/>
+      </when>
+      <when value="paired">
+        <param format="fastqsanger,fastqillumina" help="FASTQ with either Sanger-scaled quality values (fastqsanger) or Illumina-scaled quality values (fastqillumina)" label="Forward FASTQ file" name="in" type="data"/>
+        <param format="fastqsanger,fastqillumina" help="FASTQ with either Sanger-scaled quality values (fastqsanger) or Illumina-scaled quality values (fastqillumina)" label="Reverse FASTQ file" name="in2" type="data"/>
+      </when>
+    </conditional>
+
+    <param format="fasta" help="if known, Specify the adapter sequences used for these reads." label="Adapter sequence1" optional="True" type="data" name="adapter_in"/>
+    <param format="fasta" help="if known, Specify the adapter sequences used for the paired-end read." label="Adapter sequence 2" optional="True" type="data" name="adapter_in2"/>
+    <param help="Reads with longer insert sizes will be discarded" label="Maximum insert size" name="maxlength" type="integer" value="1"/>
+    <param help="Reads shorter than this after trimming will be discarded. (minlength, ml)" label="Minimum read length" name="minlength" type="integer" value="0"/>
+    <param help="(trimq)" label="Trim qulaity treshold" name="trimq" type="integer" value="10"/>
+    <param help="qtrim" label="Trim read ends to remove bases with quality below threshold quality value" name="qtrim" type="select">
+      <option selected="True" value="f">Neither end</option>
+      <option value="qtrim=l">left end</option>
+      <option value="qtrim=r">right end</option>
+      <option value="qtrim=t">both ends</option>
+    </param>
+    <conditional name="params">
+      <param help="For most cases use Commonly Used settings. If you want full control use Full Parameter List" label="BBduk settings to use" name="source_select" type="select">
+        <option value="pre_set">Commonly Used</option>
+        <option value="full">Full Parameter List</option>
+      </param>
+      <when value="pre_set"/>
+      <when value="full">
+        <param checked="false" falsevalue="" help="(trimonfailure, tof)" label="If detecting insert size by overlap fails, the reads will be trimmed and this will be re-attempted" name="trimonfailure" truevalue="trimonfailure=t" type="boolean"/>
+        <param checked="true" falsevalue="tbo=f" help="tbo, trimbyoverlap" label="Trim overlapping reads to remove non-overlapping portio" name="tbo" truevalue="tbo=t" type="boolean"/>
+        <param help="Reads with lower value than this will not be attempted to merge. (minavgquality, maq)" label="Minimum average quality value" name="minavgquality" type="integer" value="0"/>
+        <param help="If positive, reads with more combined expected errors than this will not be attempted to be merged. (maxexpectederrors, mee)" label="Max allowed expected errors in reads" name="maxexpectederrors" type="integer" value="0"/>
+        <param checked="true" falsevalue="join=f" help="(join)" label="Create merged reads" name="join" truevalue="join=t" type="boolean"/>
+        <param checked="true" falsevalue="useoverlap=f" help="(useoverlap)" label="Attempt merge based on paired read overlap" name="useoverlap" truevalue="useoverlap=t" type="boolean"/>
+        <param help="(minoverlap)" label="Minimum number of overlapping bases to consider merging" name="minoverlap" type="integer" value="12"/>
+        <param help="(minoverlap0)" label="Minimum number of overlapping bases to consider for deciding ambiguity" name="minoverlap0" type="integer" value="8"/>
+        <param help="(minoverlapinsert)" label="Minimum insert size" name="minoverlapinsert" type="integer" value="25"/>
+        <param help="Reads with insert sizes less than this after merging will be discarded. (mininsert)" label="Minimum read length after merging" name="mininsert" type="integer" value="35"/>
+        <param help="Ignore bases with quality below this. (minq)" label="Minimum base quality value" name="minq" type="integer" value="9"/>
+        <param help="Cap output quality scores at this. (maxq)" label="Maximum base quality value" name="maxq" type="integer" value="41"/>
+        <param help="The best overlap must have at least this fewer mismatches than the second best. (margin)" label="Margin" name="margin" type="integer" value="2"/>
+        <param help="Allow up to this many mismatches in the overlap. (mismatches)" label="Mismatches" name="mismatches" type="integer" value="3"/>
+        <param checked="true" falsevalue="entropy=f" help="(entropy)" label="Increase the minimum overlap requirement for low-complexity reads" name="entropy" truevalue="entropy=t" type="boolean"/>
+
+        <conditional name="modes_cond">
+          <param help="" label="Processing mode" name="processing_modes" type="select">
+            <option selected="true" value="normal=t">Default</option>
+            <option value="strict=t">Strict - Decrease false positive rate and merging rate</option>
+            <option value="fast=t">Fast - Increase speed and slightly decrease merging rate</option>
+            <option value="loose=t">Loose - Increase false positive rate and merging rate</option>
+            <option value="vloose=t">Very loose - Greatly increase false positive rate and merging rate</option>
+          </param>
+          <when value="normal=t">
+            <param checked="false" falsevalue="efilter=f" help="efilter" label="Ban overlaps with many more mismatches than expected" name="efilter" truevalue="efilter=t" type="boolean"/>
+          </when>
+          <when value="strict=t">
+            <param checked="false" falsevalue="efilter=f" help="efilter" label="Ban overlaps with many more mismatches than expected" name="efilter" truevalue="efilter=t" type="boolean"/>
+          </when>
+          <when value="fast=t">
+            <param checked="false" falsevalue="efilter=f" help="efilter" label="Ban overlaps with many more mismatches than expected" name="efilter" truevalue="efilter=t" type="boolean"/>
+          </when>
+          <when value="loose=t">
+            <param checked="true" falsevalue="efilter=f" help="efilter" label="Ban overlaps with many more mismatches than expected" name="efilter" truevalue="efilter=t" type="boolean"/>
+          </when>
+          <when value="vloose=t">
+            <param checked="true" falsevalue="efilter=f" help="efilter" label="Ban overlaps with many more mismatches than expected" name="efilter" truevalue="efilter=t" type="boolean"/>
+          </when>
+        </conditional>
+        <param checked="true" falsevalue="nzo=f" help="(nzo)" label="Only print histogram bins with nonzero value" name="nzo" truevalue="nzo=t" type="boolean"/>
+      </when>
+    </conditional>
+  </inputs>
+
+  <outputs>
+    <data format="fastqsanger" label="${tool.name} on ${on_string}: Merged fastq" name="out"/>
+    <data format="fastqsanger" label="${tool.name} on ${on_string}: Unmerged reads" name="outu"/>
+    <data format="tabular" label="${tool.name} on ${on_string}: Insert report" name="outinsert"/>
+  </outputs>
+
+  <tests>
+    <test>
+    </test>
+    <test>
+    </test>
+    <test>
+    </test>
+  </tests>
+  <help>
+**What it does**
+
+With sufficient coverage, can also merge nonoverlapping reads using gapped kmers.
+
+------
+
+**Input formats**
+
+Input may be fastq raw or gzipped.
+
+------
+
+**License and citation**
+
+
+  </help>
+</tool>

@@ -1,0 +1,98 @@
+<tool id="homer_makeucscfile" name="makeUCSCfile" version="@VERSION@.0">
+  <description>creates a bedgraph file for visualization using the UCSC Genome Browser</description>
+  <macros>
+     <import>macros.xml</import>
+  </macros> 
+  <expand macro="requirements"/>
+  <expand macro="stdio"/>
+  <command interpreter="python">    
+    makeUCSCfile.py
+    -o $output
+    --input $input.extra_files_path
+  </command>
+
+  <inputs>
+    <param name="input" type="data" format="txt" label="Tag directory"/>
+  </inputs>
+
+  <outputs>
+    <data format="gz" label="${tool.name} on ${on_string}:(bedgraph file)" name="output"/>
+  </outputs>
+
+  <help>
+        .. class:: infomark
+
+        **Homer makeUCSCfile**
+
+        More information on accepted formats and options
+
+        http://homer.ucsd.edu/homer/ngs/ucsc.html
+
+**Making Genome Browser Files**
+
+The basic strategy HOMER uses is to create a bedGraph formatted file that can then be uploaded as a custom track to the genome browser.  This is accomplished using the **makeUCSCfile** program.  To make a ucsc visualization file, type the following:
+
+**makeUCSCfile &lt;tag directory&gt; -o auto**
+
+i.e. **makeUCSCfile PU.1-ChIP-Seq/ -o auto**
+(output file will be in the PU.1-ChIP-Seq/ folder named PU.1-ChIP-Seq.ucsc.bedGraph.gz)
+
+The "-o auto" with make the program automatically generate an output file name (i.e. TagDirectory.ucsc.bedGraph.gz) and place it in the tag directory which helps with the organization of all these files.  The output file can be named differently by specifying "-o outputfilename" or by simply omitting "-o", which will send the output of the program to stdout (i.e. add " > outputfile" to capture it in the file outputfile).  It is recommended that you zip the file using **gzip** and directly upload the zipped file when loading custom tracks at UCSC.
+
+To visualize the experiment in the UCSC Genome Browser, go to Genome Browser page_ and select the appropriate genome (i.e. the genome that the sequencing tags were mapped to).  Then click on the "add custom tracks" button (this will read "manage custom tracks" once at least one custom track is loaded).  Enter the file created earlier in the "Paste URLs or data" section and click "Submit".
+
+.. _page: http://genome.ucsc.edu/cgi-bin/hgGateway
+
+------
+
+**Command line options for makeUCSCfile**
+    Usage: makeUCSCfile &lt;tag directory&gt; [options]
+
+    Creates a bedgraph file for visualization using the UCSC Genome Browser
+
+    General Options:
+        -fsize &lt;#&gt; (Size of file, when gzipped, default: 1e10, i.e. no reduction)
+        -strand &lt;both|separate|+|-&gt; (control if reads are separated by strand, default: both)
+        -fragLength &lt;# | auto | given&gt; (Approximate fragment length, default: auto)
+        -adjust &lt;#&gt; (Adjust edge of tag 3' by # bp, negative for 5', default: none[good for dnase])
+        -tbp &lt;#&gt; (Maximum tags per bp to count, default: no limit)
+        -mintbp &lt;#&gt; (Minimum tags per bp to count, default: no limit)
+        -res &lt;#&gt; (Resolution, in bp, of file, default: 1)
+            -avg (report average coverage if resolution is larger than 1bp, default: max is reported)
+        -lastTag (To keep ucsc happy, last mapped tag is NOT extended by default
+            Using this option will allow extending of data past the last tag position)
+        -norm &lt;#&gt; (Total number of tags to normalize experiment to, default: 1e7)
+        -normLength &lt;#&gt; (Expected length of fragment to normalize to [0=off], default: 100)
+        -noadj (Do not normalize tag counts)
+        -neg (plot negative values, i.e. for - strand transcription)
+        -CpG (Show unmethylated CpG ratios)
+        -color &lt;(0-255),(0-255),(0-255)&gt; (no spaces, rgb color for UCSC track, default: random)
+        -i &lt;input tag directory&gt; (normalize bedGraph to input data)
+            -pseudo &lt;#&gt; (Number of pseudo counts used to smooth out low coverage areas, default: 5)
+            -log (report log2 ratio instead of linear ratio)
+            -inputtbp &lt;#&gt;, -inputFragLength  &lt;#&gt;, -inputAdjust &lt;#&gt; can also be set
+        -bigWig &lt;chrom.size file&gt; (creates a full resolution bigWig file and track line file)
+            This requires bedGraphToBigWig to be available in your executable path
+            Also, because how how bigWig files work, use "-strand -" and "-strand +"
+            in separate runs to make strand specific files: "-strand separate" will not work
+            Consider using makeBigWig.pl and makeMultiWigHub.pl if interested in bigWigs
+        -o &lt;filename|auto&gt; (send output to this file - will be gzipped, default: prints to stdout)
+            auto: this will place an appropriately named file in the tag directory
+        -name &lt;...&gt; (Name of UCSC track, default: auto generated)
+        -style &lt;option> (See options below:)
+            chipseq (standard, default)
+            rnaseq (strand specific, if unstranded add '-strand both' to end of command)
+            tss (strand specific, single bp fragment length)
+            dnase (fragments centered on tag position instead of downstream)
+            methylated (single bp resolution of cytosine methylation)
+            unmethylated (single bp resolution of unmethylated cytosines)
+            damid (2kb fragments centered on 5' end of reads)
+        -circos &lt;chrN:XXX-YYY|genome&gt; (output only a specific region for circos[no header])
+  </help>
+
+  <tests>
+    <test>
+    </test>
+  </tests>
+
+</tool>

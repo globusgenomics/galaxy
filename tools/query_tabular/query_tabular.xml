@@ -1,0 +1,424 @@
+<tool id="query_tabular" name="Query Tabular" version="2.0.0">
+    <description>using sqlite sql</description>
+
+    <requirements>
+     <requirement type="package">pymodules</requirement>
+    </requirements>
+    <stdio>
+        <exit_code range="1:" />
+    </stdio>
+    <command><![CDATA[
+        cat $query_file &&
+        #if $add_to_database.withdb: 
+            #if $save_db:
+                cp "$add_to_database.withdb" "$sqlitedb" &&
+            #else:
+                cp "$add_to_database.withdb" "$workdb" &&
+            #end if 
+        #end if
+        python $__tool_directory__/query_tabular.py 
+        #if $save_db
+        -s "$sqlitedb"
+        #else
+        -s $workdb
+        #end if
+        -j $table_json
+        #if $sqlquery:
+          -Q "$query_file" 
+          $no_header
+          -o $output
+        #end if
+    ]]></command>
+    <configfiles>
+        <configfile name="query_file">
+$sqlquery
+        </configfile>
+        <configfile name="table_json">
+#import json
+#set $jtbldef = dict()
+#set $jtbls = []
+#set $jtbldef['tables'] = $jtbls
+#for $i,$tbl in enumerate($tables):
+  #set $jtbl = dict()
+  #set $jtbl['file_path'] = str($tbl.table)
+  #if $tbl.tbl_opts.table_name:
+  #set $tname = str($tbl.tbl_opts.table_name)
+  #else
+  #set $tname = 't' + str($i + 1) 
+  #end if
+  #set $jtbl['table_name'] = $tname
+  ## #if $tbl.tbl_opts.sel_cols:
+  ##   #set $jtbl['sel_cols'] = $tbl.tbl_opts.sel_cols el_cols
+  ## #end if
+  #if $tbl.tbl_opts.pkey_autoincr:
+    #set $jtbl['pkey_autoincr'] = str($tbl.tbl_opts.pkey_autoincr)
+  #end if
+  #if $tbl.tbl_opts.col_names:
+  #set $col_names = str($tbl.tbl_opts.col_names)
+    #if $tbl.tbl_opts.load_named_columns:
+      #set $jtbl['load_named_columns'] = True
+    #end if
+  #else 
+  #set $col_names = ''
+  #end if
+  #set $jtbl['column_names'] = $col_names
+  #set $idx_unique = []
+  #set $idx_non = []
+  #for $idx in $tbl.tbl_opts.indexes:
+    #if $idx.unique:
+      #silent $idx_unique.append(str($idx.index_columns))
+    #else:
+      #silent $idx_non.append(str($idx.index_columns))
+    #end if
+  #end for
+  #if len($idx_unique) > 0:
+    #set $jtbl['unique'] = $idx_unique
+  #end if
+  #if len($idx_non) > 0:
+    #set $jtbl['index'] = $idx_non
+  #end if
+  #set $input_filters = []
+  #for $fi in $tbl.input_opts.linefilters:
+    #if $fi.filter.filter_type == 'skip':
+      #if str($fi.filter.skip_lines) != '':
+        #set $jtbl['comment_lines'] = int($fi.filter.skip_lines)
+      #elif $tbl.table.metadata.comment_lines and $tbl.table.metadata.comment_lines > 0:
+        #set $jtbl['comment_lines'] = int($tbl.table.metadata.comment_lines)
+      #end if
+    #elif $fi.filter.filter_type == 'comment':
+      #set $jtbl['comment_char'] = str($fi.filter.comment_char)
+    #elif $fi.filter.filter_type == 'regex':
+      #set $filter_dict = dict()
+      #set $filter_dict['filter'] = str($fi.filter.filter_type)
+      #set $filter_dict['pattern'] = str($fi.filter.regex_pattern)
+      #set $filter_dict['action'] = str($fi.filter.regex_action)
+      #silent $input_filters.append($filter_dict)
+    #elif $fi.filter.filter_type == 'replace':
+      #set $filter_dict = dict()
+      #set $filter_dict['filter'] = str($fi.filter.filter_type)
+      #set $filter_dict['column'] = int(str($fi.filter.column))
+      #set $filter_dict['pattern'] = str($fi.filter.regex_pattern)
+      #set $filter_dict['replace'] = str($fi.filter.regex_replace)
+      #silent $input_filters.append($filter_dict)
+    ## #elif $fi.filter.filter_type == 'normalize':
+    ##   #set $filter_dict = dict()
+    ##   #set $filter_dict['filter'] = str($fi.filter.filter_type)
+    ##   #set $filter_dict['columns'] = [int(str($ci)) for $ci in str($fi.filter.columns).split(',')]
+    ##   #set $filter_dict['separator'] = str($fi.filter.separator)
+    ##   #silent $input_filters.append($filter_dict)
+    #end if
+  #end for
+  #if $input_filters:
+    #set $jtbl['filters'] = $input_filters
+  #end if
+  #set $jtbls += [$jtbl]
+#end for
+#echo $json.dumps($jtbldef)
+        </configfile>
+    </configfiles>
+    <inputs>
+        <param name="workdb" type="hidden" value="workdb.sqlite" label=""/>
+        <section name="add_to_database" expanded="false" title="Add tables to an existing database">
+            <param name="withdb" type="data" format="sqlite" optional="true" label="Add tables to this Database" 
+               help="Make sure your added table names are not already in this database"/>
+        </section>
+        <repeat name="tables" title="Database Table" min="0">
+            <param name="table" type="data" format="tabular" label="Tabular Dataset for Table"/>
+            <section name="input_opts" expanded="false" title="Filter Dataset Input">
+                <repeat name="linefilters" title="Filter Tabular Input Lines">
+                    <conditional name="filter">
+                        <param name="filter_type" type="select" label="Filter By">
+                            <option value="skip">skip leading lines</option>
+                            <option value="comment">comment char</option>
+                            <option value="regex">by regex expression matching</option>
+                            <option value="replace">regex replace value in column</option>
+                            <!--
+                            <option value="normalize">normalize list columns, replicates row for each item in list</option>
+                            -->
+                        </param>
+                        <when value="skip">
+                             <param name="skip_lines" type="integer" value="" min="0" optional="true" label="Skip lines" 
+                                 help="Leave blank to use the comment lines metadata for this dataset" />
+                        </when>
+                        <when value="comment">
+                            <param name="comment_char" type="text" value="#" label="Comment line starting text">
+                                <sanitizer sanitize="False"/>
+                            </param>
+                        </when>
+                        <when value="regex">
+                            <param name="regex_pattern" type="text" value="" label="regex pattern">
+                                <sanitizer sanitize="False"/>
+                            </param>
+                            <param name="regex_action" type="select" label="action for regex match">
+                                <option value="exclude_match">exclude line on pattern match</option>
+                                <option value="include_match">include line on pattern match</option>
+                                <option value="exclude_find">exclude line if pattern found</option>
+                                <option value="include_find">include line if pattern found</option>
+                            </param>
+                        </when>
+                        <when value="replace">
+                            <param name="column" type="data_column" data_ref="table" label="Column to replace text"
+                                   help=""/>
+                            <param name="regex_pattern" type="text" value="" label="regex pattern">
+                                <sanitizer sanitize="False"/>
+                            </param>
+                            <param name="regex_replace" type="text" value="" label="replacement expression">
+                                <sanitizer sanitize="False"/>
+                            </param>
+                        </when>
+                        <!--
+                        <when value="normalize">
+                            <param name="columns" type="data_column" data_ref="table" multiple="True" label="Columns to split"
+                                   help=""/>
+                            <param name="separator" type="text" value="," label="List item delimiter in column">
+                                <sanitizer sanitize="False"/>
+                                <validator type="regex" message="Anything but TAB or Newline">^[^\t\n\r\f\v]+$</validator>
+                            </param>
+                        </when>
+                        -->
+                    </conditional>
+                </repeat>
+            </section>
+            <section name="tbl_opts" expanded="false" title="Table Options">
+                <param name="table_name" type="text" value="" optional="true" label="Specify Name for Table">
+                    <help>By default, tables will be named: t1,t2,...,tn (table names must be unique)</help>
+                    <validator type="regex" message="Table name should start with a letter and may contain additional letters, digits, and underscores">^[A-Za-z]\w*$</validator>
+                </param>
+                <param name="col_names" type="text" value="" optional="true" label="Specify Column Names">
+                    <help>By default, table columns will be named: c1,c2,c3,...,cn  (column names for a table must be unique)</help>
+                    <sanitizer sanitize="False"/>
+                    <validator type="regex" message="A List of names separated by commas: Column names should start with a letter and may contain additional letters, digits, and underscores. Otherwise, the name must be eclosed in: double quotes, back quotes, or square brackets.">^([A-Za-z]\w*|"\S+[^,"]*"|`\S+[^,`]*`|[[]\S+[^,"]*[]])?(,([A-Za-z]\w*|"\S+.*"|`\S+[^,`]*`|[[]\S+[^,"]*[]])?)*$</validator>
+                </param>
+                <param name="load_named_columns" type="boolean" truevalue="load_named_columns" falsevalue="" checked="false" label="Only load the columns you have named into database"/>
+                <param name="pkey_autoincr" type="text" value="" optional="true" label="Add an auto increment primary key column with this name"
+                       help="Only creates this additional column when a name is entered. (This can not be the same name as any of the other columns in this table.)">
+                        <validator type="regex" message="Column name">^([A-Za-z]\w*)?$</validator>
+                </param>
+                <repeat name="indexes" title="Table Index">
+                    <param name="unique" type="boolean" truevalue="yes" falsevalue="no" checked="False" label="This is a unique index"/>
+                    <param name="index_columns" type="text" value="" label="Index on Columns">
+                        <help>Create an index on the column names: e,g, c1  or c2,c4</help>
+                        <validator type="regex" message="Column name, separated by commes if more than one">^([A-Za-z]\w*|"\S+[^,"]*"|`\S+[^,`]*`|[[]\S+[^,"]*[]])(,([A-Za-z]\w*|"\S+.*"|`\S+[^,`]*`|[[]\S+[^,"]*[]])?)*$</validator>
+                    </param>
+                </repeat>
+            </section>
+        </repeat>
+        <param name="save_db" type="boolean" truevalue="yes" falsevalue="no" checked="false" label="Save the sqlite database in your history"/>
+        <param name="sqlquery" type="text" area="true" size="20x80" value="" optional="true" label="SQL Query to generate tabular output">
+                <help>By default: tables are named: t1,t2,...,tn and columns in each table: c1,c2,...,cn</help>
+                <sanitizer sanitize="False"/>
+                <validator type="regex" message="">^(?ims)\s*select\s+.*\s+from\s+.*$</validator>
+        </param>
+        <param name="no_header" type="boolean" truevalue="-n" falsevalue="" checked="False" label="Omit column headers from tabular output"/>
+    </inputs>
+    <outputs>
+        <data format="sqlite" name="sqlitedb" label="sqlite db of ${on_string}">
+            <filter>save_db or not (sqlquery and len(sqlquery) > 0)</filter>
+        </data>
+        <data format="tabular" name="output" label="query results on ${on_string}">
+            <filter>sqlquery and len(sqlquery) > 0</filter>
+        </data>
+    </outputs>
+    <tests>
+
+        <test>
+            <repeat name="tables">
+                <param name="table" ftype="tabular" value="customers.tsv"/>
+                <param name="table_name" value="customers"/>
+                <param name="col_names" value="CustomerID,FirstName,LastName,Email,DOB,Phone"/>
+            </repeat>
+            <repeat name="tables">
+                <param name="table" ftype="tabular" value="sales.tsv"/>
+                <param name="table_name" value="sales"/>
+                <param name="col_names" value="CustomerID,Date,SaleAmount"/>
+            </repeat>
+            <param name="sqlquery" value="SELECT FirstName,LastName,sum(SaleAmount) as &quot;TotalSales&quot; FROM customers join sales on customers.CustomerID = sales.CustomerID GROUP BY customers.CustomerID ORDER BY TotalSales DESC"/>
+            <output name="output" file="sales_results.tsv"/>
+        </test>
+
+        <test>
+            <repeat name="tables">
+                <param name="table" ftype="tabular" value="customers.tsv"/>
+                <param name="col_names" value=",FirstName,LastName,,DOB,"/>
+            </repeat>
+            <repeat name="tables">
+                <param name="table" ftype="tabular" value="sales.tsv"/>
+            </repeat>
+            <param name="sqlquery" value="SELECT FirstName,LastName,sum(t2.c3) as &quot;TotalSales&quot; FROM t1 join t2 on t1.c1 = t2.c1 GROUP BY t1.c1 ORDER BY TotalSales DESC;"/>
+            <output name="output" file="sales_results.tsv"/>
+        </test>
+
+        <test>
+            <repeat name="tables">
+                <param name="table" ftype="tabular" value="customers.tsv"/>
+                <param name="col_names" value=",FirstName,LastName,,BirthDate,"/>
+            </repeat>
+            <param name="sqlquery" value="select FirstName,LastName,re_sub('^\d{2}(\d{2})-(\d\d)-(\d\d)','\3/\2/\1',BirthDate) as &quot;DOB&quot; from t1 WHERE re_search('[hp]er',c4)"/>
+            <output name="output" file="regex_results.tsv"/>
+        </test>
+
+        <test>
+            <repeat name="tables">
+                <param name="table" ftype="tabular" value="IEDB.tsv"/>
+                <param name="table_name" value="iedb"/>
+                <param name="col_names" value="ID,allele,seq_num,start,end,length,peptide,method,percentile_rank,ann_ic50,ann_rank,smm_ic50,smm_rank,comblib_sidney2008_score,comblib_sidney2008_rank,netmhcpan_ic50,netmhcpan_rank"/>
+            </repeat>
+            <repeat name="tables">
+                <param name="table" ftype="tabular" value="netMHC_summary.tsv"/>
+                <param name="table_name" value="mhc_summary"/>
+                <param name="col_names" value="pos,peptide,logscore,affinity,Bind_Level,Protein,Allele"/>
+            </repeat>
+            <param name="sqlquery" value="select iedb.ID,iedb.peptide,iedb.start,iedb.end,iedb.percentile_rank,mhc_summary.logscore,mhc_summary.affinity,mhc_summary.Bind_Level from iedb left outer join mhc_summary on iedb.peptide = mhc_summary.peptide order by affinity,Bind_Level"/>
+            <output name="output" file="query_results.tsv"/>
+        </test>
+
+    </tests>
+    <help><![CDATA[
+=============
+Query Tabular
+=============
+
+**Inputs**
+
+  Loads tabular datasets into a SQLite_ data base.  
+
+  An existing SQLite_ data base can be used as input, and any selected tabular datasets will be added as new tables in that data base.
+
+
+**Outputs**
+
+  The results of a SQL query are output to the history as a tabular file.
+
+  The SQLite_ data base can also be saved and output as a dataset in the history.  
+
+    *(The* **SQLite to tabular** *tool can run additional queries on this database.)*
+
+
+For help in using SQLite_ see:  http://www.sqlite.org/docs.html
+
+**NOTE:** input for SQLite dates input field must be in the format: *YYYY-MM-DD* for example: 2015-09-30
+
+See: http://www.sqlite.org/lang_datefunc.html
+
+**Example** 
+
+  Given 2 tabular datasets: *customers* and *sales*
+  
+   Dataset *customers*
+  
+    Table name: "customers"
+  
+    Column names: "CustomerID,FirstName,LastName,Email,DOB,Phone"
+  
+    =========== ========== ========== ===================== ========== ============
+    #CustomerID FirstName  LastName   Email                 DOB        Phone
+    =========== ========== ========== ===================== ========== ============
+    1           John       Smith      John.Smith@yahoo.com  1968-02-04 626 222-2222
+    2           Steven     Goldfish   goldfish@fishhere.net 1974-04-04 323 455-4545
+    3           Paula      Brown      pb@herowndomain.org   1978-05-24 416 323-3232
+    4           James      Smith      jim@supergig.co.uk    1980-10-20 416 323-8888
+    =========== ========== ========== ===================== ========== ============
+  
+   Dataset *sales*
+  
+    Table name: "sales"
+  
+    Column names: "CustomerID,Date,SaleAmount"
+  
+    =============  ============  ============
+      #CustomerID    Date          SaleAmount
+    =============  ============  ============
+               2    2004-05-06         100.22
+               1    2004-05-07          99.95
+               3    2004-05-07         122.95
+               3    2004-05-13         100.00
+               4    2004-05-22         555.55
+    =============  ============  ============
+  
+  The query
+  
+  ::
+  
+    SELECT FirstName,LastName,sum(SaleAmount) as "TotalSales" 
+    FROM customers join sales on customers.CustomerID = sales.CustomerID 
+    GROUP BY customers.CustomerID ORDER BY TotalSales DESC;
+  
+  Produces this tabular output:
+  
+    ========== ======== ==========
+    #FirstName LastName TotalSales
+    ========== ======== ==========
+    James      Smith    555.55
+    Paula      Brown    222.95
+    Steven     Goldfish 100.22
+    John       Smith    99.95
+    ========== ======== ==========
+  
+  
+  If the optional Table name and Column names inputs are not used, the query would be:
+  
+  ::
+  
+    SELECT t1.c2 as "FirstName", t1.c3 as "LastName", sum(t2.c3) as "TotalSales" 
+    FROM t1 join t2 on t1.c1 = t2.c1 
+    GROUP BY t1.c1 ORDER BY TotalSales DESC;
+  
+  You can selectively name columns, e.g. on the customers input you could just name columns 2,3, and 5: 
+  
+    Column names: ,FirstName,LastName,,BirthDate
+  
+    Results in the following data base table
+  
+    =========== ========== ========== ===================== ========== ============
+    #c1         FirstName  LastName   c4                    BirthDate  c6
+    =========== ========== ========== ===================== ========== ============
+    1           John       Smith      John.Smith@yahoo.com  1968-02-04 626 222-2222
+    2           Steven     Goldfish   goldfish@fishhere.net 1974-04-04 323 455-4545
+    3           Paula      Brown      pb@herowndomain.org   1978-05-24 416 323-3232
+    4           James      Smith      jim@supergig.co.uk    1980-10-20 416 323-8888
+    =========== ========== ========== ===================== ========== ============
+
+  Regular_expression_ functions are included for: 
+
+  ::
+
+    matching:      re_match('pattern',column) 
+
+    SELECT t1.FirstName, t1.LastName
+    FROM t1
+    WHERE re_match('^.*\.(net|org)$',c4)
+
+  Results:
+
+    =========== ==========
+    #FirstName  LastName
+    =========== ==========
+    Steven      Goldfish
+    Paula       Brown
+    =========== ==========
+
+
+  ::
+
+    searching:     re_search('pattern',column)
+    substituting:  re_sub('pattern','replacement,column)
+
+    SELECT t1.FirstName, t1.LastName, re_sub('^\d{2}(\d{2})-(\d\d)-(\d\d)','\3/\2/\1',BirthDate) as "DOB"
+    FROM t1
+    WHERE re_search('[hp]er',c4)
+
+  Results:
+
+    =========== ========== ==========
+    #FirstName  LastName   DOB
+    =========== ========== ==========
+    Steven      Goldfish   04/04/74
+    Paula       Brown      24/05/78
+    James       Smith      20/10/80
+    =========== ========== ==========
+
+.. _Regular_expression: https://docs.python.org/release/2.7/library/re.html
+.. _SQLite: http://www.sqlite.org/index.html
+
+    ]]></help>
+</tool>

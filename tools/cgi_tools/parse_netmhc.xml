@@ -1,0 +1,36 @@
+<tool id="parse_netmhc" name="Parse netMHC results" version="" >
+  <description>based on pre-selected criteria</description>
+  <requirements>
+    <requirement type="package">pymodules</requirement>
+  </requirements>
+  <command interpreter="python">
+   parse_netmhc.py 
+    -i $netmhc_file -t $affinity_threshold -n $peptide_index  > $out_candidates
+  </command>
+  <inputs>
+      <param name="netmhc_file" type="data" format="tabular,txt" label="netMHC Binding score file"/>
+      <param name="peptide_index" type="data" format="tabular,txt" label="Peptide index file" help="From tool that generates the peptide fasta file"/>
+      <param name="affinity_threshold" type="float" value="500.0" label="Affinity threshold (nM)" />
+  </inputs>
+  <outputs>
+    <data format="tabular" label="${tool.name} on ${on_string}.txt" name="out_candidates"/>
+  </outputs>
+  <tests>
+    <test>
+    </test>
+  </tests> 
+  <help>
+
+**What it does**
+
+Filters netMHC output based on following criteria:
+
+Restrict further consideration to strong- to intermediate-binding peptides by focusing on candidates with a mutant (MT) binding score of less than 500 nM. 
+Epitope binding calls are evaluated only for those peptides that contain the mutant amino acid (localized peptides). This filter eliminates any WT peptides that may overlap between the two FASTA sequences. 
+If predictions are run to assess multiple epitope lengths (for example, 9-mer, 10-mer, and so on), and/or to evaluate all patient’s HLA-A, -B, and -C alleles, we review all localized peptides and choose the single best binding value representative across lengths (9 aa, 10 aa, and so on) based on lowest binding score for MT sequence. 
+Furthermore, we choose the ‘best candidate’ (lowest MT binding score) per mutation between all independent HLA alleles that were used as input. 
+Additionally, in the output file, the WT peptide binding score is provided. Although this score may not directly affect candidate choice or immunogenicity, end users may find this comparative information useful.
+
+
+  </help>
+</tool>

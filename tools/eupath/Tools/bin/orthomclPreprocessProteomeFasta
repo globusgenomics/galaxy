@@ -1,0 +1,137 @@
+#!/usr/bin/perl
+
+use strict;
+
+my ($_inputFasta, $_maxInputSequences, $_fakeTaxonAbbrev, $outputFasta) = @ARGV;
+
+&usage() unless scalar(@ARGV) == 4;
+
+my %uniqueIds;
+
+validateProteomeFile($_inputFasta, $_maxInputSequences);
+checkProteomeFileForFullMaskSeqs($_inputFasta);
+writeCorrectedFasta($_inputFasta, $_fakeTaxonAbbrev, $outputFasta);
+
+#########################################################################################################################
+
+
+# make pass through input, and confirm that it is valid fasta, has unique IDs, contains proteins, and is not too long
+sub validateProteomeFile {
+  my ($proteomeFileName, $maxInput) = @_;
+  my $length;
+  my $seqCount;
+  my $error;
+  die "Fasta file '$proteomeFileName' does not exist\n" unless -e $proteomeFileName;
+  open(P, $proteomeFileName) || die "Can't open fasta file '$proteomeFileName'\n";
+  my $foundFirstLine;
+  my $badFirstLine;
+  while (<P>) {
+    next if /^\s*$/;		# skip blank lines
+    if (!$foundFirstLine) {
+      $badFirstLine = 1 if !/^\>/; # first non-blank line must start with >
+      $foundFirstLine = 1;
+    }
+    $length += length($_);
+    if (/^\>(\S+)/) {
+      my $id = $1;
+      die "Sequence ID '$id' is not unique in the input FASTA file\n" if $uniqueIds{$id};
+      $uniqueIds{$id} = 1;
+      $seqCount += 1;
+      last if $seqCount > $maxInput;
+    }
+  }
+  close(P);
+  if ($badFirstLine || !$seqCount || $seqCount > $maxInput || $length > $seqCount * 5000) {
+    die	"The file must be in FASTA format, contain protein sequences, and have not more than $maxInput sequences.
+The first line must be blank or be the description line for the first protein.\n";
+  }
+}
+
+# blastall fails on fully masked sequences - all X's .
+sub checkProteomeFileForFullMaskSeqs {
+  my ($proteomeFileName) = @_;
+  my %invalid_seqs;
+  my $id;
+  my $seq_is_ok = 0;
+  open(P, $proteomeFileName) || die "Can't open fasta file '$proteomeFileName'\n";
+  while (<P>) {
+    chomp;
+    next if /^\s*$/;
+    if (m/^>/) {
+      $seq_is_ok = 0;
+      ($id) = $_ =~ m/>(\S+)/;
+      delete $invalid_seqs{$id};
+      next;
+    }
+
+    my $l = length($_);
+    
+    if ( lineIsFullyMasked($_) ) {
+      next if $seq_is_ok; # a previous line of sequence was not a full run of X's
+      $invalid_seqs{$id}++;
+    } else {
+      $seq_is_ok = 1;
+      delete $invalid_seqs{$id};
+      next;
+    }
+  }
+  close(P);
+  my $error = "";
+  if (keys(%invalid_seqs) > 0) {
+    $error  = "The following sequences are 100% masked (all 'X') and are not valid input.\n";
+    $error .= join ("\n", keys %invalid_seqs) . "\n";
+    die "$error\n";
+  }
+}
+
+# check for run of X's over full length of line
+sub lineIsFullyMasked {
+  my ($line) = @_;
+  while ($line =~ /(.)/g) {
+    return 0 if ($1 !~ m/X/i);
+  }
+  return 1;
+}
+
+# lose tab characters
+# and introduce fake taxon abbrev as prefix in defline (>xxxx|my defline).  taxon abbrev is required by orthomcl
+sub writeCorrectedFasta {
+  my ($proteomeFile, $fakeTaxonAbbrev, $outputFile) = @_;
+
+  open(I, $proteomeFile) || die "can't open file $proteomeFile\n";
+  open(O, ">$outputFile") || die "can't open file $outputFile for writing\n";
+  while (<I>) {
+    s/\t/ /g;		    # lose tab chars.  formatdb fails on them.
+    s/\>/\>$fakeTaxonAbbrev\|/ if (/\>/);
+    print O $_;
+  }
+  close(I);
+  close(O);
+}
+
+
+sub usage {
+ die "
+Prepare a proteome fasta file for submission to the OrthoMCL Protome Analysis system.
+
+Usage: orthomclPreprocessProteomeFasta input_proteome_fasta_file max_allowed_input_seqs fake_taxon_abbrev corrected_and_valid_fasta_file
+
+Where:
+  - input_proteome_fasta_file: the input fasta!  Must have a unique ID in the first position of the definition line
+  - max_allowed_input_seqs:  if the input has more than this number of sequences, fail the job
+  - fake_taxon_abbrev:  a fake taxon abbreviation (eg xxxx) to prepend to the defline, for compatibility with orthomcl processing
+  - corrected_and_valid_fasta_file: the output file
+
+This program:
+  - rejects inputs that:
+     - have more sequences than the max allowed
+     - do not start with a definition line
+     - contains non-unique sequence IDs
+     - have no sequences.
+     - contain sequences that are 100% mask characters (X)
+     - contain sequences that average > 5000 base pairs (ie, not proteins)
+  - removes tab characters from the input
+  - introduces a fake taxon abbreviation as a prefix in the defline (>xxxx|my defline). The taxon abbrev is required by orthomcl
+
+";
+}

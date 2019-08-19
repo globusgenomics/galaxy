@@ -1,0 +1,34 @@
+<tool id="bdds_upload" name="BDDS Upload to Catalog" tool_type="globus_multi_datasource"
+      force_history_refresh="True">
+   <description>Upload dataset to BDDS catalog.</description>
+   <command interpreter="python">
+    bdds_ermrest_wrapper.py 
+       --session "NONE"
+       --type "upload"
+       --token "$token" 
+       --entity_path "$entity_path"
+       --input_file "$from_dataset"
+       --input_path "PPMI/upload.csv"
+       $outfile.extra_files_path $outfile  $outfile.id  $__new_file_path__
+   </command>
+   <inputs>
+     <param name="token" type="hidden" value="" >
+     <sanitizer>
+        <valid>
+          <add value="|"/>
+        </valid>
+      </sanitizer>
+     </param>
+     <param name="hostname" type="hidden" value="" />
+     <param name="sess" type="hidden"/>
+     <param name="from_dataset" type="data" label="Upload dataset">
+     </param>
+     <param name="entity_path" type="text" label="Entity Path" size="25"/>
+   </inputs>
+   <outputs>
+     <data name="outfile" type="data" format="txt" />
+   </outputs>
+   <help>
+     Upload dataset to BDDS catalog
+   </help>
+</tool>

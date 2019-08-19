@@ -1,0 +1,44 @@
+<tool id="cellml_simulation" name="CellML Simulation">
+	<description></description>
+        <requirements>
+          <requirement type="package">cellml</requirement>
+        </requirements>
+	<command interpreter="python">
+		
+		CellML_Sim.py $output_file $output_cellsim $input_cellml $t0 $tf $maxStep $tabulationStep 
+		#for $i, $s in enumerate( $parameters )
+		${s.component} ${s.name} 
+		#end for
+	
+	</command>	
+	<inputs>
+		<param name="input_cellml" type="data" format="xml" label="CellML File" help="Upload model under 'Get Data' > 'Upload File'"/>
+		<param name="t0" type="float" value="0" min="0" label="Start time"  />
+		<param name="tf" type="float" value="" min="0" label="End time"  />
+		<param name="maxStep" type="float" value="" min="0" label="Max step" help="Maximum time step size" />
+		<param name="tabulationStep" type="float" value="" min="0" label="Tabulation step" help="Output time interval size" />
+		<repeat name="parameters" title="Output Variable">
+			<param name="component" type="text" label="Component" help="Component to which the variable belongs" />
+			<param name="name" type="text" label="Name" help="Variable name" />
+		</repeat>
+	</inputs>
+	<outputs>
+		<data format="text" name="output_cellsim" label="cellsim.xml.txt" />
+		<data format="tabular" name="output_file" label="output.txt" />
+	</outputs>
+	<help>
+**Description** This tool runs models specified in the CellML_ format. Models can be uploaded using the "Upload File" tool in the "Get Data" category. The model is built and simulated at runtime using the `CellML Simulator`_ by David Nickerson. 
+
+**Tool Use** The simulation start time, end time, maximum step size, and tabulation intervals should be specified. Note that the time units are defined in the model. Output variables should be added by clicking the "Add new Output Variable" button and entering each variable's component and name. Note that the time variable should be explicitly added here.
+
+**Output** The tool produces two output files:
+
+1. *cellsim.xml.txt*: CellML model modified to run with the CellML Simulator software.
+
+2. *output.txt*: Tab-delimited text file, where each column represents the specified output variables *in the order they were entered*.
+
+.. _CellML: http://www.cellml.org
+.. _CellML Simulator: http://cellml.sourceforge.net
+
+	</help>
+</tool>

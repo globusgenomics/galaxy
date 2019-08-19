@@ -1,0 +1,18 @@
+REF=/projects/b1017/tools/Homo_sapiens_Ensembl_GRCh37/Annotation/Genes
+
+sailfish index -p 4 -k 20 -f -t $REF/genes.fa -o /projects/b1017/dapas_analysis/sailfi
+sh/index2
+
+/projects/b1017/tools/Homo_sapiens_Ensembl_GRCh37/Annotation/Archives/archive-2013-03-06-14-23-04/Genes
+
+==============
+job submission
+==============
+export LC_ALL=C
+
+REF=/projects/b1017/tools/Homo_sapiens_Ensembl_GRCh37/Annotation/Genes
+LIB=/projects/b1017/dapas/sailfish
+READS_DIR=/projects/b1017/tcga.lusc.rnaseq/fastq/
+
+
+sailfish quant -p 5 -f -i $LIB/index/ -l "T=PE:O=><:S=SA" -1 $READS_DIR/$1_1.fastq -2 $READS_DIR/$1_2.fastq -o $LIB/output/$1/

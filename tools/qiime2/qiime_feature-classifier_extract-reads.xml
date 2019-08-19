@@ -1,0 +1,72 @@
+<?xml version="1.0" ?>
+<tool id="qiime_feature-classifier_extract-reads" name="qiime feature-classifier extract-reads" version="022019">
+	<description> - Extract reads from reference</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command><![CDATA[
+  qiime feature-classifier extract-reads --i-sequences=$isequences --p-r-primer="$prprimer" --p-f-primer="$pfprimer"
+  
+  #if $ptrunclen:
+   --p-trunc-len=$ptrunclen
+  #end if
+  
+  #if str($cmdconfig) != 'None':
+   --cmd-config=$cmdconfig
+  #end if
+  
+  #if $ptrimleft:
+   --p-trim-left=$ptrimleft
+  #end if
+   --o-reads=oreads
+  #if $pidentity:
+   --p-identity=$pidentity
+  #end if
+  ;
+  cp oreads.qza $oreads;
+  ]]></command>
+	<inputs>
+		<param format="qza,no_unzip.zip" label="--i-sequences: FeatureData[Sequence] [required]" name="isequences" optional="False" type="data"/>
+		<param label="--p-f-primer: forward primer sequence  [required]" name="pfprimer" optional="False" type="text"/>
+		<param label="--p-r-primer: reverse primer sequence  [required]" name="prprimer" optional="False" type="text"/>
+		<param label="--p-trunc-len: read is cut to trunc_len if trunc_len is positive. Applied before trim_left. [default: 0]" name="ptrunclen" optional="True" type="integer" value="0"/>
+		<param label="--p-trim-left: trim_left nucleotides are removed from the 5' end if trim_left is positive. Applied after trunc_len.  [default: 0]" name="ptrimleft" optional="True" type="integer" value="0"/>
+		<param label="--p-identity: minimum combined primer match identity threshold.  [default: 0.8]" name="pidentity" optional="True" type="float" value="0.8"/>
+		<param label="--cmd-config: Use config file for command options" name="cmdconfig" optional="True" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="qza" label="${tool.name} on ${on_string}: reads.qza" name="oreads"/>
+	</outputs>
+	<help><![CDATA[
+Extract reads from reference
+-----------------------------
+
+Extract sequencing-like reads from a reference database.
+
+Parameters
+----------
+sequences : FeatureData[Sequence]
+
+f_primer : Str
+    forward primer sequence
+r_primer : Str
+    reverse primer sequence
+trunc_len : Int, optional
+    read is cut to trunc_len if trunc_len is positive. Applied before
+    trim_left.
+trim_left : Int, optional
+    trim_left nucleotides are removed from the 5' end if trim_left is
+    positive. Applied after trunc_len.
+identity : Float, optional
+    minimum combined primer match identity threshold.
+
+Returns
+-------
+reads : FeatureData[Sequence]
+]]>
+	</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

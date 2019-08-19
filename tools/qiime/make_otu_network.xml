@@ -1,0 +1,34 @@
+<tool id="qiime_make_otu_network" name="Make OTU network" version="@WRAPPER_VERSION@.0">
+    <description>Make an OTU table from an OTU map and a taxonomy assignment file</description>
+    <macros>
+        <import>macros.xml</import>
+    </macros>
+    <expand macro="requirements"/>
+    <version_command>make_otu_table.py --version</version_command>
+    <command detect_errors="aggressive"><![CDATA[
+        make_otu_network.py
+            --input_fp '$input_fp'
+            --map_fname '$map_fname'
+            --output_dir $output.extra_files_path
+    ]]></command>
+    <inputs>
+        <param argument="--input_fp" type="data" format="biom" label="OTU table" help="Name of otu table file in biom format" />
+        <param argument="--map_fname" type="data" format="tabular,txt" label="Map file" help="Name of input map file" />
+    </inputs>
+    <outputs>
+        <data name="output" format="txt" label="${tool.name} on ${on_string}: output"/>
+    </outputs>
+    <tests>
+    </tests>
+    <help><![CDATA[
+**What it does**
+
+The script `make_otu_network.py <http://qiime.org/scripts/make_otu_network.html>`_generates the otu network files to be passed into cytoscape and statistics for those networks. It uses the OTU fileand the user metadata mapping file.
+
+More information about this tool is available on
+`QIIME documentation <http://qiime.org/scripts/make_otu_network.html>`_.
+    ]]></help>
+    <citations>
+        <expand macro="citations"/>
+    </citations>
+</tool>

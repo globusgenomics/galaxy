@@ -1,0 +1,48 @@
+<?xml version="1.0" ?>
+<tool id="qiime_deblur_visualize-stats" name="qiime deblur visualize-stats" version="022019">
+	<description> - Visualize Deblur stats per sample.</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command><![CDATA[
+  qiime deblur visualize-stats --i-deblur-stats=$ideblurstats
+  
+  #if str($cmdconfig) != 'None':
+   --cmd-config=$cmdconfig
+  #end if
+  
+   --o-visualization=ovisualization;
+  
+  qiime tools export --input-path ovisualization.qzv --output-path out   && mkdir -p '$ovisualization.files_path'
+  && cp -r out/* '$ovisualization.files_path'
+  && mv '$ovisualization.files_path/index.html' '$ovisualization';
+  ]]></command>
+	<inputs>
+		<param format="qza,no_unzip.zip" label="--i-deblur-stats: DeblurStats Summary statistics of the Deblur process. [required]" name="ideblurstats" optional="False" type="data"/>
+		<param label="--cmd-config: Use config file for command options" name="cmdconfig" optional="True" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="html" label="${tool.name} on ${on_string}: visualization.qzv" name="ovisualization"/>
+	</outputs>
+	<help><![CDATA[
+Visualize Deblur stats per sample.
+----------------------------------
+
+Display Deblur statistics per sample
+
+Parameters
+----------
+deblur_stats : DeblurStats
+    Summary statistics of the Deblur process.
+
+Returns
+-------
+visualization : Visualization
+		\
+    ]]>
+	</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

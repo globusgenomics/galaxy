@@ -1,0 +1,227 @@
+<tool id="fa_gc_content_1" name="Flexbar" version="FLEXBAR: flexbar_v2.5">
+  	<description>This tool preprocesses high-throughput sequencing data efficiently.</description>
+        <requirements>
+          <requirement type="package">flexbar</requirement>
+        </requirements>
+  	<command>
+  		flexbar -n 8
+  		##if $cond_fasta_or_fastq.selector_fasta_or_fastq==&quot;fasta&quot;:
+  		##	-r $cond_fasta_or_fastq.reads1_fasta
+  		##	#if $cond_fasta_or_fastq.cond_paired_or_single_fasta.selector_paired_or_single_fasta==&quot;paired&quot;:
+  		##		-p $cond_fasta_or_fastq.cond_paired_or_single_fasta.reads2_fasta
+  		##	#end if
+  		##end if
+  		
+  		##if $cond_fasta_or_fastq.selector_fasta_or_fastq==&quot;fastq&quot;:
+  			-r $reads1_fastq
+			##if $cond_fasta_or_fastq.cond_paired_or_single_fastq.selector_paired_or_single_fastq==&quot;paired&quot;:
+                        #if $cond_paired_or_single_fastq.selector_paired_or_single_fastq==&quot;paired&quot;:
+				-p $cond_paired_or_single_fastq.reads2_fastq
+			#end if
+                        -f $format
+                        $color_space
+		##end if
+ 
+                #if $cond_adpater_entry.select_adapter_entry_type == &quot;fasta&quot;:
+                  -a $cond_adpater_entry.adapters
+                #else if $cond_adpater_entry.select_adapter_entry_type == &quot;single&quot;:
+                  -as $cond_adpater_entry.adapter_seq
+                #end if
+                #if str($barcodes) != 'None':
+                  -b  $barcodes
+                #end if
+                #if str($barcode_reads) != 'None':
+                  -br $barcode_reads
+                #end if
+
+		#if $cond_advanced_parameters.advanced_parameters == &quot;full_parameter_list&quot;:
+	   		<!-- -t $target -->
+	          -ae $cond_advanced_parameters.adapter_trim_end
+	          -an $cond_advanced_parameters.adapter_tail_length
+	          -ad $cond_advanced_parameters.adapter_read_set
+	          -ao $cond_advanced_parameters.adapter_min_overlap
+	          -at $cond_advanced_parameters.adapter_threshold
+	          -am $cond_advanced_parameters.adapter_match
+	          -ai $cond_advanced_parameters.adapter_mismatch
+	          -ag $cond_advanced_parameters.adapter_gap
+		   -be $cond_advanced_parameters.barcode_trim_end
+		   -bn $cond_advanced_parameters.barcode_tail_length
+		   -bo $cond_advanced_parameters.barcode_min_overlap
+		   -bt $cond_advanced_parameters.barcode_threshold
+		   -bk $cond_advanced_parameters.barcode_keep
+		   -bu $cond_advanced_parameters.barcode_unassigned
+		   -bm $cond_advanced_parameters.barcode_match
+		   -bi $cond_advanced_parameters.barcode_mismatch
+		   -bg $cond_advanced_parameters.barcode_gap
+		   -u  $cond_advanced_parameters.max_uncalled
+		   -x  $cond_advanced_parameters.pre_trim_left
+		   -y  $cond_advanced_parameters.pre_trim_right
+		   -q  $cond_advanced_parameters.pre_trim_phred
+		   -k  $cond_advanced_parameters.post_trim_length
+		   -m  $cond_advanced_parameters.min_read_length
+		   -o  $cond_advanced_parameters.fasta_output
+		   -l  $cond_advanced_parameters.log_level
+		#end if
+  	</command>
+  	<inputs>
+	    <!-- <param  name="threads" type="integer" value="1" label="Number of threads to employ. Default: 1. (-n option)."  /> -->
+	    <!-- <param  name="target" type="text" label="Prefix for output file names or paths. Default: flexbar. (-t option)."  /> -->
+	    <!-- <conditional name="cond_fasta_or_fastq" >
+	        <param name="selector_fasta_or_fastq" type="select" label="Select input file type:" >
+	          <option value="fasta" selected="true" >Fasta</option>
+	  	  <option value="fastq" >Fastq</option>
+	        </param>
+		<when value="fasta" >
+		  <param format="fasta" name="reads1_fasta" type="data" label="Fasta file with reads that may contain barcodes. (-r option)." />
+		  <conditional name="cond_paired_or_single_fasta" >
+		    <param name="selector_paired_or_single_fasta" type="select" label="Single-end or Paired-end?" >
+		      <option value="single" selected="true" >Single-end</option>
+		      <option value="paired" >Paired-end</option>
+		    </param>
+		    <when value="single" > </when>
+		    <when value="paired" >
+		      <param format="fasta" name="reads2_fasta" type="data" label="Fasta file with reads that may contain barcodes. (-p option)." />
+		    </when>
+		  </conditional>
+		</when>
+		<when value="fastq" > -->
+		  <param format="fastq,fastqsanger,fastqillumina,fastqcsanger" label="Fastq file with reads that may contain barcodes. (-r option)." name="reads1_fastq" type="data"/>
+		  <conditional name="cond_paired_or_single_fastq">
+		    <param label="Single-end or Paired-end?" name="selector_paired_or_single_fastq" type="select">
+		      <option selected="true" value="single">Single-end</option>
+		      <option value="paired">Paired-end</option>
+		    </param>
+		    <when value="single"> </when>
+		    <when value="paired">
+		      <param format="fastq,fastqsanger,fastqillumina,fastqcsanger" label="Fastq file with reads that may contain barcodes. (-p option)." name="reads2_fastq" type="data"/>
+		    </when>
+		  </conditional>
+                  <param label="Quality format: (-f option)." name="format" type="select">
+                    <option selected="true" value="sanger">Sanger</option>
+                    <option value="solexa">Solexa</option>
+                    <option value="i1.3">Illumina1.3+</option>
+                  </param>
+                  <param falsevalue="" label="Input in color-space format csfasta or csfastq in sanger scaling. (-c option)." name="color_space" truevalue="-c" type="boolean"/>
+		<!--</when>
+	    </conditional> uncomment this if option for fasta is enabled-->
+            <conditional name="cond_adpater_entry">
+              <param label="Adapter source" name="select_adapter_entry_type" type="select">
+                <option value="none">No adapters</option>
+                <option value="fasta">Fasta file</option>
+                <option value="single">Single adapter</option>
+              </param>
+              <when value="none"/>
+              <when value="fasta">
+                <param format="fasta" label="Fasta file with adapters for removal that may contain N. (-a option)." name="adapters" type="data"/>
+              </when>
+              <when value="single">
+                <param label="Single adapter sequence as alternative to adapters option (-as option)." name="adapter_seq" type="text"/>
+              </when>
+            </conditional>
+            <param format="fasta" label="Fasta file with barcodes for demultiplexing that may contain N. (-b option)." name="barcodes" optional="True" type="data"/>
+            <param format="fastq,fastqsanger,fastqillumina,fastqcsanger" label="Fasta file with barcodes for demultiplexing that may contain N. (-br option)." name="barcode_reads" optional="True" type="data"/>
+
+		<conditional name="cond_advanced_parameters">
+			<param label="For most mapping needs use Commonly Used settings. If you want full control use Full Parameter List." name="advanced_parameters" type="select">
+				<option selected="true" value="commonly_used_settings">Commonly Used Settings</option>
+				<option value="full_parameter_list">Full Parameter List</option>
+			</param>
+			<when value="commonly_used_settings"> </when>
+			<when value="full_parameter_list">
+	    		    <param label="Type of removal, see section trim-end modes. Default: RIGHT. (-ae option)." name="adapter_trim_end" type="select">
+	       			<option value="any">ANY</option>
+		   		<option selected="true" value="right">RIGHT</option>
+		   		<option value="left">LEFT</option>
+		   		<option value="right_tail">RIGHT_TAIL</option>
+		   		<option value="left_tail">LEFT_TAIL</option>	        
+		            </param>
+	    		<param label="Region size for tail trim-end modes. Default: adapter length. (-an option)." name="adapter_tail_length" type="integer" value="0"/>
+	    		<param label="Restriction to single read set in paired mode. One of 1 and 2. (-ad option). " name="adapter_read_set" type="text">
+		   			<option value="1">1</option>
+		   			<option value="2">2</option>	                
+				</param>
+			    <param label="Minimum overlap of adapter and read sequence. Default: 1. (-ao option)." name="adapter_min_overlap" type="integer" value="1"/>
+			    <param label="Allowed mismatches and gaps per 10 bases overlap. Default: 3.0. (-at option)." name="adapter_threshold" type="float" value="3.0"/>
+			    <param label="Alignment match score. Default: 1. (-am option)." name="adapter_match" type="integer" value="1"/>
+			    <param label="Alignment mismatch score. Default: -1. (-ai option)." name="adapter_mismatch" type="integer" value="-1"/>
+			    <param label="Alignment gap score. Default: -7. (-ag option)." name="adapter_gap" type="integer" value="-7"/>
+				<param format="fasta" label="Fasta file with barcodes for demultiplexing that may contain N. (-b option)." name="barcodes" type="data"/>
+				<param format="fasta, fastq" label="Fasta file with barcodes for demultiplexing that may contain N. (-br option)." name="barcode_reads" type="data"/>
+				<param label="Type of detection, see section trim-end modes. Default: ANY. (-be option)." name="barcode_trim_end" type="select">
+			       <option selected="true" value="any">ANY</option>
+				   <option value="right">RIGHT</option>
+				   <option value="left">LEFT</option>
+				   <option value="right_tail">RIGHT_TAIL</option>
+				   <option value="left_tail">LEFT_TAIL</option>	        
+				</param>
+				<param label="Region size in tail trim-end modes. Default: barcode length. (-bn option)." name="barcode_tail_length" type="integer" value="0"/>
+				<param label="Minimum overlap of barcode and read. Default: barcode length. (-bo option)." name="barcode_min_overlap" type="integer" value="0"/>
+				<param label="Allowed mismatches and gaps per 10 bases overlap. Default: 1.0. (-bt option)." name="barcode_threshold" type="float" value="1.0"/>
+				<param falsevalue="false" label="Keep barcodes within reads instead of removal. (-bk option)." name="barcode_keep" truevalue="true" type="boolean"/>
+				<param falsevalue="false" label="Include unassigned reads in output generation. (-bu option)." name="barcode_unassigned" truevalue="true" type="boolean"/>
+				<param label="Alignment match score. Default: 1. (-bm option)." name="barcode_match" type="integer" value="1"/>
+				<param label="Alignment mismatch score. Default: -1. (-bi option)." name="barcode_mismatch" type="integer" value="-1"/>
+				<param label="Alignment gap score. Default: -9. (-bg option)." name="barcode_gap" type="integer" value="-9"/>
+				<param label="Allowed uncalled bases (N or .) for each read. Default: 0. (-u option)." name="max_uncalled" type="integer" value="0"/>
+				<param label="Trim given number of bases on 5' read end before detection. (-x option)." name="pre_trim_left" type="integer" value="0"/>
+				<param label="Trim specified number of bases on 3' end prior to detection. (-y option)." name="pre_trim_right" type="integer" value="0"/>
+				<param label="Trim 3' end until specified or higher quality reached. (-q option)." name="pre_trim_phred" type="integer" value="0"/>
+				<param label="Trim to specified read length from 3' end after removal. (-k option)." name="post_trim_length" type="integer" value="0"/>
+				<param label="Minimum read length to remain after removal. Default: 18. (-m option)." name="min_read_length" type="integer" value="18"/>
+				<param label="Prefer non-quality formats fasta and csfasta for output. (-o option)." name="fasta_output" truevalue="-o" type="boolean"/>
+				<param label="Print valid optimal read alignment. One of ALL, MOD, and TAB. (-l option)." name="log_level" type="select">
+				   <option value="all">ALL</option>
+				   <option value="mod">MOD</option>
+				   <option value="tab">TAB</option>
+				</param>
+			</when>
+		</conditional>
+  	</inputs>
+  	
+  	<outputs>
+	    <!--<data format="fasta" name="fasta_output" from_work_dir="flexbar.fasta" >
+	    	<filter>(cond_fasta_or_fastq['selector_fasta_or_fastq'] == 'fasta')</filter>
+	    	<filter>(cond_fasta_or_fastq['selector_paired_or_single_fasta'] == 'single')</filter>
+		</data>
+
+		<data format="fasta" name="fasta_output1" from_work_dir="flexbar_1.fasta" >
+	    	<filter>(cond_fasta_or_fastq['selector_fasta_or_fastq'] == 'fasta')</filter>
+	    	<filter>(cond_fasta_or_fastq['selector_paired_or_single_fasta'] == 'paired')</filter>
+		</data>
+
+		<data format="fasta" name="fasta_output2" from_work_dir="flexbar_2.fasta" >
+	    	<filter>(cond_fasta_or_fastq['selector_fasta_or_fastq'] == 'fasta')</filter>
+	    	<filter>(cond_fasta_or_fastq['selector_paired_or_single_fasta'] == 'paired')</filter>
+		</data> -->
+
+		<!-- do same for fastq -->
+		<data format="fastq" from_work_dir="flexbar.fastq" name="fastq_output">
+	    	<!--<filter>(cond_fasta_or_fastq['selector_fasta_or_fastq'] == 'fastq')</filter>-->
+	    	<filter>(cond_paired_or_single_fastq['selector_paired_or_single_fastq'] == 'single')</filter>
+		</data>
+
+		<data format="fastq" from_work_dir="flexbar_1.fastq" name="fastq_output1">
+	    	<!--<filter>(cond_fasta_or_fastq['selector_fasta_or_fastq'] == 'fastq')</filter>-->
+	    	<filter>(cond_paired_or_single_fastq['selector_paired_or_single_fastq'] == 'paired')</filter>
+		</data>
+
+		<data format="fastq" from_work_dir="flexbar_2.fastq" name="fastq_output2">
+	    	<!--<filter>(cond_fasta_or_fastq['selector_fasta_or_fastq'] == 'fastq')</filter>-->
+	    	<filter>(cond_paired_or_single_fastq['selector_paired_or_single_fastq'] == 'paired')</filter>
+		</data>
+  	</outputs>
+  	
+
+
+	<tests>
+	    <test>
+	      <param name="input" value="test.fasta"/>
+	      <output file="flexbar_output.txt" name="out_file1"/>
+	    </test>
+  	</tests>
+
+  	<help>
+		This tool preprocesses high-throughput sequencing data efficiently.
+  	</help>
+
+</tool>

@@ -1,0 +1,88 @@
+<?xml version="1.0" ?>
+<tool id="qiime_quality-filter_q-score-joined" name="qiime quality-filter q-score-joined" version="022019">
+	<description> - Quality filter based on joined sequence quality scores.</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command>
+	<![CDATA[
+	qiime quality-filter q-score-joined --i-demux=$idemux
+
+	#if str($cmdconfig) != 'None':
+	 --cmd-config=$cmdconfig
+	#end if
+	 --o-filter-stats=ofilterstats --o-filtered-sequences=ofilteredsequences
+	#if $pqualitywindow:
+	 --p-quality-window=$pqualitywindow
+	#end if
+
+	#if $pmaxambiguous:
+	 --p-max-ambiguous=$pmaxambiguous
+	#end if
+
+	#if $pminlengthfraction:
+	 --p-min-length-fraction=$pminlengthfraction
+	#end if
+
+	#if $pminquality:
+	 --p-min-quality=$pminquality
+	#end if
+	;
+	cp ofilterstats.qza $ofilterstats;
+	cp ofilteredsequences.qza $ofilteredsequences
+	]]>
+	</command>
+	<inputs>
+		<param format="qza,no_unzip.zip" label="--i-demux: SampleData[JoinedSequencesWithQuality] The demultiplexed sequence data to be quality filtered.  [required]" name="idemux" optional="False" type="data"/>
+
+		<param label="--p-min-quality: The minimum acceptable PHRED score. All PHRED scores less that this value are considered to be low PHRED scores. [default: 4]" name="pminquality" optional="True" type="integer" value="4"/>
+		<param label="--p-quality-window: The maximum number of low PHRED scores that can be observed in direct succession before truncating a sequence read.  [default: 3]" name="pqualitywindow" optional="True" type="integer" value="3"/>
+
+		<param label="--p-min-length-fraction: The minimum length that a sequence read can be following truncation and still be retained. This length should be provided as a fraction of the input sequence length. [default: 0.75]" name="pminlengthfraction" optional="True" type="float" value="0.75"/>
+		<param label="--p-max-ambiguous: The maximum number of ambiguous (i.e., N) base calls. This is applied after trimming sequences based on `min_length_fraction`. [default: 0]" name="pmaxambiguous" optional="True" type="integer" value="0"/>
+
+		<param label="--cmd-config: Use config file for command options" name="cmdconfig" optional="True" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="qza" label="${tool.name} on ${on_string}: filter-stats.qza" name="ofilterstats"/>
+		<data format="qza" label="${tool.name} on ${on_string}: filtered-sequences.qza" name="ofilteredsequences"/>
+	</outputs>
+	<help>
+		<![CDATA[
+Quality filter based on joined sequence quality scores.
+--------------------------------------------------------
+
+This method filters joined sequence based on quality scores and the
+presence of ambiguous base calls.
+
+Parameters
+----------
+demux : SampleData[JoinedSequencesWithQuality]
+    The demultiplexed sequence data to be quality filtered.
+min_quality : Int, optional
+    The minimum acceptable PHRED score. All PHRED scores less that this
+    value are considered to be low PHRED scores.
+quality_window : Int, optional
+    The maximum number of low PHRED scores that can be observed in direct
+    succession before truncating a sequence read.
+min_length_fraction : Float, optional
+    The minimum length that a sequence read can be following truncation and
+    still be retained. This length should be provided as a fraction of the
+    input sequence length.
+max_ambiguous : Int, optional
+    The maximum number of ambiguous (i.e., N) base calls. This is applied
+    after trimming sequences based on `min_length_fraction`.
+
+Returns
+-------
+filtered_sequences : SampleData[JoinedSequencesWithQuality]
+    The resulting quality-filtered sequences.
+filter_stats : QualityFilterStats
+    Summary statistics of the filtering process.
+    ]]>
+	</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

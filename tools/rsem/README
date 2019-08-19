@@ -1,0 +1,92 @@
+# RSEM Galaxy Wrapper #
+
+## Introduction ##
+
+RSEM (RNA-Seq by Expectation-Maximization) is a software package for the
+estimation of gene and isoform abundances from RNA-Seq data. A key feature of
+RSEM is its statistically-principled approach to the handling of RNA-Seq
+reads that map to multiple genes and/or isoforms. In addition, RSEM is
+well-suited to performing quantification with de novo transcriptome
+assemblies, as it does not require a reference genome.
+
+## Installation ##
+
+Follow the [Galaxy Tool Shed
+instructions](http://wiki.g2.bx.psu.edu/Tool_Shed) to add this wrapper from
+the tool shed to your galaxy instance. Once the files are in the tools
+directory you have to have RSEM references installed. This can be done by:
+
+1. Placing the file called `rsem_indices.loc` into the directory
+   `~/galaxy-dist/tool-data` This file tells the RSEM wrapper how to find the
+   reference(s). It is formatted according to galaxy's documentation with the
+   following tab-delimited format:
+
+        unique_build_id    dbkey    display_name    file_base_path
+	
+   For example,
+
+        human_refseq_NM	human_refseq_NM	human_refseq_NM	/opt/galaxy/references/human/1.1.2/NM_refseq_ref
+
+2. Downloaded a pre-built RSEM reference from the [RSEM website](http://deweylab.biostat.wisc.edu/rsem/).
+
+3. Place reference files into the `file_base_path` listed in the
+`rsem_indices.loc` file
+
+If you would rather build your own reference files follow the instructions
+below and then place resulting reference files into the `file_base_path` listed
+in the `rsem_indices.loc` file.
+
+### Building a custom RSEM reference ###
+
+For instructions on how to build the RSEM reference files, first see the [RSEM
+documentation](http://deweylab.biostat.wisc.edu/rsem/README.html).
+
+#### Example ####
+
+Suppose we have mouse RNA-Seq data and want to use the UCSC mm9 version of the
+mouse genome. We have downloaded the UCSC Genes transcript annotations in GTF
+format (as mm9.gtf) using the Table Browser and the knownIsoforms.txt file for
+mm9 from the UCSC Downloads. We also have all chromosome files for mm9 in the
+directory `/data/mm9`. We want to put the generated reference files under
+`/opt/galaxy/references` with name `mouse_125`. We'll add poly(A) tails with
+length 125. Please note that GTF files generated from UCSC's Table Browser do
+not contain isoform-gene relationship information. For the UCSC Genes
+annotation, this information can be obtained from the knownIsoforms.txt file.
+Suppose we want to build Bowtie indices and Bowtie executables are found in
+`/sw/bowtie`.
+
+To build the reference files, first run the command:
+
+    rsem-prepare-reference --gtf mm9.gtf \
+                           --transcript-to-gene-map knownIsoforms.txt \
+                           --bowtie-path /sw/bowtie \                  
+                           /data/mm9/chr1.fa,/data/mm9/chr2.fa,...,/data/mm9/chrM.fa \
+                           /opt/galaxy/references/mouse_125
+
+To add this reference to your galaxy installation, add the following line to
+the the `rsem_indices.loc` file:
+
+    mouse_125	mouse_125	mouse_125	/opt/galaxy/references/mouse_125
+
+Then restart galaxy and you should see the `mouse_125` reference listed in the
+RSEM wrapper.
+
+## References ##
+
+* [RSEM website (stand alone package)](http://deweylab.biostat.wisc.edu/rsem/)
+
+* B. Li and C. Dewey (2011) [RSEM: accurate transcript quantification from
+  RNA-Seq data with or without a reference
+  genome](http://bioinformatics.oxfordjournals.org/content/26/4/493.abstract).
+  BMC Bioinformatics 12:323.
+
+* B. Li, V. Ruotti, R. Stewart, J. Thomson, and C. Dewey (2010) [RNA-Seq gene
+  expression estimation with read mapping
+  uncertainty](http://www.biomedcentral.com/1471-2105/12/323). Bioinformatics
+  26(4): 493-500.
+
+## Contact information ##
+* RSEM galaxy wrapper questions: ruotti@wisc.edu
+* RSEM stand alone package questions: bli@cs.wisc.edu
+* [RSEM announcements mailing list](http://groups.google.com/group/rsem-announce)
+* [RSEM users mailing list](http://groups.google.com/group/rsem-users)

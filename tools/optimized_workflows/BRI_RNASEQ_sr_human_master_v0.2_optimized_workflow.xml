@@ -1,0 +1,175 @@
+<tool id="BRI_RNAseq_sr_human_master_optimized" name="RNA-Seq sr human master v0.2 Optimized Workflow" version="SAMTOOLS: 1.2; BWA: 0.7.12; PICARD: 1.134; JAVA: 1.8.0; TOPHAT: 1.4.1; SALMON: 0.8.2">
+  <description>sr_human_master_v0.2</description>
+  <!--<action class="GlobusOptimizedWorkflows" module="galaxy_ext.globus.tools.actions.globus"/>-->
+  <requirements>
+    <requirement type="package">FastQC</requirement>
+    <requirement type="package" version="1.4.1">tophat</requirement>
+    <requirement type="package">bowtie</requirement>
+    <requirement type="package" version="0.1.19">samtools</requirement>
+    <requirement type="package" version="1.134">picard</requirement>
+    <requirement type="package" version="0.8.2">salmon</requirement>
+    <requirement type="package">pymodules</requirement>
+    <requirement type="package">java</requirement>
+    <requirement type="package">R</requirement>
+    <requirement type="package">ea-utils</requirement>
+  </requirements>
+  <command interpreter="python">
+    BRI_RNASEQ_sr_human_master_v0.2_04252016.py --sample-name $sample 
+      --lane1 $input_lane_1 --lane2 $input_lane_2 --lane3 $input_lane_3 --lane4 $input_lane_4
+      --lane5 $input_lane_5 --lane6 $input_lane_6 --lane7 $input_lane_7 --lane8 $input_lane_8
+
+      ##use precomputed indexes
+      --tophat-ref "${tophat_index.fields.path}"
+      --picard-ref "${picard_index.fields.path}"
+      --salmon-ref "${salmon_index.fields.path}"
+      --samtools-ref "${samtools_index.fields.path}"
+
+      ## annotation ref files
+      --gtf $gtf_file
+      --refflat-file $refflat_file
+      --ribosomal-file $ribosomal_list
+      --adapters-file $adapaters_file
+      --annotation-snp-bed $annotation_snp_bed
+
+      ## parameters
+      --tophat-library-type $tophat_lib_type
+      --salmon-strandedness $salmon_strandedness
+      --picard-strand-type $picard_strand_type
+      --htseq-strand-type $htseq_strand_type
+
+      ## output vcf file
+      --output-fastqmcf-log $output_fastqmcf_log  ##
+      --output-tophat-bam $output_tophat_bam
+      --output-salmon-quantification $output_salmon_quantification ##
+      --output-salmon-gene-quantification $output_salmon_gene_quantification ##
+      --output-picard-markDuplicates-html $output_picard_markDuplicates_html
+      --output-picard-markDuplicates-directory $output_picard_markDuplicates_html.extra_files_path
+      --output-picard-markDuplicates-bam $output_picard_markDuplicates_bam
+      --output-picard-alignmentSummary $output_picard_alignmentSummary
+      --output-picard-alignmentSummary-directory $output_picard_alignmentSummary.extra_files_path
+      --output-picard-collectRnaSeqSummary $output_picard_collectRnaSeqSummary
+      --output-picard-collectRnaSeqSummary-directory $output_picard_collectRnaSeqSummary.extra_files_path
+      --output-tophatStats $output_tophatStats
+      --output-htseq-counts $output_htseqcount_no_dups_counts
+      --output-htseq-counts2 $output_htseqcount2_dups_counts ##
+      --output-htseq-log2 $output_htseqcount2_dups_log  ##
+      --output-fastqc-html $output_fastqc_html
+      --output-fastqc-text $output_fastqc_text
+      --output-bcf1 $output_mpileup1 ##
+      --output-bcf2 $output_mpileup2 ##
+      --output-log $output_log
+
+      ## globus parameters
+      ##--username $username
+      ##--goauth-token "$goauth"
+      ##--source-ep=$from_endpoint
+      ##--destination-ep="$to_endpoint"
+      ##--destination-dir="$to_dir"
+      ##--deadline=1200
+      >  $output_log
+  </command>
+  <inputs>
+    <param name="sample" type="text" label="Sample label" />
+    <param name="input_lane_1" type="data" format="fastq,fastqsanger" label="Input Fastq lane 1"/>
+    <param name="input_lane_2" type="data" format="fastq,fastqsanger" label="Input Fastq lane 2"/>
+    <param name="input_lane_3" type="data" format="fastq,fastqsanger" label="Input Fastq lane 3"/>
+    <param name="input_lane_4" type="data" format="fastq,fastqsanger" label="Input Fastq lane 4"/>
+    <param name="input_lane_5" type="data" format="fastq,fastqsanger" label="Input Fastq lane 5"/>
+    <param name="input_lane_6" type="data" format="fastq,fastqsanger" label="Input Fastq lane 6"/>
+    <param name="input_lane_7" type="data" format="fastq,fastqsanger" label="Input Fastq lane 7"/>
+    <param name="input_lane_8" type="data" format="fastq,fastqsanger" label="Input Fastq lane 8"/>
+
+    <param help="If your genome of interest is not listed, contact the GlobusGenomics team" label="Select a Tophat reference genome" name="tophat_index" type="select">
+      <options from_data_table="tophat_indexes"/>
+    </param>
+    <param help="Should be the similar to the reference genome chosen for Tophat" label="Select a Picard built-in reference genome" name="picard_index" type="select">
+      <options from_data_table="all_fasta">
+      </options>
+    </param>
+    <param name="salmon_index" type="select" label="Select Salmon reference transcriptome" help="If your transcriptome of interest is not listed, contact your Galaxy admin">
+      <options from_data_table="salmon_indexes">
+        <filter type="sort_by" column="2"/>
+        <validator type="no_options" message="No indexes are available for the selected input dataset"/>
+      </options>
+    </param>
+    <param label="Select Samtools reference genome" name="samtools_index" type="select">
+      <options from_data_table="sam_fa_indexes">
+      </options>
+    </param>
+
+    <param format="gtf" label="Gene Model Annotation file" name="gtf_file" type="data"/>
+    <param format="tabular,txt" label="RefFlat file" name="refflat_file" type="data"/>    
+    <param format="picard_interval_list" label="Location of rRNA sequences in genome, in interval_list format" name="ribosomal_list" type="data"/>    
+    <param format="fasta" label="Adapater list" name="adapaters_file" type="data"/>
+    <param format="bed" label="SNP Annotation BED file" name="annotation_snp_bed" type="data"/>
+
+    <param help="TopHat will treat the reads as strand specific. Every read alignment will have an XS attribute tag. Consider supplying library type options below to select the correct RNA-seq protocol." label="Tophat Library Type" name="tophat_lib_type" type="select">
+      <option value="fr-unstranded">FR Unstranded</option>
+      <option value="fr-firststrand">FR First Strand</option>
+      <option value="fr-secondstrand">FR Second Strand</option>
+    </param>
+    <param name="salmon_strandedness" type="select" label="Specify the strandedness of the reads for Salmon">
+      <option value="U" selected="True">Not stranded (U)</option>
+      <option value="SF">read 1 (or single-end read) comes from the forward strand (SF)</option>
+      <option value="SR">read 1 (or single-end read) comes from the reverse strand (SR)</option>
+    </param>
+    <param help="STRAND_SPECIFICITY; For unpaired reads, use FIRST_READ_TRANSCRIPTION_STRAND if the reads are expected to be on the transcription strand." label="What is the RNA-seq library strand specificity for PICARD" name="picard_strand_type" type="select">
+       <option select="True" value="NONE">None</option>
+       <option value="FIRST_READ_TRANSCRIPTION_STRAND">First read transcription strand</option>
+       <option value="SECOND_READ_TRANSCRIPTION_STRAND">Second read transcription strand</option>
+    </param>
+    <param label="Strandedness for HTSEQ-Count" name="htseq_strand_type" type="select">
+      <help>Specify whether the data is from a strand-specific assay. 'Reverse' means yes with reversed strand interpretation.</help>
+      <option selected="true" value="yes">Yes</option>
+      <option value="no">No</option>
+      <option value="reverse">Reverse</option>
+    </param>
+    <!-- 
+    <param name="goauth" type="hidden" size="100" label="Globus Auth Token">
+      <sanitizer>
+        <valid>
+          <add value="|"/>
+        </valid>
+      </sanitizer>
+    </param>
+    <param name="username" type="hidden" size="100" label="Globus Username"/>
+    <param name="from_endpoint" type="hidden" size="100" label="Source Endpoint">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="to_endpoint" type="gdst_endpoint" size="100" label="Destination Endpoint">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="to_dir" type="text" size="100" label="Destination Directory on user's endpoint to store output files">
+      <sanitizer sanitize="False"/>
+    </param>
+   -->
+  </inputs>
+  <outputs>
+    <data format="txt" label="${tool.name}: Fastq-MCF log" name="output_fastqmcf_log"/>
+    <data format="bam" label="${tool.name}: Tophat accepted hits BAM" name="output_tophat_bam"/>
+    <data format="tabular" label="${tool.name}: SALMON quantification" name="output_salmon_quantification"/>
+    <data format="tabular" label="${tool.name}: SALMON gene quantification" name="output_salmon_gene_quantification"/>
+    <data format="html" label="${tool.name}: Picard MarkDups Metrics" name="output_picard_markDuplicates_html"/>
+    <data format="bam" label="${tool.name}: Picard MarkDups BAM" name="output_picard_markDuplicates_bam"/>
+    <data format="html" label="${tool.name}: Picard CollectRnaSeqSummary Metrics" name="output_picard_collectRnaSeqSummary"/>
+    <data format="txt" label="${tool.name}: TophatStatsPE Metrics" name="output_tophatStats"/>
+    <data format="html" label="${tool.name}: Picard AlignmentSummary Metrics" name="output_picard_alignmentSummary"/>
+    <data format="html" label="${tool.name}: FastQC Webpage" name="output_fastqc_html"/>
+    <data format="txt" label="${tool.name}: FastQC RawData" name="output_fastqc_text"/>
+    <data format="tabular" label="${tool.name}: HTSeqCount counts - no dups" name="output_htseqcount_no_dups_counts" />
+    <data format="tabular" label="${tool.name}: HTSeqCount counts - with dups" name="output_htseqcount2_dups_counts" />
+    <data format="tabular" label="${tool.name}: HTSeqCount log - with dups" name="output_htseqcount2_dups_log"/>
+    <data format="vcf" label="${tool.name}: Mpileup VCF with site list" name="output_mpileup1" />
+    <data format="vcf" label="${tool.name}: Mpileup VCF no site list" name="output_mpileup2" />
+    <data format="txt" label="${tool.name}: Log" name="output_log"/>
+  </outputs>
+  <tests>
+    <test>
+    </test>
+  </tests> 
+  <help>
+
+**What it does**
+
+  </help>
+</tool>

@@ -1,0 +1,56 @@
+## TYPE DECLARATIONS
+type file;
+
+## PROCEDURES
+## execute an arbitrary command through the shell
+app (file olog, file elog) job_runner(string cmd) {
+   bash "-c" cmd stdout=@olog stderr=@elog;
+}
+
+
+## PARSE COMMAND LINE ARGUMENTS
+string filedir=@arg("input_dir", "Nonsense");
+string outputdir=@arg("output_dir", "Nonsense");
+string libtabdir=@arg("lib_tab_files", "Nonsense");
+string histdir=@arg("hist_files", "Nonsens");
+
+string app_cmd=@arg("app_cmd");
+#trace(filter_cmd);
+
+file inputfiles[] <ext; exec="/nfs/software/galaxy/tools/tangram/tangram_detect_file_mapper.sh", location=filedir, prefix="in.txt">;
+file libtabfiles[] <ext; exec="/nfs/software/galaxy/tools/tangram/tangram_detect_file_mapper.sh", location=libtabdir, prefix="lib_table.dat">;
+file histfiles[] <ext; exec="/nfs/software/galaxy/tools/tangram/tangram_detect_file_mapper.sh", location=histdir, prefix="hist.dat">;
+
+foreach f,i in inputfiles {
+
+  file outlog <single_file_mapper; file=@strcat("logs/", @filename(f), ".stdout.log")>;
+  file errlog <single_file_mapper; file=@strcat("logs/", @filename(f), ".stderr.log")>;
+
+  ## user regular expressions to modify the command line
+  string basename = @strcut(@filename(f), ".*/(.*)$");
+  string outputfile = @strcat(outputdir, "/", basename, ".vcf"); 
+
+  string chr_name = @strcut(@filename(f), ".*/(.*).bam.sorted");
+
+  if(chr_name != "MT"){
+    string cmd1 = @regexp(@arg("app_cmd"), "(INBAM)", @strcat("/",@filename(f)));
+    trace(cmd1);
+
+    string cmd2 = @regexp(cmd1, "(LIB_INPUT)", @strcat("/",@filename(libtabfiles[i])));
+    trace(cmd2);
+
+    string cmd3 = @regexp(cmd2, "(HIST_INPUT)", @strcat("/",@filename(histfiles[i])));
+    trace(cmd3);
+
+    string cmd4 = @regexp(cmd3, "(RG_NAME)", @strcat(chr_name));
+    trace(cmd4);
+
+    string cmd = @regexp(cmd4, "(OUTVCF)", @strcat("/",outputfile));
+    trace(cmd);
+
+    ## send the constructed command through the shell
+    (outlog, errlog) = job_runner(cmd);
+  }
+}
+
+#swift -sites.file /scratch/uci/galaxy/files/000/dataset_305_files/tmp-tangram-detect-mTVLIa/sites.xml -tc.file /scratch/uci/galaxy/files/000/dataset_305_files/tmp-tangram-detect-mTVLIa/tc.data /nfs/software/galaxy/tools/tangram/tangram_detect.swift  -input_dir=/scratch/uci/galaxy/files/000/dataset_305_files/tmp-tangram-detect-mTVLIa -lib_tab_files=/scratch/uci/galaxy/files/000/dataset_303_files -hist_files=/scratch/uci/galaxy/files/000/dataset_304_files -output_dir=/scratch/uci/galaxy/files/000/dataset_305_files/tmp-tangram-detect-mTVLIa/detect_output -app_cmd='tangram_detect -in INBAM -lb LIB_INPUT -ht HIST_INPUT -ref /scratch/uci/galaxy/files/000/dataset_305_files/tmp-tangram-detect-mTVLIa/ref.idx -p 1  > OUTVCF' 2>&1

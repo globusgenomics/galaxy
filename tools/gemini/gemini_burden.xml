@@ -1,0 +1,87 @@
+<tool id="gemini_burden" name="GEMINI burden" version="GRABIX: 0.1.3; TABIX: 0.2.6; SAMTOOLS: 0.1.19; BEDTOOLS: 2.19.1">
+    <description>perform sample-wise gene-level burden calculations</description>
+    <requirements>
+            <!--<requirement type="package" version="0.10.0">gemini</requirement>-->
+            <requirement type="package">pymodules</requirement>
+            <requirement type="package" version="0.1.3">grabix</requirement>
+            <requirement type="package" version="0.2.6">tabix</requirement>
+            <requirement type="package" version="0.1.19">samtools</requirement>
+            <requirement type="package" version="2.19.1">bedtools</requirement>
+            <yield/>
+    </requirements>
+    <version_command>gemini --version</version_command>
+    <command>
+<![CDATA[
+        gemini burden
+          --cases $cases
+          --controls $controls
+            $save_tscores
+            $nonsynonymous
+            $calpha
+            --permutations $permutations
+            #if float( str($min_aaf) ) >= 0.0:
+                --min-aaf $min_aaf
+            #end if
+            #if float( str($max_aaf) ) >= 0.0:
+                --max-aaf $max_aaf
+            #end if
+            "${ infile }"
+            > "${ outfile }"
+]]>
+
+    </command>
+    <stdio>
+            <exit_code range="1:"/>
+            <exit_code range=":-1"/>
+            <regex match="Error:"/>
+            <regex match="Exception:"/>
+    </stdio>
+    <inputs>
+        <param format="sqlite" label="GEMINI database" name="infile" type="data"/>
+
+        <param help="(--cases)" label="Space separated list of cases for association testing" name="cases" size="30" type="text" value=""/>
+        <param help="(--controls)" label="Space separated list of controls for association testing" name="controls" size="30" type="text" value=""/>
+
+        <param checked="False" falsevalue="" help="(--save_tscores)" label="Save the permuted T-scores in the output file" name="save_tscores" truevalue="--save_tscores" type="boolean"/>
+
+        <param checked="False" falsevalue="" help="(--nonsynonymous)" label="Count all nonsynonymous variants as contributing burden" name="nonsynonymous" truevalue="--nonsynonymous" type="boolean"/>
+        <param checked="False" falsevalue="" help="(--calpha)" label="Run the C-alpha association test" name="calpha" truevalue="--calpha" type="boolean"/>
+        <param help="(--min-aaf)" label="The min. alt. allele frequency for a variant to be included" name="min_aaf" size="5" type="float" value="-1">
+            <!--validator type="in_range" min="0.0"/-->
+        </param>
+        <param help="(--max-aaf)" label="The max. alt. allele frequency for a variant to be included" name="max_aaf" size="5" type="float" value="-1">
+            <!--validator type="in_range" min="0.0"/-->
+        </param>
+
+        <param help="(--permutations)" label="Number of permutations to run for the C-alpha test" name="permutations" size="10" type="integer" value="1000">
+            <validator min="0" type="in_range"/>
+        </param>
+
+    </inputs>
+    <outputs>
+        <data format="tabular" label="${tool.name} on ${on_string}" name="outfile"/>
+    </outputs>
+    <tests>
+        <test>
+        </test>
+    </tests>
+    <help>
+**What it does**
+
+The burden tool provides a set of utilities to perform burden summaries on a per-gene, per sample basis. 
+By default, it outputs a table of gene-wise counts of all high impact variants in coding regions for each sample.
+
+$ gemini burden test.burden.db
+gene    M10475  M10478  M10500  M128215
+WDR37   2       2       2       2
+CTBP2   0       0       0       1
+DHODH   1       0       0       0
+
+@CITATION@
+    </help>
+    <citations>
+        <citation type="doi">10.1371/journal.pcbi.1003153</citation>
+        <yield/>
+    </citations>
+    <citation type="doi">10.1371/journal.pgen.1001322</citation><!-- c-alpha citation -->
+</tool>

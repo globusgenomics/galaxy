@@ -1,0 +1,65 @@
+<tool id="globus_get_data_from_ebi_to_collections" name="Get Data via Globus from the EBI server (collections)">
+  <description>using your unique file identifier</description>
+  <action module="galaxy_ext.globus.tools" class="GlobusTransferInAction"/>
+  <command interpreter="python">
+    globus_transfer.py
+    --transfer-info "$transfer_info"
+    --transfer-direction "$transfer_direction";
+    mv $path_hidden/* .;
+    for f in *_1.fastq.gz; do mv "\$f" "`basename \$f _1.fastq.gz`_forward.fastq.gz"; done;
+    for f in *_2.fastq.gz; do mv "\$f" "`basename \$f _2.fastq.gz`_reverse.fastq.gz"; done
+  </command>
+  <inputs>
+    <param name="accession" type="text" size="100" label="Enter your ENA Sample id" help=" i.e. SAMN00189025">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="path_hidden" type="hidden" size="100" label="hidden_path" value="**"/>
+    <conditional name="datatype_cond">
+        <param name="datatype" type="select" label="Data type to be transferred">
+          <option value="fastqsanger">fastq</option>
+          <option value="bam">BAM</option>
+          <option value="other">Other</option>
+        </param>
+        <when value="fastqsanger">
+          <param name="single_paired" type="select" label="Single or Paired-Ended">
+            <option value="single">Single</option>
+            <option value="paired">Paired</option>
+          </param>
+        </when>
+        <when value="bam"></when>
+        <when value="other"></when>
+    </conditional>
+    <param name="from_endpoint" type="hidden" value="ebi#public" label="Source Endpoint">
+      <sanitizer sanitize="False"/>
+    </param>
+  </inputs>
+  <outputs>
+    <collection name="list_output" type="list:paired" label="Collections on ${accession}">
+       <!-- Use named regex group to grab pattern
+           <identifier_0>_<identifier_1>.fq. Here identifier_0 is the list
+           identifier in the nested collection and identifier_1 is either
+           forward or reverse (for instance samp1_forward.fq).
+       -->
+      <discover_datasets pattern="(?P&lt;identifier_0&gt;[^_]+)_(?P&lt;identifier_1&gt;[^_]+)\.fastq.gz" ext="fastqsanger.gz" />
+    </collection>
+  </outputs>
+  <help>
+.. class:: warningmark
+    
+  **WARNING:** Be careful not to exceed disk quotas!
+    
+-----
+    
+**What it does**
+    
+  Transfers data between from Globus to your Galaxy installation
+  and creates a galaxy dataset from transfered file.
+
+-----
+    
+**Example**
+    
+  Specify your endpoints, and some paths within those endpoints.
+
+  </help>
+</tool>

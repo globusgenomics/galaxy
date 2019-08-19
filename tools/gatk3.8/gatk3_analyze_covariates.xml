@@ -1,0 +1,137 @@
+<tool id="gatk3.8_analyze_covariates" name="Analyze Covariates" version="GATK3.8: GenomeAnalysisTK-3.8-0">
+  <description>- draw plots</description>
+  <requirements>
+      <requirement type="package" version="1.8.0">java</requirement>
+      <requirement type="package" version="3.8">gatk3</requirement>
+      <requirement type="package">R</requirement>
+  </requirements>
+  <macros>
+    <import>gatk_macros.xml</import>
+  </macros>
+  <command interpreter="python">gatk3_wrapper.py
+   --max_jvm_heap_fraction &quot;1&quot;
+   -p 'java 
+    -jar &quot;\$GATK3_PATH/GenomeAnalysisTK.jar&quot;
+    -T &quot;AnalyzeCovariates&quot;
+    #if str($input_recal_bqsr) != 'None':
+        -BQSR &quot;${input_recal_bqsr}&quot;
+    #end if
+    #if str($input_recal_before) != 'None':
+        -before &quot;${input_recal_before}&quot;
+    #end if
+    #if str($input_recal_after) != 'None':
+        -after &quot;${input_recal_after}&quot;
+    #end if
+    #if $reference_source.reference_source_selector != &quot;history&quot;:
+        -R &quot;${reference_source.ref_file.fields.path}&quot;
+    #end if
+    -csv $output_log
+    -plots $output_plots
+    ##--num_threads 32 ##hard coded, for now
+    ##-log &quot;${output_log}&quot;
+    ##-Rscript,--path_to_Rscript path_to_Rscript; on path is good enough         
+    #if $analysis_param_type.analysis_param_type_selector == &quot;advanced&quot;:
+        --ignoreQ &quot;${analysis_param_type.ignore_q}&quot;
+        --numRG &quot;${analysis_param_type.num_read_groups}&quot;
+        --max_quality_score &quot;${analysis_param_type.max_quality_score}&quot;
+        --max_histogram_value &quot;${analysis_param_type.max_histogram_value}&quot;
+         ${analysis_param_type.do_indel_quality}
+    #end if
+   '
+  </command>
+  <inputs>
+    <param format="csv,gatk_report" help="-before,--beforeReportFile &amp;lt;report_file&amp;gt;" label="File containing the BQSR first-pass report file" name="input_recal_before" optional="True" type="data"/>
+    <param format="csv,gatk_report" help="-after,--afterReportFile &amp;lt;report_file&amp;gt;" label="File containing the BQSR second-pass report file" name="input_recal_after" optional="True" type="data"/>
+    <param format="csv,gatk_report" help="-recalFile,--recal_file &amp;lt;report_file&amp;gt;" label="Covariates table recalibration file" name="input_recal_bqsr" optional="True" type="data"/>
+    <conditional name="reference_source">
+      <param label="Choose the source for the reference list" name="reference_source_selector" type="select">
+        <option value="cached">Locally cached</option>
+        <option value="history">History</option>
+      </param>
+      <when value="cached">
+        <param help="-R,--reference_sequence &amp;lt;reference_sequence&amp;gt;" label="Using reference genome" name="ref_file" type="select">
+          <options from_data_table="gatk3_picard_indexes">
+                <filter column="3" type="sort_by"/>
+
+                <filter column="3" type="sort_by"/>
+
+        </param>
+      </when>
+      <when value="history">
+        <param format="fasta" help="-R,--reference_sequence &amp;lt;reference_sequence&amp;gt;" label="Using reference file" name="ref_file" type="data"/>
+      </when>
+    </conditional>
+    <conditional name="analysis_param_type">
+      <param label="Basic or Advanced options" name="analysis_param_type_selector" type="select">
+        <option selected="True" value="basic">Basic</option>
+        <option value="advanced">Advanced</option>
+      </param>
+      <when value="basic">
+        <!-- Do nothing here -->
+      </when>
+      <when value="advanced">
+        <param help="-ignoreQ,--ignoreQ &amp;lt;ignoreQ&amp;gt; " label="Ignore bases with reported quality less than this number." name="ignore_q" type="integer" value="5"/>
+        <param help="-numRG,--numRG &amp;lt;numRG&amp;gt;" label="Only process N read groups." name="num_read_groups" type="integer" value="-1"/>
+        <param help="-maxQ,--max_quality_score &amp;lt;max_quality_score&amp;gt;" label="Max quality score" name="max_quality_score" type="integer" value="50"/>
+        <param help="-maxHist,--max_histogram_value &amp;lt;max_histogram_value&amp;gt;" label="Max histogram value" name="max_histogram_value" type="integer" value="0"/>
+        <param falsevalue="" help="--do_indel_quality" label="Do indel quality" name="do_indel_quality" truevalue="--do_indel_quality" type="boolean"/>
+      </when>
+    </conditional>
+  </inputs>
+  <outputs>
+    <data format="pdf" label="${tool.name} on ${on_string} (PDF)" name="output_plots"/>
+    <data format="csv" label="${tool.name} on ${on_string} (log)" name="output_log"/>
+  </outputs>
+  <tests>
+      <test>
+      </test>
+  </tests>
+  <help>
+**What it does**
+
+Create collapsed versions of the recal csv file and call R scripts to plot residual error versus the various covariates.
+
+For more information on base quality score recalibration using the GATK, see this `tool specific page &lt;http://www.broadinstitute.org/gsa/wiki/index.php/Base_quality_score_recalibration&gt;`_.
+
+To learn about best practices for variant detection using GATK, see this `overview &lt;http://www.broadinstitute.org/gsa/wiki/index.php/Best_Practice_Variant_Detection_with_the_GATK_v3&gt;`_.
+
+If you encounter errors, please view the `GATK FAQ &lt;http://www.broadinstitute.org/gsa/wiki/index.php/Frequently_Asked_Questions&gt;`_.
+
+------
+
+**Inputs**
+
+GenomeAnalysisTK: AnalyzeCovariates accepts an recal CSV file.
+
+
+**Outputs**
+
+The output is in CSV and HTML files with links to PDF graphs and a data files.
+
+
+Go `here &lt;http://www.broadinstitute.org/gsa/wiki/index.php/Input_files_for_the_GATK&gt;`_ for details on GATK file formats.
+
+-------
+
+**Settings**::
+
+ recal_file             The input recal csv file to analyze
+ output_dir             The directory in which to output all the plots and intermediate data files
+ path_to_Rscript        The path to your implementation of Rscript. For Broad users this is maybe /broad/tools/apps/R-2.6.0/bin/Rscript
+ path_to_resources      Path to resources folder holding the Sting R scripts.
+ ignoreQ                Ignore bases with reported quality less than this number.
+ numRG                  Only process N read groups. Default value: -1 (process all read groups)
+ max_quality_score      The integer value at which to cap the quality scores, default is 50
+ max_histogram_value    If supplied, this value will be the max value of the histogram plots
+ do_indel_quality       If supplied, this value will be the max value of the histogram plots
+
+------
+
+**Citation**
+
+For the underlying tool, please cite `DePristo MA, Banks E, Poplin R, Garimella KV, Maguire JR, Hartl C, Philippakis AA, del Angel G, Rivas MA, Hanna M, McKenna A, Fennell TJ, Kernytsky AM, Sivachenko AY, Cibulskis K, Gabriel SB, Altshuler D, Daly MJ. A framework for variation discovery and genotyping using next-generation DNA sequencing data. Nat Genet. 2011 May;43(5):491-8. &lt;http://www.ncbi.nlm.nih.gov/pubmed/21478889&gt;`_
+
+If you use this tool in Galaxy, please cite Blankenberg D, et al. *In preparation.*
+
+  </help>
+</tool>

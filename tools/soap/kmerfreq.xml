@@ -1,0 +1,49 @@
+<tool id="kmerfreq" name="KmerFreq" version="KMERFREQ: default">
+    <description>- a k-mer counter program, it counts k-mer frequence of both strand from sequencing data</description>
+    <requirements>
+        <requirement type="binary">kmerfreq</requirement>
+    </requirements>
+    <command interpreter="perl">
+    	kmerfreq.pl	-k $kmer -q $phred -t $thread -1 $cz -2 $estimate -3 $stat -4 $len
+    	#for $i in $fqlist
+    		$i.file
+    	#end for
+    </command>
+    <inputs>
+        <param label="Kmer Length" name="kmer" type="integer" value="15"/>
+        <param label="phred score type" name="phred" type="select">
+        	<option value="33">phred 33</option>
+        	<option value="64">phred 64</option>
+        </param>
+        <param label="parallel jobs number (set accroding to CPU number and I/O)" name="thread" type="integer" value="1"/>
+        <repeat name="fqlist" title="fq or fa files">
+        	<param label="fq or fa files" name="file" type="data"/>
+        </repeat>
+    </inputs>
+    <outputs>
+        <data format="cz" label="k-mer_frequence_table.cz" name="cz"/>
+		    <data format="text" label="genoem_size_estimate.txt" name="estimate"/>
+		    <data format="text" label="k-mer_frequence_statistic.txt" name="stat"/>
+		    <data format="text" label="cz_block_length.txt" name="len"/>
+    </outputs>
+	<help>
+
+**Usuage**
+
+This is a k-mer counter program (version 1.0) for the preparation of k-mer frequency assisted read connection by COPE.
+It counts k-mer frequence of both strand from sequencing data and uses the array index to represent the codes of k-mers. Program requires 4^K byte computer memory for any data, for example: if KmerSize=17, then the memory usage is 4^17 = 16G, (KmerSize=15 Memory=1G; KmerSize=19 Memory=256G).
+
+This program will generate 4 result files:
+
+  1. k-mer_frequence_table.cz: k-mer frequence file in compressed format (for COPE)
+  2. genoem_size_estimate.txt: estimate result of genome size
+  3. k-mer_frequence_statistic.txt: k-mer frequence statistic file. The max frequence is 255, when k-mer frequence larger than 255, it will count as 255: 
+  4. cz_block_length.txt: compressed block length file (for COPE)
+
+
+**System requirements**
+
+run on 64-bit Linux systems.
+
+	</help>
+</tool>

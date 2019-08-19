@@ -1,0 +1,16 @@
+<tool id="samtoolsIndex" name="Samtools index" version="SAMTOOLS: 0.1.19">
+  <requirements>
+    <requirement type="package" version="0.1.19">samtools</requirement>
+  </requirements>
+	<description>Indexes sorted alignment for fast random access</description>
+	<command>samtools index $input $output</command>
+	<inputs>
+		<param format="bam" label="Alignment file" name="input" optional="false" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="bai" label="Bam index of ${input.name}" name="output" type="data"/>
+	</outputs>
+        <help>
+        </help>
+
+</tool>

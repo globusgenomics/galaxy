@@ -1,0 +1,145 @@
+<?xml version="1.0" ?>
+<tool id="qiime_cutadapt_trim-single" name="qiime cutadapt trim-single" version="022019">
+	<description> - Find and remove adapters in demultiplexed single-end sequences.</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command><![CDATA[
+  
+  qiime cutadapt trim-single --i-demultiplexed-sequences=$idemultiplexedsequences
+
+  #if '__sq__' in str($panywhere):
+    #set $panywhere_temp = $panywhere.replace('__sq__', "'")
+    #set $panywhere = $panywhere_temp
+  #end if
+  
+  #if str($panywhere):
+   --p-anywhere="$panywhere"
+  #end if
+  
+  
+  #if str($cmdconfig) != 'None':
+   --cmd-config=$cmdconfig
+  #end if
+  
+  #if $poverlap:
+   --p-overlap=$poverlap
+  #end if
+  
+  #if str($pfront):
+   --p-front="$pfront"
+  #end if
+  
+  #if $ptimes:
+   --p-times=$ptimes
+  #end if
+  
+   --o-trimmed-sequences=otrimmedsequences
+   
+  #if $pindels:
+   --p-indels
+  #end if
+  
+  #if $perrorrate:
+   --p-error-rate=$perrorrate
+  #end if
+  
+  #if $pmatchadapterwildcards:
+   --p-match-adapter-wildcards
+  #end if
+  
+  #set $slots = '${GALAXY_SLOTS:-4}'
+   --p-cores=$slots
+  
+  #if str($padapter):
+   --p-adapter="$padapter"
+  #end if
+  
+  #if $pmatchreadwildcards:
+   --p-match-read-wildcards
+  #end if
+  ;
+  cp otrimmedsequences.qza $otrimmedsequences
+  
+  ]]></command>
+	<inputs>
+		<param format="qza,no_unzip.zip" label="--i-demultiplexed-sequences: SampleData[SequencesWithQuality] The single-end sequences to be trimmed. [required]" name="idemultiplexedsequences" optional="False" type="data"/>
+
+		<param label="--p-adapter: Sequence of an adapter ligated to the 3' end. The adapter and any subsequent bases are trimmed. If a `$` is appended, the adapter is only found if it is at the end of the read. If your sequence of interest is 'framed' by a 5' and a 3' adapter, use this parameter to define a 'linked' primer - see https://cutadapt.readthedocs.io for complete details.  [optional]" name="padapter" optional="True" type="text"/>
+
+		<param label="--p-front: Sequence of an adapter ligated to the 5' end. The adapter and any preceding bases are trimmed. Partial matches at the 5' end are allowed. If a `^` character is prepended, the adapter is only found if it is at the beginning of the read.  [optional]" name="pfront" optional="True" type="text"/>
+		<param label="--p-anywhere: Sequence of an adapter that may be ligated to the 5' or 3' end. Both types of matches as described under `adapter` and `front` are allowed. If the first base of the read is part of the match, the behavior is as with `front`, otherwise as with `adapter`. This option is mostly for rescuing failed library preparations - do not use if you know which end your adapter was ligated to.  [optional]" name="panywhere" optional="True" type="text"/>
+
+		<param label="--p-error-rate: Maximum allowed error rate.  [default: 0.1]" name="perrorrate" optional="True" type="float" value="0.1"/>
+
+		<param label="--p-indels: --p-no-indels      Allow insertions or deletions of bases when matching adapters.  [default: True]" name="pindels" checked="False" type="boolean"/>
+		<param label="--p-times: Remove multiple occurrences of an adapter if it is repeated, up to `times` times. [default: 1]" name="ptimes" optional="True" type="integer" value="1"/>
+
+		<param label="--p-overlap: Require at least `overlap` bases of overlap between read and adapter for an adapter to be found.  [default: 3]" name="poverlap" optional="True" type="integer" value="3"/>
+
+		<param label="--p-match-read-wildcards: --p-no-match-read-wildcards Interpret IUPAC wildcards (e.g., N) in reads.  [default: False]" name="pmatchreadwildcards" checked="False" type="boolean"/>
+		<param label="--p-match-adapter-wildcards: --p-no-match-adapter-wildcards Interpret IUPAC wildcards (e.g., N) in adapters.  [default: True]" name="pmatchadapterwildcards" checked="False" type="boolean"/>
+
+		<param label="--cmd-config: Use config file for command options" name="cmdconfig" optional="True" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="qza" label="${tool.name} on ${on_string}: trimmed-sequences.qza" name="otrimmedsequences"/>
+	</outputs>
+	<help><![CDATA[
+Find and remove adapters in demultiplexed single-end sequences.
+----------------------------------------------------------------
+
+Search demultiplexed single-end sequences for adapters and remove them. The
+parameter descriptions in this method are adapted from the official
+cutadapt docs - please see those docs at https://cutadapt.readthedocs.io
+for complete details.
+
+Parameters
+----------
+demultiplexed_sequences : SampleData[SequencesWithQuality]
+    The single-end sequences to be trimmed.
+adapter : List[Str], optional
+    Sequence of an adapter ligated to the 3' end. The adapter and any
+    subsequent bases are trimmed. If a `$` is appended, the adapter is only
+    found if it is at the end of the read. If your sequence of interest is
+    "framed" by a 5' and a 3' adapter, use this parameter to define a
+    "linked" primer - see https://cutadapt.readthedocs.io for complete
+    details.
+front : List[Str], optional
+    Sequence of an adapter ligated to the 5' end. The adapter and any
+    preceding bases are trimmed. Partial matches at the 5' end are allowed.
+    If a `^` character is prepended, the adapter is only found if it is at
+    the beginning of the read.
+anywhere : List[Str], optional
+    Sequence of an adapter that may be ligated to the 5' or 3' end. Both
+    types of matches as described under `adapter` and `front` are allowed.
+    If the first base of the read is part of the match, the behavior is as
+    with `front`, otherwise as with `adapter`. This option is mostly for
+    rescuing failed library preparations - do not use if you know which end
+    your adapter was ligated to.
+error_rate : Float % Range(0, 1, inclusive_end=True), optional
+    Maximum allowed error rate.
+indels : Bool, optional
+    Allow insertions or deletions of bases when matching adapters.
+times : Int % Range(1, None), optional
+    Remove multiple occurrences of an adapter if it is repeated, up to
+    `times` times.
+overlap : Int % Range(1, None), optional
+    Require at least `overlap` bases of overlap between read and adapter
+    for an adapter to be found.
+match_read_wildcards : Bool, optional
+    Interpret IUPAC wildcards (e.g., N) in reads.
+match_adapter_wildcards : Bool, optional
+    Interpret IUPAC wildcards (e.g., N) in adapters.
+
+Returns
+-------
+trimmed_sequences : SampleData[SequencesWithQuality]
+    The resulting trimmed sequences.
+      ]]>
+	</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

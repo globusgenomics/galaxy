@@ -1,0 +1,60 @@
+<tool id="soapCoverage" name="SoapCoverage" version="r240">
+    <description>- calculate the coverage and depth of target sequences out of soap mapping result</description>
+    <requirements>
+        <requirement type="package">bgisoap</requirement>
+    </requirements>
+    <command interpreter="perl">
+    	soapCoverage.pl 
+    	$mode 
+    	$target
+    	$format
+    	$outtype
+    	$coverage
+    	$outdetail
+    	#for $i in $maplist
+    		$i.file
+    	#end for
+    </command>
+    <inputs>
+        <param label="coverage type" name="mode" type="select">
+        	<option value="cvg">sequencing coverage</option>
+        	<option vlaue="phy">physical coverage</option>
+        </param>
+        <param format="fasta" label="target sequence" name="target" type="data"/>
+        <repeat name="maplist" title="mapping results">
+        	<param label="reads mapping result" name="file" type="data"/>
+        </repeat>
+        <param format="fasta" label="input format" name="format" type="select" value="soap">
+        	<option value="soap">soap output format</option>
+        	<option value="sam">sam format</option>
+        </param>
+        <param label="output format" name="outtype" type="select">
+        	<option value="fasta">fasta like</option>
+        	<option value="wig">wig</option>
+        </param>        
+    </inputs>
+    <outputs>
+        <data format="tabular" name="coverage"/>
+	<data format="text" name="outdetail"/>
+    </outputs>
+	<help>
+
+This tool can calculate the depth of mapped reads for each base and the coverage of the reference sequence.	Both SOAPaligner output and sam format are accepted.
+
+**System requirements**
+
+run on 64-bit Linux systems.
+
+**Outputs**
+
+The output contains a file states the coverage of reference sequence, and a file gives the depth foreach base.
+
+
+**More information**
+
+For test data and more detailed information, click here_.
+
+.. _here: http://soap.genomics.org.cn/about.html#resource2
+
+	</help>
+</tool>

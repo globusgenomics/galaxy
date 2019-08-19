@@ -1,0 +1,111 @@
+<tool id="cga_demuxer" name="CGA Dataset Extractor">
+  <description>extract sam/bam/bai file from cga dataset</description>
+  <command interpreter="python">demuxer.py 
+  -i '$input' -p '$input.extra_files_path' 
+  -o '$output1' -t '$out_format'
+  </command>
+   <inputs>
+    <param format="cga" name="input" type="data" label="Complete Genomics Dataset"/>
+    <param name="out_format" type="select" label="Extract Format">
+        <option value="dat">dat</option>
+        <option value="sam">sam</option>
+        <option value="bam">bam</option>
+	<option value="fastq">fastq</option>
+	<option value="solexa.fastq">solexa.fastq</option>
+	<option value="stats">stats</option>
+	<option value="boxplot.png">boxplot.png</option>
+	<option value="distribution.png">distribution.png</option>
+    </param>
+    <param name="part_or_chromosome" optional="false" type="select" display="radio" label="Demux chromosome or raw cga data">
+      <option value="per part data">part</option>
+      <option value="per chromosome data">chromosome</option>
+    </param>
+    <param name="selected_chromosome" optional="true" type="select" multiple="false" label="Select a chromosome to extract">
+      <option value="">Select Chromosome</option>
+      <option value="01">1</option>
+      <option value="02">2</option>
+      <option value="03">3</option>
+      <option value="04">4</option>
+      <option value="05">5</option>
+      <option value="06">6</option>
+      <option value="07">7</option>
+      <option value="08">8</option>
+      <option value="09">9</option>
+      <option value="10">10</option>
+      <option value="12">12</option>
+      <option value="13">13</option>
+      <option value="14">14</option>
+      <option value="15">15</option>
+      <option value="16">16</option>
+      <option value="17">17</option>
+      <option value="18">18</option>
+      <option value="19">19</option>
+      <option value="20">20</option>
+      <option value="21">21</option>
+      <option value="22">22</option>
+      <option value="23">23</option>
+      <option value="24">24</option>
+    </param>
+    <param name="selected_lane" optional="true" type="select" multiple="false" label="Select a lane to extract">
+      <option value="">Select Lane</option>
+      <option value="01">1</option>
+      <option value="02">2</option>
+      <option value="03">3</option>
+      <option value="04">4</option>
+      <option value="05">5</option>
+      <option value="06">6</option>
+      <option value="07">7</option>
+      <option value="08">8</option>
+      <option value="09">9</option>
+      <option value="10">10</option>
+      <option value="11">11</option>
+      <option value="12">12</option>
+      <option value="13">13</option>
+      <option value="14">14</option>
+      <option value="15">15</option>
+      <option value="16">16</option>
+    </param>
+    <param name="selected_part" optional="true" type="select" multiple="false" label="Select a part to extract">
+      <option value="">Select Part</option>
+      <option value="01">1</option>
+      <option value="02">2</option>
+      <option value="03">3</option>
+      <option value="04">4</option>
+      <option value="05">5</option>
+      <option value="06">6</option>
+      <option value="07">7</option>
+      <option value="08">8</option>
+      <option value="09">9</option>
+      <option value="10">10</option>
+      <option value="11">11</option>
+      <option value="12">12</option>
+    </param>
+   </inputs>
+   <outputs>
+     <data format="dat" type="data" name="output1" label="${part_or_chromosome}-C${selected_chromosome}-L${selected_lane}-P${selected_part}.${out_format}"/>
+     <change_format>
+       <when input="out_format" value="dat" format="dat" />
+       <when input="out_format" value="sam" format="sam" />
+       <when input="out_format" value="bam" format="bam" />
+       <when input="out_format" value="fastq" format="fastq" />
+       <when input="out_format" value="solexa.fastq" format="fastq" />
+       <when input="out_format" value="stats" format="dat" />
+       <when input="out_format" value="boxplot.png" format="png" />
+       <when input="out_format" value="distribution.png" format="png" />
+     </change_format>
+   </outputs>
+<tests>
+</tests>
+<help>
+.. class:: infomark
+
+This tool extracts a sam/bam/bai file from a cgatools composite dataset.
+
+-----
+
+.. class:: warningmark
+
+This tool is very experimental
+
+</help>
+</tool>

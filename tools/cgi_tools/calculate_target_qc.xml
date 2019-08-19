@@ -1,0 +1,29 @@
+<tool id="calculate_target_qc" name="Calculate Target QC coverage" version="" >
+  <description>for an exome target BED file</description>
+  <requirements>
+    <requirement type="package">pymodules</requirement>
+  </requirements>
+  <command interpreter="python">
+   target_alignment_qc.py $bed_file $base_cov_file $target_cov_file > $out_file
+  </command>
+  <inputs>
+      <param name="bed_file" type="data" format="interval,bed" label="Exon Target BED file"/>
+      <param name="base_cov_file" type="data" format="txt,tabular" label="Per Base Coverage file" help="Should be from Picard HSMetrics tool"/>
+      <param name="target_cov_file" type="data" format="txt,tabular" label="Per Target Coverage file" help="Should be from Picard HSMetrics tool"/>
+
+  </inputs>
+  <outputs>
+    <data format="tabular" label="${tool.name} on ${on_string}.target.cov.qc.txt" name="out_file"/>
+  </outputs>
+  <tests>
+    <test>
+    </test>
+  </tests> 
+  <help>
+
+**What it does**
+
+Creates a coverage QC metric file based on Picard HSMetrics tool run
+
+  </help>
+</tool>

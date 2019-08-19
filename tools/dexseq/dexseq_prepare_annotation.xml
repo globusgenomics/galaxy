@@ -1,0 +1,22 @@
+<tool id="dexseq_prepare_annotation" name="DEXSeq Prepare Annotation">
+	<description>of GTF file</description>
+        <requirements>
+	     <requirement type="package">pymodules</requirement>
+             <requirement type="package">R</requirement>
+        </requirements>
+	<command interpreter="python">
+            dexseq_prepare_annotation.py $gtf_file $gff_output
+	</command>
+
+	<inputs>
+            <param format="gtf" name="gtf_file" type="data" label="Annotations File (GTF)" help=""/>
+	</inputs>
+	<outputs>
+		<data format="gff" name="gff_output" label="${tool.name} on ${on_string}: GFF Flattened File"/>
+	</outputs>
+
+	<help>
+		NOTE: This DEXseq script creates the properly formatted gff file from a GTF file to run DEXSeq package.
+	</help>
+
+</tool>

@@ -1,0 +1,20 @@
+<tool id="metasv_combine_vcf" name="Generate a bed file for combined metasv vcf files" version="0.0.1">
+  <description></description>
+  <requirements>   
+  </requirements>
+  <command interpreter="python">
+      metasv_combine_vcfs.py  
+      --input=$input_config.extra_files_path
+      --output=$output
+      --output-dir $output.extra_files_path
+      
+  </command>
+	<inputs>
+           <param format="data" help="Config file containing a directory path." label="Config File" name="input_config" type="data"/>
+	</inputs>
+	<outputs>
+                <data format="bed" label="${tool.name} on ${on_string}: (bed)" name="output"/>
+	</outputs>
+	<help>
+	</help>
+</tool>

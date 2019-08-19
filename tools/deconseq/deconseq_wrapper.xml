@@ -1,0 +1,213 @@
+<tool id="deconseq" name="Deconseq" version="DECONSEQ: 0.4.3">
+  	<description>This tool sorts apart the matching and non-matching reads into two files specified by the user.</description>
+        <requirements>
+          <requirement type="package">deconseq</requirement>
+        </requirements>
+        <command interpreter="python">
+          deconseq_wrapper.py 
+             --fileSource=&quot;${genomeSource.refGenomeSource}&quot;
+             #if $genomeSource.refGenomeSource == &quot;history&quot;
+               ##build index on the fly
+               --ref_fasta=&quot;${genomeSource.ownFile}&quot;
+               --dbkey=&quot;${dbkey}&quot;
+             #else
+               ##use precomputed indexes
+               --ref_fasta=&quot;${genomeSource.indices.fields.fasta_path}&quot;
+               --ref_index=&quot;${genomeSource.indices.fields.index_path}&quot;
+             #end if
+             -f=&quot;${input_file}&quot;  
+             -dbs=&quot;${database_name}&quot;
+             -dbs_retain=&quot;${database_retain_name}&quot;
+             -out_dir=&quot;${output_directory}&quot;
+             #if $cond_alignments.selector_alignments == &quot;num_alignments_selected&quot;
+               #if str($cond_alignments.num_alignments_option)
+                 --num_alignments ${cond_alignments.num_alignments_option}
+               #end if
+             #end if
+             #if $cond_alignments.selector_alignments == &quot;best_selected&quot;
+               #if str($cond_alignments.best_option)
+                 --best ${cond_alignments.best_option}
+               #end if
+             #end if
+             #if $params.source_select != &quot;pre_set&quot;
+               #if str($params.match_option)
+                 --match ${params.match_option}
+               #end if
+               #if str($params.mismatch_option)
+                 --mismatch ${params.mismatch_option}
+               #end if
+               #if str($params.gap_open_option)
+                 --gap_open ${params.gap_open_option}
+               #end if
+               #if str($params.gap_ext_option)
+                 --gap_ext ${params.gap_ext_option}
+               #end if
+               #if str($params.N_option)
+                 -N ${params.N_option}
+               #end if
+               #if $params.cond_strands.selector_strands == &quot;F_selected&quot; 
+                 #if $params.cond_strands.F_option
+                   -F
+                 #end if
+               #end if
+               #if $params.cond_strands.selector_strands == &quot;R_selected&quot; 
+                 #if $params.cond_strands.R_option
+                   -R
+                 #end if
+               #end if
+               #if str($params.a_option)
+                 -a ${params.a_option}
+               #end if
+               #if str($params.e_option)
+                 -e ${params.e_option}
+               #end if
+               #if $params.passes_option
+                 --passes &quot;${params.passes_option}&quot;
+               #end if
+               #if str($params.edges_option)
+                 --edges ${params.edges_option}
+               #end if
+               #if str($params.num_seeds_option)
+                 --num_seeds ${params.num_seeds_option}
+               #end if
+               #if str($params.full_search_option)
+                 --full_search=&quot;${params.full_search_option}&quot;
+               #end if
+             #end if  
+        </command>
+        <inputs>
+           <conditional name="genomeSource">
+              <param label="Will you select a reference genome from your history or use a built-in index?" name="refGenomeSource" type="select">
+                 <option value="indexed">Use a built-in index</option>
+                 <option value="history">Use one from the history</option>
+              </param>
+              <when value="indexed">
+                 <param label="Select a reference genome" name="indices" type="select">
+                    <options from_data_table="sortmerna_indexes">
+                       <filter column="2" type="sort_by"/>
+                       <validator message="No indexes are available" type="no_options"/>
+                    </options>
+                 </param>
+              </when>
+              <when value="history">
+                 <param format="fasta" label="Select a reference from history (--ref)" metadata_name="dbkey" name="ownFile" type="data"/>
+              </when>
+           </conditional>
+           <conditional name="cond_alignment_type">
+                   <param label="Select alignment" name="selector_alignment_type" type="select">
+                      <option value="fast_selected">Fast</option>
+                      <option value="sensitive_selected">Sensitive</option>
+                   </param>
+                   <when value="fast_selected">
+                      <param checked="false" label="Suggested option for aligning ~99% related species (--fast)" name="fast_option" type="boolean"/>
+                   </when>
+                   <when value="sensitive_selected">
+                      <param checked="true" label="Suggested option for aligning ~75-98% related species (--sensitive)" name="sensitive" type="boolean"/>
+                   </when>
+           </conditional>
+           <param label="FASTA/FASTQ read file (--reads)" name="reads_ref_file" type="data"/>
+           <conditional name="cond_fasta_file">
+              <param label="Output FASTA/FASTQ file (--fastx)" name="selector_fasta_file" type="select">
+                  <option value="yes">Yes</option>
+                  <option value="no">No</option>
+              </param>
+           </conditional>
+           <conditional name="cond_sam_file">
+              <param label="Output SAM alignment (--sam)" name="selector_sam_file" type="select">
+                  <option value="yes">Yes</option>
+                  <option value="no">No</option>
+              </param>
+           </conditional>
+           <conditional name="cond_blast_file">
+              <param label="Output BLAST-like alignment (--blast)" name="selector_blast_file" type="select">
+                  <option value="yes">Yes</option>
+                  <option value="no">No</option>
+              </param>
+           </conditional>
+           <conditional name="cond_log_file">
+              <param label="Output overall statistics (--log)" name="selector_log_file" type="select">
+                  <option value="yes">Yes</option>
+                  <option value="no">No</option>
+              </param>
+           </conditional>
+           <param label="Use 1 for grouping Clean + Both and 2 for grouping Contamination + Both" name="group" optional="true" type="integer" value="1"/>
+           <param checked="false" falsevalue="" label="Add SQ tags to the SAM file (--SQ)" name="sq_option" truevalue="--SQ" type="boolean"/>
+           <conditional name="cond_alignments">
+              <param label="Select alignment (OPTIONAL; with --sam or --blast)" name="selector_alignments" type="select">
+                  <option value="feeling_lucky_selected">Feeling-Lucky</option>
+                  <option value="num_alignments_selected">Num_Alignments</option>
+                  <option value="best_selected">Best</option>
+              </param>
+              <when value="feeling_lucky_selected">
+                  <param checked="false" falsevalue="" label="Report the first alignment per read reaching E-value (--feeling-lucky)" name="feeling_lucky_option" truevalue="--feeling-lucky" type="boolean"/>
+              </when>
+              <when value="num_alignments_selected">
+                  <param label="Report first INT alignments per read reaching E-value (--num_alignments)" name="num_alignments_option" optional="true" type="integer" value="0"/>
+              </when>
+              <when value="best_selected">
+                  <param label="Report single best alignment per read reaching E-value (--best)" name="best_option" optional="true" type="integer" value="2"/>
+              </when>
+           </conditional>
+           <conditional name="params">
+              <param help="For most mapping needs use Commonly Used settings. If you want full control use Full Parameter List" label="SortMeRNA settings to use" name="source_select" type="select">
+                  <option value="pre_set">Commonly Used</option>
+                  <option value="full">Full Parameter List</option>
+              </param>
+              <when value="pre_set"/>
+              <when value="full">
+                  <conditional name="cond_paired_ends">
+                     <param label="Select paired-end reads output (OPTIONAL)" name="selector_paired_ends" type="select">
+                        <option value="aligned_selected">Aligned Fasta/q File</option>
+                        <option value="rejected_selected">Rejected Fasta/q File</option>
+                     </param>
+                     <when value="aligned_selected">
+                         <param checked="false" falsevalue="" label="Both paired-end reads go in --aligned fasta/q file" name="paired_in_option" truevalue="--paired_in" type="boolean"/>
+                     </when>
+                     <when value="rejected_selected">
+                         <param checked="false" falsevalue="" label="Both paired-end reads go in --other (rejected) fasta/q file" name="paired_out_option" truevalue="--paired_out" type="boolean"/>
+                     </when>
+                  </conditional>
+                  <param label="SW score (positive integer) for a match" name="match_option" optional="true" type="integer" value="2"/>
+                  <param label="SW score (negative integer) for a mismatch" name="mismatch_option" optional="true" type="integer" value="-3"/>
+                  <param label="SW score (positive integer) for introducing a gap" name="gap_open_option" optional="true" type="integer" value="5"/>
+                  <param label="SW score (positive integer) for extending a gap" name="gap_ext_option" optional="true" type="integer" value="2"/>
+                  <param label="SW score for ambiguous letters (Ns)" name="N_option" optional="true" type="integer" value="-3"/>
+                  <conditional name="cond_strands">
+                     <param label="Select strand to search (OPTIONAL)" name="selector_strands" type="select">
+                        <option value="F_selected">Forward strand</option>
+                        <option value="R_selected">Reverse-complementary strand</option>
+                     </param>
+                     <when value="F_selected">
+                        <param checked="false" label="Search only the forward strand" name="F_option" type="boolean"/>
+                     </when>
+                     <when value="R_selected">
+                        <param checked="false" label="Search only the reverse-complementary strand" name="R_option" type="boolean"/>
+                     </when>
+                  </conditional>
+                  <param label="Number of threads to use" name="a_option" optional="true" type="integer" value="1"/>
+                  <param label="E-value" name="e_option" optional="true" type="float" value="1"/>
+                  <param label="Values for seed skip lengths for Pass 1, 2 and 3 (INT,INT,INT)" name="passes_option" optional="true" type="text" value="18,9,3"/>
+                  <param label="Number (or percent if INT followed by % sign) of nucleotides to add to each edge of the read prior to SW local alignment" name="edges_option" optional="true" type="integer" value="4"/>
+                  <param label="Number of seeds matched before searching for candidate LIS" name="num_seeds_option" optional="true" type="integer" value="2"/>
+          <param checked="false" falsevalue="" label="Search for all 0-error and 1-error seed matches in the index rather than stopping after finding a 0-error match" name="full_search_option" truevalue="--full_search" type="boolean"/>
+              </when>
+           </conditional>
+        </inputs>
+        <outputs>
+           <data format="fastq" from_work_dir="aligned.fastq" label="${tool.name} on ${on_string}: aligned.fastq" name="aligned_fastq">
+              <filter>cond_fasta_file['selector_fasta_file'] == &quot;yes&quot;</filter>
+           </data>
+           <data format="fastq" from_work_dir="rejected.fastq" label="${tool.name} on ${on_string}: rejected.fastq" name="rejected_fastq">
+              <filter>cond_fasta_file['selector_fasta_file'] == &quot;yes&quot;</filter>
+           </data>
+           <data format="sam" from_work_dir="aligned.sam" label="${tool.name} on ${on_string}: aligned.sam" name="aligned_sam">
+              <filter>cond_sam_file['selector_sam_file'] == &quot;yes&quot;</filter>
+           </data>
+           <data format="txt" from_work_dir="aligned.blast" label="${tool.name} on ${on_string}: aligned.blast" name="aligned_blast">
+              <filter>cond_blast_file['selector_blast_file'] == &quot;yes&quot;</filter>
+           </data>
+           <data format="txt" from_work_dir="aligned.log" label="${tool.name} on ${on_string}: aligned.log" name="aligned_log">
+              <filter>cond_log_file['selector_log_file'] == &quot;yes&quot;</filter>
+           </data>
+        </outputs>
+</tool>

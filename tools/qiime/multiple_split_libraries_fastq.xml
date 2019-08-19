@@ -1,0 +1,137 @@
+<tool id="qiime_multiple_split_libraries_fastq" name="Split multiple FastQ librairies" version="@WRAPPER_VERSION@.0">
+    <description>to performs demultiplexing</description>
+    <macros>
+        <import>macros.xml</import>
+    </macros>
+    <expand macro="requirements"/>
+    <version_command>multiple_split_libraries_fastq.py -v</version_command>
+    <command detect_errors="aggressive"><![CDATA[
+        mkdir input
+        &&
+        #if $input_type.type == 'collection'
+          #for $i, $pair in enumerate ($input_type.fastq_list_collection):
+            ln -s '$pair' input/${pair.name}.fastq
+            &&
+          #end for
+        #elif $input_type.type == 'regular'
+          #for $i, $s in enumerate( $input_type.input_files )
+            ln -s '$s.reads' input/${i}.fastq
+            &&
+            ln -s '$s.barcodes' input/${i}.fastq
+            &&
+            ln -s '$s.mapping' input/${i}.txt
+            &&
+          #end for
+        #end if
+      #if str($phred_quality_threshold) != "":
+        echo "split_libraries_fastq:phred_quality_threshold	$phred_quality_threshold" > param_file.txt;
+      #end if
+      #if str($max_bad_run_length) != "":
+        echo "split_libraries_fastq:max_bad_run_length	$max_bad_run_length" >> param_file.txt;
+      #end if
+      #if str($min_per_read_length_fraction) != "":
+        echo "split_libraries_fastq:min_per_read_length_fraction	$min_per_read_length_fraction" >> param_file.txt;
+      #end if
+      #if str($demultiplexing_method) == "no_demultiplex": 
+        echo "split_libraries_fastq:barcode_type	$demultiplexing_method" >> param_file.txt;
+      #end if
+
+
+        multiple_split_libraries_fastq.py
+            --input_dir 'input'
+            --output_dir 'output'
+            #if $demultiplexing_method == "mapping_barcode_file":
+              --demultiplexing_method 'mapping_barcode_files'
+            #end if
+            ###if $parameter_fp
+            ##    --parameter_fp '$parameter_fp'
+            ###end if
+            ##--read_indicator 'reads_'
+            ##--barcode_indicator 'barcodes_'
+            ##--mapping_indicator 'mapping_'
+            --mapping_extensions 'txt'
+            --leading_text '$leading_text'
+            --trailing_text '$trailing_text'
+            --sampleid_indicator '$sampleid_indicator'
+    ]]></command>
+    <inputs>
+      <conditional name="input_type">
+        <param name="type" type="select" label="Select a way to provide forward and reverse fastq files ?" help="">
+          <option value="regular" selected="true">Two simple fastq files (forward and reverse)</option>
+          <option value="collection">Dataset collection (demultiplexed fastqs)</option>
+          <!--<option value="list_collection">Multiple pairs - Combo mode (list:paired collection)</option>-->
+        </param>
+        <when value="regular">
+          <repeat name="input_files" title="Input files">
+            <param name="reads" type="data" format="fastq,fastqsanger,fastq.gz,fastqsanger.gz,fastq.bz2,fastqsanger.bz2" label="Read file"/>
+            <param name="barcodes" type="data" format="fastq,fastqsanger,fastq.gz,fastqsanger.gz,fastq.bz2,fastqsanger.bz2" label="Barcode file"/>
+            <param name="mapping" type="data" format="txt,tsv,tabular" label="Mapping file"/>
+          </repeat>
+        </when>
+        <when value="collection">
+          <param name="fastq_list_collection" type="data_collection" format="fastq" collection_type="list" label="Fastq list (collection)" help="Dataset collection made from fastq files (Multiple join fastq)"/>
+        </when>
+      </conditional>
+        <param name="demultiplexing_method" type="select" label="Method for demultiplexing">
+            <!--<option value="sampleid_by_file" selected="true">Each read file will be used to generate the –sample_ids value passed to split_libraries_fastq.py</option>-->
+            <option value="mapping_barcode_file">Search for barcodes and mapping files that match the input read files</option>
+            <option value="no_demultiplex">None (Files are demultiplexed)</option>
+        </param>
+        <!--<param argument="-/-parameter_fp" type="data" format="txt" label="Parameter file" help="It specifies changes to the default behavior of join_paired_ends.py" optional="true"/>-->
+        <param name="phred_quality_threshold" type="text" value="" label="Phred quality threshold" help=""/>
+        <param name="max_bad_run_length" type="text" value="" label="Maximum bad run length" help="" /> 
+        <param name="min_per_read_length_fraction" type="text" value="" label="Minimum per read length fraction" help="" />
+        <param argument="--leading_text" type="text" value="" label="Leading text to add to each join_paired_ends.py command"/>
+        <param argument="--trailing_text" type="text" value="" label="Trailing text to add to each join_paired_ends.py command"/>
+        <param argument="--sampleid_indicator" type="text" value="_" label="Text in fastq filename before this value will be used as output sample ids"/>
+    </inputs>
+    <outputs>
+        <data name="seq" format="fastq" label="${tool.name} on ${on_string}: Sequences" from_work_dir="output/seqs.fna" />
+        <data name="histogram" format="txt" from_work_dir="output/histograms.txt" label="${tool.name} on ${on_string}: Histograms"/>
+        <data name="log" format="txt" from_work_dir="output/log_*" label="${tool.name} on ${on_string}: Log"/>
+    </outputs>
+    <tests>
+        <test>
+            <repeat name="input_files">
+                <param name="reads" value="multiple_split_libraries_fastq/input/reads_1.fastq"/>
+                <param name="barcodes" value="multiple_split_libraries_fastq/input/barcodes_1.fastq"/>
+                <param name="mapping" value="multiple_split_libraries_fastq/input/mapping_1.txt"/>
+            </repeat>
+            <repeat name="input_files">
+                <param name="reads" value="multiple_split_libraries_fastq/input/reads_2.fastq"/>
+                <param name="barcodes" value="multiple_split_libraries_fastq/input/barcodes_2.fastq"/>
+                <param name="mapping" value="multiple_split_libraries_fastq/input/mapping_2.txt"/>
+            </repeat>
+            <param name="leading_text" value=""/>
+            <param name="trailing_text" value=""/>
+            <output name="seq" md5="c146828efa459ec7227fcbcd6e5d4cdc"/>
+            <output name="histogram" md5="5f1f73dded81cbed9f1892aabdc2cbb3"/>
+        </test>
+        <test>
+            <repeat name="input_files">
+                <param name="reads" value="multiple_split_libraries_fastq/input/reads_1.fastq"/>
+                <param name="barcodes" value="multiple_split_libraries_fastq/input/barcodes_1.fastq"/>
+                <param name="mapping" value="multiple_split_libraries_fastq/input/mapping_1.txt"/>
+            </repeat>
+            <repeat name="input_files">
+                <param name="reads" value="multiple_split_libraries_fastq/input/reads_2.fastq"/>
+                <param name="barcodes" value="multiple_split_libraries_fastq/input/barcodes_2.fastq"/>
+                <param name="mapping" value="multiple_split_libraries_fastq/input/mapping_2.txt"/>
+            </repeat>
+            <param name="parameter_fp" value="multiple_split_libraries_fastq/qiime_parameters.txt" />
+            <param name="leading_text" value=""/>
+            <param name="trailing_text" value=""/>
+            <output name="seq" md5="c146828efa459ec7227fcbcd6e5d4cdc"/>
+            <output name="histogram" md5="5f1f73dded81cbed9f1892aabdc2cbb3"/>
+        </test>
+    </tests>
+    <help><![CDATA[
+**What it does**
+
+In addition to using PCoA, it can be useful to cluster samples using UPGMA (Unweighted Pair Group Method with Arithmetic mean, also known as average linkage). As with PCoA, the input to this step is a distance matrix (i.e. resulting file from beta_diversity.py).
+The output is a newick formatted tree compatible with most standard tree viewing programs. Batch processing is also available, allowing the analysis of an entire directory of distance matrices.
+    ]]></help>
+    <citations>
+        <expand macro="citations"/>
+    </citations>
+</tool>

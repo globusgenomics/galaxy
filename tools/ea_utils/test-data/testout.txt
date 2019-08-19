@@ -1,0 +1,29 @@
+reads	100
+version	1.32
+mapped reads	11
+mapped bases	377
+phred	33
+forward	0
+reverse	11
+len max	48
+len mean	34.2727
+len stdev	9.4137
+mapq mean	255.0000
+mapq stdev	0.0000
+mapq Q1	255.00
+mapq median	255.00
+mapq Q3	255.00
+snp rate	0.000000
+pct mismatch	0.0000
+base qual mean	31.5650
+base qual stdev	3.2627
+%A	27.5862
+%C	34.4828
+%G	16.7109
+%T	21.2202
+%PCRPRIMER1	8.753316
+%PCRPRIMER1+1	45.358090
+%PCRPRIMER1+2	9.814324
+%PCRPRIMER2+1	36.074271
+num ref seqs	4
+num ref aligned	4

@@ -1,0 +1,19 @@
+##fileformat=VCFv4.0
+##fileDate=Thu Feb 14 17:14:52 2013
+##source=VcfPrinter v1.4.3 r158
+##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
+##FORMAT=<ID=VR,Number=1,Type=Integer,Description="Major variant Read Depth">
+##FORMAT=<ID=RR,Number=1,Type=Integer,Description="Reference Read Depth">
+##FORMAT=<ID=DP,Number=1,Type=Integer,Description="Total Read Depth">
+##FORMAT=<ID=GQ,Number=1,Type=Integer,Description="Genotype Quality">
+##FORMAT=<ID=FT,Number=.,Type=String,Description="Sample Genotype Filter">
+##FORMAT=<ID=AA,Number=1,Type=String,Description="Alt allele associated with variant depth">
+##FILTER=<ID=low_snpqual,Description="SNP posterior probability lower than 0.95 (default)">
+##FILTER=<ID=low_VariantReads,Description="Number of variant reads is less than 3">
+##FILTER=<ID=low_VariantRatio,Description="Variant read ratio is less than 0.1">
+##FILTER=<ID=single_strand,Description="All variant reads are in a single strand direction">
+##FILTER=<ID=low_coverage,Description="Total coverage is less than 6 (default)">
+##FILTER=<ID=No_data,Description="No valid reads on this site">
+##FILTER=<ID=No_var,Description="No valid variant read on this site">
+##FILTER=<ID=ReqIncl,Description="Site does not pass filtering requirements, but is in the list of sites required to be included">
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	C05DFACXX_1_ATCACG.vcf	C05DFACXX_1_CGATGT.vcf

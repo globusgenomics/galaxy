@@ -1,0 +1,58 @@
+<tool id="create_output_bdbag_and_minid_from_collections" name="Create BDBag and MINID" hidden="false">
+   <action module="galaxy_ext.globus.tools.actions.globus" class="HistoryManagement"/>
+   <description>for current history including collections</description>
+   <requirements>
+     <requirement type="package">pymodules</requirement>
+   </requirements>
+   <command interpreter="python">
+     create_output_collections_bdbag_and_minid.py
+     -k $userapi
+     --history $historyid
+     -u "$url"
+     -t "$goauth"
+     > $minid
+   </command>
+   <stdio>
+     <exit_code range="1:"  level="warning"   description="Bad input dataset" />
+   </stdio>
+   <inputs>
+    <param name="goauth" type="hidden" value= "**" size="100" label="Globus Auth Token">
+	<sanitizer>
+        <valid>
+          <add value="|"/>
+        </valid>
+      </sanitizer>
+    </param>
+      <conditional name="input_type">
+        <param label="Single end or paired reads?" name="paired_selector" type="select">
+          <option value="paired_collection">Collection Paired</option>
+          <option value="list_collection">Collection List</option>
+          <option value="file">Individual file</option>
+        </param>
+        <when value="paired_collection">
+          <param collection_type="paired" label="Collection to add" name="collection_obj" type="data_collection" />
+        </when>
+        <when value="list_collection">
+          <param collection_type="list" label="Collection to add" name="collection_obj" type="data_collection" />
+        </when>
+        <when value="file">
+          <param format="txt" name="input_file" type="data" label="History file" help="This should be any file in the history"/>
+        </when>
+
+      </conditional>
+      <param name="userapi" type="hidden" size="100" value="**" label="Galaxy API Key"/>
+      <param name="url" type="hidden" value="**" size="100" label="GG URL"/>
+      <param name="historyid" type="hidden" value="**" size="100" label="History id"/>
+   </inputs>
+
+   <outputs>
+     <data format="txt" name="minid" label="Minid for history ${historyid}"/>
+   </outputs>
+
+   <help>
+
+
+   </help>
+
+</tool>
+

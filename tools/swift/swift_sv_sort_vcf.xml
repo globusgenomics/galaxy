@@ -1,0 +1,54 @@
+<tool description="Filter a set of SV VCF files using SWIFT from an input directory" id="swift_sv_sort_vcf" name="Sort SV VCF with SWIFT" version="SAMTOOLS: 1.2; VCFTOOLS: vcftools_0.1.11; VCFLIB: 07.21.2015">
+  <description/>
+ <requirements>
+    <requirement type="package">swift</requirement>
+    <requirement type="package">samtools</requirement>
+    <requirement type="package">ruby</requirement>
+    <requirement type="package">vcftools</requirement>
+    <requirement type="package">vcflib</requirement>
+  </requirements>
+
+  <command interpreter="python">
+      swift_sv_sort_vcf.py
+      --dummy $output_config 
+      --output-dir $output_config.extra_files_path
+
+      #if $input_source.source_type == &quot;config&quot;:
+        ##--config $input_source.input_config
+        --vcf-dir $input_source.input_config.extra_files_path
+      #else:
+        --vcf-dir $input_source.vcfdir
+      #end if
+
+  </command>
+  <inputs>
+    <conditional name="input_source">
+      <param help="" label="Where are input VCF files?" name="source_type" type="select">
+	<option value="config">From Config File</option>
+	<option default="True" value="path">Input path</option>
+      </param>
+      <when value="config">
+	<param format="data" help="Config file containing location VCF directories." label="Config File" name="input_config" type="data"/>
+      </when>
+      <when value="path">
+	<param help="Directory path in server with all VCF files." label="VCF directory path" name="vcfdir" type="text"/>
+      </when>
+    </conditional>
+    <!--<param name="outputdir" type="text" label="Output Directory Path" help=""/>-->
+    
+  </inputs>
+
+  <outputs> 
+    <data format="tabular" name="output_config" label="${tool.name} on ${on_string}
+ (filtered vcfs)"/>
+  </outputs>
+  <help>
+
+**What it does**
+
+Performs filtering on VCF files using SWIFT to massively parallelize the provess
+
+**Outputs**
+
+  </help>
+</tool>

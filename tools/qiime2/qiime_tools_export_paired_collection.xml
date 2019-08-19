@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tool id="qiime_tools_export_paired_collection" name="qiime tools export to paired collection" version="022019">
+   <description>- Export data from a QIIME 2 Artifact or Visualization.</description>
+   <requirements>
+      <requirement type="package" version="022019">conda</requirement>
+   </requirements>
+   <command><![CDATA[qiime tools export $isequences --output-dir test && cd test && gunzip *]]></command>
+   <inputs>
+      <param format="qza,no_unzip.zip" label="Input artifact to export! [required]" name="isequences" optional="False" type="data" />
+   </inputs>
+
+   <outputs>
+      <collection type="paired" label="Export artifact to collection" name="output">
+         <discover_datasets pattern="__designation_and_ext__" directory="test" />
+      </collection>
+   </outputs>
+   <help />
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

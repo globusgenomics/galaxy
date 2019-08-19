@@ -1,0 +1,32 @@
+<tool id="vcfuniq" description="Remove duplicate records from a VCF file" name="vcfuniq" version="1.0">
+  <description>Remove duplicate records from a VCF file.</description>
+
+  <command interpreter="bash">
+    vcfuniq.sh
+
+    #if str( $input_vcf ):
+      $input_vcf
+    #else:
+      none
+    #end if
+
+    #if str( $input_vcf ):
+      $input_vcf
+    #else:
+      none
+    #end if
+
+  </command>
+  <inputs>
+    <param name="input_vcf" type="data"/>
+  </inputs>
+
+  <outputs>
+    <data format="vcf" name="output_vcf"/>
+  </outputs>
+
+  <help>
+  
+  </help>
+</tool>
+

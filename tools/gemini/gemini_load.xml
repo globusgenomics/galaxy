@@ -1,0 +1,90 @@
+<tool id="gemini_load" name="GEMINI load" version="GRABIX: 0.1.3; TABIX: 0.2.6; SAMTOOLS: 0.1.19; BEDTOOLS: 2.19.1">
+    <description>Loading a VCF file into GEMINI</description> 
+    <requirements>
+            <!--<requirement type="package" version="0.10.0">gemini</requirement>-->
+            <requirement type="package">pymodules</requirement>
+            <requirement type="package" version="0.1.3">grabix</requirement>
+            <requirement type="package" version="0.2.6">tabix</requirement>
+            <requirement type="package" version="0.1.19">samtools</requirement>
+            <requirement type="package" version="2.19.1">bedtools</requirement>
+            <yield/>
+    </requirements>
+    <version_command>gemini --version</version_command>
+    <command>
+<![CDATA[
+        gemini 
+            --annotation-dir ${annotation_databases.fields.path}
+            load
+            -v "${ infile }"
+            -t $annotation_type
+
+            #if $ped:
+                -p $ped
+            #end if
+
+            $skip_gerp_bp
+            $skip_cadd
+            $skip_gene_tables
+            $no_load_genotypes
+            $no_genotypes
+            $passonly
+            --cores \${GALAXY_SLOTS:-4}
+
+            "${ outfile }"
+]]>
+    </command>
+    <stdio>
+            <exit_code range="1:"/>
+            <exit_code range=":-1"/>
+            <regex match="Error:"/>
+            <regex match="Exception:"/>
+    </stdio>
+    <inputs>
+        <param format="vcf" label="VCF file to be loaded in the GEMINI database" name="infile" type="data"/>
+
+        <param help="(-t)" label="The annotations to be used with the input vcf" name="annotation_type" type="select">
+            <option value="snpEff">snpEff annotated VCF file</option>
+            <option value="VEP">VEP annotated VCF file</option>
+        </param>
+        <param format="tablar" help="(-p)" label="Sample information file in PED+ format" name="ped" optional="True" type="data"/>
+        <param label="Choose a gemini annotation database" name="annotation_databases" type="select">
+            <options from_data_table="gemini_databases">
+                <filter column="0" type="sort_by"/>
+                <validator message="No annotation database is available" type="no_options"/>
+            </options>
+        </param>
+        <param checked="False" falsevalue="" help="(--skip-gerp-bp)" label="Do not load GERP scores at base pair resolution" name="skip_gerp_bp" truevalue="--skip-gerp-bp" type="boolean"/>
+
+        <param checked="False" falsevalue="" help="(--skip-cadd)" label="Do not load CADD scores" name="skip_cadd" truevalue="--skip-cadd" type="boolean"/>
+
+        <param checked="False" falsevalue="" help="(--skip-gene-tables)" label="Do not load gene tables" name="skip_gene_tables" truevalue="--skip-gene-tables" type="boolean"/>
+
+        <param checked="False" falsevalue="" help="(--no-load-genotypes)" label="Genotypes exist in the file, but should not be stored" name="no_load_genotypes" truevalue="--no-load-genotypes" type="boolean"/>
+
+        <param checked="False" falsevalue="" help="e.g. some 1000G VCFs (--no-genotypes)" label="There are no genotypes in the file" name="no_genotypes" truevalue="--no-load-genotypes" type="boolean"/>
+
+        <param checked="False" falsevalue="" help="e.g. some 1000G VCFs (--passonly)" label="Keep only variants that pass all filters" name="passonly" truevalue="--passonly" type="boolean"/>
+
+    </inputs>
+    <outputs>
+        <data format="sqlite" label="${tool.name} on ${on_string}" name="outfile"/>
+    </outputs>
+    <tests>
+        <test>
+        </test>
+    </tests>
+    <help>
+**What it does**
+
+Before we can use GEMINI to explore genetic variation, we must first load our VCF file into the GEMINI database framework.
+We expect you to have first annotated the functional consequence of each variant in your VCF using either VEP or snpEff.
+
+http://gemini.readthedocs.org/en/latest/content/loading.html
+
+@CITATION@
+    </help>
+    <citations>
+        <citation type="doi">10.1371/journal.pcbi.1003153</citation>
+        <yield/>
+    </citations>
+</tool>

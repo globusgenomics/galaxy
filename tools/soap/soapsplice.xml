@@ -1,0 +1,266 @@
+<tool id="soapsplice" name="SOAPsplice" version="BGISOAP: default">
+    <description>- detection of splice junctions</description>
+    <command interpreter="python">
+        soapsplice.py
+
+        ## Reference source
+        --fileSource=$genomeSource.refGenomeSource
+        #if $genomeSource.refGenomeSource == &quot;history&quot;:
+            ##build index on the fly
+            --ref=&quot;${genomeSource.ownFile}&quot;
+            --dbkey=$dbkey
+        #else:
+            ##use precomputed indexes
+            --ref=&quot;${genomeSource.indices.fields.path}&quot;
+            --do_not_build_index
+            #end if
+
+        ## Input file(s)
+        --input1=$paired.input1
+        #if $paired.sPaired == &quot;paired&quot;:
+            --input2=$paired.input2
+            #end if
+
+        ## Prefix of output files which can contain a file directory
+        ##--output_dir_prefix=$output_dir_prefix
+
+        ## Insert length
+        --insert_length=$insert_length
+
+        ## Output files for paired-end reads input data sets
+        --forward_2segs=$forward_2segs
+        --forward_out=$forward_out
+        --reverse_2segs=$reverse_2segs                                                                      1
+        --reverse_out=$reverse_out
+        --junction=$junction
+
+        ## Check if using default or custom parameters
+        --default_full_settings_type=$default_full_settings.settings_type
+        #if $default_full_settings.settings_type == &quot;full&quot;
+            --num_threads=$default_full_settings.num_threads
+            --forward_reverse_both=$default_full_settings.forward_reverse_both
+            --max_mismatch=$default_full_settings.max_mismatch
+            --max_indel=$default_full_settings.max_indel
+            --ignore_tail_length=$default_full_settings.ignore_tail_length
+            --longest_gap_length=$default_full_settings.longest_gap_length
+            --shortest_segment_length=$default_full_settings.shortest_segment_length
+            --output_read_and_quality=$default_full_settings.output_read_and_quality
+            --output_format=$default_full_settings.output_format.setting
+            #if $default_full_settings.output_format.setting == &quot;2&quot;:
+                --set_mapq=$default_full_settings.set_mapq
+            #end if
+            --input_quality_type=$default_full_settings.input_quality_type
+            ## For output junctions
+            --max_distance_bet_paired_ends=$default_full_settings.max_distance_bet_paired_ends
+            --min_distance_bet_paired_ends=$default_full_settings.min_distance_bet_paired_ends
+            --output_junction_info=$default_full_settings.output_junction_info
+        #end if
+    </command>
+    <requirements>
+        <requirement type="package">bgisoap</requirement>
+    </requirements>
+    <inputs>
+        <conditional name="genomeSource">
+            <param label="Select a reference genome from your history or use a built-in index" name="refGenomeSource" type="select">
+                <option value="indexed">Use built-in index</option>
+                <option value="history">Use one from history</option>
+            </param>
+            <when value="indexed">
+                <param label="Select a reference genome" name="indices" type="select">
+                    <options from_data_table="2bwtbuilder_indexes">
+                        <!--<filter type="sort_by" column="2" />-->
+                        <validator message="No indexes are available" type="no_options"/>
+                    </options>
+                </param>
+            </when>
+            <when value="history">
+                <param format="fasta" label="Select a reference from history" metadata_name="dbkey" name="ownFile" type="data"/>
+            </when>
+        </conditional>
+        <conditional name="paired">
+            <param label="Is your input data set mate-paired?" name="sPaired" type="select" value="paired">
+                <option value="single">Single-end</option>
+                <option value="paired">Paired-end</option>
+            </param>
+            <when value="single">
+                <param format="fastq" label="FASTQ file" name="input1" type="data"/>
+            </when>
+            <when value="paired">
+                <param format="fastq" label="Forward FASTQ file" name="input1" type="data"/>
+                <param format="fastq" label="Reverse FASTQ file" name="input2" type="data"/>
+            </when>
+        </conditional>
+
+        <param label="Insert length of paired-end reads" name="insert_length" type="integer" value="200"/>
+
+        <conditional name="default_full_settings">
+            <param help="For most mapping needs, please use Default settings. If you want full control then use Full Parameter List" label="SOAPsplice settings to use" name="settings_type" type="select">
+                <option value="default">Default</option>
+                <option value="full">Full parameter list</option>
+            </param>
+            <when value="default"/>
+            <when value="full">
+                <param label="Number of threads" max="20" name="num_threads" type="integer" value="1"/>
+                <!-- Is this parameter to do with doing alignment on which reference chain? -->
+                <param label="Forward, reverse, or both" name="forward_reverse_both" type="select" value="3">
+                    <option value="1">Forward only</option>
+                    <option value="2">Reverse only</option>
+                    <option value="3">Both</option>
+                </param>
+                <param label="Maximum mismatch for one-segment alignment" max="5" name="max_mismatch" type="integer" value="3"/>
+                <param label="Maximum indel for one-segment alignment" max="2" name="max_indel" type="integer" value="2"/>
+                <param label="Length of tail that can be ignored in one-segment alignment" name="ignore_tail_length" type="integer" value="7"/>
+                <param label="Longest gap between two segments in two-segment alignment" name="longest_gap_length" type="integer" value="500000"/>
+                <param label="Shortest length of a segment in two-segment alignment" name="shortest_segment_length" type="integer" value="8"/>
+                <param label="Output read and quality information?" name="output_read_and_quality" type="select" value="1">
+                    <option value="1">Yes</option>
+                    <option value="2">No</option>
+                </param>
+                <conditional name="output_format">
+                    <param label="Output format" name="setting" type="select" value="0">
+                        <option value="0">Original</option>
+                        <option value="1">SOAP</option>
+                        <option value="2">SAM</option>
+                    </param>
+                    <when value="2">
+                        <param label="Set mapping quality" name="set_mapq" type="integer" value="255"/>
+                    </when>
+                </conditional>
+                <param label="Input quality type in FASTQ file" name="input_quality_type" type="select" value="0">
+                    <option value="0">quality = Phred + 64, used in Illumina/Solexa format</option>
+                    <option value="1">quality = Phred + 33, used in Sanger format</option>
+                </param>
+                <!-- For output junctions -->
+                <param label="Maximum distance between paired-end reads" name="max_distance_bet_paired_ends" type="integer" value="500000"/>
+                <param label="Minimum distance between paired-end reads" max="5" name="min_distance_bet_paired_ends" type="integer" value="50"/>
+                <param label="Output read and quality information?" name="output_junction_info" type="select" value="1">
+                    <option value="1">Output junction information</option>
+                    <option value="0">Don't output junction information</option>
+                </param>
+            </when>
+        </conditional>
+    </inputs>
+    <outputs>
+        <data format="Tabular" label="Two segment alignment for forward set of reads" name="forward_2segs"/>
+        <data format="Tabular" label="One segment alignment for forward set of reads" name="forward_out"/>
+        <data format="Tabular" label="Two segment alignment for reverse set of reads" name="reverse_2segs"/>
+        <data format="Tabular" label="One segment alignment for reverse set of reads" name="reverse_out"/>
+        <data format="Tabular" label="Junction output" name="junction"/>
+    </outputs>
+    <tests>
+        <test>
+            <!--
+                soapsplice -d index/exampleGenome.fa.index -1 data/10X_50_1.fq -2 data/10X_50_2.fq -o out/example -I 2
+                `00 > data/10X_50.stdout 2> data/10X_50.stderr
+            -->
+            <param name="refGenomeSource" value="indexed"/>
+            <param name="indices" value="phiX"/>
+            <param name="sPaired" value="single"/>
+            <param ftype="fastqsanger" name="input1" value="bwa_wrapper_in1.fastqsanger"/>
+            <param name="source_select" value="pre_set"/>
+            <param name="suppressHeader" value="true"/>
+            <output file="bwa_wrapper_out1.sam" ftype="sam" name="output" sort="True"/>
+        </test>
+    </tests>
+    <help>
+
+**What it does**
+
+SOAPsplice is a tool for the genome-wide ab initio detection of splice junction sites from RNA-Seq data. The tool performs better than the previous tools by detecting similar number of true junctions with lower false positives as the best performing tool in all different situations with different read lengths and coverage. In particular, SOAPsplice performs better by predicting more true junctions with low false positive rate when the coverage is low, which is useful for detecting the junctions for those mRNAs with relatively lower expression level. For more information, please refer to the part of &quot;Performance Evaluation&quot; in this page. SOAPsplice is free for academic use only.
+
+
+**How it works**
+
+To use SOAPsplice, short reads are searched against index files for a given reference genome are required. A selection of index files are available from the above drop down menu which have been built for use with BGI SOAP tools using the 2bwt-builder tool.
+
+
+**Outputs**
+
+Three types of output files are generated by SOAPsplice:
+
+1. One-segment alignment files which end in .out
+2. Two-segment alignment files which end in .2Segs
+3. A single junction file that ends in .junc
+
+The one-segment alignment output file has the following columns::
+
+            Column  Description
+        ----------  --------------------------------------------------------
+             index  Number i means it is ith read
+                id  The id of the read
+               seq  Sequence of mapped bases. The read will be converted to
+                    the reverse complement of the sequence if mapped on the
+                    reverse chain of reference
+              qual  Quality of sequence. Corresponding to sequence, to be
+                    consistent with seq, it will be converted too if mapped
+                    on reverse chain
+          num hits  Number of equal best hits. The reads with no hits will
+                    be ignored
+            length  Length of mapped bases
+               +/-  Alignment on the direct (+) or reverse (-) chain of the
+                    reference
+               chr  Id of reference sequence
+          location  Location of first bp on the reference, counted from 1
+                    types  Type of hits:
+                    0: exact match.
+                    1~3 RefAllele-&gt;OffsetQueryAlleleQual: number of
+                    mismatches, followed by detailed mutation sites and switch
+                    of allele types. Offset is relative to the initial
+                    location on reference. 'OffsetAlleleQual': offset, allele,
+                    and quality. &quot;1INDEL&quot;, &quot;2INDEL&quot;: alignment with 1 or 2 indels.
+                    Example: &quot;2 A-&gt;10T30 C-&gt;13A32&quot; means there are two mismatches,
+                    one on location+10 of the reference, and the other on
+                    location+13 of reference. The alleles on reference are A and C
+                    respectively, while query alleles and their quality are T, 30
+                    and A, 32.
+
+Two-segment alignment files end with a .2Segs suffix and contain the following columns::
+
+            Column  Description
+        ----------  --------------------------------------------------------
+             index  Number i means it's ith read
+                id  The id of the read;
+     hitOne,hitTwo  Number of equal best hits for both segments
+     lengthOne,etc  The length for both segments
+               +/-  Alignment on the direct (+) or reverse (-) chain of the reference
+         direction  The chain that the junction reported by this read is on, &quot;fwd&quot; means it's on the direct chain, while &quot;rev&quot; means it's on the reverse chain;
+        chrOne,etc  Id of reference sequence that both segments align to
+   locationOne,etc  Location of first bp on the reference for both segments, counted from 1
+       mismatchOne  The number of mismatches for both segments, at most 1 for each segment
+      mismatchInfo  The same as last column in one-segment alignment file.
+
+ Junction files with a .junc suffix contain the following columns::
+
+            Column  Description
+        ----------  --------------------------------------------------------
+               chr  Id of reference sequence that the junction comes from
+             site1  Left site of the junction site, one previous the left bound of the intron
+             site2  Right site of the junction site, one after the right round of the intron
+         direction  The chain that the intron is on, &quot;fwd&quot; means it's on the direct chain, while &quot;rev&quot; means it's on the reverse chain.
+            number  Number of reads supporting this junction.
+
+
+**Publication**
+
+Huang S, Zhang J, Li R, Zhang W, He Z, Lam T-W, Peng Z and Yiu S-M (2011) SOAPsplice: genome-wide ab initio detection of splice junctions from RNA-Seq data. Front. Gene. 2:46. doi: 10.3389/fgene.2011.00046
+
+
+
+**References**
+
+1. Li, H., J. Ruan, et al. (2008). &quot;Mapping short DNA sequencing reads and calling variants using mapping quality scores.&quot; Genome Res 18(11): 1851-8.
+2. Wang, E. T., R. Sandberg, et al. (2008). &quot;Alternative isoform regulation in human tissue transcriptomes.&quot; Nature 456(7221): 470-6.
+3. Trapnell, C., L. Pachter, et al. (2009). &quot;TopHat: discovering splice junctions with RNA-Seq.&quot; Bioinformatics 25(9): 1105-11.
+4. Au, Kin Fai, Jiang, Hui, Lin, Lan, Xing, Yi, Wong, Wing Hung (2010). &quot;Detection of splice junctions from paired-end RNA-seq data by SpliceMap.&quot; Nucleic Acids Research 38(14), 4570-4578.
+5. Wang, Kai et al. (2010). &quot;MapSplice: accurate mapping of RNA-seq reads for splice junction discovery.&quot; Nucleic Acids Research 38(18), e178, doi:10.1093/nar/gkq622.
+
+
+**More information**
+
+For test data and more detailed information, click here_.
+
+.. _here: http://soap.genomics.org.cn/soapsplice.html
+
+
+    </help>
+</tool>

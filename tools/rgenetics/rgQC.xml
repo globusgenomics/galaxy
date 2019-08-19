@@ -1,0 +1,110 @@
+<tool id="rgQC1" name="QC reports:" version="PLINK: 1.07">
+    <requirements><requirement type="package">plink</requirement></requirements>
+    
+    <description>Marker and Subject measures</description>
+
+    <command interpreter="python">
+        rgQC.py -i '$input_file.extra_files_path/$input_file.metadata.base_name' -o &quot;$title&quot;
+        -s '$html_file' -p '$html_file.files_path'
+    </command>
+
+    <inputs>
+          <param format="pbed" label="RGenetics genotype file in compressed Plink format" name="input_file" size="80" type="data"/>
+       <param label="Descriptive report title" name="title" size="80" type="text" value="RgQC report"/>
+   </inputs>
+
+   <outputs>
+       <data format="html" label="${title}.html" metadata_source="input_file" name="html_file"/>
+   </outputs>
+
+<tests>
+ <test>
+    <param ftype="pbed" name="input_file" value="tinywga">
+    <metadata name="base_name" value="tinywga"/>
+    <composite_data value="tinywga.bim"/>
+    <composite_data value="tinywga.bed"/>
+    <composite_data value="tinywga.fam"/>
+    <edit_attributes type="name" value="tinywga"/> 
+    </param>
+    <param name="title" value="rgQCtest1"/>
+    <output file="rgtestouts/rgQC/rgQCtest1.html" ftype="html" lines_diff="300" name="html_file">
+    <param name="dbkey" value="hg18"/>
+    <extra_files compare="sim_size" delta="100000" name="tinywga_All_Paged.pdf" type="file" value="rgtestouts/rgQC/tinywga_All_Paged.pdf"/>
+    <extra_files compare="diff" lines_diff="15" name="tinywga.log" type="file" value="rgtestouts/rgQC/tinywga.log"/>
+    <extra_files compare="diff" name="tinywga.frq" type="file" value="rgtestouts/rgQC/tinywga.frq"/>
+    <extra_files compare="diff" lines_diff="90" name="tinywga.het" type="file" value="rgtestouts/rgQC/tinywga.het"/>
+    <extra_files compare="diff" lines_diff="90" name="tinywga.hwe" type="file" value="rgtestouts/rgQC/tinywga.hwe"/>
+    <extra_files compare="diff" name="tinywga.imendel" type="file" value="rgtestouts/rgQC/tinywga.imendel"/>
+    <extra_files compare="diff" name="tinywga.imiss" type="file" value="rgtestouts/rgQC/tinywga.imiss"/>
+    <extra_files compare="diff" name="tinywga.lmendel" type="file" value="rgtestouts/rgQC/tinywga.lmendel"/>
+    <extra_files compare="diff" name="tinywga.lmiss" type="file" value="rgtestouts/rgQC/tinywga.lmiss"/>
+    <extra_files compare="sim_size" delta="100000" name="tinywga_All_3x3.pdf" type="file" value="rgtestouts/rgQC/tinywga_All_3x3.pdf"/>
+    <extra_files compare="diff" lines_diff="10" name="ldp_tinywga.bed" type="file" value="rgtestouts/rgQC/ldp_tinywga.bed"/>
+    <extra_files compare="sim_size" delta="1000" name="ldp_tinywga.bim" type="file" value="rgtestouts/rgQC/ldp_tinywga.bim"/>
+    <extra_files compare="diff" name="ldp_tinywga.fam" type="file" value="rgtestouts/rgQC/ldp_tinywga.fam"/>
+    <extra_files compare="diff" lines_diff="20" name="ldp_tinywga.log" type="file" value="rgtestouts/rgQC/ldp_tinywga.log"/>
+    <extra_files compare="diff" name="Ranked_Marker_HWE.xls" type="file" value="rgtestouts/rgQC/Ranked_Marker_HWE.xls"/>
+    <extra_files compare="diff" name="Ranked_Marker_MAF.xls" type="file" value="rgtestouts/rgQC/Ranked_Marker_MAF.xls"/>
+    <extra_files compare="diff" lines_diff="5" name="Ranked_Marker_Missing_Genotype.xls" type="file" value="rgtestouts/rgQC/Ranked_Marker_Missing_Genotype.xls"/>
+    <extra_files compare="diff" lines_diff="40" name="Ranked_Subject_Missing_Genotype.xls" type="file" value="rgtestouts/rgQC/Ranked_Subject_Missing_Genotype.xls"/>
+    <extra_files compare="sim_size" delta="20000" name="tinywga_fracmiss_cum.jpg" type="file" value="rgtestouts/rgQC/tinywga_fracmiss_cum.jpg"/>     
+    <extra_files compare="sim_size" delta="100000" name="tinywga_fracmiss_cum.pdf" type="file" value="rgtestouts/rgQC/tinywga_fracmiss_cum.pdf"/>     
+ </output>
+ </test>
+</tests>
+ <help>
+
+.. class:: infomark
+
+**Summary**
+
+This tool prepares an extensive and comprehensive series of reports for quality control checking of SNP genotypes from any arbitrary
+genotyping experiment. Designed for family based data, so includes optional reports on Mendelian errors by
+subject and by marker.
+
+The outputs include histograms and boxplots for missingness, maf, mendel counts and hwe by marker, and the ones that make sense by
+subject. The report is built as a single web page containing links to the summary marker and subject files.
+
+The F (inbreeding) statistic is calculated using a somewhat LD independent group of genotypes
+The Plink used is --indep-pairwise 40 20 0.5 until we make it configurable.
+High heterozygosity might mean contaminated sample - more than one DNA. Low heterozygosity might mean inbreeding as in strains
+of mice.
+
+If the data file you want is missing from the option list above,
+you will first need to &quot;import&quot; it so it will be available here. Files available in the system library
+can be imported by selecting and completing the &quot;Import ped/map&quot; choice from the Get Data tool group at the top of the Galaxy
+menu. Your system administrator will be responsible for adding files to the system library.
+
+-----
+
+.. class:: infomark
+
+**Syntax**
+
+- **Genotype file** is the input pedfile -
+- **Prefix** is a string used to name all of the outputs
+
+-----
+
+**Attribution**
+
+This Galaxy tool was written by Ross Lazarus for the Rgenetics project
+The current version uses Plink for most calculations and R for plotting - for full Plink attribution, source code and documentation,
+please see http://pngu.mgh.harvard.edu/~purcell/plink/ while R attribution and source code can be found at http://r-project.org
+
+Shaun Purcell provides the documentation you need specific to those settings, at
+http://pngu.mgh.harvard.edu/~purcell/plink/anal.shtml#glm
+
+Tool and Galaxy datatypes originally designed and written for the Rgenetics
+series of whole genome scale statistical genetics tools by ross lazarus (ross.lazarus@gmail.com)
+Shaun Purcell created and maintains Plink, while a cast of many maintain R.
+
+Please acknowledge your use of this tool, Galaxy, R and Plink in your publications and let
+us know so we can keep track. These tools all rely on highly competitive grant funding
+so your letting us know about publications is important to our ongoing support.
+
+</help>
+
+
+
+</tool>

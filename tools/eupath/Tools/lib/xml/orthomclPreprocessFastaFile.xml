@@ -1,0 +1,30 @@
+<tool id="orthomclPreprocessFastaFile" name="OrthoMCL Clean FASTA file" version="1.0.0">
+  <description>Clean a FASTA file for use in OrthoMCL.  The input is a pre-existing proteome FASTA file.  The output is a proteome FASTA file that conforms to OrthoMCL requirements</description>
+  <command interpreter="perl" detect_errors="aggressive">
+    ../../bin/orthomclPreprocessProteomeFasta "$proteome_fasta_file" $max_input_sequences TAXON "$output"
+  </command>
+  <inputs>
+    <param name="proteome_fasta_file" type="data" format="fasta"
+           label="Proteome FASTA file:"
+           help="A Proteome FASTA file.  Must be a set of proteins from exactly one proteome. The file must contain only protein sequences, where each sequence starts with a definition line.  The first field in the definition line must be a unique identifier.  ">
+    </param>
+    <param name="max_input_sequences"
+	   type="integer"
+	   size="6"
+	   value="100000"
+	   label="Maximum allowed number of input sequences"
+	   help="If the input fasta has more than this number of sequences, an error is thrown ">
+    </param>
+  </inputs>
+  <outputs>
+      <data format="fasta" name="output" label="${proteome_fasta_file.name}.clean" />
+  </outputs>
+
+  <help>
+
+**What it does**
+
+This tool transforms a proteome FASTA file to a proteome FASTA file in the format required by OrthoMCL.  It also validates the input FASTA.
+
+  </help>
+</tool>

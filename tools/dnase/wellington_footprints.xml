@@ -1,0 +1,38 @@
+<tool id="wellington_footprints" name="Wellington Footprints" version="0.2.5">
+  <description>accurate identification of digital genomic footprints from DNase-seq data</description>
+  <requirements>
+    <requirement type="package">pymodules</requirement>
+  </requirements>
+  <command>
+#set $input_bam = $output.extra_files_path + "/input.bam"
+#set $input_bai = $output.extra_files_path + "/input.bai"
+#set $input_bed = $output.extra_files_path + "/input.bed"
+#set $out = $output.extra_files_path + "/output"
+#set $final_output = $out + "/input.bam.input.bed.WellingtonFootprints.FDR.0.01.bed
+mkdir $output.extra_files_path; mkdir $out;
+ln -s $bam_file $input_bam;
+ln -s $bam_file.metadata.bam_index $input_bai;
+ln -s $bed_file $input_bed;
+wellington_footprints.py -fdrlimit $fdrlimit $input_bed $input_bam $out;
+cp $final_output $output;
+rm -rf $output.extra_files_path;
+  </command>
+  <stdio>
+    <exit_code range="1:" level="fatal" description="Error produced" />
+  </stdio>
+  <inputs>
+    <param help="" format="bam" label="Input BAM" name="bam_file" type="data"/>
+    <param help="" format="bed" label="Input BED" name="bed_file" type="data"/>
+    <param help="" label="FDR Limit" value="0"  name="fdrlimit" type="integer"/>
+  </inputs>
+
+   <outputs>
+         <data format="bed" label="${tool.name} on ${on_string}" name="output" />
+   </outputs>
+   <tests>
+     <test>
+     </test>
+   </tests>
+   <help>
+   </help>
+</tool>

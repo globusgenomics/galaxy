@@ -1,0 +1,42 @@
+<tool id="BCFTools_1.8_Cat" name="BCF Tools Cat" version="samtools 1.8">
+  <description>This tool allows the user to concatenate BCF files.</description>
+
+  <requirements>
+        <requirements type="package" version="1.8">samtools</requirements>
+  </requirements>
+
+  <command interpreter='python'>bcftools_wrapper.py bcftools cat $rinput > $output  </command>
+
+  <inputs>
+    <repeat name="rinput" title="BCF File">
+      <param  name="input" type="data" format="bcf" label="File"/>
+    </repeat>
+  </inputs>
+
+  <outputs>
+    <data format="bcf" name="output" label="BCF cat output"/>
+  </outputs>
+
+     <help>
+**What it does:** 
+
+This tool allows the user to concatenate BCF files. The input files are required to be sorted and have identical samples appearing in the same order. It does this using BCFtools cat from the SAMtools set of utilities:
+
+http://samtools.sourceforge.net/samtools.shtml#4
+
+------
+
+**Citation:**
+
+For the underlying tool, please cite `Li H, Handsaker B, Wysoker A, Fennell T, Ruan J, Homer N, Marth G, Abecasis G, Durbin R; 1000 Genome Project Data Processing Subgroup. The Sequence Alignment/Map format and SAMtools. Bioinformatics. 2009 Aug 15;25(16):2078-9. &lt;http://www.ncbi.nlm.nih.gov/pubmed/19505943&gt;`_
+
+
+If you use this tool within Galaxy, please cite `Gregory Minevich, Danny S. Park, Daniel Blankenberg, Richard J. Poole, and Oliver Hobert.  CloudMap: A Cloud-based Pipeline for Analysis of Mutant Genome Sequences. (Genetics 2012 In Press)`__
+
+    .. __: http://biochemistry.hs.columbia.edu/labs/hobert/literature.html
+
+Correspondence to gm2123@columbia.edu (G.M.) or or38@columbia.edu (O.H.)
+
+    </help>
+
+</tool>

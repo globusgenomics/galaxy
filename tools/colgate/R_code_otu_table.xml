@@ -1,0 +1,24 @@
+<tool id="r_code_otu_table" name="r_code_otu_table" version="R_CODE_OTU_TABLE: 0.1">
+    <description> Generate OTU table by merging shared table and taxanomy file for Colgate </description>
+    <requirements>
+      <requirement type="package">pymodules</requirement>
+      <requirement type="package" version="3.4.4">R</requirement>
+      <requirement type="package" version="0.1">colgate</requirement>
+    </requirements>
+    <command interpreter="python">
+      R_code_otu_table_wrapper.py
+      -i $shared_table
+      -t $taxonomy
+      -o $output
+      --out-dir $output.extra_files_path
+    </command>
+      <inputs>
+         <param format="shared" help="" name="shared_table" optional="false" type="data" label="Input shared Table"/>
+         <param format="taxonomy,cons.taxonomy,seq.taxonomy" help="" name="taxonomy" optional="false" type="data" label="Input taxonomy File"/>
+      </inputs>
+      <outputs>
+         <data format="tabular" label="OTU table on ${on_string}" name="output"/>
+      </outputs>
+      <help>
+      </help>
+</tool>

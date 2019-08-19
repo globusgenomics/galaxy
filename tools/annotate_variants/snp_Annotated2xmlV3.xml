@@ -1,0 +1,16 @@
+<tool id="snp_Annotated2xmlV3" name="Convert annotated variants to xml">
+	<description>Converts annotated snpInExon and annotated indelsInExon tab-separated text files to XML Spreadsheet 2003 format.  The ExonicSNPs worksheet contains ALL exonic SNPs, the NovelSNPs worksheet contains only novel SNPs, and the Indels worksheet contains all exonic indels.  Novel snps are printed to a text file.</description>
+	<command interpreter="perl">snp_Annotated2xmlV3.pl --annotated-snp-in-exon-file $annotated_snp_in_exon --annotated-indels-in-exon-file $annotated_indels_in_exon --novel-snps $novel_snps_output_file --output-file $output_xml_file</command>
+	<inputs>
+		<param name="annotated_snp_in_exon" type="data" format="tabular" label="Annotated snps in exon file" help="The annotated list of snps in the exome from seattleSNPparser"/>
+		<param name="annotated_indels_in_exon" type="data" format="tabular" label="Annotated indels in exon file" help="The annotated list of indels in the exome form indelFormat"/>
+	</inputs>
+	<outputs>
+		<data name="novel_snps_output_file" type="data" format="tabular" label="Novel variants"/>
+		<data name="output_xml_file" type="data" format="xml" label="List of variants in xml format"/>
+	</outputs>
+
+        <help>
+        </help>
+
+</tool>

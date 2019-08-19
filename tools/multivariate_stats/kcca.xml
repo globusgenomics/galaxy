@@ -1,0 +1,150 @@
+<tool id="kcca1" name="Kernel Canonical Correlation Analysis" version="RPY: default">
+  <description> </description>
+  <command interpreter="python">
+    kcca.py 
+      --input=$input1
+      --output1=$out_file1
+      --x_cols=$x_cols
+      --y_cols=$y_cols
+      --kernel=$kernelChoice.kernel
+      --features=$features
+      #if $kernelChoice.kernel == &quot;rbfdot&quot; or $kernelChoice.kernel == &quot;anovadot&quot;:
+      --sigma=$kernelChoice.sigma
+      --degree=&quot;None&quot;
+      --scale=&quot;None&quot;
+      --offset=&quot;None&quot;
+      --order=&quot;None&quot;
+      #elif $kernelChoice.kernel == &quot;polydot&quot;:
+      --sigma=&quot;None&quot;
+      --degree=$kernelChoice.degree
+      --scale=$kernelChoice.scale
+      --offset=$kernelChoice.offset
+      --order=&quot;None&quot;
+      #elif $kernelChoice.kernel == &quot;tanhdot&quot;:
+      --sigma=&quot;None&quot;
+      --degree=&quot;None&quot;
+      --scale=$kernelChoice.scale
+      --offset=$kernelChoice.offset
+      --order=&quot;None&quot;
+      #elif $kernelChoice.kernel == &quot;besseldot&quot;:
+      --sigma=$kernelChoice.sigma
+      --degree=$kernelChoice.degree
+      --scale=&quot;None&quot;
+      --offset=&quot;None&quot;
+      --order=$kernelChoice.order
+      #elif $kernelChoice.kernel == &quot;anovadot&quot;:
+      --sigma=$kernelChoice.sigma
+      --degree=$kernelChoice.degree
+      --scale=&quot;None&quot;
+      --offset=&quot;None&quot;
+      --order=&quot;None&quot;
+      #else:
+      --sigma=&quot;None&quot;
+      --degree=&quot;None&quot;
+      --scale=&quot;None&quot;
+      --offset=&quot;None&quot;
+      --order=&quot;None&quot;
+      #end if
+  </command>
+  <inputs>
+    <param format="tabular" help="Dataset missing? See TIP below." label="Select data" name="input1" type="data"/>
+    <param data_ref="input1" label="Select columns containing X variables " multiple="true" name="x_cols" numerical="True" type="data_column">
+        <validator message="Please select at least one column." type="no_options"/>
+    </param>
+    <param data_ref="input1" label="Select columns containing Y variables " multiple="true" name="y_cols" numerical="True" type="data_column">
+        <validator message="Please select at least one column." type="no_options"/>
+    </param>
+    <param help="Enter an integer value greater than 0" label="Number of canonical components to return" name="features" size="10" type="integer" value="2"/>
+    <conditional name="kernelChoice">
+        <param label="Kernel function" name="kernel" type="select">
+            <option selected="true" value="rbfdot">Gaussian Radial Basis Function</option>
+            <option value="polydot">Polynomial</option>
+            <option value="vanilladot">Linear</option>
+            <option value="tanhdot">Hyperbolic</option>
+            <option value="laplacedot">Laplacian</option>
+            <option value="besseldot">Bessel</option>
+            <option value="anovadot">ANOVA Radial Basis Function</option>
+            <option value="splinedot">Spline</option>
+        </param>
+        <when value="vanilladot"/>
+        <when value="splinedot"/>
+        <when value="rbfdot">
+            <param label="sigma (inverse kernel width)" name="sigma" size="10" type="float" value="1"/>
+        </when>
+        <when value="laplacedot">
+            <param label="sigma (inverse kernel width)" name="sigma" size="10" type="float" value="1"/>
+        </when>
+        <when value="polydot">
+            <param label="degree" name="degree" size="10" type="float" value="1"/>
+            <param label="scale" name="scale" size="10" type="float" value="1"/>
+            <param label="offset" name="offset" size="10" type="float" value="1"/>
+        </when>
+        <when value="tanhdot">
+            <param label="scale" name="scale" size="10" type="float" value="1"/>
+            <param label="offset" name="offset" size="10" type="float" value="1"/>
+        </when>
+        <when value="besseldot">
+            <param label="sigma" name="sigma" size="10" type="float" value="1"/>
+            <param label="order" name="order" size="10" type="float" value="1"/>
+            <param label="degree" name="degree" size="10" type="float" value="1"/>
+        </when>
+        <when value="anovadot">
+            <param label="sigma" name="sigma" size="10" type="float" value="1"/>
+            <param label="degree" name="degree" size="10" type="float" value="1"/>
+        </when>
+    </conditional>    
+  </inputs>
+  <outputs>
+    <data format="input" metadata_source="input1" name="out_file1"/>
+  </outputs>
+  <requirements>
+    <requirement type="python-module">rpy</requirement>
+  </requirements>
+  <tests>
+    <test>
+        <param name="input1" value="iris.tabular"/>
+        <param name="x_cols" value="1,2"/>
+        <param name="y_cols" value="3,4"/>
+        <param name="kernel" value="anovadot"/>
+        <param name="features" value="4"/>
+        <param name="sigma" value="0.1"/>
+        <param name="degree" value="2"/>
+        <output compare="re_match" file="kcca_out1.tabular" name="out_file1"/>
+    </test>
+    <test>
+        <param name="input1" value="iris.tabular"/>
+        <param name="x_cols" value="3,4"/>
+        <param name="y_cols" value="1,2"/>
+        <param name="kernel" value="rbfdot"/>
+        <param name="features" value="2"/>
+        <param name="sigma" value="0.5"/>
+        <output compare="re_match" file="kcca_out2.tabular" name="out_file1"/>
+    </test>
+  </tests>
+  <help>
+
+
+.. class:: infomark
+
+**TIP:** If your data is not TAB delimited, use *Edit Datasets-&gt;Convert characters*
+
+-----
+
+.. class:: infomark
+
+**What it does**
+
+This tool uses functions from 'kernlab' library from R statistical package to perform Kernel Canonical Correlation Analysis (kCCA) on the input data. 
+
+*Alexandros Karatzoglou, Alex Smola, Kurt Hornik, Achim Zeileis (2004). kernlab - An S4 Package for Kernel Methods in R. Journal of Statistical Software 11(9), 1-20. URL http://www.jstatsoft.org/v11/i09/*
+
+-----
+
+.. class:: warningmark
+
+**Note**
+
+This tool currently treats all variables as continuous numeric variables. Running the tool on categorical variables might result in incorrect results. Rows containing non-numeric (or missing) data in any of the chosen columns will be skipped from the analysis.
+
+  </help>
+</tool>

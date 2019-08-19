@@ -1,0 +1,137 @@
+<?xml version="1.0" ?>
+<tool id="qiime_diversity_alpha-rarefaction" name="qiime diversity alpha-rarefaction" version="022019">
+	<description> - Alpha rarefaction curves</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command><![CDATA[
+  qiime diversity alpha-rarefaction --p-max-depth="$pmaxdepth" --i-table=$itable
+  
+  #if str($pmetrics) != 'None':
+   --p-metrics=$pmetrics
+  #end if
+  
+  #if $pmindepth:
+   --p-min-depth=$pmindepth
+  #end if
+  
+  #if $piterations:
+   --p-iterations=$piterations
+  #end if
+  
+  #if str($cmdconfig) != 'None':
+   --cmd-config=$cmdconfig
+  #end if
+  
+  #if $input_files_mmetadatafile:
+  
+  #def list_dict_to_string(list_dict):
+  	#set $file_list = list_dict[0]['additional_input'].__getattr__('file_name')
+  	#for d in list_dict[1:]:
+  		#set $file_list = $file_list + ',' + d['additional_input'].__getattr__('file_name')
+  	#end for
+  	#return $file_list
+  #end def
+   --m-metadata-file=$list_dict_to_string($input_files_mmetadatafile)
+  #end if
+  
+  #if $psteps:
+   --p-steps=$psteps
+  #end if
+  
+  #if str($iphylogeny) != 'None':
+   --i-phylogeny=$iphylogeny
+  #end if
+  
+   --o-visualization=ovisualization;
+  qiime tools export --input-path ovisualization.qzv --output-path out   && mkdir -p '$ovisualization.files_path'
+  && cp -r out/* '$ovisualization.files_path'
+  && mv '$ovisualization.files_path/index.html' '$ovisualization';
+  ]]></command>
+	<inputs>
+		<param format="qza,no_unzip.zip" label="--i-table: FeatureTable[Frequency] Feature table to compute rarefaction curves from.  [required]" name="itable" optional="False" type="data"/>
+		<param label="--p-max-depth: The maximum rarefaction depth. Must be greater than min_depth.  [required]" name="pmaxdepth" optional="False" type="text"/>
+		<param format="qza,no_unzip.zip" label="--i-phylogeny: Phylogeny[Rooted] Optional phylogeny for phylogenetic metrics. [optional]" name="iphylogeny" optional="True" type="data"/>
+		<param name="pmetrics" optional="True" type="select" label="--p-metrics: The metrics to be measured. By default
+                                  computes observed_otus, shannon, and if
+                                  phylogeny is provided, faith_pd.  [optional]">
+			<option selected="True" value="None">Selection is Optional</option>
+			<option value="goods_coverage">goods_coverage</option>
+			<option value="heip_e">heip_e</option>
+			<option value="mcintosh_d">mcintosh_d</option>
+			<option value="observed_otus">observed_otus</option>
+			<option value="doubles">doubles</option>
+			<option value="michaelis_menten_fit">michaelis_menten_fit</option>
+			<option value="shannon">shannon</option>
+			<option value="margalef">margalef</option>
+			<option value="simpson">simpson</option>
+			<option value="lladser_pe">lladser_pe</option>
+			<option value="menhinick">menhinick</option>
+			<option value="singles">singles</option>
+			<option value="gini_index">gini_index</option>
+			<option value="robbins">robbins</option>
+			<option value="ace">ace</option>
+			<option value="simpson_e">simpson_e</option>
+			<option value="enspie">enspie</option>
+			<option value="berger_parker_d">berger_parker_d</option>
+			<option value="fisher_alpha">fisher_alpha</option>
+			<option value="dominance">dominance</option>
+			<option value="pielou_e">pielou_e</option>
+			<option value="chao1">chao1</option>
+			<option value="mcintosh_e">mcintosh_e</option>
+			<option value="faith_pd">faith_pd</option>
+			<option value="brillouin_d">brillouin_d</option>
+		</param>
+		<repeat name="input_files_mmetadatafile" optional="True" title="--m-metadata-file">
+			<param label="--m-metadata-file: Metadata file or artifact viewable as metadata. This option may be supplied multiple times to merge metadata. The sample metadata.  [optional]" name="additional_input" type="data" format="tabular,qza,no_unzip.zip" />
+		</repeat>
+		<param label="--p-min-depth: The minimum rarefaction depth.  [default: 1]" name="pmindepth" optional="True" type="integer" value="1"/>
+		<param label="--p-steps: The number of rarefaction depths to include between min_depth and max_depth.  [default: 10]" name="psteps" optional="True" type="integer" value="10"/>
+		<param label="--p-iterations: The number of rarefied feature tables to compute at each step.  [default: 10]" name="piterations" optional="True" type="integer" value="10"/>
+		<param label="--cmd-config: Use config file for command options" name="cmdconfig" optional="True" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="html" label="${tool.name} on ${on_string}: visualization.qzv" name="ovisualization"/>
+	</outputs>
+	<help><![CDATA[
+Alpha rarefaction curves
+-------------------------
+
+Generate interactive alpha rarefaction curves by computing rarefactions
+between \`min_depth\` and \`max_depth\`. The number of intermediate depths to
+compute is controlled by the \`steps\` parameter, with n \`iterations\` being
+computed at each rarefaction depth. If sample metadata is provided, samples
+may be grouped based on distinct values within a metadata column.
+
+Parameters
+----------
+table : FeatureTable[Frequency]
+    Feature table to compute rarefaction curves from.
+phylogeny : Phylogeny[Rooted], optional
+    Optional phylogeny for phylogenetic metrics.
+max_depth : Int % Range(1, None)
+    The maximum rarefaction depth. Must be greater than min_depth.
+metrics : Set[Str % Choices({'ace', 'berger_parker_d', 'brillouin_d', 'chao1', 'dominance', 'doubles', 'enspie', 'faith_pd', 'fisher_alpha', 'gini_index', 'goods_coverage', 'heip_e', 'lladser_pe', 'margalef', 'mcintosh_d', 'mcintosh_e', 'menhinick', 'michaelis_menten_fit', 'observed_otus', 'pielou_e', 'robbins', 'shannon', 'simpson', 'simpson_e', 'singles'})], optional
+    The metrics to be measured. By default computes observed_otus, shannon,
+    and if phylogeny is provided, faith_pd.
+metadata : Metadata, optional
+    The sample metadata.
+min_depth : Int % Range(1, None), optional
+    The minimum rarefaction depth.
+steps : Int % Range(2, None), optional
+    The number of rarefaction depths to include between min_depth and
+    max_depth.
+iterations : Int % Range(1, None), optional
+    The number of rarefied feature tables to compute at each step.
+
+Returns
+-------
+visualization : Visualization
+		\
+   ]]>
+	</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

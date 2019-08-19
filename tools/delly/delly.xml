@@ -1,0 +1,153 @@
+<tool id="delly" name="delly" version="DELLY: v0.6.3">
+  <description>structural variant prediction method</description>
+  <requirements>
+    <requirement type="package">pymodules</requirement>
+    <requirement type="package">delly</requirement>
+  </requirements>
+  <parallelism method="basic"/>
+  <stdio>
+    <regex level="warning" match="Warning: The index file is older than the data file:" source="stderr"/>
+  </stdio>
+  <command interpreter="python">
+    #if str($input_dir_source.input_dir_source_type) == &quot;history&quot;:
+      #for $bam_count, $input_bam in enumerate( $input_dir_source.input_bams ):
+        ln -s &quot;${input_bam.input_bam}&quot; &quot;localbam_${bam_count}.bam&quot; &amp;&amp;
+        ln -s &quot;${input_bam.input_bam.metadata.bam_index}&quot; &quot;localbam_${bam_count}.bam.bai&quot; &amp;&amp;
+      #end for
+    #end if
+
+    delly.py
+    -t
+    #if $checkDel:
+      DEL
+    #end if
+    #if $checkDup:
+      DUP
+    #end if
+    #if $checkInv:
+      INV
+    #end if
+    #if $checkTra:
+      TRA
+    #end if
+    -q $map_qual
+    -s $mad_cutoff
+    -m $min_flank
+    -e $epsilon
+    -o $output
+    -u $min_map_qual 
+    --output-tmp $output.extra_files_path
+    #if $genomeSource.refGenomeSource == &quot;history&quot;
+      -g ${genomeSource.ownFile}
+    #else
+      -g ${genomeSource.indices.fields.path}
+    #end if
+    #if str($exclude) != &quot;None&quot;:
+        -x $exclude
+    #end if
+
+    #set $bam_file = &quot;&quot;
+    #if str($input_dir_source.input_dir_source_type) == &quot;text&quot;
+      #import os, glob
+      #set $bam_files = sorted(glob.glob(str( $input_dir_source.input_directory_path) + &quot;/*.bam&quot;  ))
+      #for $input_bam in $bam_files:
+        #set $bam_file += $input_bam + &quot; &quot;
+      #end for
+    #else if str($input_dir_source.input_dir_source_type) == &quot;file&quot;
+      #import os, glob
+      #set $bam_files = sorted(glob.glob(str( getFileContents($input_dir_source.input_directory_path_file) ) + &quot;/*.bam&quot;  ))
+      #for $input_bam in $bam_files:
+        #set $bam_file += $input_bam + &quot; &quot;
+      #end for
+    #else
+      #for $bam_count, $input_bam in enumerate( $input_dir_source.input_bams ):
+        #set $bam_file += &quot;localbam_&quot; + str($bam_count) + &quot;.bam &quot;
+      #end for
+    #end if
+    -b &quot;$bam_file&quot;
+  </command>
+
+  <inputs>
+    <conditional name="input_dir_source">
+      <param help="If you choose the file based method, it must contain only one line with the path for your files" label="How will you specify the path to the BAM/BAI files?" name="input_dir_source_type" type="select">
+        <option value="text">Text Field</option>
+        <option value="file">Text File containing path to BAM files</option>
+        <option value="history">BAMs in history</option>
+      </param>
+      <when value="text">
+        <param help="Full path of the directory that contains a set of BAM files. All the BAM files will be used as input datasets." label="BAM directory path" name="input_directory_path" type="text"/>
+      </when>
+      <when value="file">
+        <param format="txt" help="Must contain only one line with the path for your files" label="File containing path of the directory containing the BAM files" name="input_directory_path_file" type="data"/>
+      </when>
+      <when selected="true" value="history">
+        <repeat min="1" name="input_bams" title="Sample BAM file">
+          <param format="bam" label="BAM file" name="input_bam" type="data"/>
+        </repeat>
+      </when>
+    </conditional>
+    <conditional name="genomeSource">
+      <param label="Will you select a reference genome from your history or use a built-in index?" name="refGenomeSource" type="select">
+        <option value="indexed">Use a built-in index</option>
+        <option value="history">Use one from the history</option>
+      </param>
+      <when value="indexed">
+        <param label="Select a reference genome" name="indices" type="select">
+          <options from_data_table="all_fasta">
+            <filter column="2" type="sort_by"/>
+            <validator message="No indexes are available" type="no_options"/>
+          </options>
+        </param>
+      </when>
+      <when value="history">
+        <param format="fasta" label="Select a reference from history" metadata_name="dbkey" name="ownFile" type="data"/>
+      </when>
+    </conditional>
+    <param format="bed" help="Can largely reduce the running time" label="BED file of regions to be excluded" name="exclude" optional="true" type="data"/>
+    <param checked="true" label="Check Deletion?" name="checkDel" type="boolean"/>
+    <param checked="true" label="Check Duplication?" name="checkDup" type="boolean"/>
+    <param checked="true" label="Check Inversion?" name="checkInv" type="boolean"/>
+    <param checked="true" label="Check Translation?" name="checkTra" type="boolean"/>
+    <param label="min. paired-end mapping quality" name="map_qual" type="integer" value="1"/>
+    <param label="Minimum mapping quality for genotyping" name="min_map_qual" type="integer" value="1"/>
+    <param label="insert size cutoff, median+s*MAD (deletions only)" name="mad_cutoff" type="integer" value="9"/>
+    <param label="minimum flanking sequence size" name="min_flank" type="integer" value="13"/>
+    <param label="allowed epsilon deviation of PE vs. SR deletion" name="epsilon" type="float" value="0.1"/>
+  </inputs>
+
+  <outputs>
+    <data format="vcf" label="${tool.name} on ${on_string}: (vcf)" name="output"/>
+  </outputs>
+
+  <help>
+DELLY is an integrated structural variant prediction method that can detect deletions, tandem duplications, inversions and translocations at single-nucleotide resolution in short-read massively parallel sequencing data.
+It uses paired-ends and split-reads to sensitively and accurately delineate genomic rearrangements throughout the genome.
+
+DELLY (Version: 0.5.5)
+Contact: Tobias Rausch (rausch@embl.de)
+
+Generic options:
+  -? [ --help ]                    show help message
+  -t [ --type ] arg (=DEL)         SV analysis type (DEL, DUP, INV, TRA)
+  -o [ --outfile ] arg (=&quot;sv.vcf&quot;) SV output file
+  -x [ --exclude ] arg (=&quot;&quot;)       file with chr to exclude
+
+PE options:
+  -q [ --map-qual ] arg (=0)   min. paired-end mapping quality
+  -s [ --mad-cutoff ] arg (=5) insert size cutoff, median+s*MAD (deletions only)
+
+SR options:
+  -g [ --genome ] arg          genome fasta file
+  -m [ --min-flank ] arg (=13) minimum flanking sequence size
+
+Genotyping options:
+  -v [ --vcfgeno ] arg (=&quot;site.vcf&quot;) input vcf file for genotyping only
+  -u [ --geno-qual ] arg (=20)       min. mapping quality for genotyping
+  </help>
+
+  <tests>
+    <test>
+    </test>
+  </tests>
+
+</tool>

@@ -1,0 +1,53 @@
+<tool id="fermikit_assembly" name="FermiKit Assembler" version="FERMIKIT: 0.13">
+  <description>de novo assembly for deep Illumina resequencing data into unitigs</description>
+  <requirements>
+    <requirement type="package">fermikit</requirement>
+  </requirements>
+  <command interpreter="python">
+    fermikit_assembly.py -s $genomeLength -l $readLength
+      ## input file(s)
+      --fastq $paired.input1
+      #if $paired.sPaired == &quot;paired&quot;:
+        --rfastq $paired.input2
+      #end if
+      $trim_adapters
+
+      ## output vcf file
+      --output-assembly $output_assembly
+  </command>
+  <inputs>
+    <param help="For human genome enter 3g (-s)" label="Approximate genome size" name="genomeLength" type="text" value="3g"/>
+    <conditional name="paired">
+      <param label="Is this library mate-paired?" name="sPaired" type="select">
+        <option value="single">Single-end</option>
+        <option value="paired">Paired-end</option>
+      </param>
+      <when value="single">
+        <param format="fastqsanger,fastqillumina" help="FASTQ with either Sanger-scaled quality values (fastqsanger) or Illumina-scaled quality values (fastqillumina)" label="FASTQ file" name="input1" type="data"/>
+      </when>
+      <when value="paired">
+        <param format="fastqsanger,fastqillumina" help="FASTQ with either Sanger-scaled quality values (fastqsanger) or Illumina-scaled quality values (fastqillumina)" label="Forward FASTQ file" name="input1" type="data"/>
+        <param format="fastqsanger,fastqillumina" help="FASTQ with either Sanger-scaled quality values (fastqsanger) or Illumina-scaled quality values (fastqillumina)" label="Reverse FASTQ file" name="input2" type="data"/>
+      </when>
+    </conditional>
+    <param help="(-l)" label="Primary read length" name="readLength" type="text" value="101"/>
+
+    <param falsevalue="" label="Trim adapters before assembly" name="trim_adapters" truevalue="--trim-adapters" type="boolean"/>
+  </inputs>
+  <outputs>
+    <data format="gz" label="${tool.name} on ${paired.input1}" name="output_assembly"/>
+  </outputs>
+  <tests>
+    <test>
+    </test>
+  </tests> 
+  <help>
+
+**What it does**
+
+Fermikit
+
+https://github.com/lh3/fermikit
+
+  </help>
+</tool>

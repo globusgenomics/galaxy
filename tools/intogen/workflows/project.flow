@@ -1,0 +1,43 @@
+<flow name="project" serializer="json">
+    <title>IntOGenSM</title>
+    <desc>To interpret catalogs of cancer somatic mutations</desc>
+
+    <module name="parsing">
+		<out name="projects_out" />
+
+        <flow>parsing</flow>
+    </module>
+
+	<module name="consequences">
+        <in name="projects_in" link="parsing.projects_out" />
+
+		<out name="projects_out" />
+
+		<flow>consequences-core</flow>
+	</module>
+
+	<module name="analysis">
+		<in name="projects_in" link="consequences.projects_out" />
+		<out name="projects_out" />
+
+		<flow>analysis-core</flow>
+	</module>
+
+	<module name="qc">
+		<in name="projects_in" link="analysis.projects_out" />
+
+		<flow>qc-core</flow>
+	</module>
+
+	<module name="website">
+		<in name="projects_in" link="analysis.projects_out" />
+
+		<flow>website-core</flow>
+	</module>
+
+	<module name="results" depends="website">
+		<in name="projects_in" link="analysis.projects_out" />
+
+		<flow>results-core</flow>
+	</module>
+</flow>

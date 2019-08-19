@@ -1,0 +1,21 @@
+2014-09-19 20:15:22 wok.data             [WARNING] The MongoDB data provider can not be loaded.
+2014-09-19 20:15:22 wok.data             [WARNING] This data provider is necessary only if you are going to use a MongoDB database.
+2014-09-19 20:15:22 wok.data             [WARNING] To install it run the following command: pip install pymongo-2.5.2
+2014-09-19 20:15:22 VEP-00000000         [INFO   ] --- [IntogenRun @ 0] --------------------------------------------
+2014-09-19 20:15:22 VEP-00000000         [INFO   ] Running VEP in local mode.
+2014-09-19 20:15:24 - Read existing cache info
+2014-09-19 20:15:24 - Starting...
+2014-09-19 20:15:24 - Read 7 variants into buffer
+2014-09-19 20:15:24 - Reading transcript data from cache and/or database
+2014-09-19 20:15:24 - Retrieved 283 transcripts (0 mem, 283 cached, 0 DB, 0 duplicates)
+2014-09-19 20:15:24 - Analyzing chromosome 1
+2014-09-19 20:15:24 - Analyzing variants
+2014-09-19 20:15:24 - Calculating consequences
+2014-09-19 20:15:24 - Analyzing chromosome X
+2014-09-19 20:15:24 - Analyzing variants
+2014-09-19 20:15:24 - Calculating consequences
+2014-09-19 20:15:24 - Processed 7 total variants (7 vars/sec, 7 vars/sec total)
+2014-09-19 20:15:24 - Finished!
+2014-09-19 20:15:24 VEP-00000000         [WARNING] Received signal SIGCLD
+2014-09-19 20:15:24 VEP-00000000         [INFO   ] Saving results ...
+2014-09-19 20:15:24 VEP-00000000         [INFO   ] Elapsed time: 0:00:02.146444

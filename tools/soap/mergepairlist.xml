@@ -1,0 +1,33 @@
+<tool id="mergepairlist" name="mergepairlist" version="BGISOAP: default">
+    <description>- Extract pairs from a list of two files</description>
+    <command interpreter="perl">merge_pair_list.pl $infile1 $infile2 $outfile</command>
+    <requirements>
+        <requirement type="package">bgisoap</requirement>
+    </requirements>
+    <inputs>
+        <param format="text" label="Source file" name="infile1" type="data"/>
+        <param format="text" label="Source file" name="infile2" type="data"/>
+    </inputs>
+    <outputs>
+        <data format="tabular" name="outfile"/>
+    </outputs>
+    <tests>
+        <test>
+            <!--
+                GapCloser –b config_file –a scaffold_file –o output_file
+            -->
+            <param name="refGenomeSource" value="indexed"/>
+            <param name="indices" value="phiX"/>
+            <param name="sPaired" value="single"/>
+            <param ftype="fastqsanger" name="input1" value="bwa_wrapper_in1.fastqsanger"/>
+            <param name="source_select" value="pre_set"/>
+            <param name="suppressHeader" value="true"/>
+            <output file="bwa_wrapper_out1.sam" ftype="sam" name="output" sort="True"/>
+        </test>
+    </tests>
+    <help>
+**What it does**
+
+Extracts pairs from a list of two files containing paired end reads.
+    </help>
+</tool>

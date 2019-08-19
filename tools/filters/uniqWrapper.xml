@@ -1,0 +1,33 @@
+<tool id="uniq" name="Uniq">
+    <description>removes duplicate lines</description>
+    <command interpreter="python">
+        uniqWrapper.py 
+        $output 
+        $input
+        #if $columnList:
+            $columnList
+        #end if
+    </command>
+    <inputs>
+        <param name="input" type="data" label="Concatenated data"/>
+        <param name="columnList" size="10" type="text" value="1,2,3" label="Select columns"/>
+    </inputs>
+    <outputs>
+        <data name="output" format="input" metadata_source="input"/>
+    </outputs>
+    <tests>
+        <test>
+        </test>
+        <!--TODO: if possible, enhance the underlying test code to handle this test
+            the problem is multiple params with the same name "input2"
+        <test>
+            <param name="input1" value="1.bed"/>
+            <param name="input2" value="2.bed"/>
+            <param name="input2" value="3.bed"/>
+            <output name="out_file1" file="cat_wrapper_out2.bed"/>
+        </test>
+        -->
+    </tests>
+    <help>
+    </help>
+</tool>

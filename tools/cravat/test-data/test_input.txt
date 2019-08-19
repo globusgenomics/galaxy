@@ -1,0 +1,5 @@
+TR1 chr22 30421786 + A T sample_1
+TR2 chr22 40814500 - A G sample_1
+TR3 chr22 25115450 + - AGG sample_2
+TR4 chr22 234234 + AGA - sample_2
+TR5 chr2 219134766 + G - sample_3

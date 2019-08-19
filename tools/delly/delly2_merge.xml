@@ -1,0 +1,108 @@
+<tool id="delly2_merge" name="delly2_merge" version="DELLY: v0.7.3">
+  <description>structural variant prediction method</description>
+  <requirements>
+    <requirement type="package">pymodules</requirement>
+    <requirement type="package">delly</requirement>
+    <requirement type="package">samtools</requirement>
+  </requirements>
+  <parallelism method="basic"/>
+  <stdio>
+    <regex level="warning" match="Warning: The index file is older than the data file:" source="stderr"/>
+  </stdio>
+  <command interpreter="python">     
+    delly2_merge.py
+    --out-dir $output_log.extra_files_path
+    --output $output_log
+    -t
+    #if $checkDel:
+      DEL
+    #end if
+    #if $checkDup:
+      DUP
+    #end if
+    #if $checkInv:
+      INV
+    #end if
+    #if $checkTra:
+      TRA
+    #end if
+    #if $checkIns:
+      INS
+    #end if
+    -o $output
+    -m $min_size
+    -n $max_size
+
+    ## input files
+    --input_dir_file $input_directory_path_file
+
+  </command>
+
+  <inputs>
+    <param format="txt" help="" label="File containing path of the directory containing the BCF files" name="input_directory_path_file" type="data"/>
+    <param checked="true" label="Check Deletion?" name="checkDel" type="boolean"/>
+    <param checked="true" label="Check Duplication?" name="checkDup" type="boolean"/>
+    <param checked="true" label="Check Inversion?" name="checkInv" type="boolean"/>
+    <param checked="true" label="Check Translation?" name="checkTra" type="boolean"/>
+    <param checked="true" label="Check Insertion?" name="checkIns" type="boolean"/>
+    <param label="min. SV size" name="min_size" type="integer" value="0"/>
+    <param label="max. SV size" name="max_size" type="integer" value="1000000"/>
+  </inputs>
+
+  <outputs>
+    <data format="html" label="${tool.name} on ${on_string} (log)" name="output_log"/>
+  </outputs>
+
+  <help>
+DELLY is an integrated structural variant prediction method that can detect deletions, tandem duplications, inversions and translocations at single-nucleotide resolution in short-read massively parallel sequencing data.
+It uses paired-ends and split-reads to sensitively and accurately delineate genomic rearrangements throughout the genome.
+
+DELLY (Version: 0.7.3)
+Contact: Tobias Rausch (rausch@embl.de)
+age: delly [command] [arguments]
+
+Commands:
+    call         discover and genotype structural variants
+
+    merge        merge structural variants across VCF/BCF files and within a single VCF/BCF file
+    filter       filter somatic or germline structural variants
+
+Usage: delly call [OPTIONS] -g [ref.fa] [sample1.sort.bam] [sample2.sort.bam]...
+
+Generic options:
+  -? [ --help ]                     show help message
+
+  -t [ --type ] arg (=DEL)          SV type (DEL, DUP, INV, TRA, INS)
+
+  -o [ --outfile ] arg (="sv.bcf")  SV BCF output file
+
+  -x [ --exclude ] arg              file with regions to exclude
+
+PE options:
+  -q [ --map-qual ] arg (=1)        min. paired-end mapping quality
+
+  -s [ --mad-cutoff ] arg (=9)      insert size cutoff, median+s*MAD (deletions only)
+
+  -f [ --flanking ] arg (=90)       quality of the consensus alignment
+
+SR options:
+  -g [ --genome ] arg               genome fasta file
+
+  -m [ --min-flank ] arg (=13)      minimum flanking sequence size
+
+  -n [ --noindels ]                 no small InDel calling
+
+  -i [ --indelsize ] arg (=500)     max. small InDel size
+
+Genotyping options:
+  -v [ --vcffile ] arg              input VCF/BCF file for re-genotyping
+
+  -u [ --geno-qual ] arg (=5)       min. mapping quality for genotyping
+  </help>
+
+  <tests>
+    <test>
+    </test>
+  </tests>
+
+</tool>

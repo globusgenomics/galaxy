@@ -1,0 +1,67 @@
+<?xml version="1.0" ?>
+<tool id="qiime_diversity_beta-phylogenetic" name="qiime diversity beta-phylogenetic" version="022019">
+	<description> - Beta diversity (phylogenetic)</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command><![CDATA[
+  qiime diversity beta-phylogenetic --i-table=$itable --i-phylogeny=$iphylogeny --p-metric=$pmetric
+  
+  #if str($cmdconfig) != 'None':
+   --cmd-config=$cmdconfig
+  #end if
+  
+  #set $pnjobs = '${GALAXY_SLOTS:-4}'
+  
+  #if str($pnjobs):
+   --p-n-jobs="$pnjobs"
+  #end if
+  
+   --o-distance-matrix=odistancematrix;
+   
+  cp odistancematrix.qza $odistancematrix;
+  ]]></command>
+	<inputs>
+		<param format="qza,no_unzip.zip" label="--i-table: FeatureTable[Frequency] The feature table containing the samples over which beta diversity should be computed.  [required]" name="itable" optional="False" type="data"/>
+		<param format="qza,no_unzip.zip" label="--i-phylogeny: Phylogeny[Rooted] Phylogenetic tree containing tip identifiers that correspond to the feature identifiers in the table. This tree can contain tip ids that are not present in the table, but all feature ids in the table must be present in this tree.  [required]" name="iphylogeny" optional="False" type="data"/>
+		<param label="--p-metric: The beta diversity metric to be computed.
+                                  [required]" name="pmetric" optional="False" type="select" >
+			<option value="weighted_unifrac">weighted_unifrac</option>
+			<option value="unweighted_unifrac">unweighted_unifrac</option>
+		</param>
+		<param label="--cmd-config: Use config file for command options" name="cmdconfig" optional="True" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="qza" label="${tool.name} on ${on_string}: distance-matrix.qza" name="odistancematrix"/>
+	</outputs>
+	<help><![CDATA[
+Beta diversity (phylogenetic)
+-----------------------------
+
+Computes a user-specified phylogenetic beta diversity metric for all pairs
+of samples in a feature table.
+
+Parameters
+----------
+table : FeatureTable[Frequency]
+    The feature table containing the samples over which beta diversity
+    should be computed.
+phylogeny : Phylogeny[Rooted]
+    Phylogenetic tree containing tip identifiers that correspond to the
+    feature identifiers in the table. This tree can contain tip ids that
+    are not present in the table, but all feature ids in the table must be
+    present in this tree.
+metric : Str % Choices({'unweighted_unifrac', 'weighted_unifrac'})
+    The beta diversity metric to be computed.
+
+Returns
+-------
+distance_matrix : DistanceMatrix % Properties(['phylogenetic'])
+    The resulting distance matrix.
+    ]]>
+	</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

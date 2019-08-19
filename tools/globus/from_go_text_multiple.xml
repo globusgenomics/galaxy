@@ -1,0 +1,133 @@
+<tool id="globus_get_data_flowcell_text" name="Get Flowcell sample FastQ per lane via Globus">
+  <description>Transfer FASTQ from Globus to Galaxy</description>
+  <requirements>
+    <requirement type="package">pymodules</requirement>
+  </requirements>
+<action module="galaxy_ext.globus.tools.actions.globus" class="GlobusTransferMultiple"/>
+  <command interpreter="python">
+    transfer_multiple.py
+    $username
+    -k $userkey
+    -c $usercert
+    -o transfer.log
+    --goauth-token "$goauth"
+    --source-ep="$from_endpoint"
+    --destination-ep="$to_endpoint"
+    --dataset "$from_path1" "$to_path1" "$out_file1"
+    --dataset "$from_path2" "$to_path2" "$out_file2"
+    --dataset "$from_path3" "$to_path3" "$out_file3"
+    --dataset "$from_path4" "$to_path4" "$out_file4"
+    --dataset "$from_path5" "$to_path5" "$out_file5"
+    --dataset "$from_path6" "$to_path6" "$out_file6"
+    --dataset "$from_path7" "$to_path7" "$out_file7"
+    --dataset "$from_path8" "$to_path8" "$out_file8"
+    --deadline="$deadline"
+  </command>
+  <inputs>
+    <param name="goauth" type="hidden" size="100" label="Globus Auth Token">
+      <sanitizer>
+	<valid>
+	  <add value="|"/>
+	</valid>
+      </sanitizer>
+    </param>
+    <param name="username" type="hidden" size="100" label="Globus Username"/>
+    <param name="userkey" type="hidden" size="100" label="Globus User Key"/>
+    <param name="usercert" type="hidden" size="100" label="Globus User Certificate"/>
+    <param name="globuscert" type="hidden" size="100" label="Globus Certificate"/>
+    <!--<param name="local_endpoint" type="hidden" size="100" label="Local Globus Endpoint">
+      <sanitizer sanitize="False"/>
+    </param>-->
+    <param name="from_endpoint" type="text" size="100" label="Source Endpoint">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="from_path1" type="text" size="100" label="Source Path L1">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="from_path2" type="text" size="100" label="Source Path L2">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="from_path3" type="text" size="100" label="Source Path L3">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="from_path4" type="text" size="100" label="Source Path L4">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="from_path5" type="text" size="100" label="Source Path L5">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="from_path6" type="text" size="100" label="Source Path L6">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="from_path7" type="text" size="100" label="Source Path L7">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="from_path8" type="text" size="100" label="Source Path L8">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="to_endpoint" type="hidden" size="100" label="Destination Endpoint">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="to_path1" type="hidden" size="100" label="Destination Path L1">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="to_path2" type="hidden" size="100" label="Destination Path L2">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="to_path3" type="hidden" size="100" label="Destination Path L3">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="to_path4" type="hidden" size="100" label="Destination Path L4">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="to_path5" type="hidden" size="100" label="Destination Path L5">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="to_path6" type="hidden" size="100" label="Destination Path L6">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="to_path7" type="hidden" size="100" label="Destination Path L7">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="to_path8" type="hidden" size="100" label="Destination Path L8">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="deadline" type="text" size="10" value="120" label="Deadline (In minutes)"/>
+  </inputs>
+  <outputs>
+    <data name="out_file1" type="data" format="txt"/>
+    <data name="out_file2" type="data" format="txt"/>
+    <data name="out_file3" type="data" format="txt"/>
+    <data name="out_file4" type="data" format="txt"/>
+    <data name="out_file5" type="data" format="txt"/>
+    <data name="out_file6" type="data" format="txt"/>
+    <data name="out_file7" type="data" format="txt"/>
+    <data name="out_file8" type="data" format="txt"/>
+  </outputs>
+  <tests>
+    <test>
+      <!-- TODO: UPDATE TEST CASE -->
+      <param name="namefield" value="Bob"/>
+      <output name="out_file1" file="helloworld_out.txt"/>
+    </test>
+  </tests>
+  <help>
+.. class:: warningmark
+    
+  **WARNING:** Be careful not to exceed disk quotas!
+    
+-----
+    
+**What it does**
+    
+  Transfers data between from Globus to your Galaxy installation
+  and creates a galaxy dataset from transfered file.
+
+-----
+    
+**Example**
+    
+  Specify your certs, your endpoints, and some paths within those endpoints.
+
+  </help>
+</tool>

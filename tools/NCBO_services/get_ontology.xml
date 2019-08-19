@@ -1,0 +1,385 @@
+<tool id="get_ontology" name="Get ontology by id" version="1.0.3">
+	<description>Retrieves an ontology from bioportal using its id</description>
+<!-- 	<command>java -jar ${__tool_data_path__}/shared/jars/ncbo_galaxy.jar $api_key $ontology_id > $output </command>  -->
+	<command>
+		#if $id_opts.id_opts_menu=="id_by_hand" #java -jar ${__tool_data_path__}/shared/jars/get_ontology.jar $api_key $id_opts.ontology_id > $output
+		#else #java -jar ${__tool_data_path__}/shared/jars/get_ontology.jar $api_key $id_opts.ontology_id > $output
+		#end if
+	</command> 
+
+	<inputs>
+		<param name="api_key" type="text" size="100" label="BioPortal API key" />
+		
+<!-- 		<param name="ontology_id" type="text" size="100" label="Provide ontology id ... " /> -->
+		
+		<conditional name="id_opts">
+			<!--<param name="id_opts_menu" type="select" value="none" multiple="false" label="Choose: provide id by hand (e.g. 1522 for BioPAX) or choose ontology from list">
+				<option value="id_by_hand">Provide id by hand</option>
+				<option value="choose_from_list">Choose ontology from list</option>
+			</param>-->
+			
+			<param name="id_opts_menu" type="boolean" value="False" truevalue="id_by_hand" falsevalue="choose_from_list" label="Tick the box if you want to enter the ontology ID by hand (e.g. 1522 for BioPAX). Otherwise use the dropdown menu bellow"/>
+			
+			<when value="id_by_hand">
+				<param name="ontology_id" type="text" size="100" label="Provide ontology id" />
+	    		</when>
+			
+			<when value="choose_from_list">
+				<!-- Automatically generated with http://rest.bioontology.org/bioportal/ontologies?apikey=YourAPIKey -->
+				<param name="ontology_id" type="select" multiple="false" label="Choose ontology from this list">
+					      <option value="1158">Cell Behavior Ontology</option>
+					      <option value="1016">Drosophila development</option>
+					      <option value="1033">NMR-instrument specific component of metabolomics investigations</option>
+					      <option value="1351">Medical Subject Headings</option>
+					      <option value="1146">Electrocardiography Ontology</option>
+					      <option value="1041">Protein modification</option>
+					      <option value="1062">PRotein Ontology (PRO)</option>
+					      <option value="1000">Mouse adult gross anatomy</option>
+					      <option value="1065">Tick gross anatomy</option>
+					      <option value="1123">Ontology for Biomedical Investigations</option>
+					      <option value="1058">SNP-Ontology</option>
+					      <option value="1099">African Traditional Medicine</option>
+					      <option value="1134">BioTop</option>
+					      <option value="1078">Spatial Ontology</option>
+					      <option value="1247">GeoSpecies Ontology</option>
+					      <option value="1007">Chemical entities of biological interest</option>
+					      <option value="1024">Loggerhead nesting</option>
+					      <option value="1257">MeGO</option>
+					      <option value="1135">Pseudogene</option>
+					      <option value="1049">C. elegans development</option>
+					      <option value="1070">Gene Ontology</option>
+					      <option value="1126">Family Health History Ontology</option>
+					      <option value="1108">Plant Anatomy</option>
+					      <option value="1114">Bilateria anatomy</option>
+					      <option value="1100">Ontology for Genetic Interval</option>
+					      <option value="1136">Experimental Factor Ontology</option>
+					      <option value="1141">Ontology of Physics for Biology</option>
+					      <option value="1044">Sample processing and separation techniques</option>
+					      <option value="1347">MedlinePlus Health Topics</option>
+					      <option value="1005">BRENDA tissue / enzyme source</option>
+					      <option value="1152">Minimal anatomical terminology</option>
+					      <option value="1063">Common Anatomy Reference Ontology</option>
+					      <option value="1321">Neural ElectroMagnetic Ontologies</option>
+					      <option value="1043">Physico-chemical process</option>
+					      <option value="1064">Fly taxonomy</option>
+					      <option value="1089">BIRNLex</option>
+					      <option value="1076">Ontology of Clinical Research (OCRe)</option>
+					      <option value="1110">Teleost Anatomy Ontology</option>
+					      <option value="1362">Hymenoptera Anatomy Ontology</option>
+					      <option value="1030">Mosquito gross anatomy</option>
+					      <option value="1029">Molecule role (INOH Protein name/family name ontology)</option>
+					      <option value="1116">Bleeding History Phenotype</option>
+					      <option value="1104">Biomedical Resource Ontology</option>
+					      <option value="1144">Dendritic cell</option>
+					      <option value="1125">Human Phenotype Ontology</option>
+					      <option value="1023">Biological imaging methods</option>
+					      <option value="1021">Human developmental anatomy, abstract version</option>
+					      <option value="1046">Systems Biology</option>
+					      <option value="1051">Zebrafish anatomy and development</option>
+					      <option value="1037">Plant Trait Ontology</option>
+					      <option value="1350">Logical Observation Identifier Names and Codes</option>
+					      <option value="1082">Gene Regulation Ontology</option>
+					      <option value="1107">Phenotypic quality</option>
+					      <option value="1081">Teleost taxonomy</option>
+					      <option value="1048">C. elegans gross anatomy</option>
+					      <option value="1050">Maize gross anatomy</option>
+					      <option value="1047">Cereal Plant Development</option>
+					      <option value="1349">Physician Data Query</option>
+					      <option value="1190">Ontology for Parasite LifeCycle</option>
+					      <option value="1036">Plant environmental conditions</option>
+					      <option value="1109">Sequence types and features</option>
+					      <option value="1192">Proteomics Pipeline Infrastructure for CPTAC</option>
+					      <option value="1352">National Drug File</option>
+					      <option value="1059">Computer-based Patient Record Ontology</option>
+					      <option value="1052">Protein Ontology</option>
+					      <option value="1341">COSTART</option>
+					      <option value="1304">Breast Cancer Grading Ontology</option>
+					      <option value="1344">International Classification of Primary Care</option>
+					      <option value="1061">Suggested Ontology for Pharmacogenomics</option>
+					      <option value="1353">SNOMED Clinical Terms</option>
+					      <option value="1022">Human developmental anatomy, timed version</option>
+					      <option value="1014">Physico-chemical methods and properties</option>
+					      <option value="1224">Symptom Ontology</option>
+					      <option value="1095">Xenopus anatomy and development</option>
+					      <option value="1042">OBO relationship types</option>
+					      <option value="1013">eVOC (Expressed Sequence Annotation for Humans)</option>
+					      <option value="1149">DermLex: The Dermatology Lexicon</option>
+					      <option value="1311">Malaria Ontology</option>
+					      <option value="1335">Parasite Experiment Ontology</option>
+					      <option value="1370">Amphibian taxonomy</option>
+					      <option value="1027">Medaka fish anatomy and development</option>
+					      <option value="1354">WHO Adverse Reaction Terminology</option>
+					      <option value="1011">Event (INOH pathway ontology)</option>
+					      <option value="1010">Mouse gross anatomy and development</option>
+					      <option value="1015">Drosophila gross anatomy</option>
+					      <option value="1090">Amphibian gross anatomy</option>
+					      <option value="1020">Habronattus courtship</option>
+					      <option value="1148">BioPortal Metadata</option>
+					      <option value="1038">Plant Growth and Development Stage</option>
+					      <option value="1132">NCBI organismal classification</option>
+					      <option value="1328">Ontology of homology and related concepts in biology</option>
+					      <option value="1019">Fungal gross anatomy</option>
+					      <option value="1290">ABA Adult Mouse Brain</option>
+					      <option value="1067">C. elegans phenotype</option>
+					      <option value="1069">Environment Ontology</option>
+					      <option value="1055">Galen</option>
+					      <option value="1332">Basic Formal Ontology</option>
+					      <option value="1183">Lipid Ontology</option>
+					      <option value="1026">Multiple alignment</option>
+					      <option value="1130">Cancer Research and Management ACGT Master Ontology</option>
+					      <option value="1060">Epoch Clinical Trial Ontologies</option>
+					      <option value="1112">Units of measurement</option>
+					      <option value="1369">PhysicalFields</option>
+					      <option value="1086">Ontology for disease genetic investigation</option>
+					      <option value="1091">Spider Ontology</option>
+					      <option value="1017">FlyBase Controlled Vocabulary</option>
+					      <option value="1348">Online Mendelian Inheritance in Man</option>
+					      <option value="1122">Skin Physiology Ontology</option>
+					      <option value="1142">Cardiac Electrophysiology Ontology</option>
+					      <option value="1128">Comparative Data Analysis Ontology</option>
+					      <option value="1172">Vaccine Ontology</option>
+					      <option value="1088">MaHCO - An MHC Ontology</option>
+					      <option value="1245">Cell line ontology</option>
+					      <option value="1222">Ascomycete phenotype ontology</option>
+					      <option value="1249">Smoking Behavior Risk Ontology</option>
+					      <option value="1039">Proteomics data and process provenance</option>
+					      <option value="1105">Mass spectrometry</option>
+					      <option value="1040">Protein-protein interaction</option>
+					      <option value="1237">Situation-Based Access Control</option>
+					      <option value="1008">Dictyostelium discoideum anatomy</option>
+					      <option value="1068">Subcellular Anatomy Ontology (SAO)</option>
+					      <option value="1087">Ontology of Geographical Region</option>
+					      <option value="1150">Rat Strain Ontology</option>
+					      <option value="1101">International Classification of Diseases</option>
+					      <option value="1314">Cell Line Ontology</option>
+					      <option value="1009">Human disease ontology</option>
+					      <option value="1094">Pathogen transmission</option>
+					      <option value="1084">NIFSTD</option>
+					      <option value="1025">Mammalian phenotype</option>
+					      <option value="1131">MGED Ontology</option>
+					      <option value="1035">Pathway ontology</option>
+					      <option value="1106">Gene Regulation Ontology</option>
+					      <option value="1054">Amino Acid</option>
+					      <option value="1056">Basic Vertebrate Anatomy</option>
+					      <option value="1012">Evidence codes</option>
+					      <option value="1115">Yeast phenotypes</option>
+					      <option value="1001">Cereal plant gross anatomy</option>
+					      <option value="1006">Cell type</option>
+					      <option value="1077">Mosquito insecticide resistance</option>
+					      <option value="1085">Ontology of Glucose Metabolism Disorder</option>
+					      <option value="1057">RadLex</option>
+					      <option value="1083">NanoParticle Ontology</option>
+					      <option value="1053">Foundational Model of Anatomy</option>
+					      <option value="1031">Mouse pathology</option>
+					      <option value="1092">Infectious Disease Ontology</option>
+					      <option value="1032">NCI Thesaurus</option>
+					      <option value="1381">NIF Dysfunction</option>
+					      <option value="1393">Information Artifact Ontology</option>
+					      <option value="1394">Syndromic Surveillance Ontology</option>
+					      <option value="1395">MDSS Mo</option>
+					      <option value="1397">Gazetteer</option>
+					      <option value="1398">Ontology of Language Disorder in Autism</option>
+					      <option value="1399">Pilot Ontology</option>
+					      <option value="1401">International Classification for Nursing Practice</option>
+					      <option value="1402">NIF Cell</option>
+					      <option value="1404">Uber anatomy ontology</option>
+					      <option value="1406">linkingkin2pep</option>
+					      <option value="1407">Terminology for the Description of Dynamics</option>
+					      <option value="1409">PKO_Re</option>
+					      <option value="1410">Kinetic Simulation Algorithm Ontology</option>
+					      <option value="1411">International Classification of Functioning, Disability and Health (ICF)</option>
+					      <option value="1413">Software Ontology</option>
+					      <option value="1414">Ontology for General Medical Science</option>
+					      <option value="1415">Common Terminology Criteria for Adverse Events</option>
+					      <option value="1417">Influenza Ontology</option>
+					      <option value="1418">TOK_Ontology</option>
+					      <option value="1419">Taxonomic rank vocabulary</option>
+					      <option value="1422">MedDRA</option>
+					      <option value="1423">RxNORM</option>
+					      <option value="1424">National Drug Data File</option>
+					      <option value="1425">ICD-10-PCS</option>
+					      <option value="1426">Master Drug Data Base</option>
+					      <option value="1427">Read Codes, Clinical Terms Version 3 (CTV3) </option>
+					      <option value="1428">Nursing Interventions Classification (NIC)</option>
+					      <option value="1429">ICPC-2 PLUS</option>
+					      <option value="1430">AI/RHEUM</option>
+					      <option value="1438">Breast tissue cell lines</option>
+					      <option value="1439">General Formal Ontology</option>
+					      <option value="1440">General Formal Ontology: Biology</option>
+					      <option value="1444">Chemical Information Ontology</option>
+					      <option value="1343">Health Level Seven</option>
+					      <option value="1461">Translational Medicine Ontology</option>
+					      <option value="1484">International Classification of  External Causes of Injuries</option>
+					      <option value="1487">Body System</option>
+					      <option value="1488">SysMO-JERM</option>
+					      <option value="1489">Ontology of Adverse Events (OAE)</option>
+					      <option value="1490">Platynereis stage ontology</option>
+					      <option value="1491">IMGT-ONTOLOGY</option>
+					      <option value="1494">Tissue Microarray Ontology</option>
+					      <option value="1497">PMA 2010</option>
+					      <option value="1498">Bioinformatics operations, types of data, data formats and topics</option>
+					      <option value="1499">NCI Metathesaurus</option>
+					      <option value="1500">RNA ontology</option>
+					      <option value="1501">Neomark Oral Cancer-Centred Ontology</option>
+					      <option value="1504">Current Procedural Terminology</option>
+					      <option value="1505">Ontology for MicroRNA Target Prediction</option>
+					      <option value="1506">Gene Ontology Extension</option>
+					      <option value="1507">Cell Cycle Ontology</option>
+					      <option value="1509">ICPS Network</option>
+					      <option value="1510">Metathesaurus CPT Hierarchical Terms</option>
+					      <option value="1515">Interaction Network Ontology</option>
+					      <option value="1516">ICD10</option>
+					      <option value="1517">Human developmental anatomy, abstract version, v2</option>
+					      <option value="1520">Leukocyte Surface Markers</option>
+					      <option value="1521">Neural Motor Recovery Ontology</option>
+					      <option value="1522">BioPAX</option>
+					      <option value="1523">OBOE SBC</option>
+					      <option value="1524">OBOE</option>
+					      <option value="1526">CRISP Thesaurus, 2006</option>
+					      <option value="1527">VANDF</option>
+					      <option value="1528">HUGO</option>
+					      <option value="1529">HCPCS</option>
+					      <option value="1530">Animal natural history and life history</option>
+					      <option value="1532">SemanticScience Integrated Ontology</option>
+					      <option value="1533">BioAssay Ontology</option>
+					      <option value="1534">apollo-akesios</option>
+					      <option value="1535">Terminology of Anatomy of Human Histology</option>
+					      <option value="1536">Terminology of Anatomy of Human Embryology</option>
+					      <option value="1537">Brucellosis Ontology</option>
+					      <option value="1538">Role Ontology</option>
+					      <option value="1539">Neural-Immune Gene Ontology</option>
+					      <option value="1540">Ontology for Drug Discovery Investigations</option>
+					      <option value="1541">Cell line ontology</option>
+					      <option value="1544">Crop Ontology</option>
+					      <option value="1545">Wheat trait </option>
+					      <option value="1550">PHARE</option>
+					      <option value="1552">Reproductive trait and phenotype ontology</option>
+					      <option value="1553">ICD10CM</option>
+					      <option value="1555">Vertebrate Anatomy Ontology</option>
+					      <option value="1560">Cognitive Paradigm Ontology</option>
+					      <option value="1565">Ontology of Medically Related Social Entities</option>
+					      <option value="1567">Pharmacovigilance Ontology</option>
+					      <option value="1568">Anatomical Entity Ontology</option>
+					      <option value="1569">Host Pathogen Interactions Ontology</option>
+					      <option value="1570">Traditional Medicine Constitution Value Set</option>
+					      <option value="1571">Traditional Medicine Other Factors Value Set</option>
+					      <option value="1572">Traditional Medicine Signs and Symptoms Value Set</option>
+					      <option value="1573">Traditional Medicine Meridian Value Sets</option>
+					      <option value="1574">vertebrate Homologous Organ Groups</option>
+					      <option value="1575">ExO</option>
+					      <option value="1576">FDA Medical Devices (2010)</option>
+					      <option value="1578">HOM_ElixhauserScores</option>
+					      <option value="1580">Adverse Event Reporting ontology</option>
+					      <option value="1581">HEALTH_INDICATORS</option>
+					      <option value="1582">CAO</option>
+					      <option value="1583">Clinical Measurement Ontology</option>
+					      <option value="1584">Measurement Method Ontology</option>
+					      <option value="1585">Experimental Conditions Ontology</option>
+					      <option value="1586">Orphanet Ontology of Rare Diseases</option>
+					      <option value="1587">Plant Ontology</option>
+					      <option value="1588">Ontology of General Purpose Datatypes</option>
+					      <option value="1596">HOM_MDCs-DRGS</option>
+					      <option value="1613">Bone Dysplasia Ontology</option>
+					      <option value="1614">IxnO</option>
+					      <option value="1615">Systems Chemical Biology/Chemogenomics </option>
+					      <option value="1616">Phylogenetic Ontology</option>
+					      <option value="1621">Neuro Behavior Ontology</option>
+					      <option value="1625">HOM-ICD9CM_PROCEDURES</option>
+					      <option value="1626">Enzyme Mechanism Ontology</option>
+					      <option value="1627">HOMERUN Ontology</option>
+					      <option value="1629">HOM-UCARE</option>
+					      <option value="1630">HOM-EPIC</option>
+					      <option value="1631">HOM-HARVARD</option>
+					      <option value="1632">Web-Service Interaction Ontology</option>
+					      <option value="1633">Cognitive Atlas</option>
+					      <option value="1638">Ontology of Data Mining</option>
+					      <option value="1639">Epilepsy</option>
+					      <option value="1640">Pediatric Terminology</option>
+					      <option value="1641">HOM-ICD9CM-ECODES</option>
+					      <option value="1642">HOM-DXPROCS_MDCDRG</option>
+					      <option value="1643">HOM-ICD9_PROCS_OSHPD</option>
+					      <option value="1645">HOM-MDCDRG_OSHPD</option>
+					      <option value="1647">HOM-ICD9_DXandVCODES_OSHPD</option>
+					      <option value="1648">HOM-DATASOURCE_OSHPD</option>
+					      <option value="1649">HOM-OSHPD</option>
+					      <option value="1650">Units Ontology</option>
+					      <option value="1651">Sleep Domain Ontology</option>
+					      <option value="1652">HOM-OSHPD_UseCase</option>
+					      <option value="1653">HOM-PROCS2_OSHPD</option>
+					      <option value="1654">HOM-DXVCODES2_OSHPD</option>
+					      <option value="1655">PharmGKB-in-OWL</option>
+					      <option value="1656">PhenomeBLAST ontology</option>
+					      <option value="1657">Quadrupedal Gait</option>
+					      <option value="1658">Hewan Invertebrata</option>
+					      <option value="1659">Vertebrate Trait Ontology</option>
+					      <option value="1660">HOM-DATASOURCE_EPIC</option>
+					      <option value="1661">HOM-Transplant Ontology</option>
+					      <option value="1665">Student Health Record</option>
+					      <option value="1666">Emotion Ontology</option>
+					      <option value="1667">HOM-DATASOURCE_OSHPDSC</option>
+					      <option value="1668">HOM-OSHPD-SC</option>
+					      <option value="1670">ICD_Oncology-3</option>
+					      <option value="1671">Quantitative Imaging Biomarker Ontology</option>
+					      <option value="1672">DIKB-Evidence-Ontology</option>
+					      <option value="1675">CEEROntology</option>
+					      <option value="1676">Randomized Controlled Trials (RCT) Ontology</option>
+					      <option value="1679">JADNI test ontology2</option>
+					      <option value="1680">BioActivity Ontology3</option>
+					      <option value="1681">JADNI test ontology</option>
+					      <option value="1682">Human disease in Bioactivity</option>
+					      <option value="1683">BioActivity Ontology</option>
+					      <option value="1684">BioActivity Ontology2</option>
+					      <option value="1686">Neomark Oral Cancer Ontology</option>
+					      <option value="1688">UniprotCoreBH</option>
+					      <option value="1689">Fission Yeast Phenotype Ontology</option>
+					      <option value="1691">yipd_test</option>
+					      <option value="1692">test-purl</option>
+					      <option value="1693">ICD9-ICD10-PCS (partial)</option>
+					      <option value="1694">HOM-CPT</option>
+					      <option value="1696">Synapse Ontology</option>
+					      <option value="1697">HOM-ORTHO</option>
+					      <option value="1698">HOM-DATASRC-ORTHO</option>
+					      <option value="1699">VIVO</option>
+					      <option value="1700">Test Pradip PURL</option>
+					      <option value="1701">HOM-ORTHOSURGERY</option>
+					      <option value="1702">Eurofut</option>
+				      </param>		
+	    		</when>
+		</conditional>	
+	</inputs>
+	<outputs>
+		<data format="text" name="output" />
+	</outputs>
+<!--	<tests>
+		<test>
+			<param name="api_key"/>
+			<param name="id_opts.ontology_id"/>
+		</test>
+	</tests>
+-->
+	<help>
+
+**What it does**
+
+It retrieves an ontology from BioPortal.
+
+**Parameters**
+
+* Bioportal API key: to obtain an API key, open an account in http://bioportal.bioontology.org.
+* Ontology ID: provide it by hand (e.g. 1522 for BioPAX), or select from list.
+
+**Contact**
+
+Please send any request or comment to mikel.egana.aranguren@gmail.com.
+    
+**More information**
+
+http://bioportal.bioontology.org
+  
+http://www.bioontology.org/wiki/index.php/BioPortal_REST_services
+  
+
+
+	</help>
+
+</tool>

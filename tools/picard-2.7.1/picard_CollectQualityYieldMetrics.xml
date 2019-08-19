@@ -1,0 +1,63 @@
+<tool id="picard2.7.1_CollectQualityYieldMetrics" name="BAM CollectQualityYieldMetrics" version="PICARD: 2.7.1">
+  <requirements><requirement type="package" version="2.7.1">picard</requirement><requirement type="package" version="1.8.0">java</requirement></requirements>
+  <command interpreter="python">
+    picard_wrapper.py
+      --input &quot;$input_file&quot;
+      --bai-file &quot;$input_file.metadata.bam_index&quot;
+      -t &quot;$htmlfile&quot;
+      -d &quot;$htmlfile.files_path&quot;
+      -j &quot;\$JAVA_JAR_PATH/picard.jar CollectQualityYieldMetrics&quot;
+      --tmpdir &quot;${__new_file_path__}&quot; 
+  </command>
+  <inputs>
+    <param format="bam" help="If empty, upload or import a BAM dataset" label="BAM dataset to generate statistics for" name="input_file" type="data"/>
+  </inputs>
+  <outputs>
+    <data format="html" label="${tool.name}_on_${on_string}.html" name="htmlfile"/>
+  </outputs>
+  <tests>
+    <test>
+      <!-- Command
+      java -jar BamIndexStats.jar I=test-data/picard_input_tiny_coord.bam > picard_BIS_output1.txt
+      picard_input_tiny_coord.bam can be created from picard_input_tiny_coord.sam
+      -->
+      <param ftype="bam" name="input_file" value="picard_input_tiny_coord.bam"/>
+      <output compare="contains" file="picard_BIS_output1.txt" ftype="html" lines_diff="12" name="htmlfile"/>
+    </test>
+    <test>
+      <!-- Command
+      java -jar BamIndexStats.jar I=test-data/picard_BIS_input1.bam > picard_BIS_output2.txt
+      picard_BIS_input1.bam can be created from picard_BIS_input1.sam
+      -->
+      <param ftype="bam" name="input_file" value="picard_BIS_input1.bam"/>
+      <output compare="contains" file="picard_BIS_output2.txt" ftype="html" lines_diff="12" name="htmlfile"/>
+    </test>
+  </tests>
+  <help>
+
+.. class:: infomark
+
+**Purpose**
+
+Collects quality yield metrics, a set of metrics that quantify the quality and yield of sequence data from a SAM/BAM input file.
+
+**Picard documentation**
+
+This is a Galaxy wrapper for CollectQualityYieldMetrics, a part of the external package Picard-tools_.
+
+ .. _Picard-tools: http://www.google.com/search?q=picard+samtools
+
+------
+
+.. class:: infomark
+
+**Inputs and outputs**
+
+The only input is the BAM file you wish to obtain statistics for, which is required.
+Note that it must be coordinate-sorted. Galaxy currently coordinate-sorts all BAM files.
+
+This tool outputs an HTML file that contains links to the actual metrics results, as well
+as a log file with info on the exact command run.
+
+  </help>
+</tool>

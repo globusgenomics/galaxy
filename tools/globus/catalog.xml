@@ -1,0 +1,31 @@
+<tool id="globus_catalog" name="Catalog" tool_type="globus_multi_datasource"
+      force_history_refresh="True">
+   <description>Fetch datasets from the Globus Online Catalog.</description>
+    <action module="galaxy.tools.actions.globus" class="CatalogTransfer"/>
+   <command interpreter="python">
+    transfer_from_catalog.py 
+       --session $sess
+       --token $token 
+       --host $hostname
+       --files $files
+       $catalog
+       $dataset_id
+       $outfile  $outfile.id  $__new_file_path__
+   </command>
+   <inputs>
+     <param name="token" type="hidden" value="" />
+     <param name="hostname" type="hidden" value="" />
+     <param name="sess" type="hidden"/>
+     <param name="catalog" type="hidden" value="1" label="" />
+     <param name="files" type="hidden" value="" label="" /> 
+     <param name="query" type="text" label="Query" size="25"/>
+     <param name="dataset_id" type="globus_catalog" /> 
+     <param name="dataset_name" type="hidden" label="" />
+   </inputs>
+   <outputs>
+     <data name="outfile" type="data" format="txt" />
+   </outputs>
+   <help>
+     Fetch datasets from the Globus Online Catalog.
+   </help>
+</tool>

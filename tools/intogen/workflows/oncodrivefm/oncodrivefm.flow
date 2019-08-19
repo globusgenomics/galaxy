@@ -1,0 +1,46 @@
+<flow name="oncodrivefm">
+	<title>Oncodrive Functional Mutations Analysis</title>
+	<desc>To uncover driver genes or gene modules</desc>
+
+	<in name="projects_in" />
+	<out name="projects_out" link="classify_by_id.projects_out" />
+
+	<module name="compute">
+		<title>Compute</title>
+		<desc>Compute genes and pathways</desc>
+
+		<in name="projects_in" link="projects_in" />
+		<out name="projects_out" />
+
+		<run>compute.py</run>
+	</module>
+
+	<module name="classify_by_feature" maxpar="1">
+		<title>Classify projects by feature</title>
+
+		<in name="projects_in" link="compute.projects_out" />
+		<out name="projects_out" />
+
+		<run>classify_by_feature.py</run>
+	</module>
+
+	<module name="combine">
+		<title>Combine</title>
+		<desc>Combine per slice results</desc>
+
+		<in name="projects_in" link="classify_by_feature.projects_out" />
+		<out name="projects_out" />
+
+		<run>combine.py</run>
+	</module>
+
+	<module name="classify_by_id" maxpar="1">
+		<title>Classify projects by id</title>
+
+		<in name="projects_in" link="combine.projects_out" />
+		<out name="projects_out" />
+
+		<run>classify_by_id.py</run>
+	</module>
+
+</flow>

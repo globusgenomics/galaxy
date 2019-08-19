@@ -1,0 +1,195 @@
+#!/usr/bin/perl
+use strict;
+
+&usage() unless scalar(@ARGV) == 6;
+my $selfSimilarityFile = $ARGV[0];
+my $similarityFile = $ARGV[1];
+my $groupsFile = $ARGV[2];
+my $taxonAbbrev = $ARGV[3];
+my $outputGroupsFile = $ARGV[4];
+my $outputParalogsFile = $ARGV[5];
+
+my $threshold = -5;
+my $minPercentMatch = 50;
+
+# correct for 0 exponent (do this upstream)
+
+###########################################
+# make hash of orthomcl proteins to groups
+###########################################
+
+die "groups file '$groupsFile' does not exist\n" unless -e $groupsFile;
+
+if ($groupsFile =~ m/\.gz$/) {
+  open(G, "gunzip -c $groupsFile |") or die "can't open groups file '$groupsFile'\n";
+}
+else {
+  open(G, $groupsFile) or die "can't open groups file '$groupsFile'\n";
+}
+
+my $proteinGroupHash;
+print STDERR "\nScanning groups file $groupsFile to build hash\n";
+my $count;
+while(<G>) {
+  print STDERR "." if ($count++ % 10000) == 0;
+    my @line = split(/\s/);
+    my $group = shift(@line);
+    $group =~ s/\://;
+    foreach my $protein (@line) {
+	$proteinGroupHash->{$protein} = $group;
+    }
+}
+close(G);
+close(T);
+
+####################################################################
+# scan similarities of input v. orthomcl to find ortholog assignments
+####################################################################
+# find group based on best match of user's protein
+# also, while scanning, remember the best out-species hit for each input
+# protein, used in second pass paralog processing
+my $prevQueryId;
+my $bestOutSpeciesHits;
+my $assignedProteins;
+
+open(ORTHO, ">$outputGroupsFile") || die "Can't open file '$outputGroupsFile' for writing\n";
+if ($similarityFile =~ m/\.gz$/) {
+  open(S, "gunzip -c $similarityFile |") or die $!;
+}
+else {
+  open(S, "<$similarityFile") or die $!;
+}
+
+print STDERR "\nScanning similarity file $similarityFile\n";
+while(<S>) {
+  print STDERR ":" if ($count++ % 100000) == 0;
+    my ($q_id, $s_id, $q_taxon, $s_taxon, $evalue_mant, $evalue_exp, $pctIdent, $pctMatch) = split(/\s/);
+
+    next if $q_id eq $s_id;
+    $evalue_exp = -181 unless $evalue_exp;
+
+    # for now, use simple algorithm:  assign ortholog group based on best hit.
+    if ($q_id ne $prevQueryId && $evalue_exp <= $threshold && $pctMatch >= $minPercentMatch) {
+      my $q_id2 = $q_id;
+      # strip off taxon prefix before printing final result 
+      # (it may be a fake taxon prefix)
+      $q_id2 =~ s/$taxonAbbrev\|//;
+      my $g = $proteinGroupHash->{$s_id}? $proteinGroupHash->{$s_id} : "NO_GROUP";
+      print ORTHO "$q_id2\t$g\t$s_id\t$evalue_mant\t$evalue_exp\t$pctIdent\t$pctMatch\n";
+      $prevQueryId = $q_id;
+      $bestOutSpeciesHits->{$q_id} = [$evalue_mant, $evalue_exp];
+      $assignedProteins->{$q_id} = 1;
+    }
+}
+close(ORTHO);
+close(S);
+
+####################################################################
+# scan similarities of input v. input to find paralog pairs
+####################################################################
+
+exit(0) if $selfSimilarityFile eq 'NONE';  # skip paralog processing
+
+# find group based on best match of user's protein
+# also, while scanning, remember the best out-species hit for each input 
+# protein, used in second pass paralog processing
+my $prevQueryId;
+my $runOfParalogs;
+my $paralogPairsHash;
+
+open(PARA, ">$outputParalogsFile") || die "Can't open file '$outputParalogsFile' for writing\n";
+if ($selfSimilarityFile =~ m/\.gz$/) {
+  open(SS, "gunzip -c $selfSimilarityFile |") or die $!;
+}
+else {
+  open(SS, "<$selfSimilarityFile") or die $!;
+}
+
+print STDERR "\nScanning self similarity file $selfSimilarityFile\n";
+$count = 0;
+while(<SS>) {
+  print STDERR "|" if ($count++ % 100000) == 0;
+    my ($q_id, $s_id, $q_taxon, $s_taxon, $evalue_mant, $evalue_exp, $pctIdent, $pctMatch) = split(/\s/);
+
+
+    next if ($q_id eq $s_id) || ($pctMatch < 50) || ($assignedProteins->{$q_id});
+
+    $evalue_exp = -181 unless $evalue_exp;
+
+    my $bestOutSpeciesHit = $bestOutSpeciesHits->{$q_id};
+    if ($bestOutSpeciesHit->[1] > $evalue_exp
+       || ($bestOutSpeciesHit->[1] == $evalue_exp
+	  && $bestOutSpeciesHit->[0] > $evalue_mant)) {
+      handleParalogSim($q_id, $s_id, $evalue_mant, $evalue_exp);
+    }
+}
+print STDERR "\n";
+close(PARA);
+
+
+#####################################################################
+# subroutines
+#####################################################################
+
+# 
+sub handleParalogSim {
+    my ($q_id, $s_id, $evalue_mant, $evalue_exp) = @_;
+
+    # if this pair was already seen in opposite direction
+    if ($paralogPairsHash->{$s_id} && $paralogPairsHash->{$s_id}->{$q_id}) {
+	my $firstSeenScore = $paralogPairsHash->{$s_id}->{$q_id};
+	my $score = computeParalogPairScore($firstSeenScore->{mant},
+					    $firstSeenScore->{exp},
+					    $evalue_mant, $evalue_exp);
+
+        # strip off taxon prefix before printing final result 
+        # (it may be a fake taxon prefix)
+	my $q_id2 = $q_id;
+	my $s_id2 = $s_id;
+	$q_id2 =~ s/$taxonAbbrev\|//;
+	$s_id2 =~ s/$taxonAbbrev\|//;
+	print PARA "$q_id2\t$s_id2\t$score\n";
+    }
+
+    # else, remember for next time
+    else {
+	$paralogPairsHash->{$q_id}->{$s_id} =
+	    {mant=>$evalue_mant, exp=>$evalue_exp} ;
+    }
+}
+
+sub computeParalogPairScore {
+    my ($mant1, $exp1, $mant2, $exp2) = @_;
+    # borrowed from orthomclPairs
+
+    # if either mant is approx 0, use only exp
+    if ($mant1 < 0.01 || $mant2 < 0.01) { return ($exp1 + $exp2) / -2; }
+
+    # ( -log10(evalue1) - log10(evalue2) ) / 2
+    return (log($mant1 * (10 ** $exp1))/log(10) + log($mant2 * (10 ** $exp2))/log(10)) / -2;
+}
+
+sub usage {
+    print STDERR "
+Map an input proteome to OrthoMCL groups.  Proteins that do not map to OrthoMCL groups are themselves grouped into paralog groups.
+
+usage:  orthomclMapProteomeToGroups self_similarity_file similarity_file groups_file taxon_abbrev output_groups_file output_paralogs_file
+
+where:
+  similarity_file:         concise (orthomcl-style) similarity output for input
+                           proteome v. orthomcl proteins, sorted by query_id,
+                           evalue (gzipped file supported).
+  self_similarity_file:    concise (orthomcl-style) similarity output for input
+                           proteome v. input proteins, sorted by query_id,
+                           evalue (gzipped file supported).  Use 'NONE' to skip
+                           paralog processing and output.
+  groups_file              standard orthomcl groups file
+  taxon_abbrev             taxon abbreviation that has been prepended to protein IDs
+  output_groups_file       input groups file updated to included mapped input proteins
+  output_paralogs_file     paralog groups formed from proteins that do not map to existing OrthoMCL groups
+
+Note: simseqs format output by blastSimilarity is sorted by query_id, evalue
+
+";
+    exit(1);
+}

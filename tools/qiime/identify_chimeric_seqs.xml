@@ -1,0 +1,73 @@
+<tool id="identify_chimeric_seqs" name="identify_chimeric_seqs" version="1.2.0">
+  <description>Identify chimeric sequences in input FASTA file</description>
+  <macros>
+     <import>macros.xml</import>
+  </macros>
+  <expand macro="requirements"/>
+  <command detect_errors="aggressive"><![CDATA[
+      #if $pick.chimera_detection_method == 'ChimeraSlayer':
+        parallel_identify_chimeric_seqs.py -O 64
+        --input_fasta_fp $input_fasta_fp
+        --chimera_detection_method=$pick.chimera_detection_method
+        --aligned_reference_seqs_fp $pick.aligned_reference_seqs_fp
+        --min_div_ratio $pick.min_div_ratio
+        $pick.keep_intermediates
+        --output_fp $output_fp
+      #elif $pick.chimera_detection_method == 'blast_fragments':
+        parallel_identify_chimeric_seqs.py -O 64
+        --input_fasta_fp $input_fasta_fp
+        --chimera_detection_method $pick.chimera_detection_method
+        --id_to_taxonomy_fp $pick.id_to_taxonomy_fp
+        --reference_seqs_fp $pick.reference_seqs_fp
+        --blast_db $pick.blast_db
+        --num_fragments $pick.num_fragments
+        --taxonomy_depth $pick.taxonomy_depth
+        --max_e_value $pick.max_e_value
+        --output_fp $output_fp
+      #elif $pick.chimera_detection_method == 'usearch61':
+        identify_chimeric_seqs.py 
+        --input_fasta_fp $input_fasta_fp
+        --chimera_detection_method $pick.chimera_detection_method
+        #if $pick.references.source_selector == 'history'
+          --reference_seqs_fp '$pick.references.reference_seqs_fp'
+        #else if $pick.references.source_selector == 'cached'
+          --reference_seqs_fp '$pick.references.reference_seqs_fp.fields.path'
+        #end if
+        --output_fp ./output; cp ./output/chimeras.txt $output_fp
+      #end if
+  ]]></command>
+  <inputs>
+    <param name="input_fasta_fp" type="data" format="fasta" label="input_fasta_fp" help="path to the input fasta file [REQUIRED]"/>
+    <conditional name="pick">
+      <param name="chimera_detection_method" type="select" label="chimera_detection_method" help="Chimera detection method. Choices: blast_fragments or ChimeraSlayer. [default:ChimeraSlayer]">
+        <option value="blast_fragments">blast_fragments</option>
+        <option value="ChimeraSlayer" selected="true">ChimeraSlayer</option>
+        <option value="usearch61">Usearch</option>
+      </param>
+      <when value="ChimeraSlayer">
+    <param name="aligned_reference_seqs_fp" type="data" format="txt" label="aligned_reference_seqs_fp" help="Path to (Py)Nast aligned reference sequences. REQUIRED when method ChimeraSlayer [default: ('NO', 'DEFAULT')]"/>
+    <param name="min_div_ratio" type="float" value="0.0" label="min_div_ratio" help="min divergence ratio (passed to ChimeraSlayer). If set to None uses ChimeraSlayer default value.  [default: %default]"/>
+    <param name="keep_intermediates" type="boolean" truevalue="--keep_intermediates" falsevalue="" checked="false" label="keep_intermediates" help="Keep intermediate files, useful for debugging  [default: False]"/>
+   </when>
+   <when value="usearch61">
+     <expand macro="assign_taxonomy_reference_source"/>
+   </when>
+   <when value="blast_fragments">
+    <param name="blast_db" type="text"  label="blast_db" help="Database to blast against. Must provide either --blast_db or --reference_seqs_fp when method is blast_fragments [default: ('NO', 'DEFAULT')]"/>
+    <param name="reference_seqs_fp" type="data" format="txt" label="reference_seqs_fp" help="Path to reference sequences (used to build a blast db when method blast_fragments). [default: ('NO', 'DEFAULT'); REQUIRED when method blast_fragments if no blast_db is provided;]"/>
+    <param name="id_to_taxonomy_fp" type="data" format="tabular" label="id_to_taxonomy_fp" help="Path to tab-delimited file mapping sequences to assigned taxonomy. Each assigned taxonomy is provided as a comma-separated list. [default: ('NO', 'DEFAULT'); REQUIRED when method is blast_fragments]"/>
+    <param name="taxonomy_depth" type="integer" value="4" label="taxonomy_depth" help="Number of taxonomic divisions to consider when comparing taxonomy assignments [default: 4]"/>
+    <param name="num_fragments" type="integer" value="3" label="num_fragments" help="Number of fragments to split sequences into (i.e., number of expected breakpoints + 1) [default: 3]"/>
+    <param name="max_e_value" type="float" value="1e-30" label="max_e_value" help="Max e-value to assign taxonomy [default: 1e-30]"/>
+   </when>
+  </conditional> <!-- pick -->
+ </inputs>
+ <outputs>
+  <data format="txt" name="output_fp" label="${tool.name} on ${on_string}: chimeras"/>
+ </outputs>
+ <tests>
+ </tests>
+ <help>
+
+ </help>
+</tool>

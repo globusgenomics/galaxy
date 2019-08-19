@@ -1,0 +1,203 @@
+<tool id="gatk3.3_realigner_target_creator" name="Realigner Target Creator" version="GATK3: GenomeAnalysisTK-3.3-0; SAMTOOLS: 1.1">
+  <description>for use in local realignment</description>
+  <requirements>
+      <requirement type="package" version="3.3">gatk3</requirement>
+      <requirement type="package" version="1.1">samtools</requirement>
+  </requirements>
+  <macros>
+    <import>gatk_macros.xml</import>
+  </macros>
+  <command interpreter="python">gatk3_wrapper.py
+   --max_jvm_heap_fraction &quot;1&quot;
+   --stdout &quot;${output_log}&quot;
+   -d &quot;-I&quot; &quot;${reference_source.input_bam}&quot; &quot;${reference_source.input_bam.ext}&quot; &quot;gatk_input&quot;
+   #if str( $reference_source.input_bam.metadata.bam_index ) != &quot;None&quot;:
+       -d &quot;&quot; &quot;${reference_source.input_bam.metadata.bam_index}&quot; &quot;bam_index&quot; &quot;gatk_input&quot; ##hardcode galaxy ext type as bam_index
+   #end if
+   -p 'java 
+    -jar &quot;\$GATK3_PATH/GenomeAnalysisTK.jar&quot;
+    -T &quot;RealignerTargetCreator&quot;
+    -o &quot;${output_interval}&quot;
+    \$GATK3_SITE_OPTIONS
+    \$GATK3_NUM_THREADS
+    ##-et &quot;NO_ET&quot; -K &quot;/data/galaxy/appList/GenomeAnalysisTK-2.0-36-gf5c1c1a/gatk3_key_file&quot; ##ET no phone home
+    --num_threads 32 ##hard coded, for now
+    ##-log &quot;${output_log}&quot; ##don't use this to log to file, instead directly capture stdout
+    #if $reference_source.reference_source_selector != &quot;history&quot;:
+        -R &quot;${reference_source.ref_file.fields.path}&quot;
+    #end if
+   '
+    #set $rod_binding_names = dict()
+    #for $rod_binding in $rod_bind:
+        #if str( $rod_binding.rod_bind_type.rod_bind_type_selector ) == 'custom':
+            #set $rod_bind_name = $rod_binding.rod_bind_type.custom_rod_name
+        #else
+            #set $rod_bind_name = $rod_binding.rod_bind_type.rod_bind_type_selector
+        #end if
+        #set $rod_binding_names[$rod_bind_name] = $rod_binding_names.get( $rod_bind_name, -1 ) + 1
+        -d &quot;-known:${rod_bind_name},%(file_type)s&quot; &quot;${rod_binding.rod_bind_type.input_rod}&quot; &quot;${rod_binding.rod_bind_type.input_rod.ext}&quot; &quot;input_${rod_bind_name}_${rod_binding_names[$rod_bind_name]}&quot;
+    #end for
+   
+    ##start standard gatk options
+    #if $gatk_param_type.gatk_param_type_selector == &quot;advanced&quot;:
+        #include source=$standard_gatk_options#
+    #end if
+
+    #if $reference_source.reference_source_selector == &quot;history&quot;:
+        -d &quot;-R&quot; &quot;${reference_source.ref_file}&quot; &quot;${reference_source.ref_file.ext}&quot; &quot;gatk_input_reference_fasta&quot;
+        --picard_jar &quot;/mnt/galaxyTools/tools/picard/1.121/CreateSequenceDictionary.jar&quot;
+    #end if
+    ##end standard gatk options
+    ##start analysis specific options
+    #if $analysis_param_type.analysis_param_type_selector == &quot;advanced&quot;:
+        -p '
+        --minReadsAtLocus &quot;${analysis_param_type.minReadsAtLocus}&quot;
+        --windowSize &quot;${analysis_param_type.windowSize}&quot;
+        --mismatchFraction &quot;${analysis_param_type.mismatchFraction}&quot;
+        --maxIntervalSize &quot;${analysis_param_type.maxIntervalSize}&quot;
+        '
+    #end if
+  </command>
+  <inputs>
+    <conditional name="reference_source">
+      <param label="Choose the source for the reference list" name="reference_source_selector" type="select">
+        <option value="cached">Locally cached</option>
+        <option value="history">History</option>
+      </param>
+      <when value="cached">
+        <param format="bam" help="-I,--input_file &amp;lt;input_file&amp;gt;" label="BAM file" name="input_bam" type="data">
+        </param>
+        <param help="-R,--reference_sequence &amp;lt;reference_sequence&amp;gt;" label="Using reference genome" name="ref_file" type="select">
+          <options from_data_table="gatk3_picard_indexes">
+                <filter column="3" type="sort_by"/>
+
+          </options>
+        </param>
+      </when>
+      <when value="history">
+        <param format="bam" help="-I,--input_file &amp;lt;input_file&amp;gt;" label="BAM file" name="input_bam" type="data"/>
+        <param format="fasta" help="-R,--reference_sequence &amp;lt;reference_sequence&amp;gt;" label="Using reference file" name="ref_file" type="data">
+        </param>
+      </when>
+    </conditional>
+    
+    <repeat help="-known,--known &amp;lt;known&amp;gt;" name="rod_bind" title="Binding for reference-ordered data">
+        <conditional name="rod_bind_type">
+          <param label="Binding Type" name="rod_bind_type_selector" type="select">
+            <option selected="True" value="dbsnp">dbSNP</option>
+            <option value="snps">SNPs</option>
+            <option value="indels">INDELs</option>
+            <option value="custom">Custom</option>
+          </param>
+          <when value="dbsnp">
+              <param format="vcf" label="ROD file" name="input_rod" type="data"/>
+          </when>
+          <when value="snps">
+              <param format="vcf" label="ROD file" name="input_rod" type="data"/>
+          </when>
+          <when value="indels">
+              <param format="vcf" label="ROD file" name="input_rod" type="data"/>
+          </when>
+          <when value="custom">
+              <param label="ROD Name" name="custom_rod_name" type="text" value="Unknown"/>
+              <param format="vcf" label="ROD file" name="input_rod" type="data"/>
+          </when>
+        </conditional>
+    </repeat>
+    
+    <conditional name="gatk_param_type">
+      <param label="Basic or Advanced GATK options" name="gatk_param_type_selector" type="select">
+        <option selected="True" value="basic">Basic</option>
+        <option value="advanced">Advanced</option>
+      </param>
+      <when value="basic">
+        <!-- Do nothing here -->
+      </when>
+      <when value="advanced">
+        <expand macro="advanced_options" />
+      </when>
+    </conditional>
+    
+    <conditional name="analysis_param_type">
+      <param label="Basic or Advanced Analysis options" name="analysis_param_type_selector" type="select">
+        <option selected="True" value="basic">Basic</option>
+        <option value="advanced">Advanced</option>
+      </param>
+      <when value="basic">
+        <!-- Do nothing here -->
+      </when>
+      <when value="advanced">
+        <param help="-window,--windowSize &amp;lt;windowSize&amp;gt;" label="Window size for calculating entropy or SNP clusters (windowSize)" name="windowSize" type="integer" value="10"/>
+        <param help="to disable set to &lt;= 0 or &gt; 1 (-mismatch,--mismatchFraction &amp;lt;mismatchFraction&amp;gt;)" label="Fraction of base qualities needing to mismatch for a position to have high entropy (mismatchFraction)" name="mismatchFraction" type="float" value="0.15"/>
+        <param help="-minReads,--minReadsAtLocus &amp;lt;minReadsAtLocus&amp;gt;" label="Minimum reads at a locus to enable using the entropy calculation (minReadsAtLocus)" name="minReadsAtLocus" type="integer" value="4"/>
+        <param help="-maxInterval,--maxIntervalSize &amp;lt;maxIntervalSize&amp;gt;" label="Maximum interval size" name="maxIntervalSize" type="integer" value="500"/>
+      </when>
+    </conditional>
+  </inputs>
+  <outputs>
+    <data format="gatk_interval" label="${tool.name} on ${on_string} (GATK intervals)" name="output_interval"/>
+    <data format="txt" label="${tool.name} on ${on_string} (log)" name="output_log"/>
+  </outputs>
+  <tests>
+      <test>
+          <param name="reference_source_selector" value="history"/>
+          <param ftype="fasta" name="ref_file" value="phiX.fasta"/>
+          <param ftype="bam" name="input_bam" value="gatk/fake_phiX_reads_1.bam"/>
+          <param name="rod_bind_type_selector" value="dbsnp"/>
+          <param ftype="vcf" name="input_rod" value="gatk/fake_phiX_variant_locations.vcf"/>
+          <param name="gatk_param_type_selector" value="basic"/>
+          <param name="analysis_param_type_selector" value="advanced"/>
+          <param name="windowSize" value="10"/>
+          <param name="mismatchFraction" value="0.15"/>
+          <param name="minReadsAtLocus" value="4"/>
+          <param name="maxIntervalSize" value="500"/>
+          <output file="gatk/gatk_realigner_target_creator/gatk_realigner_target_creator_out_1.gatk_interval" name="output_interval"/> 
+          <output compare="contains" file="gatk/gatk_realigner_target_creator/gatk_realigner_target_creator_out_1.log.contains" name="output_log"/>
+      </test>
+  </tests>
+  <help>
+**What it does**
+
+Emits intervals for the Local Indel Realigner to target for cleaning.  Ignores 454 reads, MQ0 reads, and reads with consecutive indel operators in the CIGAR string.
+
+For more information on local realignment around indels using the GATK, see this `tool specific page &lt;http://www.broadinstitute.org/gatk/gatkdocs/org_broadinstitute_sting_gatk_walkers_indels_RealignerTargetCreator.html&gt;`_.
+
+To learn about best practices for variant detection using GATK, see this `overview &lt;http://www.broadinstitute.org/gatk/guide/topic?name=best-practices&gt;`_.
+
+If you encounter errors, please view the `GATK FAQ &lt;http://www.broadinstitute.org/gatk/guide/topic?name=faqs&gt;`_.
+
+------
+
+**Inputs**
+
+GenomeAnalysisTK: RealignerTargetCreator accepts an aligned BAM input file.
+
+
+**Outputs**
+
+The output is in GATK Interval format.
+
+
+Go `here &lt;http://www.broadinstitute.org/gatk/guide/topic?name=intro&gt;`_ for details on GATK file formats.
+
+-------
+
+**Settings**::
+
+ windowSize          window size for calculating entropy or SNP clusters
+ mismatchFraction    fraction of base qualities needing to mismatch for a position to have high entropy; to disable set to &lt;= 0 or &gt; 1
+ minReadsAtLocus     minimum reads at a locus to enable using the entropy calculation
+ maxIntervalSize     maximum interval size
+
+------
+
+**Citation**
+
+For the underlying tool, please cite `DePristo MA, Banks E, Poplin R, Garimella KV, Maguire JR, Hartl C, Philippakis AA, del Angel G, Rivas MA, Hanna M, McKenna A, Fennell TJ, Kernytsky AM, Sivachenko AY, Cibulskis K, Gabriel SB, Altshuler D, Daly MJ. A framework for variation discovery and genotyping using next-generation DNA sequencing data. Nat Genet. 2011 May;43(5):491-8. &lt;http://www.ncbi.nlm.nih.gov/pubmed/21478889&gt;`_
+
+Please also site `McKenna A, Hanna M, Banks E, Sivachenko A, Cibulskis K, Kernytsky A, Garimella K, Altshuler D, Gabriel S, Daly M, DePristo MA (2010). The Genome Analysis Toolkit: a MapReduce framework for analyzing next-generation DNA sequencing data. Genome Res. 20:1297-303. Epub 2010 Jul 19. &lt;http://www.ncbi.nlm.nih.gov/pubmed/20644199&gt;`_
+
+If you use this tool in Galaxy, please cite `Blankenberg D, Von Kuster G, Coraor N, Ananda G, Lazarus R, Mangan M, Nekrutenko A, Taylor J. Galaxy: a web-based genome analysis tool for experimentalists. Curr Protoc Mol Biol. 2010 Jan;Chapter 19:Unit 19.10.1-21. &lt;http://www.ncbi.nlm.nih.gov/pubmed/20069535&gt;`_
+
+  </help>
+</tool>

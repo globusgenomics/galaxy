@@ -1,0 +1,231 @@
+<tool id="Annovar" name="ANNOVAR" version="CGATOOLS: 1.7">
+	<description> Annotate a file using ANNOVAR </description>
+	
+	<requirements>		
+		<requirement type="package">cgatools</requirement>
+	</requirements>
+	
+	<command interpreter="bash">
+		annovar.sh		
+		--esp ${esp}
+		--gerp ${gerp}
+		--cosmic65 ${cosmic65}
+		--cosmic67 ${cosmic67}			
+                --cosmic70 ${cosmic70}
+		--outall ${annotated}		
+		--outinvalid ${invalid}
+		--dorunannovar ${dorun}
+		--inputfile ${infile}
+		--buildver ${reference.fields.dbkey}
+		--humandb ${reference.fields.ANNOVAR_humandb}
+		--scriptsdir ${reference.fields.ANNOVAR_scripts}	
+		--verdbsnp ${verdbsnp}
+		--geneanno ${geneanno}
+		--tfbs ${tfbs}
+		--mce ${mce}
+		--cytoband ${cytoband}
+		--segdup ${segdup}
+        --dgv ${dgv}
+		--gwas ${gwas}				
+		#if $filetype.type == &quot;other&quot;
+			--varfile N
+			--VCF N
+			--chrcol ${filetype.col_chr}
+			--startcol ${filetype.col_start}
+			--endcol ${filetype.col_end}
+			--obscol ${filetype.col_obs}
+			--refcol ${filetype.col_ref}
+		
+			#if $filetype.convertcoords.convert == &quot;Y&quot;
+				--vartypecol ${filetype.convertcoords.col_vartype}
+				--convertcoords Y
+			#else
+				--convertcoords N
+			#end if
+		#end if
+		#if $filetype.type == &quot;vcf&quot;
+			--varfile N
+			--VCF Y
+			--convertcoords N
+		#end if
+		#if $filetype.type == &quot;varfile&quot;
+			--varfile Y
+			--VCF N			
+		#end if			
+		--cg46 ${cgfortysix}
+		--cg69 ${cgsixtynine}
+		--ver1000g ${ver1000g}
+		--hgvs ${hgvs}
+		--otherinfo ${otherinfo}
+		--newimpactscores ${newimpactscores}
+		--clinvar ${clinvar}
+		
+	</command>
+		
+	<inputs>
+		<param name="dorun" type="hidden" value="Y"/> <!-- will add tool in future to filter on annovar columns, then will call annovar.sh with dorun==N -->
+		<param label="Reference" name="reference" type="select">
+			<options from_data_table="annovar_loc"/>				
+		</param>
+				
+		<param help="Must be CG varfile or a tab-separated file with a 1 line header" label="Select file to annotate" name="infile" type="data"/>
+		<conditional name="filetype">
+			<param label="Select filetype" name="type" type="select">
+				<option selected="false" value="vcf"> VCF4 file </option>
+				<option selected="false" value="varfile"> CG varfile </option>
+				<option selected="false" value="other"> Other </option>
+			</param>
+                        <when value="vcf"></when>
+                        <when value="varfile"></when>
+			<when value="other">
+				<param data_ref="infile" label="Chromosome Column" multiple="False" name="col_chr" type="data_column"/> 
+				<param data_ref="infile" label="Start Column" multiple="False" name="col_start" type="data_column"/> 
+				<param data_ref="infile" label="End Column" multiple="False" name="col_end" type="data_column"/> 
+				<param data_ref="infile" label="Reference Allele Column" multiple="False" name="col_ref" type="data_column"/> 
+				<param data_ref="infile" label="Observed Allele Column" multiple="False" name="col_obs" type="data_column"/> 	
+				<conditional name="convertcoords">
+					<param label="Is this file using Complete Genomics (0-based half-open) cooridinates?" name="convert" type="select">
+						<option value="Y"> Yes </option>
+						<option selected="True" value="N"> No </option>
+					</param>
+					<when value="Y">
+						<param data_ref="infile" label="varType Column" multiple="False" name="col_vartype" type="data_column"/> 
+					</when>
+                                        <when value="N"></when>
+				</conditional>
+			</when>
+		</conditional>
+
+
+
+		<param display="checkboxes" label="Select Gene Annotation(s)" multiple="true" name="geneanno" optional="true" type="select">			
+			<option selected="true" value="refSeq"> RefSeq </option>
+			<option value="knowngene"> UCSC KnownGene </option>
+			<option value="ensgene"> Ensembl </option>			
+		</param>	
+		<param checked="False" falsevalue="N" help="if checked, cDNA level annotation is compatible with HGVS" label="Use HGVS nomenclature for RefSeq annotation" name="hgvs" truevalue="-hgvs" type="boolean"/>
+		
+
+		<!-- region-based annotation -->
+		<param checked="False" falsevalue="N" help="This option identifies Giemsa-stained chromosomes bands, (e.g. 1q21.1-q23.3)." label="Cytogenic band Annotation?" name="cytoband" truevalue="Y" type="boolean"/>
+		<param checked="False" falsevalue="N" label="Transcription Factor Binding Site Annotation?" name="tfbs" truevalue="Y" type="boolean"/>
+		<param checked="False" falsevalue="N" help="This option phastCons 44-way alignments to annotate variants that fall within conserved genomic regions." label="Most Conserved Elements Annotation?" name="mce" truevalue="Y" type="boolean"/>
+		<param checked="False" falsevalue="N" help="Genetic variants that are mapped to segmental duplications are most likely sequence alignment errors and should be treated with extreme caution." label="Segmental Duplication Annotation?" name="segdup" truevalue="Y" type="boolean"/>
+		<param checked="False" falsevalue="N" help="Identify previously reported structural variants in DGV (Database of Genomic Variants) " label="DGV (Database of Genomic Variants) Annotation?" name="dgv" truevalue="Y" type="boolean"/>
+		<param checked="False" falsevalue="N" help="Identify variants reported in previously published GWAS (Genome-wide association studies) " label="GWAS studies Annotation?" name="gwas" truevalue="Y" type="boolean"/>
+
+
+
+		<!-- filter-based annotation -->
+		<param display="checkboxes" help="SNPs in dbSNP may be flagged as Clinically Associated, Select the NonFlagged version if you do not wish to annotate with these SNPs " label="Select dbSNP version(s) to annotate with" multiple="true" name="verdbsnp" optional="true" type="select">			
+			<option value="snp132"> 132            (hg18/hg19) </option>
+			<option value="snp132NonFlagged"> 132 NonFlagged  </option>
+			<option value="snp138"> 138            (hg19 only) </option>				
+			<option value="snp138NonFlagged"> 138 NonFlagged  </option>			
+		</param>	
+
+		<param display="checkboxes" help="2012april database for ALL populations was converted to hg18 using the UCSC liftover program" label="Select 1000Genomes Annotation(s)" multiple="true" name="ver1000g" optional="true" type="select">			
+			<option value="1000g2012apr"> 2012apr (hg18/hg19) (5 populations: AMR,AFR,ASN,CEU,ALL) </option>
+			<option value="1000g2012feb"> 2012feb (hg19) (1 population: ALL) </option>
+			<option value="1000g2010nov"> 2010nov (hg19) (1 population: ALL) </option>
+			<option value="1000g2010jul"> 2010jul (hg18) (4 populations: YRI,JPT,CHB,CEU)</option>			
+		</param>	
+		<!-- 
+		<param name="g1000" type="boolean" checked="True" truevalue="Y" falsevalue="N" label="Annotate with 1000genomes project? (version 2012april)"/>
+		-->
+
+
+	<param display="checkboxes" help="si versions of databases contain indels and chrY calls" label="Select Exome Variant Server  version(s) to annotate with" multiple="true" name="esp" optional="true" type="select">			
+			<option value="esp6500si_all"> ESP6500si ALL  </option>
+			<option value="esp6500si_ea"> ESP6500si European Americans  </option>
+			<option value="esp6500si_aa"> ESP6500si African Americans  </option>
+			<option value="esp6500_all"> ESP6500   ALL </option>
+			<option value="esp6500_ea"> ESP6500   European Americans  </option>
+			<option value="esp6500_aa"> ESP6500   African Americans   </option>			
+			<option value="esp5400_all"> ESP5400   ALL  </option>
+			<option value="esp5400_ea"> ESP5400   European Americans  </option>
+			<option value="esp5400_aa"> ESP5400   African Americans  </option>			
+		</param>	
+
+
+		<param checked="False" falsevalue="N" help="GERP identifies constrained elements in multiple alignments by quantifying substitution deficits (see http://mendel.stanford.edu/SidowLab/downloads/gerp/ for details) This option annotates those variants having GERP++&gt;2 in human genome, as this threshold is typically regarded as evolutionarily conserved and potentially functional" label="GERP++ Annotation?" name="gerp" truevalue="Y" type="boolean"/>
+	
+		<param checked="False" falsevalue="N" help="version 2013-11-05. Annotations include Variant Clinical Significance (unknown, untested, non-pathogenic, probable-non-pathogenic, probable-pathogenic, pathogenic, drug-response, histocompatibility, other) and Variant disease name." label="CLINVAR Annotation? (hg19 only)" name="clinvar" truevalue="Y" type="boolean"/>
+		<param checked="False" falsevalue="N" help="NCI-60 exome allele frequency data" label="Annotate with NCI60? (hg19 only)" name="nci60" truevalue="Y" type="boolean"/>
+		<param checked="False" falsevalue="N" help="Diversity Panel; 46 unrelated individuals" label="Complete Genomics 46 Genomes?" name="cgfortysix" truevalue="Y" type="boolean"/>
+		<param checked="False" falsevalue="N" help="Diversity Panel, Pedigree, YRI trio and PUR trio" label="Complete Genomics 69 Genomes?" name="cgsixtynine" truevalue="Y" type="boolean"/>
+		<param checked="False" falsevalue="N" label="Annotate with COSMIC65? (hg19 only)" name="cosmic65" truevalue="Y" type="boolean"/>
+		<param checked="False" falsevalue="N" label="Annotate with COSMIC67? (hg19 only)" name="cosmic67" truevalue="Y" type="boolean"/>
+	        <param checked="False" falsevalue="N" label="Annotate with COSMIC70? (hg19 only)" name="cosmic70" truevalue="Y" type="boolean"/>	
+
+		<param display="checkboxes" help="LJB refers to Liu, Jian, Boerwinkle paper in Human Mutation, pubmed ID 21520341. " label="Select functional impact scores (LJB2)" multiple="true" name="newimpactscores" optional="true" type="select">						
+			<option value="ljb2_sift"> SIFT score </option>
+			<option value="ljb2_pp2hdiv"> PolyPhen2 HDIV score </option>
+			<option value="ljb2_pp2hvar"> PolyPhen2 HVAR score </option>
+			<option value="ljb2_mt"> MutationTaster score </option>
+			<option value="ljb2_ma"> MutationAssessor score </option>
+			<option value="ljb2_lrt"> LRT score (Likelihood Ratio Test) </option>			
+			<option value="ljb2_phylop"> PhyloP score </option>
+			<option value="ljb2_fathmm"> FATHMM score </option>
+			<option value="ljb2_gerp"> GERP++ score </option>			
+			<option value="ljb2_siphy"> SiPhy score </option>
+		</param>	
+		<param checked="False" falsevalue="N" help="e.g. annotated as -score,damaging- or -score,benign- instead of just score" label="Also get predictions where possible?" name="otherinfo" truevalue="-otherinfo" type="boolean"/>
+		
+		<!--  OBSOLETE impact scores, uncomment for backwards compatibility, add argument impactscores to command
+<param name="impactscores" type="select" label="Select functional impact scores annotate with (OBSOLETE)" multiple="true" display="checkboxes" optional="true" help="LJB refers to Liu, Jian, Boerwinkle paper in Human Mutation, pubmed ID 21520341.">			
+			<option value="avsift"> AV SIFT </option>
+			<option value="ljbsift"> LJB SIFT (corresponds to 1-SIFT)</option>
+			<option value="pp2"> PolyPhen2 </option>
+			<option value="mutationtaster" > MutationTaster </option>
+			<option value="lrt"> LRT (Likelihood Ratio Test) </option>			
+			<option value="phylop"> PhyloP </option>
+		</param>	
+			-->
+
+		<!-- prefix for output file so you dont have to manually rename history items -->
+		<param help="Optional" label="Prefix for your output file" name="fname" type="text" value=""/>		
+				
+	</inputs>
+
+	<outputs>
+		<data format="tabular" label="$fname ANNOVAR Invalid input on ${on_string}" name="invalid"/>	
+		<data format="tabular" label="$fname ANNOVAR Annotated variants on ${on_string}" name="annotated"/>
+	</outputs>
+
+	<help> 
+**What it does**
+
+This tool will annotate a file using ANNOVAR.
+
+**ANNOVAR Website and Documentation**
+
+Website: http://www.openbioinformatics.org/annovar/
+
+Paper: http://nar.oxfordjournals.org/content/38/16/e164
+
+**Input Formats**
+
+Input Formats may be one of the following:
+	
+VCF file
+Complete Genomics varfile
+
+Custom tab-delimited file (specify chromosome, start, end, reference allele, observed allele columns)	
+	
+Custom tab-delimited CG-derived file (specify chromosome, start, end, reference allele, observed allele, varType columns)
+		
+		
+**Database Notes**
+
+see ANNOVAR website for extensive documentation, a few notes on some of the databases:
+
+**LJB2 Database**
+
+PolyPhen2 HVAR should be used for diagnostics of Mendelian diseases, which requires distinguishing mutations with drastic effects from all the remaining human variation, including abundant mildly deleterious alleles.The authors recommend calling probably damaging if the score is between 0.909 and 1, and possibly damaging if the score is between 0.447 and 0.908, and benign if the score is between 0 and 0.446.
+
+PolyPhen HDIV should be used when evaluating rare alleles at loci potentially involved in complex phenotypes, dense mapping of regions identified by genome-wide association studies, and analysis of natural selection from sequence data. The authors recommend calling probably damaging if the score is between 0.957 and 1, and possibly damaging if the score is between 0.453 and 0.956, and benign is the score is between 0 and 0.452. 		
+		
+	</help>
+
+</tool>

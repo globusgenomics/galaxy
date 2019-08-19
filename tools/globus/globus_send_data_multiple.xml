@@ -1,0 +1,42 @@
+<tool id="globus_send_data_multiple" name="Send Multiple Data via Globus">
+  <description>Transfers data via Globus.</description>
+  <action module="galaxy_ext.globus.tools" class="GlobusTransferOutAction"/>
+  <command interpreter="python">
+    globus_transfer.py
+    --transfer-info "$transfer_info"
+    --transfer-direction "$transfer_direction"
+  </command>
+  <inputs>
+    <param name="to_endpoint" type="text" size="100" label="Destination Endpoint">
+      <sanitizer sanitize="False"/>
+    </param>
+    <repeat name="src_dataset" title="Send Files" min="1">
+      <param name="from_path" type="data" size="100" label="Send this dataset"/>
+      <param name="to_path" type="text" size="100" label="Destination Path">
+        <sanitizer sanitize="False"/>
+      </param>
+    </repeat>
+  </inputs>
+  <outputs>
+    <data name="out_file1" type="data" format="txt"/>
+  </outputs>
+  <help>
+.. class:: warningmark
+    
+  **WARNING:** Be careful not to exceed disk quotas!
+    
+-----
+    
+**What it does**
+    
+  Transfers a dataset from your Galaxy installation to a Globus
+  Online endpoint.
+    
+-----
+    
+**Example**
+    
+  Specify your your endpoints, and some paths within those endpoints.
+
+  </help>
+</tool>

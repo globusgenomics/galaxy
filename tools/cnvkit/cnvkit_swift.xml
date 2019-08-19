@@ -1,0 +1,160 @@
+<tool id="cnvkit_swift" name="cnvkit_run (Swift)" version="CNVKIT: v0.7.5">
+  <description>Copy number variation toolkit: Infer CNVs from targeted DNA sequencing</description>
+  <requirements>
+    <requirement type="package">pymodules</requirement>
+    <requirement type="package" version="3.2.2">R</requirement>
+    <requirement type="package">swift</requirement>
+  </requirements>
+  <command interpreter="python">
+        cnvkit_swift.py 
+        --out-dir $output_log.extra_files_path
+        --output $output_log
+        --log $output_swift_log
+
+        ##Ref Genome
+        #if $genomeSource.refGenomeSource == "history":
+          -p '--fasta ${genomeSource.ownFile}'
+        #else:
+        ##use precomputed indexes
+          -p '--fasta ${genomeSource.indices.fields.path}'
+        #end if
+
+        ## input files
+        #if $input_dir_source.input_dir_source_type == "text":
+            --input_dir ${input_dir_source.input_directory_path}
+        #else if $input_dir_source.input_dir_source_type == "file":
+            --input_dir_file ${input_dir_source.input_directory_path_file}
+        #else:
+            --input_files "
+            #for i in $input_dir_source.tumorbams#${i} #end for#
+        #end if
+
+        -p '-t $targetbed'
+        -p '--access $accessfile'
+
+        #if $controlSource.refControlSource == "yes":
+          --percent-bam-files-for-baseline $controlSource.percent_bam_to_use
+          #if str($controlSource.group_batch_cond.group_batch_select) == "no":
+            --baseline-input-bam all
+          #else:
+            --baseline-input-bam group
+            --group-field $controlSource.group_batch_cond.group_field
+            #if str($controlSource.group_batch_cond.group_keyword.group) == "yes":
+              --keyword-separator $controlSource.group_batch_cond.group_keyword.separator
+              --keyword-field-order $controlSource.group_batch_cond.group_keyword.field_order
+            #end if
+          #end if
+        #else:
+          --baseline $baseline
+        #end if
+  </command>
+  <inputs>
+      <conditional name="input_dir_source">
+        <param help="If you choose the file based method, it must contain only one line with the path for your files" label="How will you enter the directory path for your BAM/BAI files?" name="input_dir_source_type" type="select">
+          <option value="text">Text Field</option>
+          <option selected="True" value="file">File</option>
+          <option value="history">History</option>
+        </param>
+        <when value="text">
+          <param area="True" help="Please input the full path of the directory that contains a set of BAM files. All the BAM files will be used as input datasets." label="BAM directory path" name="input_directory_path" size="2x40" type="text"/>
+        </when>
+        <when value="file">
+          <param format="txt" help="Must contain only one line with the path for your files" label="File containing path of the directory containing the BAM files" name="input_directory_path_file" type="data"/>
+        </when>
+        <when value="history">
+          <param format="bam" name="tumorbams" type="data" label="Tumor files (.bam)" multiple="true"/>
+        </when>
+      </conditional>
+
+     <param format="bed" name="targetbed" type="data" optional="True" label="Target regions (.bed)"/>
+    
+     <conditional name="genomeSource">
+      <param label="Select a reference genome from your history or use a built-in fasta file" name="refGenomeSource" type="select">
+        <option value="indexed">Use a built-in index</option>
+        <option value="history">Use one from the history</option>
+      </param>
+      <when value="indexed">
+        <param label="Select a reference genome" name="indices" type="select">
+          <options from_data_table="all_fasta_short">
+          </options>
+        </param>
+      </when>
+      <when value="history">
+        <param format="fasta" label="Select a reference from history (.fasta)" name="ownFile" type="data"/>
+      </when>
+    </conditional>
+   
+    <param format="bed" name="accessfile" label="Select a access file from history (.bed)" type="data"/>
+
+      <conditional name="controlSource">
+        <param label="Would you like to build baseline from bam input files?" name="refControlSource" type="select">
+          <option value="no">No</option>
+          <option value="yes" selected="True">Yes</option>
+        </param>
+        <when value="no"></when>
+        <when value="yes">
+          <param name="percent_bam_to_use" type="float" value="1.0" min="0.1" max="1.0" label="Percentage of random BAM files in your input to use to create the baseline" />
+          <conditional name="group_batch_cond">
+            <param name="group_batch_select" label="Do input BAMs need to be grouped by a field in the RG information" type="select" help="If no groups need to be generated from the input BAMs, one baseline will be created for all input BAMs using Contra Baseline tool. If groups need to be created, each group will have its own baseline file generated.">
+              <option value="yes" selected="True">Generate a baseline for each group</option>
+              <option value="no">Use all input BAMs to create one baseline</option>
+            </param>
+            <when value="no"></when>
+            <when value="yes">
+              <param name="group_field" type="select" label="Read Group field to group BAMs by" >
+                <option value="ID">ID</option>
+                <option value="CN">CN</option>
+                <option value="DS">DS</option>
+                <option value="DT">DT</option>
+                <option value="FO">FO</option>
+                <option value="KS">KS</option>
+                <option value="LB">LB</option>
+                <option value="PG">PG</option>
+                <option value="PI">PI</option>
+                <option value="PL">PL</option>
+                <option value="PM">PM</option>
+                <option value="PU">PU</option>
+                <option value="SM">SM</option>
+              </param>
+              <conditional name="group_keyword">
+                <param name="group" type="select" label="Does label in the RG field contain a keyword that should be separated" help="i.e. MEGA1_N100, MEGA1_N102, MEGA2_N105 where MEGA1 and MEGA2 are the different groups that need to be created" >
+                  <option value="no" selected="True">No</option>
+                  <option value="yes">Yes</option>
+                </param>
+                <when value="no">
+                  <param name="baseline" type="data" label="Baseline reference (.cnn)"/>
+                </when>
+                <when value="yes">
+                  <param name="separator" type="text" label="Separator character" help="The character that should be used to separate in the BAM RG field name. I.E. In the above example the underscore character (_) would be the separator." />
+                  <param name="field_order" value="1" type="integer" label="Field number that contains the Group name" help="I.E. In the above example the field number would be 1 because we want to use the first part of the ID field (MEGA) to group BAMs by." />
+                </when>
+              </conditional>
+            </when>
+          </conditional>
+        </when>
+      </conditional>
+  </inputs>
+  <outputs>
+    <data format="html" label="${tool.name} on ${on_string} (log)" name="output_log"/>
+    <data format="pdf" label="${tool.name} on ${on_string} (summary)" name="output_swift_log"/>
+  </outputs>
+
+  <stdio>
+    <!-- Anything other than zero is an error -->
+    <exit_code range="1:" />
+    <exit_code range=":-1" />
+  </stdio>
+
+  <tests>
+    <test>
+      <param name="samplebams" value="test.bam"/>
+      <param name="targetbed" value="test.bed"/>
+      <output name="out_file1" file="test_cnvkit_output.txt"/>
+    </test>
+  </tests>
+
+  <help>
+This tool runs segmentation on a CNVkit CNR file.
+  </help>
+
+</tool>

@@ -1,0 +1,156 @@
+<?xml version="1.0" ?>
+<tool id="qiime_longitudinal_pairwise-distances" name="qiime longitudinal pairwise-distances" version="022019">
+	<description> - Paired pairwise distance testing and boxplots</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command>
+	<![CDATA[
+	qiime longitudinal pairwise-distances --p-state-column="$pstatecolumn"
+
+	#def list_dict_to_string(list_dict):
+		#set $file_list = list_dict[0]['additional_input'].__getattr__('file_name')
+		#for d in list_dict[1:]:
+			#set $file_list = $file_list + ',' + d['additional_input'].__getattr__('file_name')
+		#end for
+		#return $file_list
+	#end def
+
+	 --m-metadata-file=$list_dict_to_string($input_files_mmetadatafile) --p-group-column="$pgroupcolumn" --p-state-2="$pstate2" --p-individual-id-column="$pindividualidcolumn" --p-state-1="$pstate1" --i-distance-matrix=$idistancematrix
+	#if str($preplicatehandling) != 'None':
+	 --p-replicate-handling=$preplicatehandling
+	#end if
+
+	#if str($cmdconfig) != 'None':
+	 --cmd-config=$cmdconfig
+	#end if
+	 --o-visualization=ovisualization
+
+	#if $pparametric:
+	  --p-parametric
+	#else
+		--p-no-parametric
+	#end if
+
+	#if str($ppalette) != 'None':
+	 --p-palette=$ppalette
+	#end if
+	;
+	qiime tools export --input-path ovisualization.qzv --output-path out   && mkdir -p '$ovisualization.files_path'
+	&& cp -r out/* '$ovisualization.files_path'
+	&& mv '$ovisualization.files_path/index.html' '$ovisualization'
+	]]>
+	</command>
+	<inputs>
+		<param format="qza,no_unzip.zip" label="--i-distance-matrix: DistanceMatrix Matrix of distances between pairs of samples.  [required]" name="idistancematrix" optional="False" type="data"/>
+
+		<repeat name="input_files_mmetadatafile" optional="False" title="--m-metadata-file">
+			<param label="--m-metadata-file: Metadata file or artifact viewable as metadata. This option may be supplied multiple times to merge metadata. Sample metadata file containing individual_id_column.  [required]" name="additional_input" type="data" format="tabular,qza,no_unzip.zip" />
+		</repeat>
+
+		<param label="--p-group-column: Metadata column on which to separate groups for comparison  [required]" name="pgroupcolumn" optional="False" type="text"/>
+		<param label="--p-state-column: Metadata column containing state (e.g., Time) across which samples are paired. [required]" name="pstatecolumn" optional="False" type="text"/>
+
+		<param label="--p-state-1: Baseline state column value.  [required]" name="pstate1" optional="False" type="text"/>
+		<param label="--p-state-2: State column value to pair with baseline. [required]" name="pstate2" optional="False" type="text"/>
+
+		<param label="--p-individual-id-column: Metadata column containing subject IDs to use for pairing samples. WARNING: if replicates exist for an individual ID at either state_1 or state_2, that subject will be dropped and reported in standard output by default. Set replicate_handling='random' to instead randomly select one member. [required]" name="pindividualidcolumn" optional="False" type="text"/>
+		<param label="--p-parametric: --p-no-parametric Perform parametric (ANOVA and t-tests) or non-parametric (Kruskal-Wallis, Wilcoxon, and Mann-Whitney U tests) statistical tests. [default: False]" name="pparametric" checked="False" type="boolean"/>
+
+		<param label="--p-palette: Color palette to use for generating
+                                  boxplots.  [default: Set1]" name="ppalette" optional="True" type="select">
+			<option selected="True" value="None">Selection is Optional</option>
+			<option value="Accent">Accent</option>
+			<option value="tab20">tab20</option>
+			<option value="Pastel2">Pastel2</option>
+			<option value="plasma">plasma</option>
+			<option value="viridis">viridis</option>
+			<option value="rainbow">rainbow</option>
+			<option value="Pastel1">Pastel1</option>
+			<option value="inferno">inferno</option>
+			<option value="magma">magma</option>
+			<option value="tab20b">tab20b</option>
+			<option value="Set3">Set3</option>
+			<option value="Set2">Set2</option>
+			<option value="Dark2">Dark2</option>
+			<option value="Set1">Set1</option>
+			<option value="tab10">tab10</option>
+			<option value="tab20c">tab20c</option>
+			<option value="terrain">terrain</option>
+			<option value="Paired">Paired</option>
+		</param>
+
+		<param label="--p-replicate-handling: Choose how replicate samples are handled. If
+                                  replicates are detected, 'error' causes
+                                  method to fail; 'drop' will discard all
+                                  replicated samples; 'random' chooses one
+                                  representative at random from among
+                                  replicates.  [default: error]" name="preplicatehandling" optional="True" type="select">
+			<option selected="True" value="None">Selection is Optional</option>
+			<option value="error">error</option>
+			<option value="random">random</option>
+			<option value="drop">drop</option>
+		</param>
+
+		<param label="--cmd-config: Use config file for command options" name="cmdconfig" optional="True" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="html" label="${tool.name} on ${on_string}: visualization.qzv" name="ovisualization"/>
+	</outputs>
+	<help>
+		<![CDATA[
+Paired pairwise distance testing and boxplots
+----------------------------------------------
+
+Performs pairwise distance testing between sample pairs from each subject.
+Sample pairs may represent a typical intervention study, e.g., samples
+collected pre- and post-treatment; paired samples from two different
+timepoints (e.g., in a longitudinal study design), or identical samples
+receiving different two different treatments. This action tests whether the
+pairwise distance between each subject pair differs between groups (e.g.,
+groups of subjects receiving different treatments) and produces boxplots of
+paired distance distributions for each group.
+
+Parameters
+----------
+distance_matrix : DistanceMatrix
+    Matrix of distances between pairs of samples.
+metadata : Metadata
+    Sample metadata file containing individual_id_column.
+group_column : Str
+    Metadata column on which to separate groups for comparison
+state_column : Str
+    Metadata column containing state (e.g., Time) across which samples are
+    paired.
+state_1 : Str
+    Baseline state column value.
+state_2 : Str
+    State column value to pair with baseline.
+individual_id_column : Str
+    Metadata column containing subject IDs to use for pairing samples.
+    WARNING: if replicates exist for an individual ID at either state_1 or
+    state_2, that subject will be dropped and reported in standard output
+    by default. Set replicate_handling="random" to instead randomly select
+    one member.
+parametric : Bool, optional
+    Perform parametric (ANOVA and t-tests) or non-parametric (Kruskal-
+    Wallis, Wilcoxon, and Mann-Whitney U tests) statistical tests.
+palette : Str % Choices({'Accent', 'Dark2', 'Paired', 'Pastel1', 'Pastel2', 'Set1', 'Set2', 'Set3', 'inferno', 'magma', 'plasma', 'rainbow', 'tab10', 'tab20', 'tab20b', 'tab20c', 'terrain', 'viridis'}), optional
+    Color palette to use for generating boxplots.
+replicate_handling : Str % Choices({'drop', 'error', 'random'}), optional
+    Choose how replicate samples are handled. If replicates are detected,
+    "error" causes method to fail; "drop" will discard all replicated
+    samples; "random" chooses one representative at random from among
+    replicates.
+
+Returns
+-------
+visualization : Visualization
+		\
+		]]>
+	</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

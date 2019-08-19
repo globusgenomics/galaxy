@@ -1,0 +1,160 @@
+<tool id="delly2_call_swift" name="delly2_call_swift" version="DELLY: v0.7.3">
+  <description>structural variant prediction method</description>
+  <requirements>
+    <requirement type="package">pymodules</requirement>
+    <requirement type="package">delly</requirement>
+    <requirement type="package">swift</requirement>
+    <requirement type="package">samtools</requirement>
+  </requirements>
+  <parallelism method="basic"/>
+  <stdio>
+    <regex level="warning" match="Warning: The index file is older than the data file:" source="stderr"/>
+  </stdio>
+  <command interpreter="python">     
+    delly2_swift.py
+    --out-dir $output_log.extra_files_path
+    --output $output_log
+    --log $output_swift_log
+ 
+   -t
+    #if $checkDel:
+      DEL
+    #end if
+    #if $checkDup:
+      DUP
+    #end if
+    #if $checkInv:
+      INV
+    #end if
+    #if $checkTra:
+      TRA
+    #end if
+    #if $checkIns:
+      INS
+    #end if
+    -p "-q $map_qual"
+    -p "-s $mad_cutoff"
+    -p "$noindels"    
+    -v $vcffile.extra_files_path
+    -p "-u $geno_qual" 
+    #if $genomeSource.refGenomeSource == &quot;history&quot;
+    -p "-g ${genomeSource.ownFile}"
+    #else
+    -p  "-g ${genomeSource.indices.fields.path}"
+    #end if
+    #if str($exclude) != &quot;None&quot;:
+        -p "-x $exclude"
+    #end if
+    
+    ## input files
+    #if $input_dir_source.input_dir_source_type == "text":
+        --input_dir ${input_dir_source.input_directory_path}
+    #else:
+        --input_dir_file ${input_dir_source.input_directory_path_file}
+    #end if
+
+  </command>
+
+  <inputs>
+    <conditional name="genomeSource">
+      <param label="Will you select a reference genome from your history or use a built-in index?" name="refGenomeSource" type="select">
+        <option value="indexed">Use a built-in index</option>
+        <option value="history">Use one from the history</option>
+      </param>
+      <when value="indexed">
+        <param label="Select a reference genome" name="indices" type="select">
+          <options from_data_table="all_fasta">
+            <filter column="2" type="sort_by"/>
+            <validator message="No indexes are available" type="no_options"/>
+          </options>
+        </param>
+      </when>
+      <when value="history">
+        <param format="fasta" label="Select a reference from history" metadata_name="dbkey" name="ownFile" type="data"/>
+      </when>
+    </conditional>
+
+      <conditional name="input_dir_source">
+        <param help="If you choose the file based method, it must contain only one line with the path for your files" label="How will you enter the directory path for your BAM/BAI files?" name="input_dir_source_type" type="select">
+          <option value="text">Text Field</option>
+          <option selected="True" value="file">File</option>
+        </param>
+        <when value="text">
+          <param area="True" help="Please input the full path of the directory that contains a set of BAM files. All the BAM files will be used as input datasets." label="BAM directory path" name="input_directory_path" size="2x40" type="text"/>
+        </when>
+        <when value="file">
+          <param format="txt" help="Must contain only one line with the path for your files" label="File containing path of the directory containing the BAM files" name="input_directory_path_file" type="data"/>
+        </when>
+      </conditional>
+
+    <param format="bed" help="Can largely reduce the running time" label="Target regions to be excluded (bed)" name="exclude" optional="true" type="data"/>
+    <param checked="true" label="Check Deletion?" name="checkDel" type="boolean"/>
+    <param checked="true" label="Check Duplication?" name="checkDup" type="boolean"/>
+    <param checked="true" label="Check Inversion?" name="checkInv" type="boolean"/>
+    <param checked="true" label="Check Translation?" name="checkTra" type="boolean"/>
+    <param checked="true" label="Check Insertion?" name="checkIns" type="boolean"/>
+    <param label="min. paired-end mapping quality" name="map_qual" type="integer" value="1"/>
+    <param label="min. mapping quality for genotyping" name="geno_qual" type="integer" value="5"/>
+    <param label="insert size cutoff, median+s*MAD (deletions only)" name="mad_cutoff" type="integer" value="9"/>
+    <param label="no small InDel calling?" name="noindels" type="boolean" truevalue="-n" falsevalue="" selected="true"/>
+    <param label="input VCF/BCF file for regenotyping" name="vcffile" type="data" format="data" optional="true" />
+  </inputs>
+
+  <outputs>
+    <data format="html" label="${tool.name} on ${on_string} (log)" name="output_log"/>
+    <data format="pdf" label="${tool.name} on ${on_string} (summary)" name="output_swift_log"/>
+  </outputs>
+
+  <help>
+DELLY is an integrated structural variant prediction method that can detect deletions, tandem duplications, inversions and translocations at single-nucleotide resolution in short-read massively parallel sequencing data.
+It uses paired-ends and split-reads to sensitively and accurately delineate genomic rearrangements throughout the genome.
+
+DELLY (Version: 0.7.3)
+Contact: Tobias Rausch (rausch@embl.de)
+age: delly [command] [arguments]
+
+Commands:
+    call         discover and genotype structural variants
+
+    merge        merge structural variants across VCF/BCF files and within a single VCF/BCF file
+    filter       filter somatic or germline structural variants
+
+Usage: delly call [OPTIONS] -g [ref.fa] [sample1.sort.bam] [sample2.sort.bam]...
+
+Generic options:
+  -? [ --help ]                     show help message
+
+  -t [ --type ] arg (=DEL)          SV type (DEL, DUP, INV, TRA, INS)
+
+  -o [ --outfile ] arg (="sv.bcf")  SV BCF output file
+
+  -x [ --exclude ] arg              file with regions to exclude
+
+PE options:
+  -q [ --map-qual ] arg (=1)        min. paired-end mapping quality
+
+  -s [ --mad-cutoff ] arg (=9)      insert size cutoff, median+s*MAD (deletions only)
+
+  -f [ --flanking ] arg (=90)       quality of the consensus alignment
+
+SR options:
+  -g [ --genome ] arg               genome fasta file
+
+  -m [ --min-flank ] arg (=13)      minimum flanking sequence size
+
+  -n [ --noindels ]                 no small InDel calling
+
+  -i [ --indelsize ] arg (=500)     max. small InDel size
+
+Genotyping options:
+  -v [ --vcffile ] arg              input VCF/BCF file for re-genotyping
+
+  -u [ --geno-qual ] arg (=5)       min. mapping quality for genotyping
+  </help>
+
+  <tests>
+    <test>
+    </test>
+  </tests>
+
+</tool>

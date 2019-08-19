@@ -1,0 +1,93 @@
+<tool id="dnaComplete_optimized" name="DNA Variant Analisys Optimized Workflow" version="BWA: 0.7.12; SAMTOOLS: 1.2; SAMBAMBA: v0.5.4; PICARD: 1.134; GATK3: GenomeAnalysisTK-3.4-46; JAVA: jre1.7.0_51">
+  <description/>
+  <action class="GlobusOptimizedWorkflows" module="galaxy_ext.globus.tools.actions.globus"/>
+  <parallelism method="basic"/>
+  <requirements>
+    <requirement type="package">bwa</requirement>
+    <requirement type="package">samtools</requirement>
+    <requirement type="package">sambamba</requirement>
+    <requirement type="package">picard</requirement>
+    <requirement type="package">gatk3</requirement>
+    <requirement type="package">pymodules</requirement>
+    <requirement type="package">java</requirement>
+  </requirements>
+  <command interpreter="python">
+    dnaComplete_optimized_05012015.py 
+      ##use precomputed indexes
+      --bwa-ref &quot;${bwa_indices.fields.path}&quot;
+
+      ## input file(s)
+      --fastq $paired.input1
+      #if $paired.sPaired == &quot;paired&quot;:
+        --rfastq $paired.input2
+      #end if
+
+      ## GATK reference files
+      --gatk-ref &quot;${gatk_ref_file.fields.path}&quot;
+
+      ## output vcf file
+      --output-bam $output_bam
+      --output-vcf $output_vcf
+      --output-log $output_log
+
+      #if $readGroup.specReadGroup == &quot;yes&quot;
+        --rgid &quot;$readGroup.rgid&quot;
+        --rglb &quot;$readGroup.rglb&quot;
+        --rgpl &quot;$readGroup.rgpl&quot;
+        --rgsm &quot;$readGroup.rgsm&quot;
+      #end if
+      &gt;  $output_log
+  </command>
+  <inputs>
+    <conditional name="paired">
+      <param label="Is this library mate-paired?" name="sPaired" type="select">
+        <option value="single">Single-end</option>
+        <option selected="True" value="paired">Paired-end</option>
+      </param>
+      <when value="single">
+        <param format="fastqsanger,fastqillumina" help="FASTQ with either Sanger-scaled quality values (fastqsanger) or Illumina-scaled quality values (fastqillumina)" label="FASTQ file" name="input1" type="data"/>
+      </when>
+      <when value="paired">
+        <param format="fastqsanger,fastqillumina" help="FASTQ with either Sanger-scaled quality values (fastqsanger) or Illumina-scaled quality values (fastqillumina)" label="Forward FASTQ file" name="input1" type="data"/>
+        <param format="fastqsanger,fastqillumina" help="FASTQ with either Sanger-scaled quality values (fastqsanger) or Illumina-scaled quality values (fastqillumina)" label="Reverse FASTQ file" name="input2" type="data"/>
+      </when>
+    </conditional>
+    <param label="BWA reference genome" name="bwa_indices" type="select">
+      <options from_data_table="bwa_0710_indexes">
+        <filter column="2" type="sort_by"/>
+        <validator message="No indexes are available" type="no_options"/>
+      </options>
+    </param>
+    <conditional name="readGroup">
+      <param label="Specify the read group for this file? (samse/sampe -r)" name="specReadGroup" type="select">
+        <option selected="True" value="yes">Yes</option>
+        <option value="no">No</option>
+      </param>
+      <when value="yes">
+        <param help="Required if RG specified. Read group IDs may be modiﬁed when merging SAM ﬁles in order to handle collisions." label="Read group identiﬁer (ID). Each @RG line must have a unique ID. The value of ID is used in the RG tags of alignment records. Must be unique among all read groups in header section." name="rgid" optional="False" size="25" type="text"/>
+        <param help="Required if RG specified" label="Library name (LB)" name="rglb" optional="False" size="25" type="text"/>
+        <param help="Required if RG specified. Valid values : CAPILLARY, LS454, ILLUMINA, SOLID, HELICOS, IONTORRENT and PACBIO" label="Platform/technology used to produce the reads (PL)" name="rgpl" optional="False" size="25" type="text"/>
+        <param help="Required if RG specified. Use pool name where a pool is being sequenced" label="Sample (SM)" name="rgsm" optional="False" size="25" type="text"/>
+      </when>
+      <when value="no"/>
+    </conditional>
+    <param help="It should match up with the reference used in BWA step" label="GATK reference genome" name="gatk_ref_file" type="select">
+      <options from_data_table="gatk3_picard_indexes"/>
+    </param>
+    <param label="Just the hidden name" name="hidden_name" type="hidden" value="OUTPUT_NAME"/>
+  </inputs>
+  <outputs>
+    <data format="bam" label="${tool.name} on ${$hidden_name}.bam" name="output_bam"/>
+    <data format="vcf" label="${tool.name} on ${$hidden_name}.vcf" name="output_vcf"/>
+    <data format="txt" label="${tool.name} on ${$hidden_name}.log" name="output_log"/>
+  </outputs>
+  <tests>
+    <test>
+    </test>
+  </tests> 
+  <help>
+
+**What it does**
+
+  </help>
+</tool>

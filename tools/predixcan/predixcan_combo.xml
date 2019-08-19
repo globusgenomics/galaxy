@@ -1,0 +1,63 @@
+<tool id="predixcan_combo" name="PrediXcan Predict and associate" version="09-07-2016">
+  <description>predict and associate the transcriptome from a given genotype file</description>
+  <requirements>
+      <requirement type="package">pymodule</requirement>
+      <requirement type="package">predixcan</requirement>
+      <requirement type="package">tabix</requirement>
+      <requirement type="package">R</requirement>
+  </requirements>
+  <command>
+    #set $dosage_folder_path = $output_predict.extra_files_path + "/dosage";
+    mkdir $output_predict.extra_files_path;
+    mkdir $dosage_folder_path;
+    #for $i, $s in enumerate( $dosages )
+            ln -s ${s.file_name} chr${i}.txt; bgzip chr${i}.txt; mv chr${i}.txt.gz $dosage_folder_path;
+    #end for
+
+    PrediXcan.py
+    #if str($genelist) != "None":
+      --genelist $genelist
+    #end if
+    --predict --assoc
+    --weights $weight_path.fields.path
+    --output_dir $output_predict.extra_files_path
+    --dosages $dosage_folder_path
+    --dosages_prefix $dosage_prefix
+    --pheno $pheno_file
+    $regression_type
+    #if str($filter_file) != "None":
+      --filter $filter_file $filter_value
+    #end if
+    --samples $samples; cp $output_predict.extra_files_path/predicted_expression.txt $output_predict; cp $output_predict.extra_files_path/association.txt $output_associate
+  </command>
+  <inputs>
+    <param format="txt,tabular" help="List of genes. By default it will use all available genes in model database." label="Gene list" name="genelist" type="data" optional="True"/>
+    <param label="Select a weight database model" name="weight_path" type="select">
+      <options from_data_table="all_transcriptome_model">
+        <filter column="2" type="sort_by"/>
+        <validator message="No indexes are available" type="no_options"/>
+      </options>
+    </param>
+    <param help="A folder compressed in the tar.gz format containing dosages file."  multiple="true" label="Dosages data" name="dosages" type="data"/>
+    <param help="Prefix of filenames of gzipped dosage files" label="Dosages prefix" value="chr" name="dosage_prefix" type="text"/> 
+     <param format="txt" help="File in dosages directory with individual ids. Must be in same order as columns for dosages." label="Samples File" name="samples" type="data"/>
+    <param format="txt,tabular" help="Filter files can specify a subset rows in the pheno file to perform the association on." label="Filter file" name="filter_file" type="data" optional="True"/>
+    <param help="" label="Filter value" value="2" name="filter_value" type="text"/>
+    <param help="Phenotype files are expected to be in a format similar to the format required for PLINK."  label="Phenotype file" name="pheno_file" type="data" format="txt,tabular"/>
+    <param name="regression_type" type="select">
+      <option value="--logistic">logistic</option>
+      <option value="--linear" selected="true">linear</option>
+      <option value="--survival">survival</option>
+    </param>
+  </inputs>
+
+  <outputs>
+    <data format="txt,csv" label="${tool.name} on ${on_string}: Predicted file" name="output_predict"/>
+    <data format="txt,csv" label="${tool.name} on ${on_string}: Associate file" name="output_associate"/>
+  </outputs>
+
+  <tests>
+  </tests>
+  <help>
+  </help>
+</tool>

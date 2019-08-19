@@ -1,0 +1,77 @@
+﻿<macros>
+  <macro name="main">
+    <description>Strelka</description>
+    <requirements>
+      <!--<requirement type="set_environment">SCRIPT_PATH_STRELKA</requirement>-->
+      <requirement type="package" version="0.1.18">samtools</requirement>
+      <requirement type="package" version="0.1.11">vcftools</requirement>
+    </requirements>
+    <command interpreter="python">strelka_wrapper.py --tumorBam $tumorBam --normalBam $normalBam 
+	#silent sys.stderr.write("!!!! Cheetah Template Variables !!!!\n")
+	#for k,v in $searchList[2].items()
+	#silent   sys.stderr.write(" %s = %s\n" % (str(k), str(v) ))
+	#end for
+	#silent sys.stderr.write("!!!! end-of-list !!!!\n")     
+	#import string
+
+     ##--scriptPath				\$SCRIPT_PATH_STRELKA
+     --scriptPath $__tool_directory__
+     #if $genomeSource.refGenomeSource == "history":
+      --refFile "${genomeSource.ownFile}"
+     #else:
+      --refFile "${genomeSource.index.fields.path}"
+     #end if   
+
+     #if $configuration.configuration_switch == 'Default for Bwa':
+    --configFile 				strelka_config_bwa_default.ini
+     #else if $configuration.configuration_switch == 'Default for Isaac':
+          --configFile				strelka_config_isaac_default.ini
+     #else if $configuration.configuration_switch == 'Default for Eland':
+          --configFile				strelka_config_eland_default.ini
+     #else if $configuration.configuration_switch == 'Path':
+          --configFile				$configuration.configFile
+     #else:
+          --configFile				Custom
+          --depthFilterMultiple 			$configuration.depthFilterMultiple
+          --snvMaxFilteredBasecallFrac		$configuration.snvMaxFilteredBasecallFrac
+          --snvMaxSpanningDeletionFrac 		$configuration.snvMaxSpanningDeletionFrac
+          --indelMaxRefRepeat			$configuration.indelMaxRefRepeat
+          --indelMaxWindowFilteredBasecallFrac	$configuration.indelMaxWindowFilteredBasecallFrac
+          --indelMaxIntHpolLength			$configuration.indelMaxIntHpolLength
+          --ssnvPrior				$configuration.ssnvPrior
+          --sindelPrior				$configuration.sindelPrior
+          --ssnvNoise				$configuration.ssnvNoise
+          --sindelNoise				$configuration.sindelNoise
+          --ssnvNoiseStrandBiasFrac		$configuration.ssnvNoiseStrandBiasFrac
+          --minTier1Mapq				$configuration.minTier1Mapq
+          --minTier2Mapq				$configuration.minTier2Mapq
+          --ssnvQuality_LowerBound		$configuration.ssnvQuality_LowerBound
+          --sindelQuality_LowerBound		$configuration.sindelQuality_LowerBound
+          --isWriteRealignedBam			$configuration.isWriteRealignedBam
+          --binSize 				$configuration.binSize
+          --isSkipDepthFilters			$configuration.isSkipDepthFilters
+          --maxInputDepth 			$configuration.maxInputDepth
+          #if $configuration.extra_arguments.extra_arguments_switch == 'Yes':
+            --extraStrelkaArguments 		yes
+            #if $configuration.extra_arguments.a:
+              -a
+            #end if
+            #if $configuration.extra_arguments.b:
+              -b $configuration.extra_arguments.barg
+            #end if
+            #if $configuration.extra_arguments.c:
+              -c $configuration.extra_arguments.carg
+            #end if
+            #if $configuration.extra_arguments.d:
+              -d $configuration.extra_arguments.darg
+            #end if
+            #if $configuration.extra_arguments.e:
+              -e $configuration.extra_arguments.earg
+            #end if
+        #end if
+     #end if
+          
+     </command>
+  </macro>
+</macros>
+

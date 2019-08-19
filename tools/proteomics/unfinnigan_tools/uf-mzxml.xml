@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+
+<tool name="RAW to mzxml" id="uf_mzxml_id">
+  <description>Convert RAW files to mzxml files.</description>
+  <requirements>
+      <requirement type="package">unfinnigan_tools</requirement>
+      <requirement type="package">perlmodules</requirement>
+  </requirements>
+  <command>
+    uf-mzxml $Centroid $Input_param_range.Range 
+    #if $Input_param_range.Range=="-r":
+    $Input_param_range.range_from .. $Input_param_range.range_to
+    #end if
+    $upload_input
+    >  $mzXMLFile 2> $mzXMLLog
+  </command>
+  
+  <inputs>
+    <param name="upload_input" type="data" format="raw,RAW" label="Select RAW file"/>
+    <param name="Centroid" type="select" label="Plus centroid parameter" help="Use this option if you need
+ extra centroid parameter.">
+      <option value="" selected="true">Default</option>
+      <option value="-c">c(entroid)</option>
+    </param>
+    <conditional name="Input_param_range">
+      <param name="Range" type="select" label="Plus range parameter" help="Use this option if you need ext
+ra range parameter.">
+	<option value="" selected="true">Default</option>
+	<option value="-r">r(ange)</option>
+      </param>
+      <when value="">
+      </when>   
+      <when value="-r">
+	<param name="range_from" type="text" label="from" help="from"/> 
+	<param name="range_to" type="text" label="to" help="to"/> 
+      </when>
+    </conditional>
+  </inputs>
+  <outputs>
+    <data format="mzxml" name="mzXMLFile" label="${tool.name} on ${on_string}.mzxml"/>
+    <data format="txt" name="mzXMLLog" label="Log file for ${tool.name} on ${on_string}.log"/>
+  </outputs>
+  
+  <help>
+    uf-mzXML converts RAW files to mzxml format
+  </help>
+</tool>

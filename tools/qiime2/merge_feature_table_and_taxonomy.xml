@@ -1,0 +1,34 @@
+<?xml version="1.0" ?>
+<tool id="merge_feature_table_and_taxonomy" name="merge feature table and taxonomy" version="022019">
+	<description>- Merge features and taxonomy into a single biom file.</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command>
+mkdir out;
+
+qiime tools export --output-dir out $taxonomy_qza;
+qiime tools export --output-dir out $biom_qza;
+
+sed -i '1s;^;#;' out/*.tsv;
+sed -i 's/Confidence/confidence/g' out/*.tsv;
+sed -i 's/Taxon/taxonomy/g' out/*.tsv;
+sed -i 's/Feature ID/OTU ID/g' out/*.tsv;
+
+biom add-metadata -i out/*.biom -o table_with_sample_metadata.biom --observation-metadata-fp out/*.tsv
+;
+mv *.biom $biom_and_tax_merged</command>
+	<inputs>
+		<param label="Feature table" name="biom_qza" type="data" format="qza,no_unzip.zip" collection_type="list"/>
+		<param label="Taxonomy" name="taxonomy_qza" type="data" format="qza,no_unzip.zip"/>
+	</inputs>
+	<outputs>
+		<data format="biom2" label="${tool.name} on ${on_string}: biom_and_tax_merged.biom" name="biom_and_tax_merged"/>
+	</outputs>
+	<help>
+	</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

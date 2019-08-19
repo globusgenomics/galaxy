@@ -1,0 +1,300 @@
+#!/usr/bin/env python
+"""
+Run tangram_detectn
+usage: tangram_detect.py [options]
+"""
+
+import subprocess
+import glob, fnmatch, time, re, optparse, os, sys, tempfile, shutil
+
+CHUNK_SIZE = 2**20 #1mb
+
+"""
+    tangram_detect.py
+      --lb $lib_file
+      --ht $hist_file
+      --in $input_bam
+      --ref $ref
+      --proc 32
+      --outpath $output.extra_files_path
+      --output $output
+      #if $advanced.advanced_select == "yes":
+          #if str { $advanced.rg } != "all" :
+              --rg $advanced.rg
+          #end if
+          #if $advanced.cl == 1:
+              --cl
+          #end if
+          #if $advanced.mcs != 2:
+              --mcs $advanced.mcs
+          #end if
+          #if $advanced.mel != 100:
+              --mel $advanced.mel
+          #end if
+          #if $advanced.mq != 20:
+              --mq $advanced.mq
+          #end if
+          #if $advanced.smq != 20:
+              --smq $advanced.smq
+          #end if
+          #if str { $advanced.dt } != "0xffffffff":
+              --dt $advanced.dt
+          #end if
+          #if $advanced.mss != 15:
+              --mss $advanced.mss
+          #end if
+          #if $advanced.mcr != 0.85:
+              --mcr $advanced.mcr
+          #end if
+          #if $advanced.msr != 0.8:
+              --msr $advanced.msr
+          #end if
+          #if $advanced.gt == 1:
+              --gt
+          #end if
+          #if $advanced.rpf != 2:
+              --rpf $advanced.rpf
+          #end if
+          #if $advanced.srf != 5:
+              --srf $advanced.srf
+          #end if
+          #if $advanced.mjl != 50000000:
+              --mjl $advanced.mjl
+          #end if
+
+
+      #end if
+"""
+def create_idx_ref(tmpdir, ref):
+    index = "%s/ref.idx" % (tmpdir)
+
+    cmd = "tangram_index -ref %s -sp $TANGRAM_DATA/moblist_19Feb2010_sequence_length60.fa -out %s" % (ref, index)
+    print cmd
+
+    #set up stderr output options
+    stderr = tempfile.NamedTemporaryFile( prefix="tangram-stderr-", dir=tmpdir )
+
+    proc = subprocess.Popen( args=cmd, stderr=stderr, shell=True, cwd=tmpdir )
+    return_code = proc.wait()
+
+    if return_code:
+        stderr_target = sys.stderr
+    else:
+        stderr_target = sys.stdout
+    stderr.flush()
+    stderr.seek(0)
+    while True:
+        chunk = stderr.read( CHUNK_SIZE )
+        if chunk:
+            stderr_target.write( chunk )
+        else:
+            break
+    stderr.close()
+
+    return index
+
+def run_cmd ( cmd , wd_tmpdir, descriptor):
+    print cmd
+    stderr = tempfile.NamedTemporaryFile( prefix = "cmd_stderr" )
+    proc = subprocess.Popen( args=cmd, stderr=stderr, shell=True, cwd=wd_tmpdir )
+
+    exit_code = proc.wait()
+
+    if exit_code:
+        stderr_target = sys.stderr
+    else:
+        stderr_target = sys.stdout
+    stderr.flush()
+    stderr.seek(0)
+    while True:
+        chunk = stderr.read( CHUNK_SIZE )
+        if chunk:
+            stderr_target.write( chunk )
+        else:
+            break
+    stderr.close()
+
+
+def __main__():
+    print "\n\nStart time:"
+    print time.strftime('%d/%m/%Y %H:%M:%S', time.localtime(time.time()))
+
+    #Parse Command Line
+    parser = optparse.OptionParser()
+    parser.add_option( '', '--dataset', dest='dataset', action='store_true', help="Input is a dataset" )
+    parser.add_option( '', '--lb', dest='libFile', help='library information file' )
+    parser.add_option( '', '--ht', dest='histFile', help='fragment length histogram file' )
+    parser.add_option( '', '--in', dest='bamFile', help='The input Mosaik BAM dataset' )
+    parser.add_option( '', '--ref', dest='reference', help='transfered reference sequence' )
+    parser.add_option( '', '--proc', dest='proc', help="number of procesessors to run on" )
+    parser.add_option( '', '--outpath', dest='workdir', help='The directory where the outptu will be temporaryly written to.' )
+    parser.add_option( '', '--output', dest='output', help='The output.' )
+    parser.add_option( '', '--rg', dest='rg', help='the regions to detect in' )
+    parser.add_option( '', '--cl', dest='cl', action="store_true", default=False, help='check for invalid libraries' )
+    parser.add_option( '', '--mcs', dest='mcs', help='minimum cluster size ' )
+    parser.add_option( '', '--mel', dest='mel', help='minimum event lenth' )
+    parser.add_option( '', '--mq', dest='mq', help='minimum mapping quality for pairs other than special pairs' )
+    parser.add_option( '', '--smq', dest='smq', help='minimum mapping quality for special pairs' )
+    parser.add_option( '', '--dt', dest='dt', help='detection set' )
+    parser.add_option( '', '--mss', dest='mss', help='minimum size of soft clipped reads for split alignment candidate' )
+    parser.add_option( '', '--mcr', dest='mcr', help='minimum cover rate for split alignments' )
+    parser.add_option( '', '--msr', dest='msr', help='minimum score rate for split alignments' )
+    parser.add_option( '', '--gt', dest='gt', help=' do genotyping for detected SV events' )
+    parser.add_option( '', '--rpf', dest='rpf', help='minimum number of supporting read-pair fragments for genotype' )
+    parser.add_option( '', '--srf', dest='srf', help='minimum number of supporting split-read fragments for genotype' )
+    parser.add_option( '', '--mjl', dest='mjl', help='minimum jumping (bam index jump) length for genotyping. Set to 0 to turn off the jump' )
+    ( options, args ) = parser.parse_args()
+
+    
+    ## Create a temporary directory where output will be written
+    if options.dataset:
+        os.mkdir(options.workdir)
+        wd_tmpdir = tempfile.mkdtemp( prefix='tmp-tangram-detect-', dir=options.workdir )
+
+        ## create the "in" file containing a list of BAM files as input for each BAM file in the input BAM directory
+        bamDir = '%s/%s_files' % (os.path.dirname(options.bamFile), ('.').join(os.path.basename(options.bamFile).split('.')[:-1]))
+        for bamfile in glob.glob('%s/*.bam' % bamDir):
+           bam_basename = os.path.basename(bamfile)
+           inFile = open("%s/%s.in.txt" % (wd_tmpdir, bam_basename), "w")
+           inFile.write("%s\n" % bamfile )
+           inFile.close()
+    else:
+        wd_tmpdir = tempfile.mkdtemp( prefix='tmp-tangram-detect-' )
+
+        ## create the "in" file containing a list of BAM files as input
+        inFile = open("%s/in.txt" % wd_tmpdir, "w")
+        inFile.write("%s\n" % options.bamFile)
+        inFile.close()
+
+    ## create a reference index file
+    ref_index = create_idx_ref(wd_tmpdir, options.reference)
+    output_tmpdir = "%s/detect_output" % wd_tmpdir
+    os.mkdir(output_tmpdir)
+
+    ## create the command line
+    tangram_detect_path = os.popen("which %s" % "tangram_detect").read().strip()
+    if options.dataset:
+        cmd = "%s -in INBAM -lb LIB_INPUT -ht HIST_INPUT -ref %s -rg RG_NAME -p 1 " % (tangram_detect_path, ref_index)
+    else:
+        #cmd = "tangram_detect -in %s -lb %s -ht %s -ref %s -p %s " % ("%s/in.txt" % wd_tmpdir, options.libFile, options.histFile, ref_index, options.proc )
+        cmd = "tangram_detect -in %s -lb %s -ht %s -ref %s -p 16 " % ("%s/in.txt" % wd_tmpdir, options.libFile, options.histFile, ref_index )
+
+    if options.rg:
+        cmd += "-rg %s " % (options.rg)
+    if options.cl:
+        cmd += "-cl "
+    if options.mcs:
+        cmd += "-mcs %s " % (options.mcs)
+    if options.mel:
+        cmd += "-mel %s " % (options.mel)
+    if options.mq:
+        cmd += "-mq %s " % (options.mq)
+    if options.smq:
+        cmd += "-smq %s " % (options.smq)
+    if options.dt:
+        cmd += "-dt %s " % (options.dt)
+    if options.mss:
+        cmd += "-mss %s " % (options.mss)
+    if options.mcr:
+        cmd += "-mcr %s " % (options.mcr)
+    if options.msr:
+        cmd += "-msr %s " % (options.msr)
+    if options.gt:
+        cmd += "-gt %s " % (options.gt)
+    if options.rpf:
+        cmd += "-rpf %s " % (options.rpf)
+    if options.srf:
+        cmd += "-srf %s " % (options.srf)
+    if options.mjl:
+        cmd += "-mjl %s " % (options.mjl)
+
+    if options.dataset:
+        cmd += " > OUTVCF 2> /dev/null "
+        
+        ## Swift job preparation
+        ## generate a sites.xml file for the job:
+        swiftwork_dir = '%s/%s' % (wd_tmpdir, 'swiftwork')
+        os.mkdir('%s' % (swiftwork_dir))
+
+        sites_file = '%s/sites.xml' % (wd_tmpdir)
+        f = open(sites_file,'w')
+        f.write('<config>\n')
+        f.write('   <pool handle="condor">\n')
+        f.write('     <execution provider="coaster" url="none" jobmanager="local:condor"/>\n')
+        f.write('     <gridftp url="local://localhost"/>\n')
+        f.write('     <workdirectory>%s</workdirectory>\n' % (swiftwork_dir))
+        f.write('     <profile namespace="karajan" key="jobThrottle">1000</profile>\n')
+        f.write('     <profile namespace="karajan" key="initialScore">10000</profile>\n')
+        f.write('     <profile namespace="globus" key="condor.+Tenant">"ci"</profile>\n')
+        f.write('     <!-- <profile namespace="globus" key="condor.+GlobusOnline">false</profile> -->\n')
+        f.write('     <profile namespace="globus" key="jobsPerNode">32</profile>\n')
+        f.write('     <profile namespace="globus" key="maxwalltime">1000:00:00</profile>\n')
+        f.write('     <profile namespace="globus" key="maxnodes">1</profile>\n')
+        f.write('     <profile namespace="globus" key="nodeGranularity">1</profile>\n')
+        f.write('     <profile namespace="globus" key="slots">1000</profile>\n')
+        f.write('   </pool>\n')
+        f.write('</config>\n')
+        f.close()
+
+        ## generate a tc.data file for the job
+        bash_bin = os.popen("which %s" % "bash").read().strip()
+        #tangram_detect_path = os.popen("which %s" % "tangram_detect").read().strip()
+        tc_file = '%s/tc.data' % (wd_tmpdir)
+        f = open(tc_file,'w')
+        f.write('condor\tbash\t%s\n' % (bash_bin))
+        f.write('condor\ttangram_detect\t%s\n' % (tangram_detect_path))
+        f.close()
+
+        app_cmd = cmd
+
+        lib_tab_dir = '%s/%s_files' % (os.path.dirname(options.libFile), ('.').join(os.path.basename(options.libFile).split('.')[:-1]))
+        hist_dir = '%s/%s_files' % (os.path.dirname(options.histFile), ('.').join(os.path.basename(options.histFile).split('.')[:-1]))
+
+        swift_params = list()
+        swift_params.append('-input_dir=' + wd_tmpdir)
+        swift_params.append('-lib_tab_files=' + lib_tab_dir)
+        swift_params.append('-hist_files=' + hist_dir)
+        swift_params.append('-output_dir=' + output_tmpdir)
+
+        swift_file = '/nfs/software/galaxy/tools/tangram/tangram_detect.swift'
+        swift_cmd = "swift -sites.file %s -tc.file %s %s " %   (sites_file, tc_file, swift_file)
+        cmd = "%s %s %s 2>&1" % (swift_cmd, ' '.join(swift_params), '-app_cmd=\''+app_cmd+'\'')
+        log_msg = "Running Tangram Detect using Swift"
+    else:
+        cmd += " > %s" % options.output
+        log_msg = "Running Tangram Detect"
+
+    ## run the command
+    run_cmd(cmd, wd_tmpdir, log_msg)
+
+    ## After successful run, move output files to output file locations
+    if options.dataset:
+        # concatenate, sort VCF output
+        dir_contents = os.listdir(output_tmpdir)
+
+        dir_contents.sort()
+        bgzip_vcf = list()
+        for vcf in dir_contents:
+            if "vcf" in vcf:
+                vcf_path = '%s/%s' % (output_tmpdir, vcf)
+                bgzip_cmd = 'bgzip %s' % (vcf_path)
+                run_cmd(bgzip_cmd, wd_tmpdir, "Running bgzip on %s" % (vcf_path))
+ 
+                tabix_cmd = 'tabix -f -p vcf %s.gz' % (vcf_path)
+                run_cmd(tabix_cmd, wd_tmpdir, "Running tabix on %s" % (vcf_path))
+
+                bgzip_vcf.append("%s.gz" % vcf_path)
+
+
+        ## run the concatenate command on the bgzip_vcf list of files
+        concat_cmd = 'vcf-concat %s > %s' % (" ".join(bgzip_vcf), options.output)
+        run_cmd(concat_cmd, wd_tmpdir, "Running vcf-concat")
+
+    ## clean up tmp directories
+    shutil.rmtree(wd_tmpdir)
+
+    print "\n\nEnd time:"
+    print time.strftime('%d/%m/%Y %H:%M:%S', time.localtime(time.time()))
+
+if __name__=="__main__": __main__()
+

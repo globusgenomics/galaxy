@@ -1,0 +1,151 @@
+<tool id="novoalign" name="Map with Novoalign" version="NOVOALIGN: default">
+	<requirements>
+		<requirement type="binary">novoalign</requirement>
+	</requirements>
+	<description>for Illumina</description>
+	<parallelism method="basic"/>
+	<command>${GALAXY_DATA_INDEX_DIR}/../tools/novoalign/novoalign.py ${GALAXY_DATA_INDEX_DIR}/../tools/novoalign/novoalign
+		-f $fastqFile1
+
+		#if $pairedOrSingle.pairedEnd == &quot;true&quot;
+         		$pairedOrSingle.fastqFile2
+		#end if
+
+		#if $refGenomeSource.genomeSource == &quot;indexed&quot;
+			-d $refGenomeSource.index.fields.path
+		#else
+			#if $refGenomeSource.genomeSource == &quot;history&quot;
+				-d $refGenomeSource.ownFile 
+			#end if	
+		#end if
+
+		-o $outputFormat 
+
+		-r $method 
+
+		#if str( $minimumInformation )
+			-l $minimumInformation 
+		#end if
+
+		#if str( $minimumAlignmentQuality )
+			-e $minimumAlignmentQuality 
+		#end if
+
+		#if str( $fragmentLen )
+			-i $fragmentLen $stdDev
+		#end if
+
+
+		#if $adapterStrip1 != &quot;&quot;
+			#if $adapterStrip2 != &quot;&quot;
+				-a $adapterStrip1 $adapterStrip2 
+			#else
+                		-a $adapterStrip1 
+			#end if
+		#end if
+
+		#if $hardClipTail == &quot;true&quot;
+			-H 
+		#end if
+
+		#if str( $numThreads )
+			-c $numThreads
+		#end if
+
+
+		&gt; $outputFile
+	</command>
+	<inputs>
+	    <param format="fastq" label="FASTQ input file" name="fastqFile1" type="data"/>
+
+	    <conditional name="pairedOrSingle">
+		<param help="Paired-End data does not necessarily need to be treated as paired-end." label="Paired-End Reads?" name="pairedEnd" type="select">
+                	<option value="true">True</option>
+                	<option selected="true" value="false">False</option>
+                </param> 
+		<when value="true">
+	                <param format="fastq" label="the second FASTQ input file" name="fastqFile2" type="data"/>
+		</when>
+		<when value="false"/>
+	    </conditional>
+
+	    <conditional name="refGenomeSource">
+		  <param help="Built-ins were indexed using default options" label="Will you select a reference genome from your history or use a built-in index?" name="genomeSource" type="select">
+			<option value="indexed">Use a built-in index</option>
+			<option selected="true" value="history">Use one from the history</option>
+		  </param>
+		  <when value="indexed">
+			<param help="if your genome of interest is not listed - contact Galaxy team" label="Select a reference genome" name="index" type="select">
+			  <options from_data_table="novoalign_indices">
+				<filter column="2" type="sort_by"/>
+				<validator message="No indexes are available" type="no_options"/>
+			  </options>
+			</param>
+		  </when>
+		  <when value="history">
+			<param format="novoalign_base_index,fasta" label="Select the reference genome" metadata_name="dbkey" name="ownFile" type="data"/>
+		  </when>
+	    </conditional>
+
+	    <param label="-o, Specify output report format and options" name="outputFormat" type="select">
+		  <option value="Native">Native</option>
+		  <option selected="true" value="SAM">SAM</option>
+		  <option value="Pairwise">Pairwise</option>
+		  <option value="Extended">Extended</option>
+	    </param>
+
+	    <param label="-r, Set the rules for handling of reads with multiple alignment locations" name="method" type="select">
+		  <option value="None">None</option>
+		  <option selected="true" value="random">Random</option>
+		  <option value="All">All</option>
+		  <option value="Exhaustive">Exhaustive</option>
+		  <option value="0.99">0.99</option>
+	    </param>
+
+	    <param help="Leave blank for default of log4(Ng) + 5 where Ng is the length of the reference genome" label="-l, Set the minimum information content for a read in base pairs" name="minimumInformation" type="text" value="30"/>
+	    <param label="-e, Set lower limit on alignment quality for reporting." name="minimumAlignmentQuality" type="text" value="100"/>
+
+	    <param label="Fragment Length." name="fragmentLen" type="text" value="230"/>
+	    <param label="Standard Deviation." name="stdDev" type="text" value="140"/>
+
+	    <param label="-a, Enable adapter stripping from 3' end of reads before aligning. The second adapter is used for the second read in paired end mode." name="adapterStrip1" type="text" value="AGATCGGAAGAGCGGTTCAGCAGGAATGCCGAG"/>
+	    <param help="First read must have a value" label="Used for the second read in paired end mode." name="adapterStrip2" type="text" value="AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTA"/>
+
+	    <param checked="true" label="-H, Hard clipping" name="hardClipTail" type="boolean"/>
+
+	    <param label="-c, Set the number of threads to be used" name="numThreads" type="text" value="12"/>
+
+	    <param label="-h, Homopolymer" name="homopolymer" type="text" value="20"/>
+	    <param label="Dinucleotide filter score" name="dinucleotideFilter" type="text" value="20"/>
+
+	    <param help="If left blank the threshold is set based on read length, genome size and other factors." label="-t, Maximum alignment score acceptable for the best alignment" name="maxAlignmentScore" type="text" value=""/>
+
+
+
+	    <param label="Truncate reads to the specified length before alignment" name="truncateReads" type="text" value="150"/> 
+	    <param label="Gap opening penalty" name="gapOpenPenalty" type="text" value="40"/>
+	    <param label="Gap extend penalty" name="gapExtendPenalty" type="text" value="15"/>
+	    <param help="For plants 6 may be a good value" label="Penalty for unconverted CHG or CHH cytosine in bisulfite alignment mode" name="unconvertedChgChhPenalty" type="text" value="0"/>
+	    <param label="Bisulphite alignment mode" name="bisulfateAlignment" type="select">
+		  <option selected="true" value="4">Aligns in 4 possible combinations of direction and index.</option>
+		  <option value="2">Aligns reads in forward direction using CT index and in reverse complement using the GA index.</option>
+	    </param>
+
+	    <param help="If left blank, the number of bases coded as N's in the reference genome. Set to zero to disable inclusion of this in quality calculations." label="bp of source DNA that are not represented in the reference sequences" name="priorProbability" type="text" value=""/>
+
+
+            <param label="Sets score difference between best and second best alignment for calling a repeat." name="repeatScoreDiff" type="text" value="5"/>
+            <param label="Sets a limit on number of alignments for a single read." name="minimumAlignmentScore" type="text" value="1000"/>
+            <param label="Sets number of decimal places for quality score. " name="decimalsForScore" type="text" value="0"/>
+
+
+	</inputs>
+	<outputs>
+		<data format="sam" label="${tool.name} on ${on_string}: mapped reads" name="outputFile"/>
+	</outputs>
+	<help>
+Novoalign_ is an alignment tool for aligning short sequences against an indexed set of reference sequences. Typically used for aligning Illumina single end and paired end reads. 
+ .. _Novoalign: http://www.novocraft.com/main/index.php
+
+	</help>
+</tool>

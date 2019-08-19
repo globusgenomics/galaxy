@@ -1,0 +1,117 @@
+<tool id="mothur_wf_1.0_optimized" name="Mothur microbiome Optimized Workflow" version="MOTHUR 1.40.5">
+  <description>complete_optimized</description>
+  <action module="galaxy_ext.globus.tools.actions.globus" class="S3TransferOptimized"/>
+  <requirements>
+    <requirement type="package" version="1.39.5">mothur</requirement>
+    <requirement type="package" version="3.4.4">R</requirement>
+    <requirement type="package" version="2.4.3">vsearch</requirement>
+    <requirement type="package" version="2.6">krona-tools</requirement>
+    <requirement type="package" version="0.1">colgate</requirement>
+    <requirement type="package">pymodules</requirement>
+  </requirements>
+  <command interpreter="python">
+      COLGATE_Mothur_complete_optimized_20181101.py 
+      --transfer-info "$transfer_info" 
+      --transfer-info-out "$transfer_info_out"
+      ##--input-dir $input_file.extra_files_path
+      --align-ref $template 
+      --taxonomy-ref $taxonomy
+      --taxonomy-align-ref $taxonomy_template 
+      --mapping-file $mapping_file
+      #if str( $categories ):
+        --categories '$categories'
+      #end if
+      ## globus parameters
+      ##--username $username
+      ##--goauth-token "$goauth"
+      ##--source-ep=$from_endpoint
+      ##--destination-ep="$to_endpoint"
+      ##--destination-dir="$to_dir"
+      ##--deadline=1200
+      --output-classify-otu $output_classify_otu
+      --output-make-shared $output_make_shared
+      --output-otu-table $output_otu_table
+      --output-krona-html $output_krona_html
+      --output-core-diversity-html $output_core_diversity_html
+      --output-core-diversity-directory $output_core_diversity_html.extra_files_path
+      --output-log $output_log
+  </command>
+  <inputs>
+     <param name="bucket" type="text" label="S3 Bucket">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="from_path" type="text" label="Source Path">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="aws_access_key_id" type="text" label="AWS Access Key ID">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="aws_secret_access_key" type="text" label="AWS Secret Access Key">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="transfer_info" type="hidden" value="**" label="Transfer Info">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="include_subdir" type="boolean" checked="false" truevalue="yes" falsevalue="no" label="Include Sub D
+irectory for Dir or Bucket Transfer (by default, only immediate files are inluced)"/>
+    <repeat name="tags" title="Tags" min="0">
+      <param name="key" type="text" label="Key">
+        <sanitizer sanitize="False"/>
+      </param>
+      <param name="value" type="text" label="Value">
+        <sanitizer sanitize="False"/>
+      </param>
+    </repeat>
+
+        <param name="mapping_file" type="data" label="Input Mapping file" format="txt,tabular" />
+        <param name="template" type="select" label="reference - Select an alignment database " help="">
+            <options from_data_table="mothur_aligndb"/>
+        </param>
+        <param name="taxonomy" type="select" format="seq.taxonomy" label="taxonomy - Taxonomy reference">
+            <options from_data_table="mothur_taxonomy"/>
+        </param>
+        <param name="taxonomy_template" type="select" label="taxonomy reference - Select an alignment database " help="classify.seqs">
+            <options from_data_table="mothur_aligndb" >
+            <filter type="sort_by" column="1" />
+            </options>
+        </param>
+
+    <param name="bucket_out" type="text" size="100" label="Output S3 Bucket">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="to_path_out" type="text" size="100" label="To Path (directory)">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="aws_access_key_id_out" type="text" label="AWS Access Key ID">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="aws_secret_access_key_out" type="text" label="AWS Secret Access Key">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="rename_out" type="hidden" value="**" label="Rename the Object (Optional)">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="transfer_info_out" type="hidden" value="**" label="Transfer Info">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="sse" type="boolean" checked="true" truevalue="yes" falsevalue="no" label="ServerSideEncryption (AES256)"/>
+    <param argument="--categories" type="text" value="" label="Metadata category or categories to compare for categorical analyses (optional)" help="The column headers in the mapping file should be passed as a comma-separated list. By default, no categorical analyses are performed" optional="true"/>
+  </inputs>
+  <outputs>
+    <data format="txt" label="${tool.name}: Log" name="output_log"/>
+    <data format="cons.taxonomy" label="${tool.name} on ${on_string}: taxonomy" name="output_classify_otu" />
+    <data format="shared" label="${tool.name} on ${on_string}: shared" name="output_make_shared" />
+    <data format="tabular" label="OTU table on ${on_string}" name="output_otu_table"/>
+    <data format="html" label="Krona plot of ${on_string}: HTML" name="output_krona_html"/>
+    <data format="html" label="${tool.name} on ${on_string}: Core diversity report" name="output_core_diversity_html"/>
+  </outputs>
+  <tests>
+    <test>
+    </test>
+  </tests> 
+  <help>
+
+**What it does**
+
+  </help>
+</tool>

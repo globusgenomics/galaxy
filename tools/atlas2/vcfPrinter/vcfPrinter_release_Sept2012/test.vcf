@@ -1,0 +1,12 @@
+##fileformat=VCFv4.0
+##fileDate=Thu Feb 14 18:14:31 2013
+##INFO=<ID=NS,Number=1,Type=Integer,Description="Number of Samples With Data">
+##INFO=<ID=DP,Number=1,Type=Integer,Description="Total Depth">
+##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
+##FORMAT=<ID=VR,Number=1,Type=Integer,Description="Variant Read Depth">
+##FORMAT=<ID=RR,Number=1,Type=Integer,Description="Reference Read Depth">
+##FORMAT=<ID=DP,Number=1,Type=Integer,Description="Total Read Depth">
+##FORMAT=<ID=GQ,Number=1,Type=Integer,Description="Genotype Quality">
+##FORMAT=<ID=FT,Number=1,Type=String,Description="Sample Genotype Filter">
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	C05DFACXX_1_ATCACG	C05DFACXX_1_CGATGT
+[]	NS=0;DP=0		

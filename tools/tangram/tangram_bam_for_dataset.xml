@@ -1,0 +1,29 @@
+<tool id="tangram_bam_for_dataset" name="Tangram BAM using Swift" version="TANGRAM: default; SAMTOOLS: 1.2">
+  <requirements>
+    <requirement type="package">tangram</requirement>
+    <requirement type="package">swift</requirement>
+    <requirement type="package">samtools</requirement>
+  </requirements>
+  <description>Format input BAM dataset to Mosaik BAM using Swift for input parallelization&quot;</description>
+  <command interpreter="python">
+    tangram_bam_with_swift.py
+      -i $input
+      -r  &quot;\$TANGRAM_DATA/moblist_19Feb2010_sequence_length60.fa&quot; 
+      -o $output
+      --extra-files-path $output.extra_files_path
+  </command>
+  <inputs>
+    <param format="html" label="input a BAM File" name="input" type="data"/>
+    <!-- <param name="ref" type="data" format="fasta" label="input Reference file in Fasta format" /> -->
+  </inputs>
+  <outputs>
+    <data format="html" label="${tool.name} on ${on_string}: Mosaik BAM dataset for Tangram" name="output"/>
+  </outputs>
+  <help>
+
+**What it does**
+
+tangram_bam will add ZA tags that are required for the following detection. Uses the REF file for moblist_19Feb2010_sequence_length60.fa
+
+  </help>
+</tool>

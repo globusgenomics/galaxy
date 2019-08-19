@@ -1,0 +1,257 @@
+<?xml version="1.0" ?>
+<tool id="qiime_tools_import" name="qiime tools import" version="022019">
+	<description> - Import data into a new QIIME 2 Artifact.</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command><![CDATA[
+
+mkdir input;
+
+#set $in_= 'input'
+
+
+#if '__ob__' in str($semantic_type):
+	#set $type_temp = str($semantic_type).replace('__ob__', '[')
+	#set $type_temp = str($type_temp).replace('__cb__', ']')
+	#set $semantic_type = $type_temp
+#end if
+
+#def is_fastq($f_test)
+	#set $f = open($f_test, 'rb')
+	#if str($f.readline()[0]) == '@'
+		#$f.close()
+		#return True
+	#end if
+
+	#$f.close()
+	#return False
+#end def
+
+
+## Symlinks creation or On the fly creation of a combo file
+#if $input_type.type == 'list_list'
+	## Symlinks creation or On the fly creation of a combo file
+	#for $f in $input_type.list_list:
+
+		#set $is_fastq_file = $is_fastq(str($f))
+
+		#if $is_fastq_file:
+			#set $file_for_processing = 'input/' + $f.name + '.gz'
+			gzip -c ${f} > $file_for_processing;
+		#else
+			#set $file_for_processing = 'input/' + $f.name
+			ln -s ${f}  $file_for_processing;
+		#end if
+	#end for
+	#if 'SingleEndFastqManifestPhred' in str($sourceformat):
+			#set $cwd = str($outputpath.extra_files_path) + "_manifest_file.txt"
+			#set $m_file = open(str($cwd), 'w')
+			$m_file.write("sample-id,absolute-filepath,direction\n")
+			#for $f in $input_type.list_list:
+				$m_file.write(str($f.name).split("_")[0]+",$PWD/input/"+str($f.name)+".gz,forward\n")
+			#end for
+			$m_file.close()
+			#set $in_= str($cwd)
+		#end if
+	
+
+#elif $input_type.type == 'list_paired_collection':
+  
+	#set $cwd = str($outputpath.extra_files_path) + "_manifest_file.txt"
+	#set $m_file = open(str($cwd), 'w')
+	$m_file.write("sample-id,absolute-filepath,direction\n")	
+
+	#for $pair in $input_type.list_paired_collection:
+		#set $forward_is_fastq_file = $is_fastq(str($pair.forward))
+		#set $reverse_is_fastq_file = $is_fastq(str($pair.reverse))
+		
+		#if $forward_is_fastq_file:
+	 		gzip -c ${pair.forward} > input/${pair.name}_R1_001.fastq.gz;
+	 		$m_file.write(str($pair.name).split("_")[0]+",$PWD/input/"+str($pair.name)+"_R1_001.fastq.gz,forward\n")
+		#else
+	  		ln -s ${pair.forward} input/${pair.name}_R1_001.fastq.gz;
+			$m_file.write(str($pair.name).split("_")[0]+",$PWD/input/"+str($pair.name)+"_R1_001.fastq.gz,forward\n")
+        #end if
+
+	 	#if $reverse_is_fastq_file:
+	 		gzip -c ${pair.reverse} > input/${pair.name}_R2_001.fastq.gz;
+			$m_file.write(str($pair.name).split("_")[0]+",$PWD/input/"+str($pair.name)+"_R2_001.fastq.gz,reverse\n")
+        #else
+	  		ln -s ${pair.reverse} input/${pair.name}_R2_001.fastq.gz;
+			$m_file.write(str($pair.name).split("_")[0]+",$PWD/input/"+str($pair.name)+"_R2_001.fastq.gz,reverse\n")
+	  	#end if
+	#end for
+
+	
+	$m_file.close()
+	#if 'PairedEndFastqManifestPhred' in str($sourceformat):
+		#set $in_= str($cwd)
+	#elif  'Casava' in str($sourceformat):
+		#set $in_= 'input'
+	#end if
+
+#else
+	#set $res = $is_fastq(str($file))
+
+	#if $res
+		gzip -c ${file} > ${file.name}.gz;
+		#set $in_= $file.name + '.gz'
+
+	#else
+		#set $in_= str($file)
+	#end if
+   
+   #if "MultiplexedSingleEndBarcodeInSequence" in str($semantic_type):      
+ 			mv *_R1_* forward.fastq.gz;
+	    #set $in_= 'forward.fastq.gz';
+   #end if 
+
+#end if
+
+
+## rename files to predefined names for "MultiplexedPairedEndBarcodeInSequence"
+#if "MultiplexedPairedEndBarcodeInSequence" in str($semantic_type):
+		mv input/*_R1_* input/forward.fastq.gz;
+		mv input/*_R2_* input/reverse.fastq.gz;
+#end if
+
+
+qiime tools import
+
+--type="$semantic_type"
+
+--input-path=$in_
+
+--output-path=outputpath
+
+#if str($sourceformat) != 'None':
+	#if '__ob__' in str($sourceformat):
+  		#set $sourceformat_temp = str($sourceformat).replace('__ob__', '[')
+		#set $sourceformat_temp = str($sourceformat_temp).replace('__cb__', ']')
+  		#set $sourceformat = $sourceformat_temp
+	#end if
+ --input-format="$sourceformat"
+#end if
+;
+cp outputpath.qza $outputpath]]></command>
+	<inputs>
+		<conditional name="input_type">
+			<param name="type" type="select" label="Select a way to provide data, either using a file or a list" help="">
+				<option value="regular">Input file</option>
+                <option selected="true" value="list_paired_collection">Multiple pairs - Combo mode (list:paired collection)</option>
+				<option value="list_list">Input list</option>
+			</param>
+
+			<when value="regular">
+				<param name="file" type="data" multiple="false" label="Input file" />
+			</when>
+		 	<when value="list_paired_collection">
+            	<param name="list_paired_collection" type="data_collection" collection_type="list:paired" label="Fastq pairs (collection)" help="Dataset collection made from multiple pairs of files" />
+         	</when>
+			<when value="list_list">
+				<param name="list_list" type="data_collection" collection_type="list" label="Input list" />
+			</when>
+		</conditional>
+
+		<param label="--type: The semantic type of the artifact that will be created upon importing. [required]" name="semantic_type" optional="False" type="select">
+			<option value="DeblurStats">DeblurStats</option>
+			<option value="DistanceMatrix">DistanceMatrix</option>
+			<option value="EMPPairedEndSequences">EMPPairedEndSequences</option>
+			<option value="EMPSingleEndSequences">EMPSingleEndSequences</option>
+			<option value="FeatureData[AlignedSequence]">FeatureData[AlignedSequence]</option>
+			<option value="FeatureData[PairedEndSequence]">FeatureData[PairedEndSequence]</option>
+			<option value="FeatureData[Sequence]">FeatureData[Sequence]</option>
+			<option value="FeatureData[Taxonomy]">FeatureData[Taxonomy]</option>
+			<option value="FeatureTable[Balance]">FeatureTable[Balance]</option>
+			<option value="FeatureTable[Composition]">FeatureTable[Composition]</option>
+			<option value="FeatureTable[Frequency]">FeatureTable[Frequency]</option>
+			<option value="FeatureTable[PresenceAbsence]">FeatureTable[PresenceAbsence]</option>
+			<option value="FeatureTable[RelativeFrequency]">FeatureTable[RelativeFrequency]</option>
+			<option value="Hierarchy">Hierarchy</option>
+			<option value="MultiplexedPairedEndBarcodeInSequence">MultiplexedPairedEndBarcodeInSequence</option>
+			<option value="MultiplexedSingleEndBarcodeInSequence">MultiplexedSingleEndBarcodeInSequence</option>
+			<option value="PCoAResults">PCoAResults</option>
+			<option value="Phylogeny[Rooted]">Phylogeny[Rooted]</option>
+			<option value="Phylogeny[Unrooted]">Phylogeny[Unrooted]</option>
+			<option value="QualityFilterStats">QualityFilterStats</option>
+			<option value="RawSequences">RawSequences</option>
+			<option value="SampleData[AlphaDiversity]">SampleData[AlphaDiversity]</option>
+			<option value="SampleData[BooleanSeries]">SampleData[BooleanSeries]</option>
+			<option value="SampleData[DADA2Stats]">SampleData[DADA2Stats]</option>
+			<option value="SampleData[FirstDifferences]">SampleData[FirstDifferences]</option>
+			<option value="SampleData[JoinedSequencesWithQuality]">SampleData[JoinedSequencesWithQuality]</option>
+			<option selected="True" value="SampleData[PairedEndSequencesWithQuality]">SampleData[PairedEndSequencesWithQuality]</option>
+			<option value="SampleData[SequencesWithQuality]">SampleData[SequencesWithQuality]</option>
+			<option value="SampleData[Sequences]">SampleData[Sequences]</option>
+			<option value="TaxonomicClassifier">TaxonomicClassifier</option>
+			<option value="UchimeStats">UchimeStats</option>
+		</param>
+
+		<param label="--input-format: The format of the data to be imported. If not provided, data must be in the format expected by the semantic type provided via --type." name="sourceformat" optional="True" type="select">
+			<option value="AlignedDNAFASTAFormat">AlignedDNAFASTAFormat</option>
+			<option value="AlignedDNASequencesDirectoryFormat">AlignedDNASequencesDirectoryFormat</option>
+			<option value="AlphaDiversityDirectoryFormat">AlphaDiversityDirectoryFormat</option>
+			<option value="AlphaDiversityFormat">AlphaDiversityFormat</option>
+			<option value="BIOMV100DirFmt">BIOMV100DirFmt</option>
+			<option value="BIOMV100Format">BIOMV100Format</option>
+			<option value="BIOMV210DirFmt">BIOMV210DirFmt</option>
+			<option value="BIOMV210Format">BIOMV210Format</option>
+			<option value="BooleanSeriesDirectoryFormat">BooleanSeriesDirectoryFormat</option>
+			<option value="BooleanSeriesFormat">BooleanSeriesFormat</option>
+			<option value="CasavaOneEightLanelessPerSampleDirFmt">CasavaOneEightLanelessPerSampleDirFmt</option>
+			<option value="CasavaOneEightSingleLanePerSampleDirFmt">CasavaOneEightSingleLanePerSampleDirFmt</option>
+			<option value="DADA2StatsDirFmt">DADA2StatsDirFmt</option>
+			<option value="DADA2StatsFormat">DADA2StatsFormat</option>
+			<option value="DNAFASTAFormat">DNAFASTAFormat</option>
+			<option value="DNASequencesDirectoryFormat">DNASequencesDirectoryFormat</option>
+			<option value="DeblurStatsDirFmt">DeblurStatsDirFmt</option>
+			<option value="DeblurStatsFmt">DeblurStatsFmt</option>
+			<option value="DistanceMatrixDirectoryFormat">DistanceMatrixDirectoryFormat</option>
+			<option value="EMPPairedEndCasavaDirFmt">EMPPairedEndCasavaDirFmt</option>
+			<option value="EMPPairedEndDirFmt">EMPPairedEndDirFmt</option>
+			<option value="EMPSingleEndCasavaDirFmt">EMPSingleEndCasavaDirFmt</option>
+			<option value="EMPSingleEndDirFmt">EMPSingleEndDirFmt</option>
+			<option value="FastqGzFormat">FastqGzFormat</option>
+			<option value="FirstDifferencesDirectoryFormat">FirstDifferencesDirectoryFormat</option>
+			<option value="FirstDifferencesFormat">FirstDifferencesFormat</option>
+			<option value="HeaderlessTSVTaxonomyDirectoryFormat">HeaderlessTSVTaxonomyDirectoryFormat</option>
+			<option value="HeaderlessTSVTaxonomyFormat">HeaderlessTSVTaxonomyFormat</option>
+			<option value="LSMatFormat">LSMatFormat</option>
+			<option value="MultiplexedPairedEndBarcodeInSequenceDirFmt">MultiplexedPairedEndBarcodeInSequenceDirFmt</option>
+			<option value="MultiplexedSingleEndBarcodeInSequenceDirFmt">MultiplexedSingleEndBarcodeInSequenceDirFmt</option>
+			<option value="NewickDirectoryFormat">NewickDirectoryFormat</option>
+			<option value="NewickFormat">NewickFormat</option>
+			<option value="OrdinationDirectoryFormat">OrdinationDirectoryFormat</option>
+			<option value="OrdinationFormat">OrdinationFormat</option>
+			<option value="PairedDNASequencesDirectoryFormat">PairedDNASequencesDirectoryFormat</option>
+			<option selected="True" value="PairedEndFastqManifestPhred33">PairedEndFastqManifestPhred33</option>
+			<option value="PairedEndFastqManifestPhred64">PairedEndFastqManifestPhred64</option>
+			<option value="QIIME1DemuxDirFmt">QIIME1DemuxDirFmt</option>
+			<option value="QIIME1DemuxFormat">QIIME1DemuxFormat</option>
+			<option value="QualityFilterStatsDirFmt">QualityFilterStatsDirFmt</option>
+			<option value="QualityFilterStatsFmt">QualityFilterStatsFmt</option>
+			<option value="SingleEndFastqManifestPhred33">SingleEndFastqManifestPhred33</option>
+			<option value="SingleEndFastqManifestPhred64">SingleEndFastqManifestPhred64</option>
+			<option value="SingleLanePerSamplePairedEndFastqDirFmt">SingleLanePerSamplePairedEndFastqDirFmt</option>
+			<option value="SingleLanePerSampleSingleEndFastqDirFmt">SingleLanePerSampleSingleEndFastqDirFmt</option>
+			<option value="TSVTaxonomyDirectoryFormat">TSVTaxonomyDirectoryFormat</option>
+			<option value="TSVTaxonomyFormat">TSVTaxonomyFormat</option>
+			<option value="TaxonomicClassiferTemporaryPickleDirFmt">TaxonomicClassiferTemporaryPickleDirFmt</option>
+			<option value="UchimeStatsDirFmt">UchimeStatsDirFmt</option>
+			<option value="UchimeStatsFmt">UchimeStatsFmt</option>
+		</param>
+	</inputs>
+	<outputs>
+		<data format="qza" label="${tool.name} on ${on_string}: outputpath.qza" name="outputpath"/>
+	</outputs>
+	    <stdio>
+        <exit_code range="2"   level="warning"   description="Error" />
+    </stdio>
+	<help>
+</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

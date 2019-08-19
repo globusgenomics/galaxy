@@ -1,0 +1,91 @@
+<tool id="gfap_r1.0_samvcf_data_parser" name="SAMVCF data parser">
+	<description>Convert VCF-formatted variant calls as ANNOVAR input</description>
+	<command interpreter="perl">gfap_r1.0_samvcf_data_parser.pl -varfile=$varfile -outdir=$__new_file_path__/gfap -outfile=$outfile</command>
+	<inputs>
+		<param name="varfile" format="vcf" type="data" label="Input VCF file" />
+	</inputs>
+	<outputs>
+		<data format="txt" name="outfile" label="${varfile.name}.var" />
+	</outputs>
+	<help>
+.. class:: infomark
+
+**What it does**
+
+- Convert a samtools-formatted VCF-file as **ANNOVAR** input.
+- Merge calls whenever possible and compute statistics on calls.
+
+.. class:: warningmark
+
+**As the DP4-tag in the INFO field is required, only samtools/bcftools VCF-files are currently supported**.
+
+.. class:: infomark
+
+**Third-party resources**
+
+- ANNOVAR: http://www.openbioinformatics.org/annovar
+- samtools/bcftools: http://samtools.sourceforge.net
+
+----
+
+**Input .vcf file**::
+
+	#CHROM  POS     ID   REF   ALT    QUAL   FILTER  INFO
+	chr1    14522   .    G     A,C    7.8    .       DP=2;AF1=0.9999;CI95=0.5,1;DP4=0,0,2,0;MQ=30;FQ=-30                         GT:PL:GQ        1/1:37,3,0,38,1,35:41
+	chr1    14653   .    C     T      12.3   .       DP=4;AF1=0.5001;CI95=0.5,0.5;DP4=2,0,1,1;MQ=38;FQ=6.58;PV4=1,0.45,1,0.43    GT:PL:GQ        0/1:42,0,33:35
+	chr1    69968   .    A     G      13     .       DP=2;AF1=1;CI95=0.5,1;DP4=0,0,2,0;MQ=41;FQ=-33                              GT:PL:GQ        1/1:44,6,0:49
+	chr1    129285  .    G     A      37.8   .       DP=2;AF1=1;CI95=0.5,1;DP4=0,0,0,2;MQ=60;FQ=-33                              GT:PL:GQ        1/1:69,6,0:49
+	chr1    808631  .    G     A      125    .       DP=7;AF1=1;CI95=1,1;DP4=0,0,7,0;MQ=60;FQ=-48                                GT:PL:GQ        1/1:158,21,0:84
+	chr1    808922  .    G     A      222    .       DP=47;AF1=1;CI95=1,1;DP4=1,0,23,16;MQ=51;FQ=-131;PV4=1,0.0026,1,0.47        GT:PL:GQ        1/1:255,104,0:99
+	chr1    808928  .    C     T      219    .       DP=47;AF1=1;CI95=1,1;DP4=1,0,23,16;MQ=52;FQ=-131;PV4=1,2.4e-05,1,0.22       GT:PL:GQ        1/1:252,104,0:99
+	chr1    824115  .    A     C      7.8    .       DP=3;AF1=0.5001;CI95=0.5,0.5;DP4=0,1,0,2;MQ=60;FQ=4.79;PV4=1,0.037,1,0.33   GT:PL:GQ        0/1:37,0,31:33
+	chr1    824161  .    C     T      4.77   .       DP=3;AF1=0.5001;CI95=0.5,0.5;DP4=0,1,1,1;MQ=53;FQ=4.06;PV4=1,0.11,0.33,1    GT:PL:GQ        0/1:33,0,31:32
+	chr1    824215  .    T     C      8.44   .       DP=2;AF1=1;CI95=0.5,1;DP4=0,0,1,1;MQ=49;FQ=-33                              GT:PL:GQ        1/1:39,6,0:49
+	chr1    852063  .    G     A      30.8   .       DP=2;AF1=1;CI95=0.5,1;DP4=0,0,1,1;MQ=60;FQ=-33                              GT:PL:GQ        1/1:62,6,0:49
+	chr1    861630  .    G     A      58     .       DP=4;AF1=1;CI95=0.5,1;DP4=0,0,0,3;MQ=60;FQ=-36                              GT:PL:GQ        1/1:90,9,0:63
+	chr1    861808  .    A     G      48.8   .       DP=2;AF1=1;CI95=0.5,1;DP4=0,0,1,1;MQ=60;FQ=-33                              GT:PL:GQ        1/1:80,6,0:49
+	chr1    866319  .    G     A      33.5   .       DP=6;AF1=1;CI95=0.5,1;DP4=0,0,4,0;MQ=60;FQ=-39                              GT:PL:GQ        1/1:66,12,0:72
+	chr1    870903  .    T     C      78.5   .       DP=5;AF1=1;CI95=0.5,1;DP4=0,0,4,0;MQ=60;FQ=-39                              GT:PL:GQ        1/1:111,12,0:72
+
+----
+
+**Output .var file**::
+
+	#From [chr] to [ann] = ANNOVAR required fields
+	#NRF = #reads consistent w/ the reference allele on the F-strand
+	#NRR = #reads consistent w/ the reference allele on the R-strand
+	#NAF = #reads consistent w/ the alternate allele on the F-strand
+	#NAR = #reads consistent w/ the alternate allele on the R-strand
+	#DP = total #reads in call ie. NRF+NRR+NAF+NAR
+	#AD = total #reads consistent w/ the alternate allele ie. NAF+NAR
+	#AF = alternate allele ratio ie. AD/DP
+	#QC = Phred-scaled call quality
+	#P.str = NRF+NAF vs. NRR+NAR binomial test P-value ie. total strand bias
+	#P.ref = NRF vs. NRR binomial test P-value ie. reference allele strand bias
+	#P.alt = NAF vs. NAR binomial test P-value ie. alternate allele strand bias
+	#VCF.FILTER = FILTER field from the input vcf file
+	#VAR.FILTER = GFAP default FILTER to discriminate between TP and FP variants
+	#chr  start    end     ref  alt  ann  QC   NRF  NRR  NAF  NAR  VCF.FILTER  P.str     P.ref     P.alt      DP  AD  AF      VAR.FILTER
+	chr1  14907    14907   A    G    het  9    4    0    0    3    NONE        3.33e-01  4.17e-02  8.33e-02   7   3   0.4290  SKIP
+	chr1  14930    14930   A    G    het  37   4    2    0    5    NONE        1.83e-01  2.29e-01  2.08e-02   11  5   0.4550  SKIP
+	chr1  68896    68896   G    A    hom  18   0    0    3    0    NONE        8.33e-02  3.33e-01  8.33e-02   3   3   1.0000  SKIP
+	chr1  69270    69270   A    G    hom  179  0    0    31   0    NONE        3.10e-10  3.33e-01  3.10e-10   31  31  1.0000  SKIP
+	chr1  69511    69511   A    G    hom  222  0    0    13   12   NONE        3.33e-01  3.33e-01  3.33e-01   25  25  1.0000  PASS
+	chr1  69897    69897   T    C    het  14   1    0    0    3    NONE        2.08e-01  3.33e-01  8.33e-02   4   3   0.7500  SKIP
+	chr1  129285   129285  G    A    het  56   0    4    0    4    NONE        2.60e-03  4.17e-02  4.17e-02   8   4   0.5000  SKIP
+	chr1  567697   567697  G    A    hom  30   0    0    0    2    NONE        1.67e-01  3.33e-01  1.67e-01   2   2   1.0000  SKIP
+	chr1  569803   569803  G    A    hom  50   0    0    4    0    NONE        4.17e-02  3.33e-01  4.17e-02   4   4   1.0000  SKIP
+	chr1  808631   808631  G    A    hom  142  0    0    7    1    NONE        2.34e-02  3.33e-01  2.34e-02   8   8   1.0000  SKIP
+	chr1  808922   808922  G    A    hom  222  0    0    15   26   NONE        3.91e-02  3.33e-01  3.91e-02   41  41  1.0000  PASS
+	chr1  808928   808928  C    T    hom  222  0    0    14   31   NONE        5.36e-03  3.33e-01  5.36e-03   45  45  1.0000  PASS
+	chr1  816725   816725  A    G    hom  22   0    0    2    0    NONE        1.67e-01  3.33e-01  1.67e-01   2   2   1.0000  SKIP
+	chr1  821030   821030  G    T    hom  36   0    0    2    0    NONE        1.67e-01  3.33e-01  1.67e-01   2   2   1.0000  SKIP
+	chr1  821143   821143  G    T    hom  8    0    0    0    2    NONE        1.67e-01  3.33e-01  1.67e-01   2   2   1.0000  SKIP
+
+----
+
+.. class:: infomark
+
+**Feedback**: romain.daveau@curie.fr
+	</help>
+</tool>

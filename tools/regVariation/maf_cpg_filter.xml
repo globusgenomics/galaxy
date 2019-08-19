@@ -1,0 +1,87 @@
+<tool id="cpgFilter" name="Mask CpG/non-CpG sites" version="NUMPY: default">
+  <description> from MAF file</description>
+  <command interpreter="python">
+  	maf_cpg_filter.py 
+    $input 
+    $out_file1 
+    $masksite.type
+    #if $masksite.type == &quot;CpG&quot;:
+     $masksite.definition
+    #else:
+     &quot;NA&quot;
+   #end if
+    -m $mask_char
+  </command>
+  <inputs>
+    <page>
+    	<param format="maf" label="Select data" name="input" type="data"/>
+   		<param label="Mask character" name="mask_char" size="5" type="select">
+    		<option selected="true" value="0">#</option>
+          	<option value="1">$</option>
+          	<option value="2">^</option>
+          	<option value="3">*</option>
+          	<option value="4">?</option>
+          	<option value="5">N</option>
+        </param>
+        <conditional name="masksite">
+            <param label="Sites to be masked" name="type" size="5" type="select">
+                <option selected="true" value="CpG">CpG sites</option>
+                <option value="nonCpG">non-CpG sites</option>
+             </param>
+            <when value="CpG">
+                <param label="Definition" name="definition" size="5" type="select">
+                    <option selected="true" value="0">Inclusive</option>
+                    <option value="1">Restricted</option>
+                 </param>
+            </when>
+            <when value="nonCpG"/>
+        </conditional>
+    </page>
+  </inputs>
+  <outputs>
+    <data format="maf" metadata_source="input" name="out_file1"/>
+  </outputs>
+  <requirements>
+    <requirement type="python-module">numpy</requirement>
+  </requirements>
+  <tests>
+    <test>
+      <param name="input" value="6.maf"/>
+      <param name="mask_char" value="0"/>
+      <param name="type" value="CpG"/>
+      <param name="definition" value="0"/>
+      <output file="6_mask_cpg.maf" name="out_file1"/>
+    </test>
+    <test>
+      <param name="input" value="6.maf"/>
+      <param name="mask_char" value="0"/>
+      <param name="type" value="nonCpG"/>
+      <output file="6_mask_noncpg.maf" name="out_file1"/>
+    </test>
+  </tests>
+ <help> 
+
+.. class:: infomark
+
+**What it does**
+
+This tool takes a MAF file as input and masks CpG sites in every alignment block of the MAF file. 
+
+-----
+
+.. class:: warningmark
+
+**Note**
+
+*Inclusive definition* defines CpG sites as those sites that are CG in at least one of the species.
+
+*Restricted definition* considers sites to be CpG if they are CG in at least one of the species, however, sites that are part of overlapping CpGs are excluded.
+
+For more information on CpG site definitions, please refer this article_.
+
+.. _article: http://mbe.oxfordjournals.org/cgi/content/full/23/3/565
+
+  </help>  
+
+
+</tool>

@@ -1,0 +1,69 @@
+<tool id="alleleqc" name="alleleQC" version="r240">
+    <description>- determine allele quality</description>
+    <requirements>
+        <requirement type="package">bgisoap</requirement>
+    </requirements>
+    <command interpreter="python">
+        alleleqc.py
+
+        ## Inputs
+        --pileup_input=$pileup_input
+
+        ## Check if using default or custom parameters
+        --default_full_settings_type=$default_full_settings.settings_type
+        #if $default_full_settings.settings_type == &quot;full&quot;
+        --min_depth=$default_full_settings.min_depth
+        --max_depth=$default_full_settings.max_depth
+        --test_sites=$default_full_settings.test_sites
+        #end if
+
+        ## Output file
+        --alleleqc_output=$alleleqc_output
+
+    </command>
+    <inputs>
+        <param format="pileup" label="Input pileup file" name="pileup_input" type="data"/>
+        <conditional name="default_full_settings">
+            <param help="Default settings are suitable for most analyses. If you want full control, use Full parameter list" label="alleleQC settings to use" name="settings_type" type="select">
+                <option value="default">Default</option>
+                <option value="full">Full parameter list</option>
+            </param>
+            <when value="default"/>
+            <when value="full">
+                <param help="Sites with coverage less than this value will not be tested" label="Minimum depth requirement" name="min_depth" type="integer" value="10"/>
+                <param help="Sites with coverage higher than this value will not be tested " label="Maximum depth requirement" name="max_depth" type="integer" value="1000"/>
+                <param label="p-value" name="test_sites" type="select" value="off">
+                    <option value="off">Test all sites</option>
+                    <option value="on">Do no test sites</option>
+                </param>
+            </when>
+        </conditional>
+    </inputs>
+    <outputs>
+        <data format="gz" label="gz zipped alleleqc file" name="alleleqc_output"/>
+    </outputs>
+    <tests>
+        <test>
+            <!--
+                soapPopIndel -i all.txt -v all.vcf -p 2
+            -->
+            <param name="depth" value="indexed"/>
+            <param name="ploidy" value="2"/>
+            <output file="bwa_wrapper_out1.sam" ftype="sam" name="alleleqc_output" sort="True"/>
+        </test>
+    </tests>
+    <help>
+
+**What it does**
+
+alleleQC determines the quality of alleles for each sites using the results from the SOAPpileup. The results of this
+tool is used by the SOAPsnv process to detect single nucleotide variants.
+
+**More information**
+
+For test data and more detailed information, click here_.
+
+.. _here: http://soap.genomics.org.cn/SOAPsnv.html
+
+    </help>
+</tool>

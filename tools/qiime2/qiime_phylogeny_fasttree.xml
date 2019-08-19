@@ -1,0 +1,52 @@
+<?xml version="1.0" ?>
+<tool id="qiime_phylogeny_fasttree" name="qiime phylogeny fasttree" version="022019">
+	<description> - Construct a phylogenetic tree with FastTree.</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command>
+	<![CDATA[
+	qiime phylogeny fasttree --i-alignment=$ialignment
+	#set $pnthreads = '${GALAXY_SLOTS:-4}'
+
+	#if str($pnthreads):
+	 --p-n-threads="$pnthreads"
+	#end if
+
+	#if str($cmdconfig) != 'None':
+	 --cmd-config=$cmdconfig
+	#end if
+	 --o-tree=otree;
+	cp otree.qza $otree;
+	]]>
+	</command>
+	<inputs>
+		<param format="qza,no_unzip.zip" label="--i-alignment: FeatureData[AlignedSequence] Aligned sequences to be used for phylogenetic reconstruction.  [required]" name="ialignment" optional="False" type="data"/>
+		<param label="--cmd-config: Use config file for command options" name="cmdconfig" optional="True" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="qza" label="${tool.name} on ${on_string}: tree.qza" name="otree"/>
+	</outputs>
+	<help>
+		<![CDATA[
+Construct a phylogenetic tree with FastTree.
+---------------------------------------------
+
+Construct a phylogenetic tree with FastTree.
+
+Parameters
+----------
+alignment : FeatureData[AlignedSequence]
+    Aligned sequences to be used for phylogenetic reconstruction.
+
+Returns
+-------
+tree : Phylogeny[Unrooted]
+    The resulting phylogenetic tree.
+		]]>
+	</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

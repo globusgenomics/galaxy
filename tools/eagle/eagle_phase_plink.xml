@@ -1,0 +1,135 @@
+<tool id="eagle_plink" name="Eagle2 with plink input" version="@VERSION@.0">
+    <description>estimates haplotype phase either within a genotyped cohort or using a phased reference panel</description>
+
+  <macros>
+     <import>macros.xml</import>
+  </macros>
+  <expand macro="requirements"/>
+  <expand macro="stdio"/>
+
+    <command><![CDATA[
+       eagle 
+           --fam $plink_fam
+           --bim $plink_bim
+           --bed $plink_bed
+            #if $use_genetic_map.use_genetic_map_select == "use_genetic_map_yes":
+                --geneticMapFile $use_genetic_map.genetic_map 
+            #else:
+                --geneticMapFile=USE_BIM
+            #end if
+
+        #if $use_filtering_options.use_filtering_options_select == "use_filtering_options_yes":
+            #if $use_filtering_options.remove_group.remove_group_select == "remove_group_yes":
+                --remove $use_filtering_options.remove_groups
+            #end if
+
+            #if $use_filtering_options.remove_snp.remove_snp_select == "remove_snp_yes":
+                --exclude $use_filtering_options.remove_snps
+            #end if
+
+            #if $use_filtering_options.max_missing_per_snp.max_missing_per_snp_select == "max_missing_per_snp_yes":
+                --maxMissingPerSnp $use_filtering_options.max_missing_per_snps
+            #end if
+
+            #if $use_filtering_options.max_missing_per_person.max_missing_per_person_select == "max_missing_per_person_yes":
+                --maxMissingPerIndiv $use_filtering_options.max_missing_per_persons
+            #end if
+        #end if
+      
+        #if $use_region_options.use_region_options_select == "use_chr_region_options_yes":
+            --chrom $use_region_options.chrom
+        #end if
+
+        #if $use_region_options.use_region_options_select == "use_chr_basepair_region_options_yes":
+            --chrom $use_region_options.chrom
+            --bpStart $use_region_options.bpStart
+            --bpEnd $use_region_options.bpEnd
+        #end if
+ 
+        --numThreads 4
+        --outPrefix=phased
+        2>&1 | tee $output_log; cp phased.haps.gz $out_haps; cp phased.sample $out_sample
+    ]]></command>
+
+    <inputs>
+          <param name="plink_bed" type="data" label="Specify binary genotype file (.bed)"/>
+          <param name="plink_bim" type="data" label="Specify SNP map file (.bim)"/>
+          <param name="plink_fam" type="data" label="Specify individual information file (.fam)"/>
+
+          <conditional name="use_genetic_map">
+              <param name="use_genetic_map_select" type="select" label="Do you want to use a genetic map?" help="Please specify if your PLINK bim file does not contain genetic coordinates">
+                  <option value="use_genetic_map_yes">Yes</option>
+                  <option value="use_genetic_map_no" selected="True">No</option>
+              </param>
+              <when value="use_genetic_map_yes">
+                  <param name="genetic_map" type="data" label="Genetic map file (.txt or .txt.gz)" />
+              </when>
+          </conditional>
+
+          <expand macro="region_selection_option"/>
+
+          <conditional name="use_filtering_options">
+              <param name="use_filtering_options_select" type="select" label="Do you want to use filtering options?">
+                  <option value="use_filtering_options_yes">Yes</option>
+                  <option value="use_filtering_options_no" selected="True">No</option> 
+              </param>
+
+              <when value="use_filtering_options_yes">
+
+                  <conditional name="remove_group">
+                      <param name="remove_group_select" type="select" label="Ignore individuals?" help="">
+                          <option value="remove_group_yes">Yes</option>
+                          <option value="remove_group_no" selected="True">No</option>
+                      </param>
+                      <when value="remove_group_yes">
+                          <param name="remove_groups" type="data" format="txt" label="Specify file with individuals to remove (no header; FID IID must be first two columns)" />
+                      </when>
+                  </conditional>
+
+                  <conditional name="remove_snp">
+                      <param name="remove_snp_select" type="select" label="Exclude SNPs?" help="">
+                          <option value="remove_snp_yes">Yes</option>
+                          <option value="remove_snp_no" selected="True">No</option>
+                      </param>
+                      <when value="remove_snp_yes">
+                          <param name="remove_snps" type="data" format="txt" label="Specify file with excluded SNPs (no header; SNP ID must be 1st column)" />
+                      </when>
+                  </conditional>
+
+                  <conditional name="max_missing_per_snp">
+                      <param name="max_missing_per_snp_select" type="select" label="QC filter: max missing rate per SNP">
+                          <option value="max_missing_per_snp_yes">Yes</option>
+                          <option value="max_missing_per_snp_no" selected="True">No</option>
+                      </param>
+                      <when value="max_missing_per_snp_yes">
+                          <param name="max_missing_per_snps" type="float" value="0.1" default="0.1" label="Set max missing rate per SNP:"/>
+                      </when>
+                  </conditional>
+
+                  <conditional name="max_missing_per_person">
+                      <param name="max_missing_per_person_select" type="select" label="QC filter: max missing rate per person">
+                          <option value="max_missing_per_person_yes">Yes</option>
+                          <option value="max_missing_per_person_no" selected="True">No</option>
+                      </param>
+                      <when value="max_missing_per_person_yes">
+                          <param name="max_missing_per_persons" type="float" value="0.1" default="0.1" label="Set max missing rate per person:"/>
+                      </when>
+                  </conditional>
+              </when>
+          </conditional>
+    </inputs>
+    <outputs>
+        <data format="bgzip" name="out_haps" label="${tool.name} on ${on_string} haps file">
+        <!--discover_datasets pattern="(?P&lt;phased&gt;.*)\.haps.gz" format="gz" visible="true"/-->
+        </data>
+
+        <data format="tabular" name="out_sample" label="${tool.name} on ${on_string} sample file">
+        <!--discover_datasets pattern="(?P&lt;phased&gt;.*)\.sample" format="tabular" visible="true"/-->
+        </data>
+      <!--data name="out_haps" format="gz" label="${tool.name} on ${on_string} haplotypes (.haps)"/>
+      <data name="out_sample" format="gz" label="${tool.name} on ${on_string} additional information (.sample)"/-->
+      <data name="output_log" format="txt" label="${tool.name} on ${on_string} logfile"/>
+    </outputs>
+    <help><![CDATA[
+    ]]></help>
+</tool>

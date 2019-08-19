@@ -1,0 +1,111 @@
+<?xml version="1.0"?>
+
+<tool name="SNAP Alignment bags" id="SNAP_Alignment_id_bag">
+  <requirements>
+    <requirement type="package">snap</requirement>
+  </requirements>
+  <description>
+  </description>
+
+  <command interpreter="python">
+   snap_bag.py
+   #if $genomeSource.refGenomeSource == "history":
+     ${genomeSource.ownFile}
+   #else
+     ${genomeSource.indices.fields.path}
+   #end if
+
+   $output
+
+    #if $input_source.source_type == "bag":
+      bag $input_source.bag_config.extra_files_path
+    #else
+      #if $input_source.source_type == "bdbag":
+        bdbag~$input_source.sample_id $input_source.bag_config.extra_files_path
+      #else:
+        #if $input_source.singlePaired.sPaired == "single":
+          $input_source.singlePaired.input1
+        #else:
+          $input_source.singlePaired.input1 $input_source.singlePaired.input2
+        #end if
+      #end if
+    #end if
+
+  </command>
+
+  <inputs>
+    <conditional name="input_source">
+      <param help="" label="Where are the input fastq files?" name="source_type" type="select">
+        <option value="bdbag">Encode BDbag</option>
+        <option value="bag">bag</option>
+        <option value="file">file</option>
+      </param>
+      <when value="bdbag">
+        <param name="sample_id" label="Sample ID in bag" type="text" help="If sample is paired, only one pair needs to be named. The pair will be identified using the Bag's metadata file"/>
+        <param format="data" help="Bag containing ENCODE Bag" label="ENCODE Bag" name="bag_config" type="data"/>
+      </when>
+      <when value="bag">
+        <param format="data" help="Bag containing location of fastq directories." label="Bag File" name="bag_config" type="data"/>
+      </when>  
+      <when value="file">
+        <conditional name="singlePaired">
+            <param name="sPaired" type="select" label="Is this unpaired reads or paired-end reads?">
+              <option value="single">Single-end</option>
+              <option value="paired">Paired-end</option>
+            </param>
+            <when value="single">
+                <param format="fastqsanger" name="input1" type="data" label="FASTQ file" />
+            </when>
+            <when value="paired">
+                <param format="fastqsanger" name="input1" type="data" label="FASTQ file, forward reads" />
+                <param format="fastqsanger" name="input2" type="data" label="FASTQ file, reverse reads" />
+            </when>
+        </conditional>
+      </when>
+    </conditional>
+    <conditional name="genomeSource">
+      <param label="Will you select a reference genome from your history or use a built-in index?" name="refGenomeSource" type="select">
+        <option value="indexed">Use a built-in index</option>
+        <option value="history">Use one from the history</option>
+      </param>
+      <when value="indexed">
+        <param label="Select a reference genome" name="indices" type="select">
+          <options from_data_table="snap_indexes"/>
+        </param>
+      </when>
+      <when value="history">
+        <param name="IndexDIR" type="data" label="Select a index file" help="This should be the output of SNAP Build Index"/>
+      </when>
+    </conditional>
+  </inputs>
+
+  <outputs>
+    <data name="output" format="bam" label="${tool.name} on ${on_string}.bam" />
+  </outputs>
+
+  <help>
+SNAP_ is a new sequence aligner that is 10-100x faster and simultaneously more accurate than existing tools like BWA, Bowtie2 and SOAP2. It runs on commodity x86 processors, and supports a rich error model that lets it cheaply match reads with more differences from the reference than other tools. This gives SNAP up to 2x lower error rates than existing tools and lets it match larger mutations that they may miss.
+ .. _SNAP: http://snap.cs.berkeley.edu/
+
+SNAP was developed by a team from the UC Berkeley AMP Lab, Microsoft, and UCSF.
+
+SNAP 0.13.4 for Linux (64-bit)
+
+**Usage:**
+
+To build an index:
+
+snap  index  hg19.fa  index-dir	
+
+To align unpaired reads:
+
+snap single index-dir  reads.fq  -o output.sam	
+  
+To align paired-end reads:
+
+snap  paired index-dir  read1.fq  read2.fq  -o  output.sam	
+
+
+  </help>
+
+</tool>

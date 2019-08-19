@@ -1,0 +1,13 @@
+#cp this file to settings.rb
+#and fill in the details
+
+#Program settings (DO NOT CHANGE)
+VERSION="1.4.3"
+REVISION="158"
+#User specific settings
+RUBY_EXE = ""
+INSTALL_DIR = ""
+#Cluster specific settings
+USER = ""
+SCRATCH = ""
+JOB_QUEUE = ""

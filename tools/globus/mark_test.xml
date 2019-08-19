@@ -1,0 +1,16 @@
+<tool id="mark_test" name="Mark Test">
+  <description>test tool</description>
+  <command interpreter="python"> 
+    mark_test.py
+    --wait "$wait"
+  </command>
+  <inputs>
+    <param name="wait" type="text" size="100" label="Wait">
+      <sanitizer sanitize="False"/>
+    </param>
+  </inputs>
+  <outputs>
+    <data name="out_file1" type="data" format="txt"/>
+  </outputs>
+
+</tool>

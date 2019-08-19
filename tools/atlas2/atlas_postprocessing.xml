@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+
+<tool name="ATLAS post processing" id="atlas_post_proc">
+
+  <description>
+    ATLAS-SNP2 vcf post processing (recoding chromosome IDs for Tourette Exomes).
+  </description>
+
+  <!--
+  <requirements>
+    <requirement type="package">pymodules</requirement>
+  </requirements>
+  -->
+
+  <command interpreter="python">
+    atlas_postprocessing.py -v $input_vcf -o $processed_vcf -d $bam_dir
+  </command>
+
+  <inputs>
+    <param name="input_vcf" type="data" format="vcf" label="Input VCF File"/>
+    <param name="bam_dir" type="text" label="BAM Directory Path" help=""/>
+  </inputs>
+
+  <outputs>
+    <data format="vcf" name="processed_vcf" label="Output VCF File"/>
+  </outputs>
+
+  <help>
+    This tool was designed as a part of the Tourette Exome consensus variant
+    calling workflow. ATLAS-SNP2 decided to hard code contig IDs which did not
+    match our .fasta reference file. This tool prepends the string 'chr' to
+    each variant line in a vcf file in order to correct for this.
+  </help>
+
+</tool>
+
+

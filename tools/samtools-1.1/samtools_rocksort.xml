@@ -1,0 +1,32 @@
+<tool id="samtools_rocksort" name="RockSort" version="SAMTOOLS: 0.2.0-rc5-392-g5f584aa-dnanexus-rocksort">
+  <requirements>
+    <requirement type="package" version="0.2.0-rc5-392-g5f584aa-dnanexus-rocksort">samtools</requirement>
+  </requirements>
+  <description>sort BAM file using rocksort</description>
+  <command interpreter="python">
+    samtools_rocksort.py 
+      --input=$input
+      --order=$order
+      --output=$output
+  </command>
+  <inputs>
+    <param format="bam" label="input a BAM File to sort" name="input" type="data"/>
+    <param label="What order to sort?" name="order" type="select">
+       <option value="coordinate">coordinate</option>
+       <option value="lexicographically">lexicographic</option>
+    </param>
+  </inputs>
+  <outputs>
+    <data format="bam" label="${tool.name} on ${on_string}: sorted BAM" name="output"/>
+  </outputs>
+  <help>
+
+**What it does**
+
+This tool uses the SAMTools_ toolkit DNAnexus version to rocksort alignment file.
+
+.. _SAMTools: http://devblog.dnanexus.com/faster-bam-sorting-with-samtools-and-rocksdb/
+
+
+  </help>
+</tool>

@@ -1,0 +1,173 @@
+<tool description="Parallel submission of Atlas jobs exposing the full parameter set" id="swift_atlas_wrapper_v2" name="Atlas Swift submission (full parameter set)" version="SAMTOOLS: 1.2">
+  <description>Run Atlas jobs with Swift</description>
+ <requirements>
+    <requirement type="package">swift</requirement>
+	<requirement type="package">samtools</requirement>
+  </requirements>
+
+  <command interpreter="python">
+      swift_atlas_wrapper_v2.py
+
+      ### sites file
+      --sites-file $sites_file
+
+      ### tc file
+      --tc-file $tc_file
+
+      ### atlas snp swift file
+      --swift-file $snp_swift_file
+
+      ### fasta input
+      --fasta $fasta_file
+
+      ### bam file directory
+      --bam-dir $bamdir
+
+      ### output directory to be written
+      --output-dir $outputdir
+
+      ### platform on which reads were generated
+      --platform $platform
+      
+
+      ### posterior probability cutoff
+      #if str( $post_cutoff ):
+        --post-cutoff $post_cutoff
+      #else:
+        none
+      #end if
+
+      ### Minimum site coverage
+      #if str( $min_coverage ):
+        --min-coverage $min_coverage
+      #else:
+        none
+      #end if
+
+      ### Prior on error given normal coverage
+      #if str( $prior_prob_e ):
+        --prior-e $prior_prob_e
+      #else:
+        none
+      #end if
+
+      ### Prior of error given low coverage
+      #if str( $prior_prob_l ):
+        --prior-l $prior_prob_l
+      #else:
+        none
+      #end if
+
+      ### max percent substitutions allowed per base 
+      #if str( $base_sub_max ):
+        --base-sub-filter $base_sub_max
+      #else:
+        none
+      #end if
+
+      ### max percent indels allowed per base
+      #if str( $base_indel_max ):
+        --base-indel-filter $base_indel_max
+      #else:
+        none
+      #end if
+
+      ### maximum alignments allowed
+      #if str( $alignment_max ):
+        --max-alignments $alignment_max
+      #else:
+        none
+      #end if
+
+      ### max insertion size allowed
+      #if str( $insert_size_max ):
+        --insert-size-filter $insert_size_max
+      #else:
+        none
+      #end if
+
+
+      ### flag to evaluate on at sites in sites file
+      #if $evalSites.eval_sites_flag == &quot;Yes&quot;:
+        #if str( $eval_sites_flag ):
+          --only-eval-sites    
+          ### sites to call file
+          #if str( $sites_list ):
+            --sites-list $sites_list
+          #else:
+            none
+          #end if
+        #else:
+          none
+        #end if
+      #else:
+        none
+      #end if
+
+      ### flag to filter at quali less than 1
+      #if $qualFilter.qual_filter == &quot;Yes&quot;:
+        #if str( $qualFilter ):
+          --qual-filter
+        #else:
+          none
+        #end if
+      #else:
+        none
+      #end if
+      
+      ### outputs
+      -d $output1
+
+
+  </command>
+  <inputs>
+    <param format="txt" help="" label="Sites File" name="sites_file" type="data"/>
+    <param format="txt" help="" label="TC File" name="tc_file" type="data"/>
+    <param format="txt" help="" label="SNP Swift File" name="snp_swift_file" type="data"/>
+    <param format="fasta" help="" label="Fasta Reference" name="fasta_file" type="data"/>
+    <param help="" label="BAM Directory Path" name="bamdir" type="text"/>
+    <param help="" label="Output Directory Path" name="outputdir" type="text"/>
+
+    <param help="" label="Choosing Platform:" name="platform" type="select">
+      <option selected="true" value="Illumina">Illumina</option>
+      <option value="454_FLX">454 FLX</option>
+      <option value="454_XLR">454 Titanium</option>
+    </param>
+
+    <conditional name="qualFilter">
+      <param help="" label="Filter variants with QUAL less than 1?" name="qual_filter" type="select">
+        <option value="Yes"> Yes </option>
+        <option value="No"> No </option>
+      </param>
+    </conditional>
+    
+    <param help="" label="Posterior probability cutoff" name="post_cutoff" type="text"/>
+    <param help="" label="Minimum coverage for a site to be called." name="min_coverage" type="text"/>
+    <param help="" label="Prior for error with normal coverage 454 and Illumina data." name="prior_prob_e" type="text"/>
+    <param help="" label="Prior for error with low coverage 454 data." name="prior_prob_l" type="text"/>
+    <param help="" label="Maximum percentage of substitution bases allowed in the alignment." name="base_sub_max" type="text"/>
+    <param help="" label="Maximum percentage ofinsertion and deletion bases allowed in the alignmen" name="base_indel_max" type="text"/>
+    <param help="" label="Insertion size for pair-end re-sequencing data" name="insert_size_max" type="text"/>
+    <param help="" label="Maximum number of alignments allowed to be piled up on a site." name="alignment_max" type="text"/>
+    <conditional name="evalSites">
+      <param help="" label="Restrict evaluation to sites in Sites List file." name="eval_sites_flag" type="select">
+        <option value="Yes"> Yes </option>
+        <option value="No"> No </option>
+      </param>
+      <when value="Yes">    
+        <param help="" label="File containing sites that will always appear in output VCF." name="sites_list" type="data"/>
+      </when>
+    </conditional>
+  </inputs>
+
+  <outputs> 
+    <data format="tabular" name="output1"/>
+  </outputs>
+  <help>
+
+**What it does**
+
+**Outputs**
+
+  </help>
+</tool>

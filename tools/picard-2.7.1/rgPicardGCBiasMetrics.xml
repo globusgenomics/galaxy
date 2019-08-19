@@ -1,0 +1,147 @@
+<tool id="PicardGCBiasMetrics" name="SAM/BAM GC Bias Metrics" version="PICARD: 2.7.1">
+  <command interpreter="python">
+    picard_wrapper.py -i &quot;$input_file&quot; -d &quot;$html_file.files_path&quot; -t &quot;$html_file&quot;
+    --windowsize &quot;$windowsize&quot; --mingenomefrac &quot;$mingenomefrac&quot; -n &quot;$out_prefix&quot; --tmpdir &quot;${__new_file_path__}&quot;
+    -j &quot;\$JAVA_JAR_PATH/picard.jar CollectGcBiasMetrics&quot;
+#if $genomeSource.refGenomeSource == &quot;history&quot;:
+ --ref-file &quot;${genomeSource.ownFile}&quot;
+#else:
+ --ref &quot;${genomeSource.index.fields.path}&quot;
+#end if
+  </command>
+  <requirements><requirement type="package">picard</requirement><requirement type="package" version="1.8.0">java</requirement></requirements>
+  <inputs>
+    <param format="sam,bam" help="If empty, upload or import a SAM/BAM dataset." label="SAM/BAM dataset to generateGC bias metrics" name="input_file" type="data"/>
+    <param help="Use this remind you what the job was for." label="Title for the output file" name="out_prefix" size="80" type="text" value="Short Read GC Bias Metrics"/>
+    <conditional name="genomeSource"> 
+      <param label="Select Reference Genome" name="refGenomeSource" type="select">
+        <option selected="true" value="default">Use the assigned data genome/build</option>
+        <option value="indexed">Select a different built-in genome</option>
+        <option value="history">Use a genome (fasta format) from my history</option>
+      </param>
+      <when value="default">
+        <param help="Galaxy thinks that the reads in you dataset were aligned against this reference. If this is not correct, use the 'Select a build-in reference genome' option of the 'Select Reference Genome' dropdown to select approprtiate Reference." label="Check the assigned reference genome" name="index" type="select">
+          <options from_data_table="all_fasta">
+                <filter column="3" type="sort_by"/>
+          <filter column="dbkey" key="dbkey" multiple="True" ref="input_file" separator="," type="data_meta"/>
+          <validator message="No reference build available for the selected input data" type="no_options"/>
+          </options>
+        </param>
+      </when>
+      <when value="indexed">
+        <param help="This list contains genomes cached at this Galaxy instance. If your genome of interest is not present here request it by using 'Help' link at the top of Galaxy interface or use the 'Use a genome (fasta format) from my history' option of the 'Select Reference Genome' dropdown." label="Select a built-in reference genome" name="index" type="select">
+          <options from_data_table="all_fasta"/>
+        </param>
+      </when>
+      <when value="history">
+        <param format="fasta" help="This option works best for relatively small genomes. If you are working with large human-sized genomes, send request to Galaxy team for adding your reference to this Galaxy instance by using 'Help' link at the top of Galaxy interface." label="Select a reference genome from history" metadata_name="dbkey" name="ownFile" type="data"/>
+      </when>
+    </conditional>
+    <param help="The size of windows on the genome that are used to bin reads. Default value: 100." label="GC minimum window size" name="windowsize" type="integer" value="100"/>
+    <param help="For summary metrics, exclude GC windows that include less than this fraction of the genome. Default value: 1.0E-5." label="Minimum Genome Fraction" name="mingenomefrac" type="float" value="0.00001"/>
+    <!--
+    
+    Users can be enabled to set Java heap size by uncommenting this option and adding '-x "$maxheap"' to the <command> tag.
+    If commented out the heapsize defaults to the value specified within picard_wrapper.py
+    
+    <param name="maxheap" type="select" help="If in doubt, choose 8G and read Picard documentation please"
+     label="Java heap size">
+    <option value="1G">1GB: very small data</option>
+    <option value="2G" selected="true">2GB</option>
+    <option value="4G">4GB for larger datasets </option>
+    <option value="8G" >8GB use if 4GB fails</option>
+    <option value="16G">16GB - try this if 8GB fails</option>
+    </param>
+    
+    -->
+
+  </inputs>
+  <outputs>
+    <data format="html" label="${out_prefix}.html" name="html_file"/>
+  </outputs>
+  <tests>
+    <test>
+      <!-- Uncomment this if maxheap is enabled above
+      <param name="maxheap" value="8G" />
+      -->
+      <param name="out_prefix" value="CollectGCBias"/>
+      <param name="windowsize" value="100"/>
+      <param name="mingenomefrac" value="0.00001"/>
+      <param name="refGenomeSource" value="history"/>
+      <param dbkey="hg18" name="ownFile" value="picard_input_hg18.trimmed.fasta"/>      
+      <param dbkey="hg18" ftype="sam" name="input_file" value="picard_input_summary_alignment_stats.sam"/>
+      <output file="picard_output_GcBias_uploaded_hg18_summary_alignment_stats.html" ftype="html" lines_diff="50" name="html_file"/>
+    </test>
+  </tests>
+  <help>
+
+
+.. class:: infomark
+
+**Summary**
+
+This Galaxy tool uses Picard to report detailed metrics about reads that fall within windows of a certain GC bin on the reference genome.
+
+**Picard documentation**
+
+This is a Galaxy wrapper for CollectGcBiasMetrics, a part of the external package Picard-tools_.
+
+ .. _Picard-tools: http://www.google.com/search?q=picard+samtools
+
+-----
+
+.. class:: infomark
+
+**Syntax**
+
+- **Input** - SAM/BAM format aligned short read data in your current history
+- **Title** - the title to use for all output files from this job - use it for high level metadata
+- **Reference Genome** - Galaxy (and Picard) needs to know which genomic reference was used to generate alignemnts within the input SAM/BAM dataset. Here you have three choices:
+
+  - *Assigned data genome/build* - a genome specified for this dataset. If you your SAM/BAM dataset has an assigned reference genome it will be displayed below this dropdown. If it does not -&gt; use one of the following two options.
+  - *Select a different built-in genome* - this option will list all reference genomes presently cached at this instance of Galaxy.
+  - *Select a reference genome from history* - alternatively you can upload your own version of reference genome into your history and use it with this option. This is however not advisable with large human-sized genomes. If your genome is large contact Galaxy team using &quot;Help&quot; link at the top of the interface and provide exact details on where we can download sequences you would like to use as the refenece. We will then install them as a part of locally cached genomic references.
+  
+- **Window Size** see Picard documentation http://picard.sourceforge.net/command-line-overview.shtml#CollectGCBiasMetrics
+- **Minimum Genome Fraction** See Picard documentation at http://picard.sourceforge.net/command-line-overview.shtml#CollectGCBiasMetrics
+
+-----
+
+.. class:: infomark
+
+**Inputs, outputs, and parameters**
+
+The Picard documentation (reformatted for Galaxy) says:
+
+.. csv-table::
+   :header-rows: 1
+
+    Option,Description
+    &quot;REFERENCE_SEQUENCE=File&quot;,&quot;The reference sequence fasta file. Required.&quot;
+    &quot;INPUT=File&quot;,&quot;The BAM or SAM file containing aligned reads. Required.&quot;
+    &quot;OUTPUT=File&quot;,&quot;The text file to write the metrics table to. Required.&quot;
+    &quot;CHART_OUTPUT=File&quot;,&quot;The PDF file to render the chart to. Required.&quot;
+    &quot;SUMMARY_OUTPUT=File&quot;,&quot;The text file to write summary metrics to. Default value: null.&quot;
+    &quot;WINDOW_SIZE=Integer&quot;,&quot;The size of windows on the genome that are used to bin reads. Default value: 100.&quot;
+    &quot;MINIMUM_GENOME_FRACTION=Double&quot;,&quot;For summary metrics, exclude GC windows that include less than this fraction of the genome. Default value: 1.0E-5.&quot;
+    &quot;CREATE_MD5_FILE=Boolean&quot;,&quot;Whether to create an MD5 digest for any BAM files created. Default value: false.&quot;
+
+The output produced by the tool has the following columns::
+
+ 1. GC: The G+C content of the reference sequence represented by this bin. Values are from 0% to 100%
+ 2. WINDOWS: The number of windows on the reference genome that have this G+C content.
+ 3. READ_STARTS: The number of reads who's start position is at the start of a window of this GC.
+ 4. MEAN_BASE_QUALITY: The mean quality (determined via the error rate) of all bases of all reads that are assigned to windows of this GC.
+ 5. NORMALIZED_COVERAGE: The ration of &quot;coverage&quot; in this GC bin vs. the mean coverage of all GC bins. A number of 1 represents mean coverage, a number less than one represents lower than mean coverage (e.g. 0.5 means half as much coverage as average) while a number greater than one represents higher than mean coverage (e.g. 3.1 means this GC bin has 3.1 times more reads per window than average).
+ 6. ERROR_BAR_WIDTH: The radius of error bars in this bin based on the number of observations made. For example if the normalized coverage is 0.75 and the error bar width is 0.1 then the error bars would be drawn from 0.65 to 0.85.
+
+.. class:: warningmark
+
+**Warning on SAM/BAM quality**
+
+Many SAM/BAM files produced externally and uploaded to Galaxy do not fully conform to SAM/BAM specifications. Galaxy deals with this by using the **LENIENT**
+flag when it runs Picard, which allows reads to be discarded if they're empty or don't map. This appears
+to be the only way to deal with SAM/BAM that cannot be parsed.
+
+  </help>
+</tool>

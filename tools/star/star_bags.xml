@@ -1,0 +1,483 @@
+<tool id="star_bags" name="STAR bags input" version="STAR: 2.4.2a; SAMTOOLS: 1.2">
+    <description>Gapped-read aligner for RNA-seq data</description>
+
+    <requirements>
+        <requirement type="package" version="STAR-2.5.3a">star</requirement>
+        <requirement type="package">samtools</requirement>
+    </requirements>
+
+    <command>
+        #import os, glob
+        #set $path = ""
+        #set $forward = ""
+        #set $reverse = ""
+        #if os.path.exists(str($input1.extra_files_path)):
+          ###set $path = "%s/*/*/data/%s" % ($input1.extra_files_path, $sample_name)
+          #set $path = "%s/*/*/data/*.fastq.gz" % ($input1.extra_files_path)
+        #else:
+          #set $fh = open(str($input1), "r")
+          #set $path = "%s/data/%s" % ($fh.readline().rstrip("\n"), $sample_name)
+        #end if
+        #set $files = glob.glob("%s*" % $path)
+        #if str($sPaired) == "single":
+          #set $forward = $files[0]
+        #else:
+          #set $file1 = $files[0]
+          #set $file2 = $files[1]
+          #set $length1 = len($file1)
+          #set $length2 = len($file2)
+          #if $length1 == $length2:
+            ## figure out which is read1 and which is read2
+            #set $split_file1 = list($file1)
+            #set $split_file2 = list($file2)
+            #for $i, $j in enumerate($split_file1):
+              #if $split_file1[$i] != $split_file2[$i]:
+                ## assume the difference in fastq files is the 1 and 2 in their name
+                #if $split_file1[$i] == "1":
+                  #set $forward = $file1
+                  #set $reverse = $file2
+                #else:
+                  #set $forward = $file2
+                  #set $reverse = $file1
+                #end if
+              #end if
+            #end for
+          #end if
+        #end if
+
+
+        #set $file_format = "txt"
+        #set $f = open(str($forward), "r")
+        #set $file_start = $f.readline()
+        #if $file_start.startswith("\x1f\x8b\x08"):
+            #set $file_format = "gz"
+        #end if
+        #if str($runSecondPass_cond.runSecondPass) == &quot;original&quot;
+            mkdir $output_log.extra_files_path; STAR --runMode genomeGenerate --genomeDir $output_log.extra_files_path --genomeFastaFiles ${refGenomeSource.index.fields.source} --sjdbFileChrStartEnd $runSecondPass_cond.spliceJunctionInterval --sjdbOverhang 75 --runThreadN 16;
+        #end if
+        #if str($refGenomeSource.genomeSource) == &quot;history&quot;
+            mkdir $output_log.extra_files_path; STAR --runMode genomeGenerate --genomeDir $output_log.extra_files_path --genomeFastaFiles ${refGenomeSource.ownFile} --runThreadN 32
+            #if str($annotations_file) != &quot;None&quot;:
+                --sjdbGTFfile $annotations_file --sjdbOverhang 75
+            #end if
+            ;
+        #end if
+
+        ##
+	## Run STAR.
+	##
+
+        STAR
+	## Can adjust this as appropriate for the system.
+        --genomeLoad NoSharedMemory
+
+        #if str($runSecondPass_cond.runSecondPass) == &quot;original&quot;
+            --genomeDir $output_log.extra_files_path
+        #else
+            #if str($refGenomeSource.genomeSource) == &quot;indexed&quot;
+                --genomeDir ${refGenomeSource.index.fields.path}
+            #else
+                --genomeDir $output_log.extra_files_path
+            #end if
+        #end if
+        --readFilesIn $forward
+	#if $sPaired == &quot;paired&quot;
+            $reverse
+        #end if
+
+        #if "gz" in (str($forward)) or $file_format == "gz":
+            --readFilesCommand &quot;zcat&quot;
+        #end if
+        #if str($runSecondPass_cond.runSecondPass) == &quot;twopassmode&quot;:
+            --twopassMode Basic
+        #end if
+        #if str($annotations_file) != &quot;None&quot;:
+            --sjdbGTFfile $annotations_file
+        #end if
+        --runThreadN 16
+
+        #if $readGroup.specReadGroup == &quot;yes&quot;
+          #set $rg_line = &quot;ID:&quot; + str($readGroup.rgid) + &quot; &quot;
+          #set $rg_line += &quot;SM:&quot; + str($readGroup.rgsm) + &quot; &quot;
+          #set $rg_line += &quot;LB:&quot; + str($readGroup.rglb) + &quot; &quot;
+          #set $rg_line += &quot;PL:&quot; + str($readGroup.rgpl) + &quot; &quot;
+          #if str($readGroup.rgpu) != &quot;&quot;
+              #set $rg_line += &quot;PU:&quot; + str($readGroup.rgpu) + &quot; &quot;
+          #end if
+          #if str($readGroup.rgcn) != &quot;&quot;
+              #set $rg_line += &quot;CN:&quot; + str($readGroup.rgcn) + &quot; &quot;
+          #end if
+          #if str($readGroup.rgds) != &quot;&quot;
+              #set $rg_line += &quot;DS:&quot; + str($readGroup.rgds) + &quot; &quot;
+          #end if
+          #if str($readGroup.rgdt) != &quot;&quot;
+              #set $rg_line += &quot;DT:&quot; + str($readGroup.rgdt) + &quot; &quot;
+          #end if
+          #if str($readGroup.rgfo) != &quot;&quot;
+              #set $rg_line += &quot;FO:&quot; + str($readGroup.rgfo) + &quot; &quot;
+          #end if
+          #if str($readGroup.rgks) != &quot;&quot;
+              #set $rg_line += &quot;KS:&quot; + str($readGroup.rgks) + &quot; &quot;
+          #end if
+          #if str($readGroup.rgpg) != &quot;&quot;
+              #set $rg_line += &quot;PG:&quot; + str($readGroup.rgpg) + &quot; &quot;
+          #end if
+          #if str($readGroup.rgpi) != &quot;&quot;
+              #set $rg_line += &quot;PI:&quot; + str($readGroup.rgpi) + &quot; &quot;
+          #end if
+          --outSAMattrRGline $rg_line
+        #end if
+        --outSAMtype $outputformat
+        --outSAMunmapped $outSAMunmapped
+
+	## Parameters.
+	#if $params.settingsType == &quot;full&quot;:
+            --chimSegmentMin $params.chim_segment_min
+            --chimScoreMin $params.chim_score_min
+            --outFilterMultimapNmax $params.outFilterMultimapNmax
+            --outFilterMismatchNmax $params.outFilterMismatchNmax
+            --outFilterMismatchNoverLmax $params.outFilterMismatchNoverLmax
+            --alignIntronMin $params.alignIntronMin
+            --alignIntronMax $params.alignIntronMax
+            --alignMatesGapMax $params.alignMatesGapMax
+            --alignSJoverhangMin $params.alignSJoverhangMin
+            --alignSJDBoverhangMin $params.alignSJDBoverhangMin
+            #if str($params.quantMode) != &quot;none&quot;:
+                --quantMode $params.quantMode
+            #end if
+            --outFilterIntronMotifs $params.outFilterIntronMotifs
+            --chimJunctionOverhangMin $params.chimJunctionOverhangMin
+
+            ###for $sam_attributes in str( $params.out_sam_attributes).split( ',' ):
+                ##
+            ###end for
+
+	#end if
+
+	## Needed to generate SAM tags for Cufflinks tools.
+        --outSAMstrandField intronMotif
+
+        ##;
+
+	##
+	## BAM conversion.
+	##
+
+	## Convert aligned reads.
+        ##samtools view -Shb Aligned.out.sam | samtools sort - Aligned.out
+
+	## Convert chimeric reads.
+	#if $params.settingsType == &quot;full&quot;:
+          #if $params.chim_segment_min &gt; 0:
+            ; samtools view -Shb Chimeric.out.sam | samtools sort - Chimeric.out
+          #end if
+	#end if
+        #if str($runSecondPass_cond.runSecondPass) == &quot;original&quot;
+            ; rm -rf $output_log.extra_files_path
+        #end if
+    </command>
+    <!--
+    <stdio>
+        <regex match="core dumped" source="stderr" level="fatal" description="core dumped"/>
+	<regex match="FATAL ERROR" source="stderr" level="fatal" description="fatal error" />
+        <regex match=".*" source="both" level="log" description="tool progress"/>
+    </stdio>
+    -->
+    <stdio>
+        <regex description="generic stdout/err chatter" level="warning" match=".*" source="both"/>
+    </stdio>
+
+    <inputs>
+        <param help="--outFileNamePrefix" label="Sample name" name="outFileNamePrefix" type="text"/>&quot;
+        <!-- FASTQ input(s) and options specifically for paired-end data. -->
+        <param label="Is this library mate-paired?" name="sPaired" type="select">
+          <option value="single">Single-end</option>
+          <option selected="true" value="paired">Paired-end</option>
+        </param>
+        <param format="txt" help="Data bag containing Nucleotide-space: Must have Sanger-scaled quality values with ASCII offset 33" label="RNA-Seq FASTQ bag" name="input1" type="data"/>
+        <param label="Sample Name inside the Fastq bag" name="sample_name" type="text"/>
+
+        <!-- Genome source. -->
+        <conditional name="refGenomeSource">
+            <param help="Built-ins were indexed using default options" label="Will you select a reference genome from your history or use a built-in index?" name="genomeSource" type="select">
+                <option value="indexed">Use a built-in index</option>
+                <option value="history">Use one from the history</option>
+            </param>
+            <when value="indexed">
+            <param label="Select a reference genome" name="index" type="select">
+                <options from_data_table="star_indexes">
+                    <filter column="2" type="sort_by"/>
+                    <validator message="No indexes are available for the selected input dataset" type="no_options"/>
+                </options>
+            </param>
+            </when>
+            <when value="history">
+                <param format="fasta" label="Select the reference genome" metadata_name="dbkey" name="ownFile" type="data"/>
+            </when>
+        </conditional>
+
+        <param format="gtf" label="Include annotation file at mapping stage" name="annotations_file" optional="True" type="data"/>
+        <conditional name="runSecondPass_cond">
+            <param help="A splice junctions interval file is needed as input and will generate a new genome index" label="Run a second pass mapping with a re-generated genome?" name="runSecondPass" type="select">
+                <option value="no">No</option>
+                <option value="original">Original Two-step 2-pass mode</option>
+                <option value="twopassmode">Basic TwoPassMode option (twopassMode)</option>
+            </param>
+            <when value="no"/>
+            <when value="original">
+                <param format="interval" help="This is the original 2-pass method which involves genome re-generation step in-between 1st and 2nd passes. You will need to use the splice-juction file from the first STAR pass." label="Select splice-junction interval file from first pass" name="spliceJunctionInterval" type="data"/>
+            </when>
+            <when value="twopassmode"/>
+        </conditional>
+        <conditional name="readGroup">
+          <param label="Specify the read group for this file? (--outSAMattrRGline)" name="specReadGroup" type="select">
+            <option value="yes">Yes</option>
+            <option selected="True" value="no">No</option>
+          </param>
+          <when value="yes">
+            <param help="Required if RG specified. Read group IDs may be modified when merging SAM files in  orderto handle collisions." label="Read group identifier (ID). Each @RG line must have a unique ID. The value of ID is used in the RG tags of  alignment records. Must be unique among all read groups in header section." name="rgid" size="25" type="text">
+              <validator type="empty_field"/>
+            </param>
+            <param label="Platform/technology used to produce the reads (PL)" name="rgpl" type="select">
+              <option value="CAPILLARY">CAPILLARY</option>
+              <option value="LS454">LS454</option>
+              <option value="ILLUMINA">ILLUMINA</option>
+              <option value="SOLID">SOLID</option>
+              <option value="HELICOS">HELICOS</option>
+              <option value="IONTORRENT">IONTORRENT</option>
+              <option value="PACBIO">PACBIO</option>
+            </param>
+            <param help="Required if RG specified" label="Library name (LB)" name="rglb" size="25" type="text">
+              <validator type="empty_field"/>
+            </param>
+            <param help="Required if RG specified. Use pool name where a pool is being sequenced" label="Sample (SM)" name="rgsm" size="25" type="text">
+              <validator type="empty_field"/>
+            </param>
+            <param help="Optional. Unique identifier (e.g. flowcell-barcode.lane for Illumina or slide fo r SOLiD)" label="Platform unit (PU)" name="rgpu" size="25" type="text"/>
+            <param help="Optional" label="Sequencing center that produced the read (CN)" name="rgcn" size="25" type="text"/>
+            <param help="Optional" label="Description (DS)" name="rgds" size="25" type="text"/>
+            <param help="Optional. ISO8601 format date or date/time, like YYYY-MM-DD" label="Date that run was produced (DT)" name="rgdt" size="25" type="text"/>
+            <param help="Optional. Multi-base flows are encoded in IUPAC format, and non-nucleotide flows by various other characters. Format: /\*|[ACMGRSVTWYHK DBN]+/" label="Flow order (FO). The array of nucleotide bases that correspond to the nucleotides used for  each flow of each read" name="rgfo" optional="true" size="25" type="text">
+              <validator type="regex">\*|[ACMGRSVTWYHKDBN]+$</validator>
+            </param>
+            <param help="Optional" label="The array of nucleotide bases that correspond to the key sequence of each read (KS)" name="rgks" size="25" type="text"/>
+            <param help="Optional" label="Programs used for processing the read group (PG)" name="rgpg" size="25" type="text"/>
+            <param help="Optional" label="Predicted median insert size (PI)" name="rgpi" size="25" type="text"/>
+          </when>
+          <when value="no"/>
+        </conditional>
+        <param help="--outSAMtype" label="Output format" name="outputformat" type="select">
+            <option value="SAM Unsorted">SAM Unsorted</option>
+            <option value="SAM SortedByCoordinate">SAM SortedByCoordinate</option>
+            <option value="BAM Unsorted">BAM Unsorted</option>
+            <option selected="True" value="BAM SortedByCoordinate">BAM SortedByCoordinate</option>
+        </param>
+        <param help="--outSAMunmapped" label="Output Unmapped reads in SAM format" name="outSAMunmapped" type="select">
+            <option selected="True" value="None">None</option>
+            <option value="Within">Within</option>
+        </param>
+
+        <!-- Parameter settings. -->
+        <conditional name="params">
+            <param help="You can use the default settings or set custom values for any STAR parameter." label="Settings to use" name="settingsType" type="select">
+                <option selected="true" value="preSet">Use Defaults</option>
+                <option value="full">Full parameter list</option>
+            </param>
+            <when value="preSet"/>
+            <!-- Full/advanced params. -->
+            <when value="full">
+                <param help="--outFilterIntronMotifs" label="Filter intron motifs" name="outFilterIntronMotifs" type="select">
+                  <option selected="True" value="None">None</option>
+                  <option value="RemoveNoncanonical">RemoveNoncanonical</option>
+                  <option value="RemoveNoncanonicalUnannotated">RemoveNoncanonicalUnannotated</option>
+                </param>
+                <param label="Minimum overhang for a chimeric junction" min="0" name="chimJunctionOverhangMin" type="integer" value="20"/>
+	        <param label="Minimum chimeric segment length" min="0" name="chim_segment_min" type="integer" value="0"/>
+	        <param label="Minimum total (summed) score of the chimeric segments" min="0" name="chim_score_min" type="integer" value="0"/>
+                <param help="Read alignments will be output only if the read maps fewer than this value, otherwise no alignments will be output" label="Max mapping reads" min="0" name="outFilterMultimapNmax" type="integer" value="10"/>
+                <param help=" alignment will be output only if it has fewer mismatches than this value" label="Max mismatches" min="0" name="outFilterMismatchNmax" type="integer" value="10"/>
+                <param help="alignment will be output only if its ratio of mismatches to mapped length is less than this value" label="Mismatch ratio" min="0" name="outFilterMismatchNoverLmax" type="float" value="0.3"/>
+                <param help="genomic gap is considered intron if its length is greater or equal to alignIntronMin, otherwise it is considered Deletion" label="Minimum intron size" min="0" name="alignIntronMin" type="integer" value="21"/>
+                <param help="maximum intron size, if 0, max intron size will be determined by (2 power to winBinNbits) x winAnchorDistNbins" label="Maximum intron size" min="0" name="alignIntronMax" type="integer" value="0"/>
+                <param help="if 0, max intron gap will be determined by (2^winBinNbits) x winAnchorDistNbins" label="Maximum gap between two mates" min="0" name="alignMatesGapMax" type="integer" value="0"/>
+                <param help="--alignSJoverhangMin" label="Minimum overhang for spliced alignments" min="0" name="alignSJoverhangMin" type="integer" value="5"/>
+                <param help="--alignSJoverhangMin" label="Minimum overhang for sjdb annotated alignments" min="0" name="alignSJDBoverhangMin" type="integer" value="3"/>
+                <param label="Quantifications of annotations" name="quantMode" type="select">
+                  <option value="none">None</option>
+                  <option value="TranscriptomeSAM">TranscriptomeSAM</option>
+                </param>
+
+                <param label="SAM attributes to output" multiple="True" name="out_sam_attributes" type="select">
+                  <option value="NH">NH</option>
+                  <option value="HI">HI</option>
+                  <option value="AS">AS</option>
+                  <option value="nM">nM</option>
+                </param>
+            </when>
+        </conditional>
+    </inputs>
+
+    <outputs>
+        <data format="txt" from_work_dir="Log.final.out" label="${tool.name} on ${outFileNamePrefix}: log file" name="output_log"/>
+	<data format="interval" from_work_dir="Chimeric.out.junction" label="${tool.name} on ${outFileNamePrefix}: chimeric junctions" name="chimeric_junctions">
+	  <filter>(params['settingsType'] == 'full' and params['chim_segment_min'] &gt; 0)</filter>
+	  <actions>
+	    <conditional name="refGenomeSource.genomeSource">
+	      <when value="indexed">
+		<action name="dbkey" type="metadata">
+		  <option column="1" name="star_indexes" offset="0" type="from_data_table">
+		    <filter column="0" compare="startswith" keep="False" type="param_value" value="#"/>
+		    <filter column="0" ref="refGenomeSource.index" type="param_value"/>
+		  </option>
+		</action>
+	      </when>
+	      <when value="history">
+		<action name="dbkey" type="metadata">
+		  <option name="refGenomeSource.ownFile" param_attribute="dbkey" type="from_param"/>
+		</action>
+	      </when>
+	    </conditional>
+	  </actions>
+	</data>
+	<data format="bam" from_work_dir="Chimeric.out.bam" label="${tool.name} on ${outFileNamePrefix}: aligned chimeric reads" name="chimeric_reads">
+	  <filter>(params['settingsType'] == 'full' and params['chim_segment_min'] &gt; 0)</filter>
+	  <actions>
+	    <conditional name="refGenomeSource.genomeSource">
+	      <when value="indexed">
+		<action name="dbkey" type="metadata">
+		  <option column="1" name="star_indexes" offset="0" type="from_data_table">
+		    <filter column="0" compare="startswith" keep="False" type="param_value" value="#"/>
+		    <filter column="0" ref="refGenomeSource.index" type="param_value"/>
+		  </option>
+		</action>
+	      </when>
+	      <when value="history">
+		<action name="dbkey" type="metadata">
+		  <option name="refGenomeSource.ownFile" param_attribute="dbkey" type="from_param"/>
+		</action>
+	      </when>
+	    </conditional>
+	  </actions>
+	</data>
+        <data format="bam" from_work_dir="Aligned.toTranscriptome.out.bam" label="${tool.name} on ${outFileNamePrefix}: transcriptome alignment" name="bam_quant">
+          <filter>(params['settingsType'] == 'full' and params['quantMode'] == 'TranscriptomeSAM')</filter>
+          <actions>
+            <conditional name="refGenomeSource.genomeSource">
+              <when value="indexed">
+                <action name="dbkey" type="metadata">
+                  <option column="1" name="star_indexes" offset="0" type="from_data_table">
+                    <filter column="0" compare="startswith" keep="False" type="param_value" value="#"/>
+                    <filter column="0" ref="refGenomeSource.index" type="param_value"/>
+                  </option>
+                </action>
+              </when>
+              <when value="history">
+                <action name="dbkey" type="metadata">
+                  <option name="refGenomeSource.ownFile" param_attribute="dbkey" type="from_param"/>
+                </action>
+              </when>
+            </conditional>
+          </actions>
+        </data>
+        <data format="interval" from_work_dir="SJ.out.tab" label="${tool.name} on ${outFileNamePrefix}: splice junctions" name="splice_junctions">
+	  <actions>
+	    <conditional name="refGenomeSource.genomeSource">
+	      <when value="indexed">
+		<action name="dbkey" type="metadata">
+		  <option column="1" name="star_indexes" offset="0" type="from_data_table">
+		    <filter column="0" compare="startswith" keep="False" type="param_value" value="#"/>
+		    <filter column="0" ref="refGenomeSource.index" type="param_value"/>
+		  </option>
+		</action>
+	      </when>
+	      <when value="history">
+		<action name="dbkey" type="metadata">
+		  <option name="refGenomeSource.ownFile" param_attribute="dbkey" type="from_param"/>
+		</action>
+	      </when>
+	    </conditional>
+	  </actions>
+	</data>
+        <data format="bam" from_work_dir="Aligned.out.bam" label="${tool.name} on ${outFileNamePrefix}: aligned reads" name="aligned_reads">
+          <filter>(outputformat == 'BAM Unsorted')</filter>
+	  <actions>
+	    <conditional name="refGenomeSource.genomeSource">
+	      <when value="indexed">
+		<action name="dbkey" type="metadata">
+		  <option column="1" name="star_indexes" offset="0" type="from_data_table">
+		    <filter column="0" compare="startswith" keep="False" type="param_value" value="#"/>
+		    <filter column="0" ref="refGenomeSource.index" type="param_value"/>
+		  </option>
+		</action>
+	      </when>
+	      <when value="history">
+		<action name="dbkey" type="metadata">
+		  <option name="refGenomeSource.ownFile" param_attribute="dbkey" type="from_param"/>
+		</action>
+	      </when>
+	    </conditional>
+	  </actions>
+        </data>
+        <data format="bam" from_work_dir="Aligned.sortedByCoord.out.bam" label="${tool.name} on ${outFileNamePrefix}: aligned sorted reads" name="aligned_sorted_reads">
+          <filter>(outputformat == 'BAM SortedByCoordinate')</filter>
+          <actions>
+            <conditional name="refGenomeSource.genomeSource">
+              <when value="indexed">
+                <action name="dbkey" type="metadata">
+                  <option column="1" name="star_indexes" offset="0" type="from_data_table">
+                    <filter column="0" compare="startswith" keep="False" type="param_value" value="#"/>
+                    <filter column="0" ref="refGenomeSource.index" type="param_value"/>
+                  </option>
+                </action>
+              </when>
+              <when value="history">
+                <action name="dbkey" type="metadata">
+                  <option name="refGenomeSource.ownFile" param_attribute="dbkey" type="from_param"/>
+                </action>
+              </when>
+            </conditional>
+          </actions>
+        </data>
+        <data format="sam" from_work_dir="Aligned.out.sam" label="${tool.name} on ${outFileNamePrefix}: aligned reads" name="aligned_sam_reads">
+          <filter>(outputformat == 'SAM Unsorted')</filter>
+          <actions>
+            <conditional name="refGenomeSource.genomeSource">
+              <when value="indexed">
+                <action name="dbkey" type="metadata">
+                  <option column="1" name="star_indexes" offset="0" type="from_data_table">
+                    <filter column="0" compare="startswith" keep="False" type="param_value" value="#"/>
+                    <filter column="0" ref="refGenomeSource.index" type="param_value"/>
+                  </option>
+                </action>
+              </when>
+              <when value="history">
+                <action name="dbkey" type="metadata">
+                  <option name="refGenomeSource.ownFile" param_attribute="dbkey" type="from_param"/>
+                </action>
+              </when>
+            </conditional>
+          </actions>
+        </data>
+        <data format="sam" from_work_dir="Aligned.sortedByCoord.out.sam" label="${tool.name} on ${outFileNamePrefix}: aligned sorted reads" name="aligned_sorted_sam_reads">
+          <filter>(outputformat == 'SAM SortedByCoordinate')</filter>
+          <actions>
+            <conditional name="refGenomeSource.genomeSource">
+              <when value="indexed">
+                <action name="dbkey" type="metadata">
+                  <option column="1" name="star_indexes" offset="0" type="from_data_table">
+                    <filter column="0" compare="startswith" keep="False" type="param_value" value="#"/>
+                    <filter column="0" ref="refGenomeSource.index" type="param_value"/>
+                  </option>
+                </action>
+              </when>
+              <when value="history">
+                <action name="dbkey" type="metadata">
+                  <option name="refGenomeSource.ownFile" param_attribute="dbkey" type="from_param"/>
+                </action>
+              </when>
+            </conditional>
+          </actions>
+        </data>
+    </outputs>
+
+</tool>

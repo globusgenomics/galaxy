@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<repositories description="Proteomics datatypes and the TPP">
+	<repository toolshed="http://toolshed.g2.bx.psu.edu" name="galaxy_protk" owner="iracooke" changeset_revision="c25df71f7b68" prior_installation_required="True"/>
+   	<repository toolshed="http://toolshed.g2.bx.psu.edu" name="protk_trans_proteomic_pipeline" owner="iracooke" changeset_revision="e85a18371516"/>
+	<repository toolshed="http://toolshed.g2.bx.psu.edu" name="proteomics_datatypes" owner="iracooke" changeset_revision="09b89b345de2"/>
+ </repositories>

@@ -1,0 +1,30 @@
+<?xml version="1.0" ?>
+<tool id="qiime_tools_export" name="qiime tools export" version="022019">
+	<description> - Export data from a QIIME 2 Artifact or Visualization.</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command><![CDATA[qiime tools export $isequences --output-dir test
+	]]></command>
+	<inputs>
+	<param format="qza,no_unzip.zip" label="Input artifact to export! [required]" name="isequences" optional="False" type="data"/></inputs>
+	
+	<outputs>
+    <data format="txt" name="report">
+        <discover_datasets pattern="__designation_and_ext__" directory="test" visible="true" />
+    </data>
+	</outputs>
+	
+	<!--<outputs>
+	
+   <collection type="list" label="Exported artifact" name="output1">
+     <discover_datasets pattern="*.*" directory="test" />
+   </collection>
+ </outputs>-->
+	<help>
+</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

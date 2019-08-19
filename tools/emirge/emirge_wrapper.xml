@@ -1,0 +1,116 @@
+<tool id="emirge_wrapper" name="EMIRGE" version="USEARCH: 7.0.1090; BOWTIE: 1.1.2">
+    <description>Assemble deeply covered transcripts</description>
+    <requirements>
+        <requirement>pymodules</requirement>
+        <requirement>usearch</requirement>
+        <requirement>bowtie</requirement>
+    </requirements>
+    <command interpreter="python">emirge_wrapper.py
+#if $reads_opts.reads_opts_selector == &quot;single&quot;:
+  --read1 $reads_opts.single_query
+  --single
+#else:
+  --read1 $reads_opts.forward_query
+  --read2 $reads_opts.reverse_query
+  --paired
+  --insert-mean $reads_opts.insert_mean
+  --insert-stdev $reads_opts.insert_stdev
+#end if
+  $amplicon_lib
+  --max-read-length $max_read_length
+#if $ref_db_opts.ref_db_opts_selector == &quot;precompiled&quot;:
+  --db &quot;${ref_db_opts.databases.fields.bowtie_path}&quot;
+  --fasta &quot;${ref_db_opts.databases.fields.fasta_path}&quot;
+  --indexed
+#else:
+  --fasta &quot;$ref_db_opts.fasta_ref&quot;
+#end if
+--phred33
+--out $output1
+--outdir $output1.extra_files_path
+--num_threads 32
+#if $adv_opts.adv_opts_selector==&quot;advanced&quot;:
+--iterations $adv_opts.iterations
+--snp_fraction $adv_opts.snp_fraction
+--variant_fraction $adv_opts.variant_fraction
+--join_threshold $adv_opts.join_threshold
+--read_depth $adv_opts.read_depth
+#end if
+    </command>
+    <inputs>
+        <conditional name="reads_opts">
+            <param label="Paired-end or Single Ended Fastq files?" name="reads_opts_selector" type="select">
+                <option value="single">Single-Ended</option>
+                <option selected="True" value="paired">Paired-Ended</option>
+            </param>
+            <when value="single">
+                <param format="fastqsanger" label="Single Read Fastq" name="single_query" type="data"/>
+            </when>
+            <when value="paired">
+                <param format="fastqsanger" label="Forward Read Fastq" name="forward_query" type="data"/>
+                <param format="fastqsanger" label="Reverse Read Fastq" name="reverse_query" type="data"/>
+                <param label="Mean insert size for Paired-ended reads" name="insert_mean" size="15" type="integer" value="300"/>
+                <param label="Mean standard deviation for Paired-ended reads" name="insert_stdev" size="15" type="integer" value="20"/>
+            </when>
+        </conditional>
+        <param checked="false" falsevalue="" help="Select this option if using PCR amplicons (all fragments start/end at same loci)" label="Amplicon Library" name="amplicon_lib" truevalue="--amplicon" type="boolean"/>
+        <param label="Max read length" name="max_read_length" size="15" type="integer" value="50"/>
+        <conditional name="ref_db_opts">
+            <param label="Reference database" name="ref_db_opts_selector" type="select">
+                <option selected="true" value="precompiled">Precompiled database</option>
+                <option value="history">Database in your history</option>
+            </param>
+            <when value="precompiled">
+                <param label="Select a database" name="databases" type="select">
+                    <options from_data_table="emirge_indexes">
+                        <filter column="3" type="sort_by"/>
+                    </options>
+                </param>
+            </when>
+            <when value="history">
+                <param format="fasta" label="FASTA file" name="fasta_ref" type="data"/>
+            </when>
+        </conditional>
+
+        <conditional name="adv_opts">
+            <param label="Show advanced options?" name="adv_opts_selector" type="select">
+              <option selected="True" value="basic">Hide Advanced Options</option>
+              <option value="advanced">Show Advanced Options</option>
+            </param>
+            <when value="basic"/>
+            <when value="advanced">
+                <param help="Range 1-50; more complex samples require higher value" label="Number of iterations" name="iterations" type="integer" value="25">
+                    <validator max="50" min="1" type="in_range"/>
+                </param>
+                <param help="If fraction of variants in a candidate sequence exceeds this threshold, then split the candidate into two sequences for next iteration" label="SNP fraction threshold" name="snp_fraction" type="float" value="0.04"/>
+                <param help="Minimum probability of second most probable base at a site required in order to call site a variant" label="Variant fraction threshold" name="variant_fraction" type="float" value="0.1"/>
+                <param help="If two candidate sequences share &gt;= this fractional identity over their bases with mapped reads, then merge the two sequences into one for the next iteration" label="Join threshold" name="join_threshold" type="float" value="0.97"/>
+                <param help="Minimium average read depth below which a candidate sequence is discarded for next iteration" label="Minimum depth" name="read_depth" type="integer" value="3"/>
+            </when>
+        </conditional>
+    </inputs>
+    <outputs>
+        <data format="fasta" name="output1"/>
+    </outputs>
+    <help>
+    
+-----
+
+**What it does**
+
+Assemble deeply covered transcripts (e.g. rRNA) from various sources (e.g. environmental sample).
+
+For amplicons, run e-PCR on the reference database using the same primers first (do not use full-length reference sequences).
+
+The Galaxy wrapper for this tool will: * support single file of paired reads * detect the quality-score encoding * build the bowtie index for the reference db (if necessary) * determine max read length and insert standard deviation parameters * filter, rename output
+
+Note: for the amplicon size, specify the length targeted in the library preparation, not the apparent length determined in silico by mapping.
+
+-----
+
+**Reference**
+
+http://www.ncbi.nlm.nih.gov/pubmed/21595876
+
+    </help>
+</tool>

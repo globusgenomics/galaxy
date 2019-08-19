@@ -1,0 +1,127 @@
+<tool force_history_refresh="True" id="soapdenovo2_contig" name="contig" version="r240">
+    <requirements>
+        <requirement type="package">bgisoap</requirement>
+    </requirements>
+    <command interpreter="python">
+        soapdenovo2_contig.py
+
+        ## Inputs
+        --pre_graph_basic=$pre_graph_basic
+        --vertex=$vertex
+        --pre_arc=$pre_arc
+        --edge_gz=$edge_gz
+
+        ## Outputs
+        --contig=$contig
+        --arc=$arc
+        --updated_edge=$updated_edge
+        --contig_index=$contig_index
+
+        ## Check if using default or custom parameters
+        --default_full_settings_type=$default_full_settings.settings_type
+        #if $default_full_settings.settings_type == &quot;full&quot;
+            --resolve_repeats=$default_full_settings.resolve_repeats
+            --multi_kmer_setting=$default_full_settings.multi_kmer.multi_kmer_setting
+            --merge_level=$default_full_settings.merge_level
+            --edge_cov_cutoff=$default_full_settings.edge_cov_cutoff
+            --weight=$default_full_settings.weight
+            #if $default_full_settings.multi_kmer.multi_kmer_setting == &quot;YES&quot;
+            	--max_k=$default_full_settings.multi_kmer.max_k
+            	--reads_info_file=$default_full_settings.multi_kmer.reads_info_file
+            	--ncpu=$default_full_settings.multi_kmer.ncpu
+            	--merge_clean_bubble=$default_full_settings.multi_kmer.merge_clean_bubble
+            #end if
+        #end if
+    </command>
+    <inputs>
+        <param format="input" label="Pregraph output from SOAPdenovo2 pregraph" name="pre_graph_basic" type="data"/>
+        <param format="input" label="Vertex output from SOAPdenovo2 pregraph" name="vertex" type="data"/>
+        <param format="input" label="preArc output from SOAPdenovo2 pregraph" name="pre_arc" type="data"/>
+        <param format="input" label="edge.gz output from SOAPdenovo2 pregraph" name="edge_gz" type="data"/>
+        <!--Other parameters -->
+        <conditional name="default_full_settings">
+        <param help="Default settings is suitable for most mapping needs. If you want full control, use Full parameter list" label="SOAP settings to use" name="settings_type" type="select">
+            <option value="default">Default</option>
+            <option value="full">Full parameter list</option>
+        </param>
+        <when value="default"/>
+        <when value="full">
+            <param label="Resolve repeats by reads" name="resolve_repeats" type="select" value="NO">
+                <option value="NO">No</option>
+                <option value="YES">Yes</option>
+            </param>
+            <param label="Strength of merging similar sequences during contiging" name="merge_level" type="select" value="1">
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+            </param>
+            <param label="Delete edges with coverage no larger than?" name="edge_cov_cutoff" type="integer" value="1"/>
+            <param label="Weight to filter arc when linearizing two edges" name="weight" type="integer" value="0"/>
+            <conditional name="multi_kmer">
+            <param help="" label="" name="multi_kmer_setting" type="select" value="NO">
+            	<option value="NO">No</option>
+            	<option value="YES">Yes</option>
+            </param>
+            <when value="NO"/>
+            <when value="YES">
+            	<param label="Max k when using multi-kmer" name="max_k" type="integer" value="13"/>
+            	<param format="input" label="Information on solexa reads required for when multi-kmer is used" name="reads_info_file" type="data"/>
+            	<param label="Number of CPUs to use" name="ncpu" type="integer" value="8"/>
+            	<param label="Merge clean bubble before iterate" name="merge_clean_bubble" optional="true" type="select">
+                	<option value="NO">No</option>
+                	<option value="YES">Yes</option>
+            	</param>
+            </when>
+            </conditional>
+        </when>
+        </conditional>
+    </inputs>
+    <outputs>
+        <data format="text" label="contig: contig" name="contig">
+        </data>
+        <data format="text" label="contig: arc" name="arc">
+        </data>
+        <data format="text" label="contig: updated edge" name="updated_edge">
+        </data>
+        <data format="text" label="contig: contig index" name="contig_index">
+        </data>
+    </outputs>
+    <tests>
+        <test>
+            <param name="max_read_length" value="50"/>
+            <output name="contig" value="hello world"/>
+        </test>
+    </tests>
+    <help>
+.. class:: infomark
+
+**Note:** This contig operation will not work without having previously run the SOAPdenovo2 pregraph operation on your read data.
+
+-----
+
+**What it does**
+
+SOAPdenovo is a novel short-read assembly method that can build a de novo draft assembly for the human-sized genomes.
+The program is specially designed to assemble Illumina GA short reads. It creates new opportunities for building
+reference sequences and carrying out accurate analyses of unexplored genomes in a cost effective way.
+
+The contig operation in SOAPdenovo2 analyses the outputs created by the previous pregraph (out.preGraphBasic, out.out.vertex
+and out.preArc) to identify contigs made up of sequence reads that overlap with one another.
+
+-----
+
+**Output files from pregraph**
+
+1. contig. Contig information: corresponding edge index, length, kmer coverage, whether it's tip and the sequence. Either a contig or its reverse complementry counterpart is included. Each reverse complementary contig index is indicated in the .ContigIndex file.
+2. Arc. Arcs coming out of each edge and their corresponding coverage by reads
+3. updated.edge. Some information for each edge in graph: length, Kmers at both ends, index difference between the reverse-complementary edge and this one.
+4. ContigIndex. Each record gives information about each contig in the .contig. it's edge index, length, the index difference between its reverse-complementary counterpart and itself.
+
+**More information**
+
+For test data and more detailed information, click here_.
+
+.. _here: http://soap.genomics.org.cn/soapdenovo.html
+    </help>
+</tool>

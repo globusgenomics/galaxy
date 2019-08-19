@@ -1,0 +1,48 @@
+<tool id="gemini_db_info" name="GEMINI db_info" version="GRABIX: 0.1.3; TABIX: 0.2.6; SAMTOOLS: 0.1.19; BEDTOOLS: 2.19.1">
+    <description>List the gemini database tables and columns</description>
+    <requirements>
+            <!--<requirement type="package" version="0.10.0">gemini</requirement>-->
+            <requirement type="package">pymodules</requirement>
+            <requirement type="package" version="0.1.3">grabix</requirement>
+            <requirement type="package" version="0.2.6">tabix</requirement>
+            <requirement type="package" version="0.1.19">samtools</requirement>
+            <requirement type="package" version="2.19.1">bedtools</requirement>
+            <yield/>
+    </requirements>
+    <version_command>gemini --version</version_command>
+    <command>
+<![CDATA[
+        gemini db_info
+            "${ infile }" | tr -s ' ' '\t'
+            > "${ outfile }"
+]]>
+    </command>
+    <stdio>
+            <exit_code range="1:"/>
+            <exit_code range=":-1"/>
+            <regex match="Error:"/>
+            <regex match="Exception:"/>
+    </stdio>
+    <inputs>
+        <param format="sqlite" label="GEMINI database" name="infile" type="data"/>
+    </inputs>
+    <outputs>
+        <data format="tabular" label="${tool.name} on ${on_string}" name="outfile"/>
+    </outputs>
+    <tests>
+        <test>
+        </test>
+    </tests>
+    <help>
+**What it does**
+
+Because of the sheer number of annotations that are stored in gemini, there are admittedly too many columns to remember by rote. 
+If you can’t recall the name of particular column, just use the db_info tool. It will report all of the tables and all of the columns / types in each table.
+
+@CITATION@
+    </help>
+    <citations>
+        <citation type="doi">10.1371/journal.pcbi.1003153</citation>
+        <yield/>
+    </citations>
+</tool>

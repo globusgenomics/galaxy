@@ -1,0 +1,44 @@
+<tool description="Using Swift to submit Atlas jobs" id="swift_atlas_wrapper" name="Atlas Swift submission" version="SAMTOOLS: 1.2">
+  <description>Run Atlas jobs with Swift</description>
+ <requirements>
+    <requirement type="package">swift</requirement>
+	<requirement type="package">samtools</requirement>
+  </requirements>
+
+  <command interpreter="python">
+      swift_atlas_wrapper.py
+      ### sites file
+      --sites.file $sites_file
+      ### tc file
+      --tc.file $tc_file
+      ### atlas snp swift file
+      $snp_swift_file
+      ### fasta input
+      --fasta $fasta_file
+      ### bam file directory
+      --bamdir $bamdir
+      ### output directory to be written
+      ##--outputdir=$outputdir
+      --outputdir=$output1.extra_files_path
+      ### outputs
+      -d $output1
+  </command>
+  <inputs>
+    <param format="txt" help="" label="Sites File" name="sites_file" type="data"/>
+    <param format="txt" help="" label="TC File" name="tc_file" type="data"/>
+    <param format="txt" help="" label="SNP Swift File" name="snp_swift_file" type="data"/>
+    <param format="fasta" help="" label="Fasta Reference" name="fasta_file" type="data"/>
+    <param help="" label="BAM Directory Path" name="bamdir" type="text"/>
+    <!--<param name="outputdir" type="text" label="Output Directory Path" help=""/>-->
+  </inputs>
+  <outputs> 
+    <data fortmat="tabular" name="output1"/>
+  </outputs>
+  <help>
+
+**What it does**
+
+**Outputs**
+
+  </help>
+</tool>

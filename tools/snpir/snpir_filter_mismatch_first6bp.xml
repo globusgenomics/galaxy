@@ -1,0 +1,62 @@
+<tool id="filter_mismatch_first6bp" name="SNPiR Filter mismatch" version="SNPIR: 12-May-2014; SAMTOOLS: 1.2; UCSC_TOOLS: 20140801; BEDTOOLS: 2.17.0">
+  <requirements>
+    <requirement type="package">snpir</requirement>
+    <requirement type="package">samtools</requirement>
+    <requirement type="package">ucsc_tools</requirement>
+    <requirement type="package">bedtools</requirement>
+  </requirements>
+  <description>
+    Remove mismatches in first 6 bp of reads
+  </description>
+
+  <command>
+    ln -s $inputBAM input.bam; samtools index -b input.bam; 
+    filter_mismatch_first6bp.pl 
+    -infile $inputVCF -outfile $outputVCF -bamfile input.bam $fastqFormat -minbasequal $qualityThreshold
+
+  </command>
+
+  <inputs>
+    <param format="vcf" label="Select an input VCF file" name="inputVCF" type="data"/>
+    <param format="bam" label="Select an input BAM file" name="inputBAM" type="data"/>
+    <param checked="false" falsevalue="" label="Reads in the bam file are in Illumina 1.3+ FASTQ-like format" name="fastqFormat" truevalue="-illumina " type="boolean"/>
+    <param help="default is 25" label="Minimum base quality for mismaches to be taken into account" min="0" name="qualityThreshold" type="integer" value="25"/>
+  </inputs>
+
+  <outputs>
+    <data format="vcf" label="${tool.name} on ${on_string}" name="outputVCF"/>
+  </outputs>
+
+  <help>
+
+.. class:: infomark
+
+**Purpose**
+
+Filter for variants that are caused by mismatches between the first 6 bases of reads, by Robert Piskol (piskol@stanford.edu) 
+							   Gokul Ramaswami (gokulr@stanford.edu) 07/25/2013
+
+This program takes a variant file and an indexed bam file. It removes variants that are only supported
+by variants within the first 6 positions of mapped reads
+
+
+Arguments:
+-infile FILE	- File containing a list of variants to be filtered
+-outfile FILE	- Output file for filtered variants
+-bamfile FILE	- File containing mapped short reads that were used for variant calling
+-minbasequal N	- Minimum base quality for mismaches to be taken into account (default: 25)
+-illumina	- reads in the bam file are in Illumina 1.3+ FASTQ-like format
+-help		- Show this help screen                 
+
+
+------
+
+.. class:: infomark
+
+**Inputs, outputs, and parameters**
+
+
+
+  </help>
+
+</tool>

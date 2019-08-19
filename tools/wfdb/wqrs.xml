@@ -1,0 +1,84 @@
+<tool id="wqrs_id1" name="wqrs" version="WFDB: 10.5.20">
+  <description>
+    single-channel QRS detector based on length transform
+  </description>
+  <requirements>
+    <requirement type="package">wfdb</requirement>
+  </requirements>
+
+  <command interpreter="python">
+     wfdb_wrapper.py   
+   --program wqrs
+   --record $record
+   --data $datafile
+   --outputfile $outputfile
+   #if $options == &quot;advanced&quot;:
+     --begintime $options.begintime
+     --stoptime $options.stoptime
+     --resolution $options.resolution
+     --jpoints $options.jpoints
+     --threshold $options.threshold
+     --frequency $options.frequency
+     --signal $options.signal
+     --resample $options.resample
+   #end if
+
+  </command>
+
+  <inputs>
+    <param format="hea" label="Record ID" name="record" type="data"/>
+    <param format="dat" label="Data File (*.dat)" name="datafile" type="data"/>
+    <conditional name="options">
+      <param label="Modify Options?" name="selectOptions" type="select">
+        <option selected="true" value="default">Default options</option>
+        <option value="advanced">Modify options</option>
+      </param>
+
+      <when value="default"/>
+      <when value="advanced">
+        <param help="Begin at the specified time in record (default: start of the record)." label="Start Time" name="begintime" type="text" value="0"/>
+        <param help="Process until the specified time in record (default: the end of the record)." label="Stop Time" name="stoptime" type="text" value="e"/>
+	<param checked="False" falsevalue="false" help="Read the signal files in high-resolution mode (default: standard mode). These modes are identical for ordinary records. For multifrequency records, the standard decimation of oversampled signals to the frame rate is suppressed in high-resolution mode" label="High-Resolution" name="resolution" truevalue="true" type="boolean"/>
+	<param checked="False" falsevalue="false" label="Find and annotate J-points (QRS ends) as well as QRS onsets" name="jpoints" truevalue="true" type="boolean"/>
+        <param help="use higher values to reduce false detections, or lower values to reduce the number of missed beats (default: 100)" label="Specify the detection threshold" name="threshold" type="integer" value="100"/>
+        <param help="Specify the power line (mains) frequency used at the time of the recording, in Hz (default: 60). wqrs will apply a notch filter of the specified frequency to the input signal before length-transforming it." label="Specify the power line (mains) frequency" name="frequency" type="integer" value="60"/>
+	<param checked="False" falsevalue="false" help="Resample the input at 120 Hz if the power line frequency is 60 Hz, or at 150 Hz otherwise (default: do not resample)." label="Resample" name="resample" truevalue="true" type="boolean"/>
+        <param help="Specify the signal (number or name) to be used for QRS detection (default: 0)." label="Signal for QRS detection" name="signal" type="integer" value="0"/>
+	
+      </when>
+    </conditional>
+  </inputs>
+
+  <outputs>
+    <data format="wqrs" label="${tool.name} on ${on_string}: Reference annotation file" name="outputfile"/>
+  </outputs>
+
+  <help>
+
+::
+
+  wqrs attempts to locate QRS complexes in an ECG signal in the specified record. The detector algorithm is based on the length transform.
+
+::
+
+  usage: wqrs -r RECORD [OPTIONS ...]
+  where RECORD is the name of the record to be analyzed, and OPTIONS may include any of::
+
+  -f TIME     begin at specified time (default: beginning of the record)
+  -H          read multifrequency signals in high resolution mode
+  -j          find and annotate J-points (QRS ends) as well as QRS onsets
+  -m THRESH   set detector threshold to THRESH (default: 100)
+  -p FREQ     specify power line (mains) frequency (default: 60)
+  -R          resample input at 120 or 150 Hz, depending on power line
+              frequency (default: do not resample)
+  -s SIGNAL   analyze specified signal (default: 0)
+  -t TIME     stop at specified time (default: end of the record)
+
+::
+
+  If too many beats are missed, decrease THRESH;  if there are too many extra detections, increase THRESH.
+
+
+  </help>
+
+</tool>

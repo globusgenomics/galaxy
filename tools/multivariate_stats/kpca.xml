@@ -1,0 +1,140 @@
+<tool id="kpca1" name="Kernel Principal Component Analysis" version="RPY: default">
+  <description> </description>
+  <command interpreter="python">
+    kpca.py 
+      --input=$input1
+      --output1=$out_file1
+      --output2=$out_file2
+      --var_cols=$var_cols
+      --kernel=$kernelChoice.kernel
+      --features=$features
+      #if $kernelChoice.kernel == &quot;rbfdot&quot; or $kernelChoice.kernel == &quot;anovadot&quot;:
+      --sigma=$kernelChoice.sigma
+      --degree=&quot;None&quot;
+      --scale=&quot;None&quot;
+      --offset=&quot;None&quot;
+      --order=&quot;None&quot;
+      #elif $kernelChoice.kernel == &quot;polydot&quot;:
+      --sigma=&quot;None&quot;
+      --degree=$kernelChoice.degree
+      --scale=$kernelChoice.scale
+      --offset=$kernelChoice.offset
+      --order=&quot;None&quot;
+      #elif $kernelChoice.kernel == &quot;tanhdot&quot;:
+      --sigma=&quot;None&quot;
+      --degree=&quot;None&quot;
+      --scale=$kernelChoice.scale
+      --offset=$kernelChoice.offset
+      --order=&quot;None&quot;
+      #elif $kernelChoice.kernel == &quot;besseldot&quot;:
+      --sigma=$kernelChoice.sigma
+      --degree=$kernelChoice.degree
+      --scale=&quot;None&quot;
+      --offset=&quot;None&quot;
+      --order=$kernelChoice.order
+      #elif $kernelChoice.kernel == &quot;anovadot&quot;:
+      --sigma=$kernelChoice.sigma
+      --degree=$kernelChoice.degree
+      --scale=&quot;None&quot;
+      --offset=&quot;None&quot;
+      --order=&quot;None&quot;
+      #else:
+      --sigma=&quot;None&quot;
+      --degree=&quot;None&quot;
+      --scale=&quot;None&quot;
+      --offset=&quot;None&quot;
+      --order=&quot;None&quot;
+      #end if
+  </command>
+  <inputs>
+    <param format="tabular" help="Dataset missing? See TIP below." label="Select data" name="input1" type="data"/>
+    <param data_ref="input1" label="Select columns containing input variables " multiple="true" name="var_cols" numerical="True" type="data_column">
+        <validator message="Please select at least one column." type="no_options"/>
+    </param>
+    <param help="To return all, enter 0" label="Number of principal components to return" name="features" size="10" type="integer" value="2"/>
+    <conditional name="kernelChoice">
+        <param label="Kernel function" name="kernel" type="select">
+            <option selected="true" value="rbfdot">Gaussian Radial Basis Function</option>
+            <option value="polydot">Polynomial</option>
+            <option value="vanilladot">Linear</option>
+            <option value="tanhdot">Hyperbolic</option>
+            <option value="laplacedot">Laplacian</option>
+            <option value="besseldot">Bessel</option>
+            <option value="anovadot">ANOVA Radial Basis Function</option>
+            <option value="splinedot">Spline</option>
+        </param>
+        <when value="vanilladot"/>
+        <when value="splinedot"/>
+        <when value="rbfdot">
+            <param label="sigma (inverse kernel width)" name="sigma" size="10" type="float" value="1"/>
+        </when>
+        <when value="laplacedot">
+            <param label="sigma (inverse kernel width)" name="sigma" size="10" type="float" value="1"/>
+        </when>
+        <when value="polydot">
+            <param label="degree" name="degree" size="10" type="integer" value="1"/>
+            <param label="scale" name="scale" size="10" type="integer" value="1"/>
+            <param label="offset" name="offset" size="10" type="integer" value="1"/>
+        </when>
+        <when value="tanhdot">
+            <param label="scale" name="scale" size="10" type="integer" value="1"/>
+            <param label="offset" name="offset" size="10" type="integer" value="1"/>
+        </when>
+        <when value="besseldot">
+            <param label="sigma" name="sigma" size="10" type="integer" value="1"/>
+            <param label="order" name="order" size="10" type="integer" value="1"/>
+            <param label="degree" name="degree" size="10" type="integer" value="1"/>
+        </when>
+        <when value="anovadot">
+            <param label="sigma" name="sigma" size="10" type="integer" value="1"/>
+            <param label="degree" name="degree" size="10" type="integer" value="1"/>
+        </when>
+    </conditional>    
+  </inputs>
+  <outputs>
+    <data format="input" metadata_source="input1" name="out_file1"/>
+    <data format="pdf" name="out_file2"/>
+  </outputs>
+  <requirements>
+    <requirement type="python-module">rpy</requirement>
+  </requirements>
+  <tests>
+    <test>
+        <param name="input1" value="iris.tabular"/>
+        <param name="var_cols" value="1,2,3,4"/>
+        <param name="kernel" value="polydot"/>
+        <param name="features" value="2"/>
+        <param name="offset" value="0"/>
+        <param name="scale" value="1"/>
+        <param name="degree" value="2"/>
+        <output file="kpca_out1.tabular" name="out_file1"/>
+        <output file="kpca_out2.pdf" name="out_file2"/>
+    </test>
+  </tests>
+  <help>
+
+
+.. class:: infomark
+
+**TIP:** If your data is not TAB delimited, use *Edit Datasets-&gt;Convert characters*
+
+-----
+
+.. class:: infomark
+
+**What it does**
+
+This tool uses functions from 'kernlab' library from R statistical package to perform Kernel Principal Component Analysis (kPCA) on the input data. It outputs two files, one containing the summary statistics of the performed kPCA, and the other containing a scatterplot matrix of rotated values reported by kPCA.   
+
+*Alexandros Karatzoglou, Alex Smola, Kurt Hornik, Achim Zeileis (2004). kernlab - An S4 Package for Kernel Methods in R. Journal of Statistical Software 11(9), 1-20. URL http://www.jstatsoft.org/v11/i09/*
+
+-----
+
+.. class:: warningmark
+
+**Note**
+
+This tool currently treats all variables as continuous numeric variables. Running the tool on categorical variables might result in incorrect results. Rows containing non-numeric (or missing) data in any of the chosen columns will be skipped from the analysis.
+
+  </help>
+</tool>

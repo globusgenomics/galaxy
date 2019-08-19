@@ -1,0 +1,80 @@
+<tool id="count" name="cellranger count" version="CELL RANGER: 2.2.0">
+<description> takes FASTQ files from cellranger mkfastq and performs alignment, filtering, barcode counting, and UMI counting</description>
+    <requirements>
+      <requirement type="package" version="2.2.0">cellranger</requirement>
+      <requirement type="package" version="v2.19.1">illumina</requirement>
+      <requirement type="package">pymodules</requirement>
+    </requirements>
+
+<command interpreter="python">
+    count.py
+    --id $id
+    --fastqs $fastqs_path.extra_files_path
+    
+    #if str($refGenomeSource.genomeSource) == &quot;indexed&quot;
+        --transcriptome ${refGenomeSource.index.fields.path}
+    #else
+        --transcriptome ${refGenomeSource.transcriptome.extra_files_path}
+    #end if
+
+    ##--transcriptome $transcriptome.extra_files_path
+    --sample $sample
+    --expect-cells $expect_cells
+    --chemistry $chemistry
+    
+    --output-dir $output.extra_files_path
+    --metric  $metric
+    --hdf5  $hdf5
+    --mhdf5 $mhdf5
+   
+</command>
+
+<inputs>
+    <param name="id" type="text" label="A unique run ID string: e.g. sample345 (--id)" help=""/>
+    <param name="fastqs_path" type="data" format="txt" label="Path of the fastq_path folder (--fastqs)"/>
+
+    <conditional name="refGenomeSource">
+        <param help="Built-ins were indexed using default options" label="Will you select a reference genome from your history or use a built-in index?" name="genomeSource" type="select">
+            <option value="indexed">Use a built-in index</option>
+            <option value="history">Use one from the history</option>
+        </param>
+        <when value="indexed">
+            <param label="Select a reference genome" name="index" type="select">
+                <options from_data_table="cellranger_indexes">
+                    <!--filter column="2" type="sort_by"/>
+                    <validator message="No indexes are available for the selected input dataset" type="no_options"/-->
+                </options>
+            </param>
+        </when>
+        <when value="history">
+            <param name="transcriptome" type="data" format="txt" label="Path to the Cell Ranger compatible transcriptome reference (--transcriptome)"/>
+        </when>
+    </conditional>
+
+
+    <!--param name="transcriptome" type="data" format="txt" label="Path to the Cell Ranger compatible transcriptome reference (transcriptome)"/-->
+    <param name="sample" type="text" label="sample (--sample)" help="Sample name as specified in the sample sheet supplied to cellranger mkfastq. Can take multiple comma-separated values"/>
+    <param name="expect_cells" type="integer" value="3000" min="0" label="Expected number of recovered cells (--expect-cells)"/>
+    <param name="chemistry" type="select" label="Assay configuration (--chemistry)" help="">
+      <option value="auto" selected="true">autodetection (default)</option>
+      <option value="threeprime">Single Cell 3′ (threeprime)</option>
+      <option value="fiveprime">Single Cell 5′ (fiveprime)</option>
+      <option value="SC3Pv1">Single Cell 3′ v1 (SC3Pv1)</option>
+      <option value="SC3Pv2">Single Cell 3′ v2 (SC3Pv2)</option>
+      <option value="SC5P-PE"> Single Cell 5′ paired-end (SC5P-PE)</option>
+      <option value="SC5P-R2">Single Cell 5′ R2-only (SC5P-R2)</option>
+    </param>
+</inputs>
+
+<outputs>
+    <data format="tabular" name="output" label="${tool.name} on ${on_string} main output"/>
+    <data format="csv" name="metric" label="${tool.name} on ${on_string} summary CSV"/>
+    <data format="h5" name="hdf5" label="${tool.name} on ${on_string} Filtered gene-barcode matrices HDF5"/>
+    <data format="h5" name="mhdf5" label="${tool.name} on ${on_string} Molecule-level information HDF5"/>
+</outputs>
+
+<help>
+
+</help>
+
+</tool>

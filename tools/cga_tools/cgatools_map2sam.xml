@@ -1,0 +1,30 @@
+<tool id="map2sam" name="CGA Map2Sam">
+  <description>Converts CGI initial reference mappings into SAM format.</description>
+  <command>
+cgatools map2sam --reads=$reads --mappings=$mappings  --reference=$reference > $output 2> $output2
+  </command>
+
+  <inputs>
+    <param format="tsv,bz2" name="reads" type="data" label="Complete Genomics reads file"/>
+    <param format="tsv.bz2" name="mappings" type="data" label="Complete Genomics mappings file"/>
+    <param format="crr" name="reference" type="data" label="Complete Genomics reference file"/>
+  </inputs>
+
+  <outputs>
+    <data format="sam" name="output"/>
+    <data format="txt" name="output2"/>
+  </outputs>
+
+
+  <help>
+    The Map2Sam converter takes as input Reads and Mappings files, a library 
+    structure file and a crr reference file and generates one SAM file as an 
+    output. The output is sent into stdout by default. All the mapping records 
+    from the input are converted into corresponding SAM records one to one. In 
+    addition, the unmapped DNB records are reported as SAM records having 
+    appropriate indication. Map2Sam converter tries to identify primary 
+    mappings and highlight them using the appropriate flag. The negative gaps 
+    in CGI mappings are represented using GS/GQ/GC tags.
+  </help>
+
+</tool>

@@ -1,0 +1,20 @@
+<tool id="contra_large_del" name="Generate a bed file for combined contra large deletions" version="0.0.1">
+  <description></description>
+  <requirements>   
+  </requirements>
+  <command interpreter="python">
+      contra_large_del.py  
+      --input=$input_config.extra_files_path
+      --output=$output
+      --output-dir $output.extra_files_path
+      
+  </command>
+	<inputs>
+           <param format="data" help="Config file containing a directory path." label="Config File" name="input_config" type="data"/>
+	</inputs>
+	<outputs>
+                <data format="bed" label="${tool.name} on ${on_string}: (bed)" name="output"/>
+	</outputs>
+	<help>
+	</help>
+</tool>

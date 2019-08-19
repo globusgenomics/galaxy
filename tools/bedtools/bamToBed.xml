@@ -1,0 +1,90 @@
+<tool id="bedtools_bamtobed" name="Convert from BAM to BED" version="BEDTOOLS: 2.17.0">
+
+<description>
+</description>    
+
+<requirements>
+        <requirement type="package">bedtools</requirement>
+</requirements>
+
+<command>
+    bamToBed $option $ed_score 
+
+    #if $input_source.input_type == "text":
+        -i '$input_source.input_file_path'
+    #else:
+        -i '$input_source.input_file'
+    #end if 
+    &gt; '$output'
+    
+    #if str($tag):
+      -tag      $tag
+    #end if
+</command>
+
+<inputs>
+      <conditional name="input_source">
+        <param help="If you choose the file based method, it must contain only one line with the path for your files" label="How will you enter the path for your BAM/BAI files?" name="input_type" type="select">
+          <option value="text">Text Field</option>
+          <option selected="True" value="file">File</option>
+        </param>
+        <when value="text">
+          <param area="True" help="Please input the full bam file path." label="BAM file path" name="input_file_path" size="2x40" type="text"/>
+        </when>
+        <when value="file">
+          <param format="bam" help="Must contain only one line with the path for your files" label="Convert the following BAM file to BED" name="input_file" type="data"/>
+        </when>
+      </conditional>
+    <!--param format="bam" label="Convert the following BAM file to BED" name="input" type="data"/-->
+    <param label="What type of BED output would you like" name="option" type="select">
+        <option value="">Create a 6-column BED file.</option>
+        <option value="-bed12">Create a full, 12-column &quot;blocked&quot; BED file.</option>
+        <option value="-bedpe">Create a paired-end, BEDPE format.</option>
+    </param>
+    <param checked="false" falsevalue="" label="Report spliced BAM alignments as separate BED entries" name="split" truevalue="-split" type="boolean"/>
+    <param checked="false" falsevalue="" label="Use alignment's edit-distance for BED score" name="ed_score" truevalue="-ed" type="boolean"/>
+    <param label="Use other NUMERIC BAM alignment tag as the BED score" name="tag" optional="true" type="text"/>
+</inputs>
+
+<outputs>
+    <data format="bed" label="${tool.name} on ${on_string}" name="output"/>
+</outputs>
+
+<help>
+
+**What it does**
+
+This tool converts a BAM file to a BED file. The end coordinate is computed
+by inspecting the CIGAR string. The QNAME for the alignment is used as the 
+BED name field and, by default, the MAPQ is used as the BED score. 
+
+.. class:: infomark
+
+The &quot;Report spliced BAM alignment...&quot; option breaks BAM alignments with the &quot;N&quot; (splice) operator into distinct BED entries.  For example, using this option on a CIGAR such as 50M1000N50M would, by default, produce a single BED record that spans 1100bp.  However, using this option, it would create two separate BED records that are each 50bp in size and are separated by 1000bp (the size of the N operation).  This is important for RNA-seq and structural variation experiments.
+
+
+.. class:: warningmark
+
+If using a custom BAM alignment TAG as  the BED score, note that this must be a numeric tag (e.g., type &quot;i&quot; as in NM:i:0).
+
+.. class:: warningmark
+
+If creating a BEDPE output (see output formatting options), the BAM file should be sorted by query name.
+
+.. class:: warningmark
+
+This tool requires that `bedtools`__ has been installed on your system.
+
+------
+
+This tool is part of the `bedtools package`__ from the `Quinlan laboratory`__. If you use this tool, please cite `Quinlan AR, and Hall I.M. BEDTools: A flexible framework for comparing genomic features. Bioinformatics, 2010, 26, 6.`__
+
+    .. __: http://code.google.com/p/bedtools/
+    .. __: http://code.google.com/p/bedtools/
+    .. __: http://cphg.virginia.edu/quinlan/
+    .. __: http://bioinformatics.oxfordjournals.org/content/26/6/841.short
+
+
+
+</help>
+</tool>

@@ -1,0 +1,191 @@
+<tool id="bowtie2" name="Bowtie2" version="BOWTIE2: 2.1.0; SAMTOOLS: 1.2">
+    <!-- Wrapper compatible with Bowtie version 2.0.0 -->
+    <description>is a short-read aligner</description>
+    <version_command>bowtie2 --version</version_command>
+    <requirements>
+        <requirement type="package">bowtie2</requirement>
+        <requirement type="package">samtools</requirement>
+        <requirement type="package">sambamba</requirement>
+    </requirements>
+    <command interpreter="python">
+        bowtie2_wrapper.py
+        
+        ## Change this to accommodate the number of threads you have available.
+        --num-threads=&quot;32&quot;
+
+        ## Outputs.
+        --output=$output
+
+        #if str( $singlePaired.sPaired ) == &quot;single&quot;
+            #if $output_unaligned_reads_l
+                --output_unaligned_reads=$output_unaligned_reads_l
+            #end if
+        #else
+            #if $output_unaligned_reads_l and $output_unaligned_reads_r
+                --output_unaligned_reads_l=$output_unaligned_reads_l
+                --output_unaligned_reads_r=$output_unaligned_reads_r
+            #end if
+        #end if
+        
+        ## Handle reference file.
+        #if $refGenomeSource.genomeSource == &quot;history&quot;:
+            --own-file=$refGenomeSource.ownFile
+        #else:
+            --indexes-path=&quot;${refGenomeSource.index.fields.path}&quot;
+        #end if
+
+        ## Are reads single-end or paired?
+        --single-paired=$singlePaired.sPaired
+
+        ## First input file always required.
+        --input1=$input1
+        
+        ## Second input only if input is paired-end.
+        #if $singlePaired.sPaired == &quot;paired&quot;
+            --input2=$singlePaired.input2
+            -I $singlePaired.minInsert
+            -X $singlePaired.maxInsert
+        #end if
+
+        ## Set params.
+        --settings=$params.settingsType
+        
+        #if $params.settingsType == &quot;full&quot;:
+            #if str($params.align_type) == &quot;end_to_end&quot;:
+                --end-to-end --preset-alignment=$params.preset.align_preset_select
+            #else:
+                --local --preset-alignment=$params.preset.align_preset_select-local
+            #end if
+        #end if
+
+        ## Read group information.
+        #if $readGroup.specReadGroup == &quot;yes&quot;
+          --rgid=&quot;$readGroup.rgid&quot;
+          --rglb=&quot;$readGroup.rglb&quot;
+          --rgpl=&quot;$readGroup.rgpl&quot;
+          --rgsm=&quot;$readGroup.rgsm&quot;
+        #end if
+    </command>
+    <inputs>
+        <conditional name="singlePaired">
+            <param label="Is this library mate-paired?" name="sPaired" type="select">
+              <option value="single">Single-end</option>
+              <option value="paired">Paired-end</option>
+            </param>
+            <when value="single">
+                <param format="fastqsanger" help="Nucleotide-space: Must have Sanger-scaled quality values with ASCII offset 33" label="FASTQ file" name="input1" type="data"/>
+            </when>
+            <when value="paired">
+                <param format="fastqsanger" help="Nucleotide-space: Must have Sanger-scaled quality values with ASCII offset 33" label="FASTQ file" name="input1" type="data"/>
+                <param format="fastqsanger" help="Nucleotide-space: Must have Sanger-scaled quality values with ASCII offset 33" label="FASTQ file" name="input2" type="data"/>
+                <!-- TODO: paired-end specific parameters. -->
+                <param label="Minimum insert size for valid paired-end alignments" name="minInsert" type="integer" value="0"/>
+                <param label="Maximum insert size for valid paired-end alignments" name="maxInsert" type="integer" value="500"/>
+            </when>
+        </conditional>
+        <param checked="False" falsevalue="false" label="Write all reads that could not be aligned to a file (uses --un for single-end and  --un-conc for paired-ends)" name="unalignedFile" truevalue="true" type="boolean"/>
+        <conditional name="refGenomeSource">
+          <param help="Built-ins were indexed using default options" label="Will you select a reference genome from your history or use a built-in index?" name="genomeSource" type="select">
+            <option value="indexed">Use a built-in index</option>
+            <option value="history">Use one from the history</option>
+          </param>
+          <when value="indexed">
+            <param help="If your genome of interest is not listed, contact the Galaxy team" label="Select a reference genome" name="index" type="select">
+              <options from_data_table="bowtie2_indexes">
+                <filter column="3" type="sort_by"/>
+                <validator message="No indexes are available for the selected input dataset" type="no_options"/>
+              </options>
+            </param>
+          </when>
+          <when value="history">
+            <param format="fasta" label="Select the reference genome" metadata_name="dbkey" name="ownFile" type="data"/>
+          </when>  <!-- history -->
+        </conditional>  <!-- refGenomeSource -->
+        <conditional name="params">
+            <param help="You can use the default settings or set custom values for any of Bowtie's parameters." label="Parameter Settings" name="settingsType" type="select">
+              <option value="preSet">Use Defaults</option>
+              <option value="full">Full parameter list</option>
+            </param>
+            <when value="preSet"/>
+            <!-- Full/advanced params. -->
+            <when value="full">
+                <param label="Type of alignment" name="align_type" type="select">
+                    <option selected="true" value="end_to_end">End to end</option>
+                    <option value="local">Local</option>
+                </param>
+                <conditional name="preset">
+                    <param label="Use Preset options" name="b2_preset" type="select">
+                          <option selected="true" value="Yes">Yes</option>
+                          <option value="No">No</option>
+                    </param>
+                    <when value="Yes">
+                        <param label="Preset option" name="align_preset_select" type="select">
+                            <option value="very-fast">Very fast</option>
+                            <option value="fast">Fast</option>
+                            <option selected="true" value="sensitive">Sensitive</option>
+                            <option value="very-sensitive">Very sensitive</option>
+                        </param>
+                    </when>
+                    <when value="No"/>
+                </conditional>
+            </when>  <!-- full -->
+      </conditional>  <!-- params -->
+      <conditional name="readGroup">
+            <param label="Specify the read group for this file?" name="specReadGroup" type="select">
+                <option value="yes">Yes</option>
+                <option selected="True" value="no">No</option>
+            </param>
+            <when value="yes">
+                <param help="Required if RG specified. Read group IDs may be modiﬁed when merging SAM ﬁles in order to handle collisions." label="Read group identiﬁer (ID). Each @RG line must have a unique ID. The value of ID is used in the RG tags of alignment records. Must be unique among all read groups in header section." name="rgid" size="25" type="text"/>
+                <param help="Required if RG specified" label="Library name (LB)" name="rglb" size="25" type="text"/>
+                <param help="Required if RG specified. Valid values : CAPILLARY, LS454, ILLUMINA, SOLID, HELICOS, IONTORRENT and PACBIO" label="Platform/technology used to produce the reads (PL)" name="rgpl" size="25" type="text"/>
+                <param help="Required if RG specified. Use pool name where a pool is being sequenced" label="Sample (SM)" name="rgsm" size="25" type="text"/>
+            </when>
+            <when value="no"/>
+        </conditional> <!-- readGroup -->
+    </inputs>
+
+    <outputs>
+        <data format="fastqsanger" label="${tool.name} on ${on_string}: unaligned reads (L)" name="output_unaligned_reads_l">
+            <filter>unalignedFile is True</filter>
+            <actions>
+                <action type="format">
+                    <option name="singlePaired.input1" param_attribute="ext" type="from_param"/>
+                </action>
+            </actions>
+        </data>
+        <data format="fastqsanger" label="${tool.name} on ${on_string}: unaligned reads (R)" name="output_unaligned_reads_r">
+            <filter>singlePaired['sPaired'] == &quot;paired&quot; and unalignedFile is True</filter>
+            <actions>
+                <action type="format">
+                    <option name="singlePaired.input1" param_attribute="ext" type="from_param"/>
+                </action>
+            </actions>
+        </data>
+        <data format="bam" label="${tool.name} on ${on_string}: aligned reads" name="output">
+          <actions>
+            <conditional name="refGenomeSource.genomeSource">
+              <when value="indexed">
+                <action name="dbkey" type="metadata">
+                  <option column="1" name="bowtie2_indexes" offset="0" type="from_data_table">
+                    <filter column="0" compare="startswith" keep="False" type="param_value" value="#"/>
+                    <filter column="0" ref="refGenomeSource.index" type="param_value"/>
+                  </option>
+                </action>
+              </when>
+              <when value="history">
+                <action name="dbkey" type="metadata">
+                  <option name="refGenomeSource.ownFile" param_attribute="dbkey" type="from_param"/>
+                </action>
+              </when>
+            </conditional>
+          </actions>
+        </data>
+    </outputs>
+
+    <tests>
+    </tests>
+
+    <help>
+    </help>
+</tool>

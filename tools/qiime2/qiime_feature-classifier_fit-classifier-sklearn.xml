@@ -1,0 +1,84 @@
+<?xml version="1.0" ?>
+<tool id="qiime_feature-classifier_fit-classifier-sklearn" name="qiime feature-classifier fit-classifier-sklearn" version="022019">
+	<description>- Train an almost arbitrary scikit-learn classifier</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command>
+		<![CDATA[
+	qiime feature-classifier fit-classifier-sklearn --p-classifier-specification="$pclassifierspecification"
+
+	#if str( $id_to_taxonomy_fp.selector ) == 'history'
+		#set $tax = $id_to_taxonomy_fp.taxonomy_fp
+		--i-reference-taxonomy '$tax'
+	#else:
+		#set $tax = $id_to_taxonomy_fp.taxonomy_fp.fields.path
+		--i-reference-taxonomy '$tax'
+	#end if
+
+		--i-reference-reads=$ireferencereads
+	#if str($iclassweight) != 'None':
+	 --i-class-weight=$iclassweight
+	#end if
+	 --o-classifier=oclassifier
+	#if str($cmdconfig) != 'None':
+	 --cmd-config=$cmdconfig
+	#end if
+	;
+	cp oclassifier.qza $oclassifier;
+]]>
+	</command>
+	<inputs>
+		<param format="qza,no_unzip.zip" label="--i-reference-reads: FeatureData[Sequence] [required]" name="ireferencereads" optional="False" type="data"/>
+
+		<conditional name="id_to_taxonomy_fp" optional="True">
+			   <param name="selector" type="select" label="Reference taxonomy to query">
+				  <option value="cached">Public databases</option>
+				  <option value="history">Databases from your history</option>
+			   </param>
+			   <when value="cached">
+				  <param argument="--taxonomy_fp" label="Reference taxonomy" type="select" optional="True">
+					 <options from_data_table="qiime_taxonomy" />
+				  </param>
+			   </when>
+			   <when value="history">
+				  <param argument="--taxonomy_fp" type="data" format="qza,no_unzip.zip" label="Reference databases" optional="True" />
+			   </when>
+		</conditional>
+
+		<param format="qza,no_unzip.zip" label="--i-class-weight: FeatureTable[RelativeFrequency] [optional]" name="iclassweight" optional="True" type="data"/>
+		<param label="--p-classifier-specification: [required]" name="pclassifierspecification" optional="False" type="text"/>
+		<param label="--cmd-config: Use config file for command options" name="cmdconfig" optional="True" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="qza" label="${tool.name} on ${on_string}: classifier.qza" name="oclassifier"/>
+	</outputs>
+	<help>
+		<![CDATA[
+Train an almost arbitrary scikit-learn classifier
+-------------------------------------------------
+
+Train a scikit-learn classifier to classify reads.
+
+Parameters
+----------
+reference_reads : FeatureData[Sequence]
+		\
+reference_taxonomy : FeatureData[Taxonomy]
+		\
+class_weight : FeatureTable[RelativeFrequency], optional
+		\
+classifier_specification : Str
+		\
+
+Returns
+-------
+classifier : TaxonomicClassifier
+		\
+		]]>
+	</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

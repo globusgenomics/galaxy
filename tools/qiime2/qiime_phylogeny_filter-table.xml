@@ -1,0 +1,53 @@
+<?xml version="1.0" ?>
+<tool id="qiime_phylogeny_filter-table" name="qiime phylogeny filter-table" version="022019">
+	<description> - Remove features from table if they're not present in tree.</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command>
+	<![CDATA[
+	qiime phylogeny filter-table --i-table=$itable --i-tree=$itree
+
+	#if str($cmdconfig) != 'None':
+	 --cmd-config=$cmdconfig
+	#end if
+	 --o-filtered-table=ofilteredtable;
+
+	cp ofilteredtable.qza $ofilteredtable;
+	]]>
+	</command>
+	<inputs>
+		<param format="qza,no_unzip.zip" label="--i-table: FeatureTable[Frequency] Feature table that features should be filtered from.  [required]" name="itable" optional="False" type="data"/>
+		<param format="qza,no_unzip.zip" label="--i-tree: Phylogeny[Rooted | Unrooted] Tree where tip identifiers are the feature identifiers that should be retained in the table.  [required]" name="itree" optional="False" type="data"/>
+		<param label="--cmd-config: Use config file for command options" name="cmdconfig" optional="True" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="qza" label="${tool.name} on ${on_string}: filtered-table.qza" name="ofilteredtable"/>
+	</outputs>
+	<help>
+		<![CDATA[
+Remove features from table if they're not present in tree.
+-----------------------------------------------------------
+
+Remove features from a feature table if their identifiers are not tip
+identifiers in tree.
+
+Parameters
+----------
+table : FeatureTable[Frequency]
+    Feature table that features should be filtered from.
+tree : Phylogeny[Rooted | Unrooted]
+    Tree where tip identifiers are the feature identifiers that should be
+    retained in the table.
+
+Returns
+-------
+filtered_table : FeatureTable[Frequency]
+    The resulting feature table.
+	]]>
+	</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

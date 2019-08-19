@@ -1,0 +1,52 @@
+5240	7267	+	Rv0005	gyrB	Fluoroquinolones
+7302	9818	+	Rv0006	gyrA	Fluoroquinolones
+409362	410801	+	Rv0341	iniB	Isoniazid
+410838	412760	+	Rv0342	iniA	Isoniazid
+412757	414238	+	Rv0343	iniC	Isoniazid
+575348	576790	+	Rv0486	mshA	Ethionamid
+759807	763325	+	Rv0667	rpoB	Rifampin
+763370	767320	+	Rv0668	rpoC	Rifampin compensatory
+775586	778480	-	Rv0676c	mmpL5	Clofazimine/Bedaquiline
+778477	778905	-	Rv0677c	mmpS5	Clofazimine/Bedaquiline
+778906	778989	-	intergenic rv0678-mmpS	rv0678-mmpS5 promoter region	Clofazimine/Bedaquiline
+778990	779487	+	Rv0678	Rv0678	Clofazimine/Bedaquiline
+781560	781934	+	Rv0682	rpsL	Streptomycin
+800809	801462	+	Rv0701	rplC	Linezolid
+1416181	1417347	-	Rv1267	embR	Ethambutol
+1417348	1417657	-	intergenic Rv1268c-embR	Rv1268c-embR promoter region	Ethambutol
+1471847	1473382	+	rrs	rrs	Streptomycin
+1473658	1476795	+	rrl	rrl	Linezolid
+1461045	1461290	+	Rv1305	atpE	Diarylquinoline
+1673300	1673439	+	intergenic Rv1482c-mabA	mabA-inhA promoter region	Isoniazid
+1673440	1674183	+	Rv1483	mabA	Isoniazid
+1674184	1674201	+	intergenic mabA-inhA	mabA-inhA intergenic region	Ethionamid/Isoniazid
+1674202	1675011	+	Rv1484	inhA	Ethionamid/Isoniazid
+1833542	1834987	+	Rv1630	rpsA	Pyrazinamide
+1917940	1918746	+	Rv1694	tlyA	Aminoglycosides
+2101651	2103042	-	Rv1854c	ndh	Isoniazid
+2153889	2156111	-	Rv1908c	katG	Isoniazid
+2156112	2156148	-	intergenic furA-katG	furA-katG	Isoniazid
+2156149	2156592	-	Rv1909c	furA	Isoniazid
+2288681	2289241	-	Rv2043C	pncA	Pyrazinamide
+2289242	2289281	-	intergenic pncA	pncA promoter region	Pyrazinamide
+2518115	2519365	+	Rv2245	kasA	Isoniazid
+2715333	2715469	-	intergenic	eis promoter region	Kanamycin
+2725570	2726087	-	Pseudogene	oxyR	Isoniazid
+2726088	2726192	+	intergenic oxyR-ahpC	oxyR-ahpC promoter region	Isoniazid
+2726193	2726780	+	Rv2428	ahpC	Isoniazid
+2746135	2747598	-	Rv2447c	folC	Para-Aminosalisylic Acid
+2986839	2987615	+	Rv2671	ribD	Para-Aminosalisylic Acid
+3073680	3074471	-	Rv2764c	thyA	Para-Aminosalisylic Acid
+3074472	3074635	-	intergenic thyA-Rv2765	thyA-Rv2765 promoter region	Aminoglycosides
+3336796	3337917	-	Rv2981c	ddlA	D-Cycloserine
+3840194	3841420	-	Rv3423c	alr	D-Cycloserine
+3877464	3878507	-	Rv3457c	rpoA	Rifampin compensatory
+4038158	4040704	-	Rv3596c	clpC1	Pyrazinamide
+4043862	4044281	-	Rv3601c	panD	Pyrazinamide
+4239863	4243147	+	Rc3793	embC	Ethambutol
+4243147	4243232	+	intergenic embC-embA	embC-embA promoter region	Ethambutol
+4243233	4246517	+	Rv3794	embA	Ethambutol
+4246514	4249810	+	Rv3795	embB	Ethambutol
+4326004	4327473	-	Rv3854c	ethA	Ethionamid
+4327549	4328199	+	Rv3855	ethR	Ethionamid
+4407528	4408202	-	RV3919c	gidB	Streptomycin

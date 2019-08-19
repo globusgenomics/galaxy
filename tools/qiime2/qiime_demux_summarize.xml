@@ -1,0 +1,60 @@
+<?xml version="1.0" ?>
+<tool id="qiime_demux_summarize" name="qiime demux summarize" version="022019">
+	<description> - Summarize counts per sample.</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command><![CDATA[
+  qiime demux summarize --i-data=$idata
+  
+  #if str($cmdconfig) != 'None':
+   --cmd-config=$cmdconfig
+  #end if
+  
+  #if $pn:
+   --p-n=$pn
+  #end if
+  
+   --o-visualization=ovisualization;
+  qiime tools export --input-path ovisualization.qzv --output-path out   && mkdir -p '$ovisualization.files_path'
+  && cp -r out/* '$ovisualization.files_path'
+  && mv '$ovisualization.files_path/index.html' '$ovisualization';
+]]></command>
+	<inputs>
+		<param format="qza,no_unzip.zip" label="--i-data: SampleData[JoinedSequencesWithQuality | PairedEndSequencesWithQuality | SequencesWithQuality] The demultiplexed sequences to be summarized.  [required]" name="idata" optional="False" type="data"/>
+		<param label="--p-n: The number of sequences that should be selected at random for quality score plots. The quality plots will present the average positional qualities across all of the sequences selected. If input sequences are paired end, plots will be generated for both forward and reverse reads for the same \`n\` sequences.  [default: 10000]" name="pn" optional="True" type="integer" value="10000"/>
+
+		<param label="--cmd-config: Use config file for command options" name="cmdconfig" optional="True" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="html" label="${tool.name} on ${on_string}: visualization.qzv" name="ovisualization"/>
+	</outputs>
+	<help><![CDATA[
+Summarize counts per sample.
+-----------------------------
+
+Summarize counts per sample for all samples, and generate interactive
+positional quality plots based on \`n\` randomly selected sequences.
+
+Parameters
+----------
+data : SampleData[JoinedSequencesWithQuality | PairedEndSequencesWithQuality | SequencesWithQuality]
+    The demultiplexed sequences to be summarized.
+n : Int, optional
+    The number of sequences that should be selected at random for quality
+    score plots. The quality plots will present the average positional
+    qualities across all of the sequences selected. If input sequences are
+    paired end, plots will be generated for both forward and reverse reads
+    for the same \`n\` sequences.
+
+Returns
+-------
+visualization : Visualization
+		\
+   ]]>
+	</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

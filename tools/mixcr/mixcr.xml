@@ -1,0 +1,126 @@
+<tool id="mixcr" name="MiXCR" version="MiXCR: v2.0.2">
+  <description>is a universal tool for fast and accurate analysis of T- and B- cell receptor repertoire sequencing data</description>
+  <requirements>
+    <requirement type="package">pymodules</requirement>
+    <requirement type="package">mixcr</requirement>
+    <requirement type="package" version="1.8.0">java</requirement>
+  </requirements>
+  <parallelism method="basic"/>
+  <stdio>
+    <regex level="warning" match="Warning: The index file is older than the data file:" source="stderr"/>
+  </stdio>
+  <command>
+  #set $input_dir_path = $output.extra_files_path+"/input";
+  mkdir $output.extra_files_path; mkdir $input_dir_path;
+
+  #if $fastq.matepair == "single":
+    #if $fastq.singlefastq.ext == 'fasta':
+        #set $ext = 'fasta'
+    #else:
+        #set $ext = 'fastq'
+    #end if
+
+    ln -s $fastq.singlefastq singlefastq.$ext;
+    mv singlefastq.$ext $input_dir_path;
+  #end if
+
+  #if $fastq.matepair == "paired":
+    #if $fastq.fastq1.ext == 'fasta':
+        #set $ext = 'fasta'
+    #else:
+        #set $ext = 'fastq'
+    #end if
+
+    ln -s $fastq.fastq1 fastq1.$ext; mv fastq1.$ext $input_dir_path;
+    ln -s $fastq.fastq2 fastq2.$ext; mv fastq2.$ext $input_dir_path;
+
+  #end if
+
+  python /opt/galaxy/tools/mixcr/mixcr.py     
+  mixcr.py
+  --input $inputs.type
+  -p '--chains $chains'
+  -p '--species $species'
+  --report mixcrReport.log
+  --parameters $inputs.parameters
+  --OassemblingFeatures $OassemblingFeatures
+  --output $output
+  --output-dir $output.extra_files_path
+  --output1 $clones_txt
+  --output2 $alignments_txt
+
+  #if $fastq.matepair == "single":
+    --inputfastq "$input_dir_path/singlefastq.$ext"
+  #end if
+  
+  #if $fastq.matepair == "paired":
+    --inputfastq "$input_dir_path/fastq1.$ext $input_dir_path/fastq2.$ext"
+  #end if
+   
+  </command>
+
+  <inputs>
+    <conditional name="fastq">
+       <param name="matepair" type="select" label="Library type">
+          <option value="single">Single End Reads</option>
+          <option value="paired">Paired End Reads</option>
+       </param>
+       <when value="single">
+          <param name="singlefastq" type="data" checked="yes" format="fastq,fasta" label="Single-end reads (fastq, fasta)" />
+       </when>
+       <when value="paired">
+           <param name="fastq1" type="data" format="fastq,fasta" label="Left/Forward strand reads (fasta, fastq)" />
+           <param name="fastq2" type="data" format="fasta,fastq" label="Right/Reverse strand reads (fasta, fastq)" />
+        </when>
+     </conditional>
+
+     <conditional name="inputs">
+       <param name="type" type="select" label="Input type">
+          <option value="standard">Standard</option>
+          <option value="rnaseq">RNA-seq</option>
+       </param>
+       <when value="standard">
+          ## align options
+          <param name="parameters" type="text" value="default" label="parameters (-p)"/>
+          ## assemble options
+       </when>
+       <when value="rnaseq">
+          <param name="parameters" type="text" value="rna-seq" label="parameters (-p)"/>          <param checked="true" name="OallowPartialAlignments" type="boolean" label="preserves alignments with not fully aligned V and J parts (-OallowPartialAlignments)"/>  
+       </when>
+     </conditional>
+          ## align options
+     <param name="chains" type="select" label="T-cell/B-cell specific features (-c)">
+       <option selected="true" value="All">All</option>
+       <option value="TCR">TCR</option>
+       <option value="IGH">IGH</option>
+       <option value="TCR,IGH">both (TCR,IGH)</option>
+     </param>
+     <param name="species" type="select" label="Species name (-s)">
+       <option selected="true" value="hsa">Homo sapiens</option>
+       <option value="mus">Mus musculus</option>
+     </param>
+     <param name="species" type="select" label="Species name (-s)">
+       <option selected="true" value="hsa">Homo sapiens</option>
+       <option value="mus">Mus musculus</option>
+     </param>
+     <param name="OassemblingFeatures" type="select" label="region of TCR/BCR sequence which will be used to assemble clones (-OassemblingFeatures)">
+       <option selected="true" value="CDR3">CDR3 region only</option>
+       <option value="VDJRegion">Full TCR/BCR sequence</option>
+     </param>
+  </inputs>
+
+  <outputs>
+    <data format="tabular" label="${tool.name} on ${on_string} (report.log)" name="output"/>
+    <data format="tabular" label="${tool.name} on ${on_string} (clones.txt)" name="clones_txt"/>
+    <data format="tabular" label="${tool.name} on ${on_string} (alignments.txt)" name="alignments_txt"/>
+  </outputs>
+
+  <help>
+  </help>
+
+  <tests>
+    <test>
+    </test>
+  </tests>
+
+</tool>

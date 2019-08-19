@@ -1,0 +1,440 @@
+<tool id="run_gs2006" name="Run Simulation">
+	<description></description>
+        <requirements>
+          <requirement type="package">greenstein2006</requirement>
+        </requirements>
+<command interpreter="python">
+Run_gs2006.py --root_dir $__root_dir__ --params_file $params --states_file $states --fluxes_file $fluxes --log_file $log --Num_beats $protocol.Num_beats --protocol $protocol.selection --Period $protocol.Period --Shift $protocol.Shift --Pulse_duration $protocol.Pulse_duration --Pulse_amplitude $protocol.Pulse_amplitude --t_clamp_start $protocol.t_clamp_start --t_clamp_end $protocol.t_clamp_end --t_sim_end $protocol.t_sim_end --t_output_start $t_output_start --V_clamp $protocol.V_clamp --V_hold $protocol.V_hold --STATE_1 $STATE_1 --STATE_2 $STATE_2 --STATE_3 $STATE_3 --STATE_4 $STATE_4 --STATE_5 $STATE_5 --STATE_6 $STATE_6 --STATE_7 $STATE_7 --STATE_8 $STATE_8 --STATE_9 $STATE_9 --STATE_10 $STATE_10 --STATE_11 $STATE_11 --STATE_12 $STATE_12 --STATE_13 $STATE_13 --STATE_14 $STATE_14 --STATE_15 $STATE_15 --STATE_16 $STATE_16 --STATE_17 $STATE_17 --STATE_18 $STATE_18 --STATE_19 $STATE_19 --STATE_20 $STATE_20 --STATE_21 $STATE_21 --STATE_22 $STATE_22 --STATE_23 $STATE_23 --STATE_24 $STATE_24 --STATE_25 $STATE_25 --STATE_26 $STATE_26 --STATE_27 $STATE_27 --STATE_28 $STATE_28 --STATE_29 $STATE_29 --STATE_30 $STATE_30 --STATE_31 $STATE_31 --STATE_32 $STATE_32 --STATE_33 $STATE_33 --STATE_34 $STATE_34 --STATE_35 $STATE_35 --STATE_36 $STATE_36 --STATE_37 $STATE_37 --STATE_38 $STATE_38 --STATE_39 $STATE_39 --STATE_40 $STATE_40 --V $V --mNa $mNa --hNa $hNa --jNa $jNa --Nai $Nai --Ki $Ki --Cai $Cai --CaSR $CaSR --LTRPNCa $LTRPNCa --HTRPNCa $HTRPNCa --xKs $xKs --C0Kv43 $C0Kv43 --C1Kv43 $C1Kv43 --C2Kv43 $C2Kv43 --C3Kv43 $C3Kv43 --OKv43 $OKv43 --CI0Kv43 $CI0Kv43 --CI1Kv43 $CI1Kv43 --CI2Kv43 $CI2Kv43 --CI3Kv43 $CI3Kv43 --OIKv43 $OIKv43 --C0Kv14 $C0Kv14 --C1Kv14 $C1Kv14 --C2Kv14 $C2Kv14 --C3Kv14 $C3Kv14 --OKv14 $OKv14 --CI0Kv14 $CI0Kv14 --CI1Kv14 $CI1Kv14 --CI2Kv14 $CI2Kv14 --CI3Kv14 $CI3Kv14 --OIKv14 $OIKv14 --C1Herg $C1Herg --C2Herg $C2Herg --C3Herg $C3Herg --OHerg $OHerg --IHerg $IHerg --DTOUT $DTOUT --NCaRU $NCaRU --Faraday $Faraday --Temp $Temp --Rgas $Rgas --Csa $Csa --VSS $VSS --VSR $VSR --Vmyo $Vmyo --PCa $PCa --JRyRmax $JRyRmax --r_xfer $r_xfer --Cao $Cao --Ko $Ko --Nao $Nao --Clo $Clo --Cli $Cli --KdIto2 $KdIto2 --PCl $PCl --GKr $GKr --GKs $GKs --GK1 $GK1 --GKp $GKp --GNa $GNa --kNaCa $kNaCa --KmNa $KmNa --KmCa $KmCa --KmK1 $KmK1 --ksat $ksat --eta $eta --INaKmax $INaKmax --KmNai $KmNai --KmKo $KmKo --IpCamax $IpCamax --KmpCa $KmpCa --GCab $GCab --GNab $GNab --Kfb $Kfb --Krb $Krb --KSR $KSR --Nfb $Nfb --Nrb $Nrb --vmaxf $vmaxf --vmaxr $vmaxr --KvScale $KvScale --Kv43Frac $Kv43Frac --alphaa0Kv43 $alphaa0Kv43 --aaKv43 $aaKv43 --betaa0Kv43 $betaa0Kv43 --baKv43 $baKv43 --alphai0Kv43 $alphai0Kv43 --aiKv43 $aiKv43 --betai0Kv43 $betai0Kv43 --biKv43 $biKv43 --alphaa0Kv14 $alphaa0Kv14 --aaKv14 $aaKv14 --betaa0Kv14 $betaa0Kv14 --baKv14 $baKv14 --alphai0Kv14 $alphai0Kv14 --betai0Kv14 $betai0Kv14 --f1Kv43 $f1Kv43 --f2Kv43 $f2Kv43 --f3Kv43 $f3Kv43 --f4Kv43 $f4Kv43 --b1Kv43 $b1Kv43 --b2Kv43 $b2Kv43 --b3Kv43 $b3Kv43 --b4Kv43 $b4Kv43 --f1Kv14 $f1Kv14 --f2Kv14 $f2Kv14 --f3Kv14 $f3Kv14 --f4Kv14 $f4Kv14 --b1Kv14 $b1Kv14 --b2Kv14 $b2Kv14 --b3Kv14 $b3Kv14 --b4Kv14 $b4Kv14 --A0_HERG $A0_HERG --B0_HERG $B0_HERG --A1_HERG $A1_HERG --B1_HERG $B1_HERG --A2_HERG $A2_HERG --B2_HERG $B2_HERG --A3_HERG $A3_HERG --B3_HERG $B3_HERG --A4_HERG $A4_HERG --B4_HERG $B4_HERG --A5_HERG $A5_HERG --B5_HERG $B5_HERG --A6_HERG $A6_HERG --B6_HERG $B6_HERG --T_Const_HERG $T_Const_HERG --CSQNtot $CSQNtot --KmCSQN $KmCSQN --LTRPNtot $LTRPNtot --HTRPNtot $HTRPNtot --khtrpn_plus $khtrpn_plus --khtrpn_minus $khtrpn_minus --kltrpn_plus $kltrpn_plus --kltrpn_minus $kltrpn_minus --CMDNtot $CMDNtot --EGTAtot $EGTAtot --KmCMDN $KmCMDN --KmEGTA $KmEGTA --fL $fL --gL $gL --bL $bL --aL $aL --omega $omega --gammacf $gammacf --k12 $k12 --k21 $k21 --k23 $k23 --k32 $k32 --k34 $k34 --k43 $k43 --k45 $k45 --k54 $k54 --k56 $k56 --k65 $k65 --k25 $k25 --k52 $k52
+	
+</command>
+<inputs>
+
+
+<conditional name="protocol">
+<param name="selection" type="select" label="Protocol">
+<option value="pacing">Pacing</option>
+<option value="clamp">Voltage Clamp</option>
+</param>
+<when value="pacing">
+<param name="Num_beats" type="integer" value="10" label="Number of beats" help="Total number of beats" />
+<param name="Period" type="float" label="Period" value="1000" help="Period between beats (ms)" />
+<param name="Shift" type="float" label="Shift" value="5" help="Pacing Shift (ms)" />
+<param name="Pulse_duration" type="float" label="Pulse duration" value="0.5" help="Stimulus pulse duration (ms)" />
+<param name="Pulse_amplitude" type="float" label="Pulse amplitude" value="-80" help="Stimulus pulse amplitude (A/F)" />
+<param name="t_clamp_start" type="hidden" value="0" />
+<param name="t_clamp_end" type="hidden" value="0" />
+<param name="t_sim_end" type="hidden" value="0" />
+<param name="V_clamp" type="hidden" value="0" />
+<param name="V_hold" type="hidden" value="0" />
+</when>
+<when value="clamp">
+<param name="t_clamp_start" type="float" label="Clamp start time" value="10" help="Clamp starting time (ms)" />
+<param name="t_clamp_end" type="float" label="Clamp end time" value="200" help="Clamp ending time (ms)" />
+<param name="t_sim_end" type="float" label="Simulation end time" value="210" help="Simulation ending time (ms)" />
+<param name="V_clamp" type="float" label="Clamp V" value="10.01" help="Clamp potential (mV)" />
+<param name="V_hold" type="float" label="Holding V" value="-100" help="Holding potential (mV) [Initial condition of V will be ignored]" />
+<param name="Num_beats" type="hidden" value="0" />
+<param name="Period" type="hidden" value="0" />
+<param name="Shift" type="hidden" value="0" />
+<param name="Pulse_duration" type="hidden" value="0" />
+<param name="Pulse_amplitude" type="hidden" value="0" />
+</when>
+ </conditional> 
+ 
+	<param name="DTOUT" type="float" label="Tabulation interval" value="1" help="Time between state outputs (ms)" />
+	<param name="t_output_start" type="float" label="Output start" value="0" help="Time to begin writing output (ms)" />
+	
+<param name="STATE_1" type="float" label="RyR-LCC State 1" value="0.682939648962000" help="Initial condition" />
+<param name="STATE_2" type="float" label="RyR-LCC State 2" value="3.36355600000000e-06" help="Initial condition" />
+<param name="STATE_3" type="float" label="RyR-LCC State 3" value="5.49220000000000e-08" help="Initial condition" />
+<param name="STATE_4" type="float" label="RyR-LCC State 4" value="0.00461043253800000" help="Initial condition" />
+<param name="STATE_5" type="float" label="RyR-LCC State 5" value="9.42394700000000e-06" help="Initial condition" />
+<param name="STATE_6" type="float" label="RyR-LCC State 6" value="0.0359987153260000" help="Initial condition" />
+<param name="STATE_7" type="float" label="RyR-LCC State 7" value="1.77342000000000e-07" help="Initial condition" />
+<param name="STATE_8" type="float" label="RyR-LCC State 8" value="7.53670000000000e-08" help="Initial condition" />
+<param name="STATE_9" type="float" label="RyR-LCC State 9" value="0.000242134125000000" help="Initial condition" />
+<param name="STATE_10" type="float" label="RyR-LCC State 10" value="4.95121000000000e-07" help="Initial condition" />
+<param name="STATE_11" type="float" label="RyR-LCC State 11" value="2.52252000000000e-07" help="Initial condition" />
+<param name="STATE_12" type="float" label="RyR-LCC State 12" value="1.00000000000000e-12" help="Initial condition" />
+<param name="STATE_13" type="float" label="RyR-LCC State 13" value="0" help="Initial condition" />
+<param name="STATE_14" type="float" label="RyR-LCC State 14" value="2.12500000000000e-09" help="Initial condition" />
+<param name="STATE_15" type="float" label="RyR-LCC State 15" value="4.00000000000000e-12" help="Initial condition" />
+<param name="STATE_16" type="float" label="RyR-LCC State 16" value="1.24580000000000e-08" help="Initial condition" />
+<param name="STATE_17" type="float" label="RyR-LCC State 17" value="0" help="Initial condition" />
+<param name="STATE_18" type="float" label="RyR-LCC State 18" value="0" help="Initial condition" />
+<param name="STATE_19" type="float" label="RyR-LCC State 19" value="9.10000000000000e-11" help="Initial condition" />
+<param name="STATE_20" type="float" label="RyR-LCC State 20" value="0" help="Initial condition" />
+<param name="STATE_21" type="float" label="RyR-LCC State 21" value="2.13518480000000e-05" help="Initial condition" />
+<param name="STATE_22" type="float" label="RyR-LCC State 22" value="6.03000000000000e-10" help="Initial condition" />
+<param name="STATE_23" type="float" label="RyR-LCC State 23" value="1.31494300000000e-06" help="Initial condition" />
+<param name="STATE_24" type="float" label="RyR-LCC State 24" value="1.63339340000000e-05" help="Initial condition" />
+<param name="STATE_25" type="float" label="RyR-LCC State 25" value="3.33710000000000e-08" help="Initial condition" />
+<param name="STATE_26" type="float" label="RyR-LCC State 26" value="3.64257000000000e-07" help="Initial condition" />
+<param name="STATE_27" type="float" label="RyR-LCC State 27" value="2.00000000000000e-12" help="Initial condition" />
+<param name="STATE_28" type="float" label="RyR-LCC State 28" value="1.00000000000000e-12" help="Initial condition" />
+<param name="STATE_29" type="float" label="RyR-LCC State 29" value="2.84231000000000e-07" help="Initial condition" />
+<param name="STATE_30" type="float" label="RyR-LCC State 30" value="5.81000000000000e-10" help="Initial condition" />
+<param name="STATE_31" type="float" label="RyR-LCC State 31" value="0.261492026499000" help="Initial condition" />
+<param name="STATE_32" type="float" label="RyR-LCC State 32" value="1.28828900000000e-06" help="Initial condition" />
+<param name="STATE_33" type="float" label="RyR-LCC State 33" value="6.07437000000000e-07" help="Initial condition" />
+<param name="STATE_34" type="float" label="RyR-LCC State 34" value="0.00179605577700000" help="Initial condition" />
+<param name="STATE_35" type="float" label="RyR-LCC State 35" value="3.67179700000000e-06" help="Initial condition" />
+<param name="STATE_36" type="float" label="RyR-LCC State 36" value="0.0127750687290000" help="Initial condition" />
+<param name="STATE_37" type="float" label="RyR-LCC State 37" value="6.30570000000000e-08" help="Initial condition" />
+<param name="STATE_38" type="float" label="RyR-LCC State 38" value="2.67480000000000e-08" help="Initial condition" />
+<param name="STATE_39" type="float" label="RyR-LCC State 39" value="8.65041550000000e-05" help="Initial condition" />
+<param name="STATE_40" type="float" label="RyR-LCC State 40" value="1.77104000000000e-07" help="Initial condition" />
+
+<param name="V" type="float" label="V (mV)" value="-93.3197727698540" help="Initial condition" />
+<param name="mNa" type="float" label="m(I_Na)" value="0.000380504749000000" help="Initial condition" />
+<param name="hNa" type="float" label="h(I_Na)" value="0.997668179931000" help="Initial condition" />
+<param name="jNa" type="float" label="j(I_Na)" value="0.998165969884000" help="Initial condition" />
+<param name="Nai" type="float" label="Nai (mM)" value="10.4478822201100" help="Initial condition" />
+<param name="Ki" type="float" label="Ki (mM)" value="131.625456905363" help="Initial condition" />
+<param name="Cai" type="float" label="Cai (mM)" value="0.000128015497000000" help="Initial condition" />
+<param name="CaSR" type="float" label="CaSR (mM)" value="0.891915411676000" help="Initial condition" />
+<param name="LTRPNCa" type="float" label="LTRPNCa (mM)" value="0.114462781701000" help="Initial condition" />
+<param name="HTRPNCa" type="float" label="HTRPNCa (mM)" value="0.980722138327000" help="Initial condition" />
+<param name="xKs" type="float" label="xKs" value="0.000175551540000000" help="Initial condition" />
+<param name="C0Kv43" type="float" label="C0Kv43" value="0.957567652704000" help="Initial condition" />
+<param name="C1Kv43" type="float" label="C1Kv43" value="0.0219471684100000" help="Initial condition" />
+<param name="C2Kv43" type="float" label="C2Kv43" value="0.000188633504000000" help="Initial condition" />
+<param name="C3Kv43" type="float" label="C3Kv43" value="7.20571000000000e-07" help="Initial condition" />
+<param name="OKv43" type="float" label="OKv43" value="1.03200000000000e-09" help="Initial condition" />
+<param name="CI0Kv43" type="float" label="CI0Kv43" value="0.0152065201870000" help="Initial condition" />
+<param name="CI1Kv43" type="float" label="CI1Kv43" value="0.00447034123500000" help="Initial condition" />
+<param name="CI2Kv43" type="float" label="CI2Kv43" value="0.000665651077000000" help="Initial condition" />
+<param name="CI3Kv43" type="float" label="CI3Kv43" value="5.21768690000000e-05" help="Initial condition" />
+<param name="OIKv43" type="float" label="OIKv43" value="1.22912800000000e-06" help="Initial condition" />
+<param name="C0Kv14" type="float" label="C0Kv14" value="0.749980626396000" help="Initial condition" />
+<param name="C1Kv14" type="float" label="C1Kv14" value="0.0881087602990000" help="Initial condition" />
+<param name="C2Kv14" type="float" label="C2Kv14" value="0.00388171132100000" help="Initial condition" />
+<param name="C3Kv14" type="float" label="C3Kv14" value="7.60129950000000e-05" help="Initial condition" />
+<param name="OKv14" type="float" label="OKv14" value="5.60386000000000e-07" help="Initial condition" />
+<param name="CI0Kv14" type="float" label="CI0Kv14" value="0.146019656332000" help="Initial condition" />
+<param name="CI1Kv14" type="float" label="CI1Kv14" value="0.00765304256100000" help="Initial condition" />
+<param name="CI2Kv14" type="float" label="CI2Kv14" value="0.00290503055700000" help="Initial condition" />
+<param name="CI3Kv14" type="float" label="CI3Kv14" value="0.00107501602000000" help="Initial condition" />
+<param name="OIKv14" type="float" label="OIKv14" value="0.000657420277000000" help="Initial condition" />
+<param name="C1Herg" type="float" label="C1Herg" value="0.999574286291000" help="Initial condition" />
+<param name="C2Herg" type="float" label="C2Herg" value="0.000355495242000000" help="Initial condition" />
+<param name="C3Herg" type="float" label="C3Herg" value="6.25138770000000e-05" help="Initial condition" />
+<param name="OHerg" type="float" label="OHerg" value="6.75331000000000e-06" help="Initial condition" />
+<param name="IHerg" type="float" label="IHerg" value="9.51191000000000e-07" help="Initial condition" />
+
+<param name="NCaRU" type="integer" label="NCaRU" value="50000" help="Number of Ca Release Units" />
+<param name="Faraday" type="float" label="Faraday" value="96.5" help="Faraday's constant (C/mmol)" />
+<param name="Temp" type="float" label="Temp" value="310" help="Temperature (K)" />
+<param name="Rgas" type="float" label="Rgas" value="8.314" help="Universal Gas constant (J/[mol K])" />
+<param name="Csa" type="float" label="Csa" value="153.4e-6" help="Membrane capacitance (pF)" />
+<param name="VSS" type="float" label="VSS" value="0.203e-12" help="Single dyad subspace volume (microL)" />
+<param name="VSR" type="float" label="VSR" value="1.3913e-6" help="SR volume (microL)" />
+<param name="Vmyo" type="float" label="Vmyo" value="25.84e-6" help="Myoplasmic volume (microL)" />
+<param name="PCa" type="float" label="PCa" value="9.13e-13" help="LCC single channel permeability (cm^3/s)" />
+<param name="JRyRmax" type="float" label="JRyRmax" value="19.60" help="Ca flux rate through open RyR (1/ms)" />
+<param name="r_xfer" type="float" label="r_xfer" value="220" help="Ca flux rate from SS to myoplasm (1/ms)" />
+<param name="Cao" type="float" label="Cao" value="2" help=" Extracellular [Ca] (mM)" />
+<param name="Ko" type="float" label="Ko" value="4" help="Extracellular [K] (mM)" />
+<param name="Nao" type="float" label="Nao" value="138" help="Extracellular [Na] (mM)" />
+<param name="Clo" type="float" label="Clo" value="150" help="Extracellular [Cl] (mM)" />
+<param name="Cli" type="float" label="Cli" value="20" help="Intracellular [Cl] (mM)" />
+<param name="KdIto2" type="float" label="KdIto" value="0.1502" help="Dissociation constant of Cl channel (Ito2) for Ca (mM)" />
+<param name="PCl" type="float" label="PCl" value="2.65e-15" help="Cl single channel permeability (cm^3/s)" />
+<param name="GKr" type="float" label="GKr" value="0.029" help="Maximal conductance of IKr (mS/microF)" />
+<param name="GKs" type="float" label="GKs" value="0.035" help="Maximal conductance of IKs (mS/microF)" />
+<param name="GK1" type="float" label="GK" value="2.73" help="Maximal conductance of IK1 (mS/microF)" />
+<param name="GKp" type="float" label="GKp" value="0.003" help="Maximal conductance of IKp (mS/microF)" />
+<param name="GNa" type="float" label="GNa" value="12.8" help="Maximal conductance of INa (mS/microF)" />
+<param name="kNaCa" type="float" label="kNaCa" value="0.27" help="Scale factor for Na/Ca exchanger (A/F)" />
+<param name="KmNa" type="float" label="KmNa" value="87.5" help="Na half saturation constant for Na/Ca exchanger (mM)" />
+<param name="KmCa" type="float" label="KmCa" value="1.38" help="Ca half saturation constant for Na/Ca exchanger (mM)" />
+<param name="KmK1" type="float" label="KmK" value="13.0" help="K half saturation constant for IK1 (mM)" />
+<param name="ksat" type="float" label="ksat" value="0.2" help="Na/Ca exchange saturation factor at negative potentials" />
+<param name="eta" type="float" label="eta" value="0.35" help="Controls voltage dependence of Na/Ca exchange" />
+<param name="INaKmax" type="float" label="INaKmax" value="1.7325" help="Scale factor for Na/K pump (A/F)" />
+<param name="KmNai" type="float" label="KmNai" value="20" help="Na half saturation constant for Na/K pump (mM)" />
+<param name="KmKo" type="float" label="KmKo" value="1.5" help="K half saturation constant for Na/K pump (mM)" />
+<param name="IpCamax" type="float" label="IpCamax" value="0.03" help="Maximum sarcolemmal Ca pump current (A/F)" />
+<param name="KmpCa" type="float" label="KmpCa" value="0.0005" help="Ca half saturation constant for sarcolemmal Ca pump (mM)" />
+<param name="GCab" type="float" label="GCab" value="0" help="Maximal conductance of ICab (mS/microF)" />
+<param name="GNab" type="float" label="GNab" value="0.00001" help="Maximal conductance of INab (mS/microF)" />
+<param name="Kfb" type="float" label="Kfb" value="0.26e-3" help="Forward half-saturation constant for SR Ca ATPase (mM)" />
+<param name="Krb" type="float" label="Krb" value="1.8" help="Reverse half-saturation constant for SR Ca ATPase (mM)" />
+<param name="KSR" type="float" label="KSR" value="1" help="Scale factor for SR Ca ATPase" />
+<param name="Nfb" type="float" label="Nfb" value="0.75" help="Forward cooperativity constant for SR Ca ATPase" />
+<param name="Nrb" type="float" label="Nrb" value="0.75" help="Reverse cooperativity constant for SR Ca ATPase" />
+<param name="vmaxf" type="float" label="vmaxf" value="2.0961e-4" help="SR Ca ATPase forward rate parameter (mM/ms)" />
+<param name="vmaxr" type="float" label="vmaxr" value="2.0961e-4" help="SR Ca ATPase reverse rate parameter (mM/ms)" />
+<param name="KvScale" type="float" label="KvScale" value="1.5876" help="Scale factor for Kv4.3 and Kv1.4 currents" />
+<param name="Kv43Frac" type="float" label="Kv43Frac" value="0.77" help="Fraction of Ito1 (peak current at 40 mV) that is made up of Kv4.3 " />
+<param name="alphaa0Kv43" type="float" label="alphaa0Kv43" value="0.543708" help="IKv43 rate parameter (1/ms)" />
+<param name="aaKv43" type="float" label="aaKv43" value="0.028983" help=" IKv43 rate parameter (1/mV)" />
+<param name="betaa0Kv43" type="float" label="betaa0Kv43" value="0.080185" help="IKv43 rate parameter (1/ms)" />
+<param name="baKv43" type="float" label="baKv43" value="0.0468437" help="IKv43 rate parameter (1/mV)" />
+<param name="alphai0Kv43" type="float" label="alphai0Kv43" value="0.0498424" help="IKv43 rate parameter (1/ms)" />
+<param name="aiKv43" type="float" label="aiKv43" value="0.000373016" help="IKv43 rate parameter (1/mV)" />
+<param name="betai0Kv43" type="float" label="betai0Kv43" value="0.000819482" help="IKv43 rate parameter (1/ms)" />
+<param name="biKv43" type="float" label="biKv43" value="0.00000005374" help="IKv43 rate parameter (1/mV)" />
+<param name="alphaa0Kv14" type="float" label="alphaa0Kv14" value="1.89306" help="IKv14 rate parameter (1/ms)" />
+<param name="aaKv14" type="float" label="aaKv14" value="0.00695" help="IKv14 rate parameter (1/mV)" />
+<param name="betaa0Kv14" type="float" label="betaa0Kv14" value="0.011796" help="IKv14 rate parameter (1/ms)" />
+<param name="baKv14" type="float" label="baKv14" value="0.08527" help="IKv14 rate parameter (1/mV)" />
+<param name="alphai0Kv14" type="float" label="alphai0Kv14" value="0.002962800" help="IKv14 rate parameter (1/ms)" />
+<param name="betai0Kv14" type="float" label="betai0Kv14" value="0.000105600" help="IKv14 rate parameter (1/ms)" />
+<param name="f1Kv43" type="float" label="f1Kv43" value="1.8936" help="IKv43 rate parameter" />
+<param name="f2Kv43" type="float" label="f2Kv43" value="14.224647456" help="IKv43 rate parameter" />
+<param name="f3Kv43" type="float" label="f3Kv43" value="158.574378389" help="IKv43 rate parameter" />
+<param name="f4Kv43" type="float" label="f4Kv43" value="142.936645351" help="IKv43 rate parameter" />
+<param name="b1Kv43" type="float" label="b1Kv43" value="6.77348" help="IKv43 rate parameter" />
+<param name="b2Kv43" type="float" label="b2Kv43" value="15.6212705152" help="IKv43 rate parameter" />
+<param name="b3Kv43" type="float" label="b3Kv43" value="28.7532603313" help="IKv43 rate parameter" />
+<param name="b4Kv43" type="float" label="b4Kv43" value="524.576206679" help="IKv43 rate parameter" />
+<param name="f1Kv14" type="float" label="f1Kv14" value="0.20005" help="IKv14 rate parameter" />
+<param name="f2Kv14" type="float" label="f2Kv14" value="0.320280" help=" IKv14 rate parameter" />
+<param name="f3Kv14" type="float" label="f3Kv14" value="13.50909223" help="IKv14 rate parameter" />
+<param name="f4Kv14" type="float" label="f4Kv14" value="1151.7651385" help="IKv14 rate parameter" />
+<param name="b1Kv14" type="float" label="b1Kv14" value="2.2300" help="IKv14 rate parameter" />
+<param name="b2Kv14" type="float" label="b2Kv14" value="12.000299" help="IKv14 rate parameter" />
+<param name="b3Kv14" type="float" label="b3Kv14" value="5.3701338025" help="IKv14 rate parameter" />
+<param name="b4Kv14" type="float" label="b4Kv14" value="5.2396395511" help="IKv14 rate parameter" />
+<param name="A0_HERG" type="float" label="A0_HERG" value="0.017147641733086" help="IKr rate parameter (1/ms)" />
+<param name="B0_HERG" type="float" label="B0_HERG" value="0.03304608038835" help="IKr rate parameter (1/mV)" />
+<param name="A1_HERG" type="float" label="A1_HERG" value="0.03969328381141" help="IKr rate parameter (1/ms)" />
+<param name="B1_HERG" type="float" label="B1_HERG" value="-0.04306054163980" help="IKr rate parameter (1/mV)" />
+<param name="A2_HERG" type="float" label="A2_HERG" value="0.02057448605977" help="IKr rate parameter (1/ms)" />
+<param name="B2_HERG" type="float" label="B2_HERG" value="0.02617412715118" help="IKr rate parameter (1/mV)" />
+<param name="A3_HERG" type="float" label="A3_HERG" value="0.00134366604423" help="IKr rate parameter (1/ms)" />
+<param name="B3_HERG" type="float" label="B3_HERG" value="-0.02691385498399" help="IKr rate parameter (1/mV)" />
+<param name="A4_HERG" type="float" label="A4_HERG" value="0.10666316491288" help="IKr rate parameter (1/ms)" />
+<param name="B4_HERG" type="float" label="B4_HERG" value="0.00568908859717" help="IKr rate parameter (1/mV)" />
+<param name="A5_HERG" type="float" label="A5_HERG" value="0.00646393910049" help="IKr rate parameter (1/ms)" />
+<param name="B5_HERG" type="float" label="B5_HERG" value="-0.04536642959543" help="IKr rate parameter (1/mV)" />
+<param name="A6_HERG" type="float" label="A6_HERG" value="0.00008039374403" help="IKr rate parameter (1/ms)" />
+<param name="B6_HERG" type="float" label="B6_HERG" value="0.00000069808924" help="IKr rate parameter (1/mV)" />
+<param name="T_Const_HERG" type="float" label="T_Const_HERG" value="5.320000001" help="IKr rate scale factor for temperature" />
+<param name="CSQNtot" type="float" label="CSQNtot" value="2.7" help="Total SR calsequestrin concentration (mM)" />
+<param name="KmCSQN" type="float" label="KmCSQN" value="0.63" help="Ca half saturation constant for calsequestrin (mM)" />
+<param name="LTRPNtot" type="float" label="LTRPNtot" value="0.07" help="Total troponin low-affinity site concentration (mM)" />
+<param name="HTRPNtot" type="float" label="HTRPNtot" value="0.14" help="Total troponin high-affinity site concentration (mM)" />
+<param name="khtrpn_plus" type="float" label="khtrpn_plus" value="20" help="Troponin Ca binding rate parameter (1/[mM ms])" />
+<param name="khtrpn_minus" type="float" label="khtrpn_minus" value="0.066e-3" help="Troponin Ca binding rate parameter (1/ms)" />
+<param name="kltrpn_plus" type="float" label="kltrpn_plus" value="40" help="Troponin Ca binding rate parameter (1/[mM ms])" />
+<param name="kltrpn_minus" type="float" label="kltrpn_minus" value="0.04" help="Troponin Ca binding rate parameter (1/ms)" />
+<param name="CMDNtot" type="float" label="CMDNtot" value="0.05" help="Total myoplasmic calmodulin concentration (mM)" />
+<param name="EGTAtot" type="float" label="EGTAtot" value="0" help=" Total myoplasmic EGTA concentration (mM)" />
+<param name="KmCMDN" type="float" label="KmCMDN" value="2.38e-3" help="Ca half saturation constant for calmodulin (mM)" />
+<param name="KmEGTA" type="float" label="KmEGTA" value="1.5e-4" help="Ca half saturation constant for EGTA (mM)" />
+<param name="fL" type="float" label="fL" value="0.85" help="L-type Ca channel rate parameter (1/ms)" />
+<param name="gL" type="float" label="gL" value="2" help="L-type Ca channel rate parameter (1/ms)" />
+<param name="bL" type="float" label="" value="32.1948" help="L-type Ca channel rate parameter" />
+<param name="aL" type="float" label="bL" value="12.8878" help="L-type Ca channel rate parameter" />
+<param name="omega" type="float" label="omega" value="0.0269659" help="L-type Ca channel rate parameter (1/ms)" />
+<param name="gammacf" type="float" label="gammacf" value="1.39" help="L-type Ca channel rate parameter (1/[mM ms])" />
+<param name="k12" type="float" label="k12" value="4387.50" help="RyR channel rate parameter (1/ms)" />
+<param name="k21" type="float" label="k21" value="1250" help="RyR channel rate parameter (1/ms)" />
+<param name="k23" type="float" label="k23" value="2.358e8" help="RyR channel rate parameter (1/ms)" />
+<param name="k32" type="float" label="k32" value="9.6" help="RyR channel rate parameter (1/ms)" />
+<param name="k34" type="float" label="k34" value="1.415e6" help="RyR channel rate parameter (1/ms)" />
+<param name="k43" type="float" label="k43" value="13.65" help="RyR channel rate parameter (1/ms)" />
+<param name="k45" type="float" label="k45" value="0.07" help="RyR channel rate parameter (1/ms)" />
+<param name="k54" type="float" label="k54" value="93.385" help="RyR channel rate parameter (1/ms)" />
+<param name="k56" type="float" label="k56" value="1.887e7" help="RyR channel rate parameter (1/ms)" />
+<param name="k65" type="float" label="k65" value="30" help="RyR channel rate parameter (1/ms)" />
+<param name="k25" type="float" label="k25" value="2.358e6" help="RyR channel rate parameter (1/ms)" />
+<param name="k52" type="float" label="k52" value="0.001235" help="RyR channel rate parameter (1/ms)" />
+	
+</inputs>
+	<outputs>
+		<data format="tabular" name="log" label="log.txt" />
+		<data format="tabular" name="params" label="params.txt" />
+	  <data format="tabular" name="states" label="states.txt" />
+	  <data format="tabular" name="fluxes" label="fluxes.txt" />
+	</outputs>
+	<help>
+
+Computational model of the cardiac myocyte from Greenstein, J.L., Hinch, R., and R.L. Winslow. 2006. Mechanisms of excitation-contraction coupling in an integrative model of the cardiac ventricular myocyte. Biophys J. 90: 77-91. (PubMed_)
+
+.. _Pubmed: http://www.ncbi.nlm.nih.gov/pubmed/16214852
+
+**Article Abstract**
+It is now well established that characteristic properties of excitation-contraction (EC) coupling in cardiac myocytes, such as high gain and graded Ca(2+) release, arise from the interactions that occur between L-type Ca(2+) channels (LCCs) and nearby ryanodine-sensitive Ca(2+) release channels (RyRs) in localized microdomains. Descriptions of Ca(2+)-induced Ca(2+) release (CICR) that account for these local mechanisms are lacking from many previous models of the cardiac action potential, and those that do include local control of CICR are able to reconstruct properties of EC coupling, but require computationally demanding stochastic simulations of approximately 10^5 individual ion channels. In this study, we generalize a recently developed analytical approach for deriving simplified mechanistic models of CICR to formulate an integrative model of the canine cardiac myocyte which is computationally efficient. The resulting model faithfully reproduces experimentally measured properties of EC coupling and whole cell phenomena. The model is used to study the role of local redundancy in L-type Ca(2+) channel gating and the role of dyad configuration on EC coupling. Simulations suggest that the characteristic steep rise in EC coupling gain observed at hyperpolarized potentials is a result of increased functional coupling between LCCs and RyRs. We also demonstrate mechanisms by which alterations in the early repolarization phase of the action potential, resulting from reduction of the transient outward potassium current, alters properties of EC coupling.
+
+**Model Use**
+This tool requires protocol parameters, initial conditions, and physical constants to be specified. The "Pacing" protocol paces the cell at the specified period and number of beats. The default parameter set will produce an AP train at 1Hz. The "Voltage Clamp" protocol clamps the membrane potential to the specified value. Note that the initial conditions may need to be changed to reproduce the results from Figures 2 and 4.
+
+**Output**
+
+*log.txt*: Produced by the model program. Should be checked for errors after each simulation.
+
+*params.txt*: Used as input to the model program containing the simulation parameters.
+
+*states.txt*: Tab-delimited text containing time series of all 78 states. Column headers are:
+
+1. Time
+
+2. STATE_1
+
+3. STATE_2
+
+4. STATE_3
+
+5. STATE_4
+
+6. STATE_5
+
+7. STATE_6
+
+8. STATE_7
+
+9. STATE_8
+
+10. STATE_9
+
+11. STATE_10
+
+12. STATE_11
+
+13. STATE_12
+
+14. STATE_13
+
+15. STATE_14
+
+16. STATE_15
+
+17. STATE_16
+
+18. STATE_17
+
+19. STATE_18
+
+20. STATE_19
+
+21. STATE_20
+
+22. STATE_21
+
+23. STATE_22
+
+24. STATE_23
+
+25. STATE_24
+
+26. STATE_25
+
+27. STATE_26
+
+28. STATE_27
+
+29. STATE_28
+
+30. STATE_29
+
+31. STATE_30
+
+32. STATE_31
+
+33. STATE_32
+
+34. STATE_33
+
+35. STATE_34
+
+36. STATE_35
+
+37. STATE_36
+
+38. STATE_37
+
+39. STATE_38
+
+40. STATE_39
+
+41. STATE_40
+
+42. V
+
+43. mNa
+
+44. hNa
+
+45. jNa
+
+46. Nai
+
+47. Ki
+
+48. Cai
+
+49. CaSR
+
+50. LTRPNCa
+
+51. HTRPNCa
+
+52. xKs
+
+53. C0Kv43
+
+54. C1Kv43
+
+55. C2Kv43
+
+56. C3Kv43
+
+57. OKv43
+
+58. CI0Kv43
+
+59. CI1Kv43
+
+60. CI2Kv43
+
+61. CI3Kv43
+
+62. OIKv43
+
+63. C0Kv14
+
+64. C1Kv14
+
+65. C2Kv14
+
+66. C3Kv14
+
+67. OKv14
+
+68. CI0Kv14
+
+69. CI1Kv14
+
+70. CI2Kv14
+
+71. CI3Kv14
+
+72. OIKv14
+
+73. C1Herg
+
+74. C2Herg
+
+75. C3Herg
+
+76. OHerg
+
+77. IHerg
+
+*fluxes.txt*: Tab-delimited text containing time series of Ca2+ fluxes and states. Column headers are:
+
+1. Time
+
+2. ICaL
+
+3. JCaL
+
+4. JRyR
+
+5. CaSSavg
+
+	</help>
+</tool>

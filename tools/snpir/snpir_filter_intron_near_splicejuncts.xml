@@ -1,0 +1,59 @@
+<tool id="filter_intron_near_splicejuncts" name="SNPiR Filter intron" version="SNPIR: 12-May-2014; SAMTOOLS: 1.2; UCSC_TOOLS: 20140801; BEDTOOLS: 2.17.0">
+  <requirements>
+    <requirement type="package">snpir</requirement>
+    <requirement type="package">samtools</requirement>
+    <requirement type="package">ucsc_tools</requirement>
+    <requirement type="package">bedtools</requirement>
+  </requirements>
+  <description>
+    candidates that are within 4 bp of splicing junctions
+  </description>
+
+  <command>
+    filter_intron_near_splicejuncts.pl 
+    -infile $inputVCF -outfile $outputVCF -genefile $inputAnnotation -splicedist $splicedist
+
+  </command>
+
+  <inputs>
+    <param format="vcf" label="Select an input VCF file" name="inputVCF" type="data"/>
+    <param format="gtf,tabular" label="Gene Annotation file" name="inputAnnotation" type="data"/>
+    <param help="default is 4" label="Maximum filter distance from splicing junction for variants" min="0" name="splicedist" type="integer" value="4"/>
+  </inputs>
+
+  <outputs>
+    <data format="vcf" label="${tool.name} on ${on_string}" name="outputVCF"/>
+  </outputs>
+
+  <help>
+
+.. class:: infomark
+
+**Purpose**
+
+Filter for intronic variants close to splicing junctions, by Robert Piskol (piskol@stanford.edu) 
+							   Gokul Ramaswami (gokulr@stanford.edu) 07/25/2013
+
+This program takes a variant file and a gene annotation file in UCSC text format
+and filters all variants that are in intronic regions in a distance closer than a user selected value.
+         
+
+Arguments:
+infile FILE	- File containing a list of variants to be filtered
+outfile FILE	- Output file for filtered variants
+genefile FILE	- File in UCSC txt format (sorted by chomosome and position)
+splicedist N	- Maximum filter distance from splicing junction for variants (default: 4)
+help		- Show this help screen                 
+
+
+------
+
+.. class:: infomark
+
+**Inputs, outputs, and parameters**
+
+
+
+  </help>
+
+</tool>

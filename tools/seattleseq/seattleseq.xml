@@ -1,0 +1,39 @@
+<tool id="seattleseq_wrapper" description="SeattleSeq" name="SeattleSeq" version="1.0">
+ <description>Submit Seattle Seq</description>
+ <command>
+     java -jar /nfs/software/galaxy/tools/seattleseq/SeattleSeq.jar $filter $vcf_file $output_vcf $inputtype $outputformat
+ </command>
+ <inputs>
+   <param name="filter" type="text" size="30" label="Email Address:"/>
+
+   <param name="inputtype" type="select" label="Input Type:" help="Input Type: SNPs, INDELs or Both">
+     <option value="SNP" selected="true">SNPs</option>
+     <option value="INDELs" >INDELs</option>
+     <option value="BOTH">Both</option>
+   </param>
+
+   <param name="outputformat" type="select" label="Output Format:" help="Output File Format: VCF or SeattleSeq Annotation Format">
+     <option value="VCF" selected="true">VCF Format</option>
+     <option value="SEATTLE" >SeattleSeq Annotation Format</option>
+   </param>
+
+   <param name="vcf_file" type="data" format="vcf" label="Input VCF File" help=""/>
+ </inputs>
+ <outputs> 
+   <data format="vcf" name="output_vcf" file="seattleseq_outputfile.vcf" label="${tool.name} from ${on_string}"/>
+ </outputs>
+ <tests>
+   <test>
+     <!--
+     chrM_base is the index files' location/base name. 
+     -->
+   </test>
+ </tests>
+ <help>
+
+**What it does: SeattleSeq provides annotation of SNVs (single-nucleotide variations) and indels, both known and novel. This annotation includes dbSNP rs ID, gene names and accession numbers, variation functions (e.g. missense), protein positions and amino-acid changes, conservation scores, HapMap frequencies, PolyPhen predictions, and clinical association.**
+
+**Outputs: VCF Formatted or SeattleSeq formatted annotations.**
+
+ </help>
+ </tool>

@@ -1,0 +1,26 @@
+<tool id="submit_to_ss" name="Submit to SeattleSeq">
+	<description>Annotates SNPs with the SeattleSeq Annotation server</description>
+	<command interpreter="perl">submit_to_SS.pl --email-address $email_address --input-file $input_file --output-file $output_file</command>
+	<inputs>
+		<param name="email_address" type="text" label="Email address" help="The email address to send to the SeattleSeq Annotation server" optional="false" size="25">
+			<sanitizer>
+				<valid>
+					<add value="@" />
+				</valid>
+			</sanitizer>
+		</param>
+		<param name="input_file" type="data" format="tabular" label="Input file" help="The input file to send to the SeattleSeq Annotation server" optional="false"/>
+	</inputs>
+	<outputs>
+		<data name="output_file" format="tabular" label="SeattleSeq annotation of ${input_file.name}"/>
+	</outputs>
+
+	<help>
+		Submits a list of SNPs to SeattleSeq Annotation
+
+		.. class:: infomark
+
+		You will recieve an email notification when the process is complete
+	</help>
+
+</tool>

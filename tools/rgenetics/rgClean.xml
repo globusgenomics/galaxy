@@ -1,0 +1,145 @@
+<tool id="rgClean1" name="Clean genotypes:" version="PLINK: 1.07">
+    <requirements><requirement type="package">plink</requirement></requirements>
+    <description>filter markers, subjects</description>
+
+    <command interpreter="python">
+        rgClean.py '$input_file.extra_files_path' '$input_file.metadata.base_name' '$title' '$mind'
+        '$geno' '$hwe' '$maf' '$mef' '$mei' '$out_file1' '$out_file1.files_path'
+        '$relfilter' '$afffilter' '$sexfilter' '$fixaff'
+    </command>
+
+    <inputs>
+       <param format="pbed" label="RGenetics genotype library file in compressed Plink format" name="input_file" size="120" type="data"/>
+       <param label="Descriptive title for cleaned genotype file" name="title" size="80" type="text" value="Cleaned_data"/>
+       <param label="Maximum Missing Fraction: Markers" name="geno" type="text" value="0.05"/>
+       <param label="Maximum Missing Fraction: Subjects" name="mind" type="text" value="0.1"/>
+       <param label="Maximum Mendel Error Rate: Family" name="mef" type="text" value="0.05"/>
+       <param label="Maximum Mendel Error Rate: Marker" name="mei" type="text" value="0.05"/>
+       <param label="Smallest HWE p value (set to 0 for all)" name="hwe" type="text" value="0"/>
+       <param label="Smallest Minor Allele Frequency (set to 0 for all)" name="maf" type="text" value="0.01"/>
+       <param help="Optionally remove related subjects if pedigree identifies founders and their offspring" label="Filter on pedigree relatedness" name="relfilter" optional="false" size="132" type="select">
+         <option selected="true" value="all">No filter on relatedness</option>
+         <option value="fo">Keep Founders only (pedigree m/f ID = &quot;0&quot;)</option>
+         <option value="oo">Keep Offspring only (one randomly chosen if &gt;1 sibs in family)</option>
+   		</param>
+       <param help="Optionally remove affected or non affected subjects" label="Filter on affection status" name="afffilter" optional="false" size="132" type="select">
+         <option selected="true" value="allaff">No filter on affection status</option>
+         <option value="affonly">Keep Controls only (affection='1')</option>
+         <option value="unaffonly">Keep Cases only (affection='2')</option>
+   		</param>
+       <param help="Optionally remove all male or all female subjects" label="Filter on gender" name="sexfilter" optional="false" size="132" type="select">
+         <option selected="true" value="allsex">No filter on gender status</option>
+         <option value="msex">Keep Males only (pedigree gender='1')</option>
+         <option value="fsex">Keep Females only (pedigree gender='2')</option>
+   		</param>
+       <param help="Use this option to switch the affection status to a new value for all output subjects" label="Change ALL subjects affection status to (0=no change,1=unaff,2=aff)" name="fixaff" type="text" value="0"/>
+   </inputs>
+
+   <outputs>
+       <data format="pbed" label="${title}_rgClean.pbed" metadata_source="input_file" name="out_file1"/>
+   </outputs>
+
+<tests>
+ <test>
+    <param ftype="pbed" name="input_file" value="tinywga">
+    <metadata name="base_name" value="tinywga"/>
+    <composite_data value="tinywga.bim"/>
+    <composite_data value="tinywga.bed"/>
+    <composite_data value="tinywga.fam"/>
+    <edit_attributes type="name" value="tinywga"/> 
+    </param>
+    <param name="title" value="rgCleantest1"/>
+    <param name="geno" value="1"/>
+    <param name="mind" value="1"/>
+    <param name="mef" value="0"/>
+    <param name="mei" value="0"/>
+    <param name="hwe" value="0"/>
+    <param name="maf" value="0"/>
+    <param name="relfilter" value="all"/>
+    <param name="afffilter" value="allaff"/>
+    <param name="sexfilter" value="allsex"/>
+    <param name="fixaff" value="0"/>
+    <output compare="diff" file="rgtestouts/rgClean/rgCleantest1.pbed" lines_diff="25" name="out_file1">
+    <extra_files compare="diff" name="rgCleantest1.bim" type="file" value="rgtestouts/rgClean/rgCleantest1.bim"/>
+    <extra_files compare="diff" name="rgCleantest1.fam" type="file" value="rgtestouts/rgClean/rgCleantest1.fam"/>
+    <extra_files compare="diff" name="rgCleantest1.bed" type="file" value="rgtestouts/rgClean/rgCleantest1.bed"/>
+    </output>
+ </test>
+</tests>
+<help>
+
+.. class:: infomark
+
+**Syntax**
+
+- **Genotype data** is the input genotype file chosen from your current history
+- **Descriptive title** is the name to use for the filtered output file
+- **Missfrac threshold: subjects** is the threshold for missingness by subject. Subjects with more than this fraction missing will be excluded from the import
+- **Missfrac threshold: markers** is the threshold for missingness by marker. Markers with more than this fraction missing will be excluded from the import
+- **MaxMendel Individuals** Mendel error fraction above which to exclude subjects with more than the specified fraction of mendelian errors in transmission (for family data only)
+- **MaxMendel Families** Mendel error fraction above which to exclude families with more than the specified fraction of mendelian errors in transmission (for family data only)
+- **HWE** is the threshold for HWE test p values below which the marker will not be imported. Set this to -1 and all markers will be imported regardless of HWE p value
+- **MAF** is the threshold for minor allele frequency - SNPs with lower MAF will be excluded
+- **Filters** for founders/offspring or affected/unaffected or males/females are optionally available if needed
+- **Change Affection** is only needed if you want to change the affection status for creating new analysis datasets
+
+-----
+
+**Attribution**
+
+This tool relies on the work of many people. It uses Plink http://pngu.mgh.harvard.edu/~purcell/plink/,
+and the R http://cran.r-project.org/ and
+Bioconductor http://www.bioconductor.org/ projects.
+respectively.
+
+In particular, http://pngu.mgh.harvard.edu/~purcell/plink/
+has excellent documentation describing the parameters you can set here.
+
+This implementation is a Galaxy tool wrapper around these third party applications.
+It was originally designed and written for family based data from the CAMP Illumina run of 2007 by
+ross lazarus (ross.lazarus@gmail.com) and incorporated into the rgenetics toolkit.
+
+Rgenetics merely exposes them, wrapping Plink so you can use it in Galaxy.
+
+-----
+
+**Summary**
+
+Reliable statistical inference depends on reliable data. Poor quality samples and markers
+may add more noise than signal, decreasing statistical power. Removing the worst of them
+can be done by setting thresholds for some of the commonly used technical quality measures
+for genotype data. Of course discordant replicate calls are also very informative but are not
+in scope here.
+
+Marker cleaning: Filters are available to remove markers below a specific minor allele
+frequency, beyond a Hardy Wienberg threshold, below a minor allele frequency threshold,
+or above a threshold for missingness. If family data are available, thresholds for Mendelian
+error can be set.
+
+Subject cleaning: Filters are available to remove subjects with many missing calls. Subjects and markers for family data can be filtered by proportions
+of Mendelian errors in observed transmission. Use the QC reporting tool to
+generate a comprehensive series of reports for quality control.
+
+Note that ancestry and cryptic relatedness should also be checked using the relevant tools.
+
+-----
+
+.. class:: infomark
+
+**Tip**
+
+You can check that you got what you asked for by running the QC tool to ensure that the distributions
+are truncated the way you expect. Note that you do not expect that the thresholds will be exactly
+what you set - some bad assays and subjects are out in multiple QC measures, so you sometimes have
+more samples or markers than you exactly set for each threshold. Finally, the ordering of
+operations matters and Plink is somewhat restrictive about what it will do on each pass
+of the data. At least it's fixed.
+
+-----
+
+This Galaxy tool was written by Ross Lazarus for the Rgenetics project
+It uses Plink for most calculations - for full Plink attribution, source code and documentation,
+please see http://pngu.mgh.harvard.edu/~purcell/plink/ plus some custom python code
+
+</help>
+</tool>

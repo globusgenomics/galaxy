@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<tool name="BioModels" id="biomodels" tool_type="data_source" version="1.0">
+    <description>server</description>
+    <requirements>
+      <requirement type="package">pymodules</requirement>
+    </requirements>
+    <command interpreter="python">data_source.py $output $__app__.config.output_size_limit</command>
+    <inputs action="https://cvrg2.globusgenomics.org/biomodels/" check_values="false"> 
+    <!--<inputs action="http://cvrg.galaxycloud.org:8081/biomodels/biomodels_search.py" check_values="false"> -->
+        <display>go to BioModels search server $GALAXY_URL</display>
+        <param name="GALAXY_URL" type="baseurl" value="/tool_runner?tool_id=biomodels" />
+    </inputs>
+    <request_param_translation>
+        <request_param galaxy_name="URL" remote_name="URL" missing="">
+            <append_param separator="&amp;" first_separator="?" join="=">
+                <value name="d" missing="" />
+                <value name="dbkey" missing="" />
+                <value name="q" missing="" />
+                <value name="s" missing="" />
+                <value name="t" missing="" />
+            </append_param>
+        </request_param>
+        <request_param galaxy_name="URL_method" remote_name="URL_method" missing="get" />
+        <request_param galaxy_name="data_type" remote_name="data_type" missing="xml" />
+    </request_param_translation>
+    <uihints minwidth="800"/>
+    <outputs>
+        <data name="output" format="xml" label="model.xml"/>
+    </outputs>
+    <options sanitize="False" refresh="True"/>
+</tool>

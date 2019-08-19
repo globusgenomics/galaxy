@@ -1,0 +1,44 @@
+<tool id="cru3d_convert_globals" name="Convert Global States File">
+	<description></description>
+<requirements>
+  <requirement type="package">pymodules</requirement>
+</requirements>
+<command interpreter="python">
+  CRU3D_convert_globals.py --output_file "$states_txt" --simulation "$simulation.extra_files_path" 
+</command>
+<inputs>
+  <param name="simulation" type="data" format="html" label="Simulation data"/>
+    </inputs>
+	<outputs>
+		<data format="tabular" name="states_txt" label="CRU3DGlobalStates.txt" />
+	</outputs>
+	<help>
+
+
+.. class:: warningmark
+
+The input dataset must be the output of a spark simulation.
+
+-----
+
+This tool converts the global states file from binary to table format (for plotting).
+
+Output format:
+
+-Column 1: Time (ms)
+
+-Column 2: RyR flux (pA)
+
+-Column 3: Number of open RyRs
+
+-Column 4: Number of open LCCs
+
+-Column 5: LCC flux (pA)
+
+-Column 6: Mean JSR Ca2+ (uM)
+
+-Column 7: Mean subspace Ca2+ (uM)
+
+
+	</help>
+</tool>

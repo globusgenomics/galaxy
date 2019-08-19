@@ -1,0 +1,6 @@
+condor ruby /usr/bin/ruby1.9.1
+condor bash /bin/bash
+condor ls /bin/ls
+condor vcftools /mnt/galaxyTools/tools/vcftools/vcftools_0.1.11/bin/vcftools
+condor vcffixup /mnt/galaxyTools/tools/vcflib/02.03.2014/bin/vcffixup
+condor vcffilter /mnt/galaxyTools/tools/vcflib/02.03.2014/bin/vcffilter

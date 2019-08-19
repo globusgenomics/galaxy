@@ -1,0 +1,69 @@
+<tool id="samtools1.8_rmdup" name="rmdup" version="SAMTOOLS: 1.8">
+  <requirements>
+    <requirement type="package" version="1.8">samtools</requirement>
+  </requirements>
+  <description>remove PCR duplicates</description>
+  <command>samtools rmdup 
+  #if str( $bam_paired_end_type.bam_paired_end_type_selector ) == &quot;PE&quot;
+      ${bam_paired_end_type.force_se}
+  #else:
+      -s
+  #end if
+  &quot;$input1&quot; &quot;$output1&quot;
+  2&gt;&amp;1 || echo &quot;Error running samtools rmdup.&quot; &gt;&amp;2
+  </command>
+  <inputs>
+    <param format="bam" label="BAM File" name="input1" type="data"/>
+    
+    <conditional name="bam_paired_end_type">
+      <param label="Is data paired-end" name="bam_paired_end_type_selector" type="select">
+        <option selected="True" value="PE">BAM is paired-end</option>
+        <option value="SE">BAM is single-end</option>
+      </param>
+      <when value="PE">
+        <param checked="False" falsevalue="" help="(-S)" label="Treat as single-end" name="force_se" truevalue="-S" type="boolean"/>
+      </when>
+      <when value="SE"/> <!-- No extra parameters here -->
+    </conditional>
+    
+  </inputs>
+  <outputs>
+    <data format="bam" name="output1"/>
+  </outputs>
+  <tests>
+    <test>
+      <param ftype="bam" name="input1" value="1.bam"/>
+      <param name="bam_paired_end_type_selector" value="SE"/>
+      <output file="1.bam" ftype="bam" name="output1" sort="True"/>
+    </test>
+    <test>
+      <param ftype="bam" name="input1" value="1.bam"/>
+      <param name="bam_paired_end_type_selector" value="PE"/>
+      <param name="force_se" value="True"/>
+      <output file="1.bam" ftype="bam" name="output1" sort="True"/>
+    </test>
+    <test>
+      <param ftype="bam" name="input1" value="1.bam"/>
+      <param name="bam_paired_end_type_selector" value="PE"/>
+      <param name="force_se"/>
+      <output file="1.bam" ftype="bam" name="output1" sort="True"/>
+    </test>
+  </tests>
+  <help>
+
+**What it does**
+
+This tool uses the SAMTools_ toolkit to remove potential PCR duplicates: if multiple read pairs have identical external coordinates, only retain the pair with highest mapping quality. In the paired-end mode, this command ONLY works with FR orientation and requires ISIZE is correctly set. It does not work for unpaired reads (e.g. two ends mapped to different chromosomes or orphan reads). 
+
+.. _SAMTools: http://samtools.sourceforge.net/samtools.shtml
+
+------
+
+**Citation**
+
+For the underlying tool, please cite `Li H, Handsaker B, Wysoker A, Fennell T, Ruan J, Homer N, Marth G, Abecasis G, Durbin R; 1000 Genome Project Data Processing Subgroup. The Sequence Alignment/Map format and SAMtools. Bioinformatics. 2009 Aug 15;25(16):2078-9. &lt;http://www.ncbi.nlm.nih.gov/pubmed/19505943&gt;`_
+
+If you use this tool in Galaxy, please cite Blankenberg D, et al. *In preparation.*
+
+  </help>
+</tool>

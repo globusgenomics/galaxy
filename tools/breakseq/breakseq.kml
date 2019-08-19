@@ -1,0 +1,330 @@
+<project><!-- CACHE ID f1622cb4-2179-479b-8c8b-201ddea16c6c-no-provenance -->
+  <import file="sys.xml"/>
+  <import file="scheduler.xml"/>
+  <import file="rlog.xml"/>
+  <import file="vdl.k"/>
+  <types>
+     <xs:schema targetNamespace="http://ci.uchicago.edu/swift/2009/02/swiftscript" xmlns="http://ci.uchicago.edu/swift/2009/02/swiftscript" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      	   <xs:simpleType name="file">
+      	   <xs:restriction base="string"/>
+      	   </xs:simpleType>
+     </xs:schema>
+  </types>
+  <global name="swift#string#17013">
+    <vdl:new type="string" value="INPUTFILE" />
+  </global>
+  <global name="swift#string#17000">
+    <vdl:new type="string" value="-c" />
+  </global>
+  <global name="swift#string#17002">
+    <vdl:new type="string" value="Nonsense" />
+  </global>
+  <global name="swift#string#17001">
+    <vdl:new type="string" value="inputfiles" />
+  </global>
+  <global name="swift#string#17006">
+    <vdl:new type="string" value="tool_cmd" />
+  </global>
+  <global name="swift#string#17010">
+    <vdl:new type="string" value=".stdout.log" />
+  </global>
+  <global name="swift#string#17004">
+    <vdl:new type="string" value="samplenames" />
+  </global>
+  <global name="swift#string#17014">
+    <vdl:new type="string" value="OUTPUTDIR" />
+  </global>
+  <global name="swift#string#17009">
+    <vdl:new type="string" value="logs/" />
+  </global>
+  <global name="swift#string#17012">
+    <vdl:new type="string" value=".stderr.log" />
+  </global>
+  <global name="swift#string#17007">
+    <vdl:new type="string" value="/" />
+  </global>
+  <global name="swift#string#17005">
+    <vdl:new type="string" value="outputdir" />
+  </global>
+  <global name="swift#string#17003">
+    <vdl:new type="string" value="," />
+  </global>
+  <global name="swift#int#1">
+    <vdl:new type="int" value="1" />
+  </global>
+  <element name="run__cmd" arguments="olog,elog,cmd" _defline="6">
+     
+     
+     
+    <unitStart name="run__cmd" line="6" type="PROCEDURE" outputs="olog,elog"/>
+    <vdl:execute>
+      <vdl:tr>bash</vdl:tr>
+      <vdl:stagein var="{cmd}"/>
+      <vdl:stageout var="{olog}"/>
+      <vdl:stageout var="{elog}"/>
+
+      <vdl:arguments>
+        <variable>swift#string#17000</variable>
+        <variable>cmd</variable>
+      </vdl:arguments>
+      <vdl:stdout>
+        <swiftscript:filename _traceline="7">
+         <variable>olog</variable> 
+        </swiftscript:filename>
+      </vdl:stdout><vdl:stderr>
+        <swiftscript:filename _traceline="7">
+         <variable>elog</variable> 
+        </swiftscript:filename>
+      </vdl:stderr>
+    </vdl:execute>
+    <vdl:closedataset var="{olog}"/>
+    <vdl:closedataset var="{elog}"/>
+    <unitEnd name="run__cmd" line="6" type="PROCEDURE"/></element>
+
+  <set name="input_list">
+        <vdl:new type="string" dbgname="input_list" waitCount="1" _defline="12"/>
+  </set>
+   
+  <set name="items">
+        <vdl:new type="string[]" dbgname="items" waitCount="1" _defline="13"/>
+  </set>
+   
+  <set name="samples_list">
+        <vdl:new type="string" dbgname="samples_list" waitCount="1" _defline="15"/>
+  </set>
+   
+  <set name="itemNames">
+        <vdl:new type="string[]" dbgname="itemNames" waitCount="1" _defline="16"/>
+  </set>
+   
+  <set name="outputdir">
+        <vdl:new type="string" dbgname="outputdir" waitCount="1" _defline="18"/>
+  </set>
+   
+  <set name="tool_cmd">
+        <vdl:new type="string" dbgname="tool_cmd" waitCount="1" _defline="19"/>
+  </set>
+   
+  <restartLog>
+  	<vdl:mains>
+		<vdl:startprogressticker />
+		<vdl:mainp>
+		    <uparallel>
+		        <sequential>
+		             <vdl:setfieldvalue _traceline="13">
+		                 <variable>input_list</variable>
+		                 <swiftscript:arg _traceline="12">
+		                  <variable>swift#string#17001</variable><variable>swift#string#17002</variable> 
+		                 </swiftscript:arg>
+		             </vdl:setfieldvalue>
+		             <partialCloseDataset var="{input_list}"/>
+		        </sequential>
+		        <sequential>
+		             <vdl:setfieldvalue _traceline="15">
+		                 <variable>items</variable>
+		                 <swiftscript:strsplit _traceline="13">
+		                  <variable>input_list</variable><variable>swift#string#17003</variable> 
+		                 </swiftscript:strsplit>
+		             </vdl:setfieldvalue>
+		             <partialCloseDataset var="{items}"/>
+		        </sequential>
+		        <sequential>
+		             <vdl:setfieldvalue _traceline="16">
+		                 <variable>samples_list</variable>
+		                 <swiftscript:arg _traceline="15">
+		                  <variable>swift#string#17004</variable><variable>swift#string#17002</variable> 
+		                 </swiftscript:arg>
+		             </vdl:setfieldvalue>
+		             <partialCloseDataset var="{samples_list}"/>
+		        </sequential>
+		        <sequential>
+		             <vdl:setfieldvalue _traceline="18">
+		                 <variable>itemNames</variable>
+		                 <swiftscript:strsplit _traceline="16">
+		                  <variable>samples_list</variable><variable>swift#string#17003</variable> 
+		                 </swiftscript:strsplit>
+		             </vdl:setfieldvalue>
+		             <partialCloseDataset var="{itemNames}"/>
+		        </sequential>
+		        <sequential>
+		             <vdl:setfieldvalue _traceline="19">
+		                 <variable>outputdir</variable>
+		                 <swiftscript:arg _traceline="18">
+		                  <variable>swift#string#17005</variable><variable>swift#string#17002</variable> 
+		                 </swiftscript:arg>
+		             </vdl:setfieldvalue>
+		             <partialCloseDataset var="{outputdir}"/>
+		        </sequential>
+		        <sequential>
+		             <vdl:setfieldvalue _traceline="21">
+		                 <variable>tool_cmd</variable>
+		                 <swiftscript:arg _traceline="19">
+		                  <variable>swift#string#17006</variable> 
+		                 </swiftscript:arg>
+		             </vdl:setfieldvalue>
+		             <partialCloseDataset var="{tool_cmd}"/>
+		        </sequential>
+		        <sequential>
+		          <vdl:tparallelFor name="$"_kvar="ix" _vvar="f">
+		          	<getarrayiterator>
+		          		<variable>items</variable>
+		          	</getarrayiterator>
+		          	<set names="$$, f">
+		          		<each items="{$}"/>
+		          	</set>
+		          	<set name="ix">
+		          		<vdl:new type="int" value="{$$}"/>
+		          	</set>
+		          	<unitStart line="21" type="FOREACH_IT"/>
+		          	<set name="input_file_parts">
+		          	      <vdl:new type="string[]" dbgname="input_file_parts" waitCount="1" _defline="22"/>
+		          	</set>
+		          	 
+		          	<set name="input_basename">
+		          	      <vdl:new type="string" dbgname="input_basename" waitCount="1" _defline="23"/>
+		          	</set>
+		          	 
+		          	<set name="output_dir">
+		          	      <vdl:new type="string" dbgname="output_dir" waitCount="1" _defline="24"/>
+		          	</set>
+		          	 
+		          	<set name="swift#mapper#17008">
+		          	      <vdl:new type="string" dbgname="swift#mapper#17008" _defline=""/>
+		          	</set>
+		          	 
+		          	<set name="outlog">
+		          	  <vdl:new type="file" dbgname="outlog" _defline="25">
+		          	    <vdl:mapping descriptor="single_file_mapper">
+		          	      <vdl:parameter name="file"><variable>swift#mapper#17008</variable></vdl:parameter>
+		          	    </vdl:mapping>
+		          	  </vdl:new>
+		          	</set>
+		          	 
+		          	<set name="swift#mapper#17011">
+		          	      <vdl:new type="string" dbgname="swift#mapper#17011" _defline=""/>
+		          	</set>
+		          	 
+		          	<set name="errlog">
+		          	  <vdl:new type="file" dbgname="errlog" _defline="26">
+		          	    <vdl:mapping descriptor="single_file_mapper">
+		          	      <vdl:parameter name="file"><variable>swift#mapper#17011</variable></vdl:parameter>
+		          	    </vdl:mapping>
+		          	  </vdl:new>
+		          	</set>
+		          	 
+		          	<set name="cmd1">
+		          	      <vdl:new type="string" dbgname="cmd1" waitCount="1" _defline="28"/>
+		          	</set>
+		          	 
+		          	<set name="cmd2">
+		          	      <vdl:new type="string" dbgname="cmd2" waitCount="1" _defline="29"/>
+		          	</set>
+		          	 
+		          	<uparallel>
+		          	    <sequential>
+		          	         <vdl:setfieldvalue _traceline="23">
+		          	             <variable>input_file_parts</variable>
+		          	             <swiftscript:strsplit _traceline="22">
+		          	              <variable>f</variable><variable>swift#string#17007</variable> 
+		          	             </swiftscript:strsplit>
+		          	         </vdl:setfieldvalue>
+		          	         <partialCloseDataset var="{input_file_parts}"/>
+		          	    </sequential>
+		          	    <sequential>
+		          	         <vdl:setfieldvalue _traceline="24">
+		          	             <variable>input_basename</variable>
+		          	             <vdl:getfieldsubscript>
+		          	               <argument name="var"><variable>input_file_parts</variable></argument>
+		          	               <argument name="subscript"><vdlop:subtraction>
+		          	               <swiftscript:length _traceline="23">
+		          	                <variable>input_file_parts</variable> 
+		          	               </swiftscript:length>
+		          	               <variable>swift#int#1</variable>
+		          	             </vdlop:subtraction></argument>
+		          	             </vdl:getfieldsubscript>
+		          	         </vdl:setfieldvalue>
+		          	         <partialCloseDataset var="{input_basename}"/>
+		          	    </sequential>
+		          	    <sequential>
+		          	         <vdl:setfieldvalue _traceline="25">
+		          	             <variable>output_dir</variable>
+		          	             <swiftscript:strcat _traceline="24">
+		          	              <variable>outputdir</variable><variable>swift#string#17007</variable><vdl:getfieldsubscript>
+		          	               <argument name="var"><variable>itemNames</variable></argument>
+		          	               <argument name="subscript"><variable>ix</variable></argument>
+		          	             </vdl:getfieldsubscript> 
+		          	             </swiftscript:strcat>
+		          	         </vdl:setfieldvalue>
+		          	         <partialCloseDataset var="{output_dir}"/>
+		          	    </sequential>
+		          	    <sequential>
+		          	         <vdl:setfieldvalue _traceline="-1">
+		          	             <variable>swift#mapper#17008</variable>
+		          	             <swiftscript:strcat _traceline="25">
+		          	              <variable>swift#string#17009</variable><variable>input_basename</variable><variable>swift#string#17010</variable> 
+		          	             </swiftscript:strcat>
+		          	         </vdl:setfieldvalue>
+
+		          	    </sequential>
+		          	    <sequential>
+		          	         <vdl:setfieldvalue _traceline="-1">
+		          	             <variable>swift#mapper#17011</variable>
+		          	             <swiftscript:strcat _traceline="26">
+		          	              <variable>swift#string#17009</variable><variable>input_basename</variable><variable>swift#string#17012</variable> 
+		          	             </swiftscript:strcat>
+		          	         </vdl:setfieldvalue>
+
+		          	    </sequential>
+		          	    <sequential>
+		          	         <vdl:setfieldvalue _traceline="29">
+		          	             <variable>cmd1</variable>
+		          	             <swiftscript:regexp _traceline="28">
+		          	              <swiftscript:arg _traceline="28">
+		          	              <variable>swift#string#17006</variable> 
+		          	             </swiftscript:arg><variable>swift#string#17013</variable><variable>f</variable> 
+		          	             </swiftscript:regexp>
+		          	         </vdl:setfieldvalue>
+		          	         <partialCloseDataset var="{cmd1}"/>
+		          	    </sequential>
+		          	    <sequential>
+		          	         <vdl:setfieldvalue _traceline="31">
+		          	             <variable>cmd2</variable>
+		          	             <swiftscript:regexp _traceline="29">
+		          	              <variable>cmd1</variable><variable>swift#string#17014</variable><variable>output_dir</variable> 
+		          	             </swiftscript:regexp>
+		          	         </vdl:setfieldvalue>
+		          	         <partialCloseDataset var="{cmd2}"/>
+		          	    </sequential>
+		          	    <sequential>
+		          	      <sequential>
+		          	      <unitStart name="trace" type="INTERNALPROC" outputs=""/>
+		          	       
+		          	      <trace _traceline="31">
+		          	          <variable>cmd2</variable>
+		          	      </trace>
+		          	      <unitEnd name="trace" type="INTERNALPROC"/>
+		          	      </sequential>
+		          	    </sequential>
+		          	    <sequential>
+		          	      <run__cmd _traceline="32">
+		          	          <variable>outlog</variable>
+		          	          <variable>errlog</variable>
+		          	          <variable>cmd2</variable>
+		          	      </run__cmd>
+
+		          	    </sequential>
+		          	</uparallel>
+		          	<vdl:cleandataset var="{input_file_parts}"/>
+		          	<vdl:cleandataset var="{errlog}"/>
+		          	<vdl:cleandataset var="{outlog}"/>	<unitEnd line="21" type="FOREACH_IT"/>
+		          </vdl:tparallelFor>
+		        </sequential>
+		    </uparallel>
+		</vdl:mainp>
+		<vdl:stopprogressticker />
+	</vdl:mains>
+  </restartLog>
+  <vdl:cleandataset var="{itemNames}"/>
+  <vdl:cleandataset var="{items}"/>
+  <vdl:cleandataset shutdown="true"/>
+</project>

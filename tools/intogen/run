@@ -1,0 +1,204 @@
+#/bin/bash
+
+ROOT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+source $ROOT_PATH/lib/common.sh
+
+if [ ! -f $ROOT_PATH/conf/system.sh ]; then
+	log warn "This is the first time you start locally the system."
+	log warn "Running the setup first ..."
+	eval $ROOT_PATH/setup $*
+	if ! $?; then
+		log error "ERROR: Setup failed."
+		exit -1
+	fi
+fi
+
+source $ROOT_PATH/conf/system.sh
+[ -f "$ROOT_PATH/conf/user.sh" ] && source $ROOT_PATH/conf/user.sh
+
+#export PYTHONPATH
+#export PERL5LIB
+
+source "$ENV_PATH/bin/activate"
+
+# Defaults ============================================================================================
+
+HOST="0.0.0.0"
+PORT=5000
+USE_GUNICORN="no"
+
+# Arguments ===========================================================================================
+
+ARGS=""
+
+function args_append {
+	if [ -n "$ARGS" ]; then
+		ARGS="$ARGS $*"
+	else
+		ARGS="$*"
+	fi
+}
+
+function print_help {
+
+local CMD=$1
+
+case $CMD in
+	service | web ) cat <<EOF
+
+  --host HOST        The interface of the web server to listen for.
+
+  --port PORT        The port of the web server to listen for.
+  
+  --gunicorn         Use gunicorn.
+  
+EOF
+	;;
+
+	service | web ) ;;
+	* ) python $BIN_PATH/start.py $CMD --help;;
+esac
+}
+
+#VALID_CMDS="service web analysis batch-analysis"
+#HIDDEN_CMDS="analysis-genes analysis-results combination"
+
+#if [ $# -eq 0 ]; then
+#	log error "The first argument should be the command to run."
+#	log error "Available commands: $VALID_CMDS"
+#	exit -1
+#fi
+
+if [ $# -gt 0 ]; then
+	CMD="$1"
+	shift
+fi
+
+#if [[ ! "$VALID_CMDS $HIDDEN_CMDS" =~ $CMD ]]; then
+#	log error "The first argument should be the command to run."
+#	log error "Available commands: $VALID_CMDS"
+#	exit -1
+#fi
+
+function parse_web_args {
+	while [ $# -gt 0 ]; do
+		case $1 in
+			--host ) shift; HOST="$1";;
+
+			--port ) shift; PORT="$1";;
+			
+			--gunicorn ) USE_GUNICORN="yes";;
+
+			-h | --help ) print_help $CMD; exit 0 ;;
+		
+			* ) args_append $1 ;;
+		esac
+		
+		shift
+	done
+}
+
+function parse_args {
+	while [ $# -gt 0 ]; do
+		case $1 in
+			-h | --help ) print_help $CMD; exit 0 ;;
+		
+			* ) args_append $1 ;;
+		esac
+		
+		shift
+	done
+}
+
+case $CMD in
+	service | web ) parse_web_args $* ;;
+	
+	* ) parse_args $* ;;
+esac
+
+# Start ===============================================================================================
+
+function ctrl_c {
+	count=0
+	if [ -f $PID_FILE ]; then
+		PID=$(cat $PID_FILE)
+		while pid_alive $PID; do
+			sleep 1
+			let count=$count+1
+			if [ $count -ge 120 ]; then
+				log warn "Control-C pressed !"
+				if [ "$USE_GUNICORN" == "yes" ]; then
+					SIGNAL="-QUIT"
+				else
+					SIGNAL="-INT"
+				fi
+				eval $ROOT_PATH/stop $SIGNAL
+				break
+			fi
+		done
+	fi
+
+	#exit -1
+}
+
+function run_service {
+	local pidfile=$1
+	
+	if [ "$USE_GUNICORN" == "yes" ]; then
+		gunicorn --bind $HOST:$PORT --pid $pidfile -c $CONF_PATH/base.gunicorn $ARGS web.home:app
+	else
+		python $WEB_PATH/home.py --host $HOST --port $PORT --pid-file $pidfile $ARGS
+	fi
+	
+	[ -f $PID_FILE ] && rm $PID_FILE
+}
+
+trap ctrl_c SIGINT
+trap ctrl_c SIGQUIT
+
+#log debug PYTHONPATH=$PYTHONPATH
+#log debug PERL5LIB=$PERL5LIB
+
+[ ! -d $RUNTIME_PATH ] && mkdir -p $RUNTIME_PATH
+
+case $CMD in
+	service )
+		run_service $PID_FILE
+	;;
+	
+	web )
+		python $WEB_PATH/home.py --host $HOST --port $PORT --pid-file $PID_FILE $ARGS &
+		
+		PID=$!
+			
+		sleep 1
+	
+		# Check alive before launching the browser
+		if pid_alive $PID; then
+			log info "Server running with PID $PID"
+		
+			browse http://$HOST:$PORT >/dev/null &
+		
+			while pid_alive $PID; do
+				sleep 1
+			done
+		fi
+	
+		[ -f $PID_FILE ] && rm $PID_FILE
+	;;
+	
+	* )
+		python $BIN_PATH/start.py $CMD $ARGS &
+		PID=$!
+
+		echo $PID > $PID_FILE
+
+		while pid_alive $PID; do
+			sleep 1
+		done
+
+		[ -f $PID_FILE ] && rm $PID_FILE
+	;;
+esac
+

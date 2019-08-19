@@ -1,0 +1,104 @@
+<tool id="gemini_annotate" name="GEMINI annotate" version="GEMINI: 0.10.0; GRABIX: 0.1.3; TABIX: 0.2.6; SAMTOOLS: 0.1.19; BEDTOOLS: 2.19.1">
+    <description>adding your own custom annotations</description>
+    <requirements>
+            <requirement type="package">pymodules</requirement>
+            <requirement type="package" version="0.10.0">gemini</requirement>
+            <requirement type="package" version="0.1.3">grabix</requirement>
+            <requirement type="package" version="0.2.6">tabix</requirement>
+            <requirement type="package" version="0.1.19">samtools</requirement>
+            <requirement type="package" version="2.19.1">bedtools</requirement>
+            <yield/>
+    </requirements>
+    <version_command>gemini --version</version_command>
+    <command>
+<![CDATA[
+
+bgzip -c $annotate_source > tabixed.gz;
+tabix -p bed tabixed.gz;
+
+        gemini annotate
+            -f tabixed.gz
+            -c $column_name
+            -a $a.a_selector
+            #if $a.a_selector == 'extract':
+                -t $a.column_type
+                -e $a.column_extracts
+                -o $a.operation
+            #end if
+
+            "${ infile }"
+            > "${ outfile }"
+]]>
+
+    </command>
+    <stdio>
+            <exit_code range="1:"/>
+            <exit_code range=":-1"/>
+            <regex match="Error:"/>
+            <regex match="Exception:"/>
+    </stdio>
+    <inputs>
+        <param format="sqlite" label="GEMINI database" name="infile" type="data"/>
+        <param format="bed" help="(-f)" label="File containing the annotations in BED format" name="annotate_source" type="data"/>
+
+        <param help="(-c)" label="The name of the column to be added to the variant table" name="column_name" size="20" type="text" value="">
+            <sanitizer invalid_char=" ">
+                <valid initial="string.letters,string.digits">
+                    <add value="_"/> 
+                </valid>
+            </sanitizer>
+        </param>
+        <conditional name="a">
+            <param help="(-a)" label="How should the annotation file be used?" name="a_selector" type="select">
+                <option value="boolean">Did a variant overlap a region or not? (boolean)</option>
+                <option value="count">How many regions did a variant overlap? (count)</option>
+                <option selected="True" value="extract">Extract specific values from a BED file. (extract)</option>
+            </param>
+            <when value="extract">
+
+                <param data_ref="annotate_source" force_select="true" help="(-e)" label="Column to extract information from for list annotations" name="column_extracts" type="data_column"/>
+
+
+                <param help="(-t)" label="What data type(s) should be used to represent the new values in the database?" name="column_type" type="select">
+                    <option value="float">Decimal precision number (float)</option>
+                    <option value="integer">Integer number (integer)</option>
+                    <option value="text">Text columns such as &quot;valid&quot;, &quot;yes&quot; (text)</option>
+                </param>
+
+                <param help="in the event that a variant overlaps multiple annotations in your annotation file. (-o)" label="Operation to apply to the extract column values ..." name="operation" type="select">
+                    <option value="mean">Compute the average of the (numeric) values</option>
+                    <option value="median">Compute the median of the (numeric) values</option>
+                    <option value="mix">Compute the minimum of the (numeric) values</option>
+                    <option value="max">Compute the maximum of the (numeric) values</option>
+                    <option value="mode">Compute the maximum of the (numeric) values</option>
+                    <option value="first">Use the value from the first record in the annotation file</option>
+                    <option value="last">Use the value from the last record in the annotation file</option>
+                    <option value="list">Create a comma-separated list of the observed (text) values</option>
+                    <option value="uniq_list">Create a comma-separated list of non-redundant observed (text) values</option>
+                </param>
+
+            </when>
+            <when value="boolean"/>
+            <when value="count"/>
+        </conditional>
+
+    </inputs>
+    <outputs>
+        <data format="tabular" label="${tool.name} on ${on_string}" name="outfile"/>
+    </outputs>
+    <tests>
+        <test>
+        </test>
+    </tests>
+    <help>
+**What it does**
+
+It is inevitable that researchers will want to enhance the gemini framework with their own, custom annotations. gemini provides a sub-command called annotate for exactly this purpose.
+
+@CITATION@
+    </help>
+    <citations>
+        <citation type="doi">10.1371/journal.pcbi.1003153</citation>
+        <yield/>
+    </citations>
+</tool>

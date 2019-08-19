@@ -1,0 +1,401 @@
+<tool id="bg_platypus" name="Platypus" version="PLATYPUS: Platypus_0.8.1">
+    <description>A Haplotype-Based Variant Caller For Next Generation Sequence Data</description>
+    <requirements>
+        <requirement type="package">platypus</requirement>
+    </requirements>
+    <stdio>
+      <exit_code description="Error in tool run" level="fatal" range="1:"/>
+    </stdio>
+
+    <command>
+      #set $reference_fasta_filename = &quot;localref.fa&quot;
+      #if str( $reference_source.reference_source_selector ) == &quot;history&quot;:
+        ln -s &quot;${reference_source.ref_file_fasta}&quot; &quot;${reference_fasta_filename}&quot; &amp;&amp;
+        samtools faidx &quot;${reference_fasta_filename}&quot; 2&gt;&amp;1 || echo &quot;Error running samtools faidx for Platypus&quot; &gt;&amp;2 &amp;&amp;
+      #else:
+        #set $reference_fasta_filename = str( $reference_source.ref_file.fields.path )
+      #end if
+
+      #if str($input_dir_source.input_dir_source_type) == &quot;history&quot;:
+        #for $bam_count, $input_bam in enumerate( $input_dir_source.input_bams ):
+          ln -s &quot;${input_bam.input_bam}&quot; &quot;localbam_${bam_count}.bam&quot; &amp;&amp;
+          ln -s &quot;${input_bam.input_bam.metadata.bam_index}&quot; &quot;localbam_${bam_count}.bam.bai&quot; &amp;&amp;
+        #end for
+      #end if
+
+      #if str($regions_type_cond.regions_type) == &quot;file&quot;:
+        ln -s $regions_type_cond.region_file &quot;local.bed&quot; &amp;&amp;
+      #end if
+
+      Platypus.py callVariants
+        --output $outfile
+        --logFileName=$output_log
+        --refFile &quot;${reference_fasta_filename}&quot;
+        --nCPU 32
+
+
+        #if $regions_type_cond.regions_type == &quot;file&quot;:
+          --regions &quot;local.bed&quot;
+        #else if $regions_type_cond.regions_type == &quot;text&quot;:
+          --regions &quot;$regions_type_cond.region_text&quot;
+        #end if
+
+        --bamFiles $listOfBAMFiles
+
+        #if str($options_type.options_type_selector) == &quot;advanced&quot;
+          #if $options_type.skip_regions_type_cond.regions_type == &quot;file&quot;:
+            --skipRegionsFile $options_type.skip_regions_type_cond.region_file
+          #else if $options_type.skip_regions_type_cond.regions_type == &quot;text&quot;:
+            --skipRegionsFile &quot;$options_type.skip_regions_type_cond.region_text&quot;
+          #end if
+
+          --minReads=$options_type.minReads
+          --maxReads=$options_type.maxReads
+          --maxReadLength=$options_type.maxReadLength
+          #if str($options_type.sourcefile) != &quot;None&quot;
+            --source=$options_type.sourcefile
+          #end if
+          $options_type.longHaps
+          #if str($options_type.HLATyping) == &quot;yes&quot;:
+            --HLATyping=1
+          #end if
+          #if str($options_type.largeWindows_cond.largeWindows) == &quot;yes&quot;
+            --largeWindows 1
+            --maxSize=$options_type.largeWindows_cond.maxSize
+          #else
+            --largeWindows 0
+          #end if
+          --maxVariants=$options_type.maxVariants
+          --coverageSamplingLevel=$options_type.coverageSamplingLevel
+          --maxHaplotypes=$options_type.maxHaplotypes
+          $options_type.skipDifficultWindows
+          $options_type.getVariantsFromBAMs
+          $options_type.genSNPs
+          $options_type.genIndels
+          #if str($options_type.mergeClusteredVariants_cond.mergeClusteredVariants) == &quot;yes&quot;
+            --mergeClusteredVariants 1
+            --minVarDist=$options_type.mergeClusteredVariants_cond.minVarDist
+            --maxVarDist=$options_type.mergeClusteredVariants_cond.maxVarDist
+          #else
+            --mergeClusteredVariants 0
+          #end if
+          --minFlank=$options_type.minFlank
+          $options_type.trimReadFlank
+          $options_type.filterVarsByCoverage
+          --filteredReadsFrac=$options_type.filteredReadsFrac
+          $options_type.useEMLikelihoods
+          $options_type.countOnlyExactIndelMatches
+          $options_type.calculateFlankScore
+          #if str($options_type.assemble_cond.assemble) == &quot;yes&quot;
+            --assemble=1
+            --assemblyRegionSize=$options_type.assemble_cond.assemblyRegionSize
+            --assemblerKmerSize=$options_type.assembles_cond.assemblerKmerSize
+            $options_type.assemble_cond.assembleAll
+            $options_type.assemble_cond.assembleBadReads
+            $options_type.assemble_cond.assembleBrokenPairs
+            $options_type.assemble_cond.noCycles
+          #else
+            --assemble=0
+          #end if
+
+          --minMapQual=$options_type.minMapQual
+          --minBaseQual=$options_type.minBaseQual
+          --minGoodQualBases=$options_type.minGoodQualBases
+          --maxGOF=$options_type.maxGOF
+          --minPosterior=$options_type.minPosterior
+          --sbThreshold=$options_type.sbThreshold
+          --scThreshold=$options_type.scThreshold
+          --abThreshold=$options_type.abThreshold
+          --minVarFreq=$options_type.minVarFreq
+          --badReadsWindow=$options_type.badReadsWindow
+          --badReadsThreshold=$options_type.badReadsThreshold
+          --rmsmqThreshold=$options_type.rmsmqThreshold
+          --qdThreshold=$options_type.qdThreshold
+          --hapScoreThreshold=$options_type.hapScoreThreshold
+          #if str($options_type.outputRefCalls_cond.outputRefCalls) == &quot;yes&quot;
+            --outputRefCalls=1
+            --refCallBlockSize=$options_type.outputRefCalls_cond.refCallBlockSize
+          #else
+            --outputRefCalls=0
+          #end if
+
+          $options_type.trimAdapter
+          $options_type.trimOverlapping
+          $options_type.filterDuplicates
+          $options_type.filterReadsWithUnmappedMates
+          $options_type.filterReadsWithDistantMates
+          $options_type.filterReadPairsWithSmallInserts
+          $options_type.trimSoftClipped
+        #end if
+        ##2&gt; /dev/null
+    </command>
+    <inputs>
+        <conditional name="reference_source">
+            <param label="Choose the source for the reference genome" name="reference_source_selector" type="select">
+                <option value="cached">Locally cached</option>
+                <option value="history">History</option>
+            </param>
+            <when value="cached">
+                <param label="Using reference genome" name="ref_file" type="select">
+                    <options from_data_table="fasta_indexes">
+                        <validator message="A built-in reference genome is not available for the build associated with the selected input file" type="no_options"/>
+                    </options>
+                </param>
+            </when>
+            <when value="history"> <!-- FIX ME!!!! -->
+                <param format="fasta" label="Using reference file" name="ref_file_fasta" type="data"/>
+            </when>
+        </conditional>
+
+        <conditional name="input_dir_source">
+            <param help="If you choose the file based method, it must contain only one line with the path for your files" label="How will you specify the path to the BAM/BAI files?" name="input_dir_source_type" type="select">
+                <option value="text">Text Field</option>
+                <option value="file">Text File containing path to BAM files</option>
+                <option value="history">BAMs in history</option>
+            </param>
+            <when value="text">
+                <param help="Full path of the directory that contains a set of BAM files. All the BAM files will be used as input datasets." label="BAM directory path" name="input_directory_path" type="text"/>
+            </when>
+            <when value="file">
+                <param format="txt" help="Must contain only one line with the path for your files" label="File containing path of the directory containing the BAM files" name="input_directory_path_file" type="data"/>
+            </when>
+            <when selected="true" value="history">
+                <repeat min="1" name="input_bams" title="Sample BAM file">
+                    <param format="bam" label="BAM file" name="input_bam" type="data"/>
+                </repeat>
+            </when>
+        </conditional>
+        <conditional name="regions_type_cond">
+            <param help="Region as comma-separated list of chr:start-end, or just list of chr, or nothing; or a BED file(regions)" label="Specify region by file or text input" name="regions_type" type="select">
+                <option selected="true" value="none">None</option>
+                <option value="file">Specify regions by file</option>
+                <option value="text">Enter regions</option>
+            </param>
+            <when value="none"/>
+            <when value="file">
+                <param format="bed,tabular" help="The columns of the tab-delimited file are: CHROM, POS, and, optionally, POS_TO, where positions are 1-based and inclusive." label="Region File" name="region_file" type="data"/>
+            </when>
+            <when value="text">
+                <param help="chr|chr:pos|chr:from-to|chr:from-[,…]" label="Comma-separated list of regions" name="region_text" type="text"/>
+            </when>
+        </conditional>
+
+        <conditional name="options_type">
+            <param label="Basic or Advanced options" name="options_type_selector" type="select">
+                <option selected="True" value="basic">Basic</option>
+                <option value="advanced">Advanced</option>
+            </param>
+            <when value="basic">
+                <!-- Do nothing here -->
+            </when>
+            <when value="advanced">
+                <conditional name="skip_regions_type_cond">
+                    <param help="region as comma-separated list of chr:start-end, or just list of chr, or nothing, (skipRegionsFile)" label="Specify regions to skip by file or text input" name="regions_type" type="select">
+                        <option selected="true" value="none">None</option>
+                        <option value="file">Specify regions by file</option>
+                        <option value="text">Enter regions</option>
+                    </param>
+                    <when value="none"/>
+                    <when value="file">
+                        <param format="bcf,vcf,tabix,bed" help="The columns of the tab-delimited file are: CHROM, POS, and, optionally, POS_TO, where positions are 1-based and inclusive." label="Region File" name="region_file" type="data"/>
+                    </when>
+                    <when value="text">
+                        <param help="chr|chr:pos|chr:from-to|chr:from-[,…]" label="Comma-separated list of regions" name="region_text" type="text"/>
+                    </when>
+                </conditional>
+                <param help="(--minReads)" label="Minimum number of supporting reads required before a variant candidate will be considered" name="minReads" size="10" type="integer" value="2">
+                    <validator min="0" type="in_range"/>
+                </param>
+                <param help="(--maxReads)" label="Maximium coverage in window" name="maxReads" size="10" type="integer" value="5000000">
+                    <validator min="0" type="in_range"/>
+                </param>
+                <param help="(--maxReadLength)" label="Maximum read length" name="maxReadLength" size="10" type="integer" value="150">
+                    <validator min="0" type="in_range"/>
+                </param>
+                <param format="vcf" help="(--source)" label="vcf file to get candidates from" name="sourcefile" optional="true" type="data">
+                </param>
+                <param checked="false" falsevalue="" help="(--longHaps)" label="Do not trim replacement variants from input VCFs" name="longHaps" truevalue="--longHaps=1" type="boolean"/>
+                <param help="Requires a source file containing HLA haplotypes (--HLATyping)" label="Run HLA genotyping mode" name="HLATyping" type="select">
+                    <option selected="true" value="no">No</option>
+                    <option value="yes">Yes</option>
+                </param>
+                <conditional name="largeWindows_cond">&quot;
+                    <param help="(--largeWindows)" label="Window size can be up to the maximum size of variants" name="largeWindows" type="select">
+                        <option selected="True" value="no">Default</option>
+                        <option value="yes">Set maxSize window</option>
+                    </param>
+                    <when value="no"/>
+                    <when value="yes">
+                        <param help="(--maxSize)" label="Largest variant to consider" name="maxSize" size="10" type="integer" value="1500">
+                            <validator min="0" type="in_range"/>
+                        </param>
+                    </when>
+                </conditional>
+                <param help="(--maxVariants)" label="Maximium variants to consider in a given window" name="maxVariants" size="10" type="integer" value="8">
+                    <validator min="0" type="in_range"/>
+                </param>
+                <param help="(--coverageSamplingLevel)" label="Downsample to this level of coverage when filtering haplotypes in divergent regions" name="coverageSamplingLevel" size="10" type="integer" value="30">
+                    <validator min="0" type="in_range"/>
+                </param>
+                <param help="(--maxHaplotypes)" label="Maximium haplotypes to consider in a given window" name="maxHaplotypes" size="10" type="integer" value="50">
+                    <validator min="0" type="in_range"/>
+                </param>
+                <param checked="false" falsevalue="" help="(--skipDifficultWindows)" label="Skip windows with &gt; maxVariants candidates" name="skipDifficultWindows" truevalue="--skipDifficultWindows=1" type="boolean"/>
+                <param checked="true" falsevalue="--getVariantsFromBAMs=0" help="(--getVariantsFromBAMs)" label="Generate variant candidates from input BAMs and other inputs" name="getVariantsFromBAMs" truevalue="" type="boolean"/>
+                <param checked="true" falsevalue="--genSNPs=0" help="(--genSNPs)" label="SNP candidates will be considered" name="genSNPs" truevalue="" type="boolean"/>
+                <param checked="true" falsevalue="--genIndels=0" help="(--genIndels)" label="Indel candidates will be considered" name="genIndels" truevalue="" type="boolean"/>
+                <conditional name="mergeClusteredVariants_cond">&quot;
+                    <param help="This will result in slower more accurate variant calls in diverse regions (--mergeClusteredVariants)" label="Merge variant-containing windows which are close together" name="mergeClusteredVariants" type="select">
+                        <option value="no">No</option>
+                        <option selected="True" value="yes">Yes</option>
+                    </param>
+                    <when value="no"/>
+                    <when value="yes">
+                        <param help="(--minVarDist)" label="Min distance allowed between windows" name="minVarDist" size="10" type="integer" value="9">
+                            <validator min="0" type="in_range"/>
+                        </param>
+                        <param help="(--maxVarDist)" label="Max distance between variants to be considered in the same window" name="maxVarDist" size="10" type="integer" value="15">
+                            <validator min="0" type="in_range"/>
+                        </param>
+                    </when>
+                </conditional>
+                <param help="(--minFlank)" label="Flank size for indel candidates" name="minFlank" size="10" type="integer" value="10">
+                    <validator min="0" type="in_range"/>
+                </param>
+                <param checked="false" falsevalue="" help="(--trimReadFlank)" label="Set base-qualities to 0 within trimReadFlank bases of the end of reads" name="trimReadFlank" truevalue="--trimReadFlank=1" type="boolean"/>
+                <param checked="true" falsevalue="--filterVarsByCoverage=0" help="(--filterVarsByCoverage)" label="Filter variants in difficult regions by the number of times each variant is seen" name="filterVarsByCoverage" truevalue="" type="boolean"/>
+                <param help="If greater than this fraction of reads are filtered in a given  window, the badReads filter is triggered. (--filteredReadsFrac)" label="Filter badReads fraction threshold" name="filteredReadsFrac" size="10" type="float" value="0.7">
+                    <validator min="0" type="in_range"/>
+                </param>
+                <param checked="false" falsevalue="" help="Otherwise likelihoods from individual sample will be used (--useEMLikelihoods)" label="Use likelihoods computed from EM algorithm to call genotypes for each sample." name="useEMLikelihoods" truevalue="--useEMLikelihoods=1" type="boolean"/>
+                <param checked="false" falsevalue="" help="(--countOnlyExactIndelMatches)" label="Count only exactly matching indels in the NV field" name="countOnlyExactIndelMatches" truevalue="--countOnlyExactIndelMatches=1" type="boolean"/>
+                <param checked="false" falsevalue="" help="(--calculateFlankScore)" label="Use additional alignment routine to calculate scores from flanks outside windows" name="calculateFlankScore" truevalue="--calculateFlankScore=1" type="boolean"/>
+                <conditional name="assemble_cond">&quot;
+                    <param help="(--assemble)" label="Use Cortex to assemble variant candidates" name="assemble" type="select">
+                        <option selected="True" value="no">No</option>
+                        <option value="yes">Yes</option>
+                    </param>
+                    <when value="no"/>
+                    <when value="yes">
+                        <param help="(--assemblyRegionSize)" label="Size of region to assemble with Cortex" name="assemblyRegionSize" size="10" type="integer" value="1500">
+                            <validator min="0" type="in_range"/>
+                        </param>
+                        <param help="(--assemblerKmerSize)" label="Kmer size to use for cortex assembly" name="assemblerKmerSize" size="10" type="integer" value="15">
+                            <validator min="0" type="in_range"/>
+                        </param>
+                        <param checked="true" falsevalue="" help="(--assembleAll)" label="Assemble all regions" name="assembleAll" truevalue="--assembleAll=1" type="boolean"/>
+                        <param checked="true" falsevalue="--assembleAll=0" help="(--assembleBadReads)" label="Use bad reads for local assembly" name="assembleBadReads" truevalue="" type="boolean"/>
+                        <param checked="false" falsevalue="" help="(--assembleBrokenPairs)" label="Use broken read pairs for local assembly" name="assembleBrokenPairs" truevalue="--assembleBrokenPairs=1" type="boolean"/>
+                        <param checked="true" falsevalue="--noCycles=1" help="(--noCycles)" label="Allow cycles in graph" name="noCycles" truevalue="--noCycles=0" type="boolean"/>
+                  </when>
+                </conditional>
+                <param help="(--minMapQual)" label="Minimum mapping quality of read" name="minMapQual" size="10" type="integer" value="20">
+                    <validator min="0" type="in_range"/>
+                </param>
+                <param help="(--minBaseQual)" label="Minimum base-calling quality" name="minBaseQual" size="10" type="integer" value="20">
+                    <validator min="0" type="in_range"/>
+                </param>
+                <param help="(--minGoodQualBases)" label="Minimum bases per read that must have base quality greater than minBaseQuality" name="minGoodQualBases" size="10" type="integer" value="20">
+                    <validator min="0" type="in_range"/>
+                </param>
+                <param help="Value is a Phred-score (--maxGOF)" label="Max allowed value for goodness-of-fit test. Higher than this triggers GOF filter" name="maxGOF" size="10" type="integer" value="30">
+                    <validator min="0" type="in_range"/>
+                </param>
+                <param help="Value is a Phred-score (--minPosterior)" label="Only variants with posterior &gt;= will be outpu to the VCF" name="minPosterior" size="10" type="integer" value="5">
+                    <validator min="0" type="in_range"/>
+                </param>
+                <param help="(--sbThreshold)" label="P-value for strand-bias filtering" name="sbThreshold" size="10" type="float" value="0.001">
+                    <validator min="0" type="in_range"/>
+                </param>
+                <param help="(--scThreshold)" label="Cut-off for SC filter" name="scThreshold" size="10" type="float" value="0.95">
+                    <validator min="0" type="in_range"/>
+                </param>
+                <param help="(--abThreshold)" label="P-value for allele-bias filtering" name="abThreshold" size="10" type="float" value="0.001">
+                    <validator min="0" type="in_range"/>
+                </param>
+                <param help="(--minVarFreq)" label="Variants below this frequency will be flagged as allele-biased" name="minVarFreq" size="10" type="float" value="0.05">
+                    <validator min="0" type="in_range"/>
+                </param>
+                <param help="(--badReadsWindow)" label="Size of window around variant to look for low-quality bases" name="badReadsWindow" size="10" type="integer" value="11">
+                    <validator min="0" type="in_range"/>
+                </param>
+                <param help="(--badReadsThreshold)" label="Variants where the median minimum quality in a window of badReadsWindow around the variant position falls below this value will be filtered with the flag 'badReads'" name="badReadsThreshold" size="10" type="integer" value="15">
+                    <validator min="0" type="in_range"/>
+                </param>
+                <param help="(--rmsmqThreshold)" label="RMSMQ filter triggers when root-mean-square mapping quality across region containing variant is below this" name="rmsmqThreshold" size="10" type="integer" value="40">
+                    <validator min="0" type="in_range"/>
+                </param>
+                <param help="(--qdThreshold)" label="QD filter triggers quality/depth for variant is below this" name="qdThreshold" size="10" type="integer" value="10">
+                    <validator min="0" type="in_range"/>
+                </param>
+                <param help="(--hapScoreThreshold)" label="HapScore filter triggers HapScore for variant is above this" name="hapScoreThreshold" size="10" type="integer" value="4">
+                    <validator min="0" type="in_range"/>
+                </param>
+                <conditional name="outputRefCalls_cond">&quot;
+                    <param help="(--outputRefCalls)" label="Block reference calls in output" name="outputRefCalls" type="select">
+                        <option selected="True" value="no">No</option>
+                        <option value="yes">Yes</option>
+                    </param>
+                    <when value="no"/>
+                    <when value="yes">
+                        <param help="(--refCallBlockSize)" label="Max size of reference call block" name="refCallBlockSize" size="10" type="integer" value="1000">
+                            <validator min="0" type="in_range"/>
+                        </param>
+                    </when>
+                </conditional>
+                <param checked="true" falsevalue="--trimAdapter=0" help="This is mainly useful for trimming adapter sequences. (--trimAdapter)" label="Set the qual to 0 for any part of read which exceeds the mapped fragment length" name="trimAdapter" truevalue="" type="boolean"/>
+                <param checked="true" falsevalue="--trimOverlapping=0" help="(--trimOverlapping)" label="Set the qual to 0 for any overlap in paired end reads" name="trimOverlapping" truevalue="" type="boolean"/>
+                <param checked="true" falsevalue="--filterDuplicates=0" help="(--filterDuplicates)" label="Duplicate reads will be removed based on the read-pair start and end" name="filterDuplicates" truevalue="" type="boolean"/>
+                <param checked="true" falsevalue="--filterReadsWithUnmappedMates=0" help="(--filterReadsWithUnmappedMates)" label="Reads with un-mapped mates will be removed" name="filterReadsWithUnmappedMates" truevalue="" type="boolean"/>
+                <param checked="true" falsevalue="--filterReadsWithDistantMates=0" help="(--filterReadsWithDistantMates)" label="Reads with mates mapped far away will be removed" name="filterReadsWithDistantMates" truevalue="--filterReadsWithDistantMates=1" type="boolean"/>
+                <param checked="true" falsevalue="--filterReadPairsWithSmallInserts=0" help="(--filterReadPairsWithSmallInserts)" label="Read pairs with insert sizes smaller one read length will be removed" name="filterReadPairsWithSmallInserts" truevalue="" type="boolean"/>
+                <param checked="true" falsevalue="--trimSoftClippeds=0" help="(--trimSoftClipped)" label="Set to 0 any soft clipped parts of the read" name="trimSoftClipped" truevalue="--trimSoftClipped=1" type="boolean"/>
+
+            </when>
+        </conditional>
+    </inputs>
+    <configfiles>
+      <configfile name="listOfBAMFiles">
+        #if str($input_dir_source.input_dir_source_type) == &quot;text&quot;
+          #import os, glob
+          #set $bam_files = glob.glob(str( $input_dir_source.input_directory_path) + &quot;/*.bam&quot;  )
+          #for $input_bam in $bam_files:
+$input_bam
+          #end for
+
+        #else if str($input_dir_source.input_dir_source_type) == &quot;file&quot;
+          #import os, glob
+          #set $bam_files = glob.glob(str( getFileContents($input_dir_source.input_directory_path_file) ) + &quot;/*.bam&quot;  )
+          #for $input_bam in $bam_files:
+$input_bam
+          #end for
+        #else
+          #for $bam_count, $input_bam in enumerate( $input_dir_source.input_bams ):
+localbam_${bam_count}.bam
+          #end for
+        #end if
+      </configfile>
+    </configfiles>
+    <outputs>
+        <data format="vcf" label="${tool.name} on ${on_string}: (vcf)" name="outfile"/>
+        <data format="txt" label="${tool.name} on ${on_string}: (log)" name="output_log"/>
+    </outputs>
+
+    <tests>
+    </tests>
+    <help>
+<![CDATA[
+
+**What it does**
+
+Platypus is a tool designed for efficient and accurate variant-detection in high-throughput sequencing data.
+By using local realignment of reads and local assembly it achieves both high sensitivity and high specificity.
+Platypus can detect SNPs, MNPs, short indels, replacements and (using the assembly option) deletions up to several kb.
+
+
+]]>
+    </help>
+    <citations>
+        <citation type="doi">doi:10.1038/ng.3036</citation>
+    </citations>
+</tool>

@@ -1,0 +1,31 @@
+<tool id="intogen_wrapper" name="intogen">
+  	<description>This tool interprets catalogs of cancer somatic mutations.</description>
+        <requirements>
+          <requirement type="package">pymodules</requirement>
+          <requirement type="package">perlmodules</requirement>
+        </requirements>
+  	<command interpreter="bash">
+                run analysis -p IntogenRun -a $genome_assembly $mutations_file -w \$PWD/test 2>/dev/null;
+                unzip test/projects/IntogenRun/results.zip
+        </command>
+  	<inputs>
+  		<param name="genome_assembly" type="select" label="Genome Assembly" >
+		      <option value="hg18" >hg18 (NCBI36)</option>
+		      <option value="hg19" selected="true" >hg19 (GRCh37)</option>
+	    </param>
+  		<param format="tdm,tsv,dat,vcf,maf" name="mutations_file" type="data" label="File with mutations per sample" />
+  	</inputs>
+  	<outputs>
+		<data format="tabular" name="consequences" from_work_dir="IntogenRun/consequences.tsv" label="${tool.name} on ${on_string}: consequences.tsv" />
+		<data format="tabular" name="genes" from_work_dir="IntogenRun/genes.tsv" label="${tool.name} on ${on_string}: genes.tsv"/>
+		<data format="tabular" name="project" from_work_dir="IntogenRun/project.tsv" label="${tool.name} on ${on_string}: project.tsv"/>
+		<data format="tabular" name="variant_genes" from_work_dir="IntogenRun/variant_genes.tsv" label="${tool.name} on ${on_string}: variant_genes.tsv"/>
+		<data format="tabular" name="variant_samples" from_work_dir="IntogenRun/variant_samples.tsv" label="${tool.name} on ${on_string}: variant_samples.tsv" />
+    <data format="tabular" name="pathways" from_work_dir="IntogenRun/pathways.tsv" label="${tool.name} on ${on_string}: pathways.tsv" />
+  	</outputs>
+  	
+  	<help>
+		http://www.intogen.org/web/mutations/v04/help?0
+  	</help>
+
+</tool>

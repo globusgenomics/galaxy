@@ -1,0 +1,32 @@
+<tool id="preppereadsforveletfasta" name="Prepare reads for use with velvet (FASTA)" version="1.0.0">
+	<description>Prepare paired-end reads for use with Velvet</description>
+	<command interpreter="python">
+	  preppereads_fasta.py 
+           '$__app__.config.new_file_path'
+	   '$input1'
+           '$input2'
+           '$outpe'
+	   '$outsingletons'; exit 0
+	</command>
+        <inputs>
+            <param name="input1" type="data" format="fasta" label="Read 1 of paired-end dataset"/>
+            <param name="input2" type="data" format="fasta" label="Read 2 of paired-end dataset"/>
+        </inputs>
+	<outputs>
+                <data format="fasta" name="outpe" label="Merged paired-end reads ready for velvet"/>
+		<data format="fasta" name="outsingletons" label="Singleton reads reads for velvet"/>
+		
+	</outputs>
+	<requirements>
+	</requirements>
+	<help>
+**Paired-end reads preparation for velvet**
+
+Velvet requires paired-end reads to be in the same file in an interleaved FASTQ format. This format specifies that read 1 should be followed immediately by read 2. 
+
+This script is useful to ensure reads are in the correct order prior to passing the data to Velvet.
+
+Singleton reads can also be produced if quality trimming or other filtering criteria have removed the read's mate. These can also be passed to Velvet using a second short read channel. 
+
+	</help>
+</tool>

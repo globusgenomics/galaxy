@@ -1,0 +1,83 @@
+<tool id="tangram_filter" name="Tangram filter" version="1.0.3">
+  <requirements>
+    <requirement type="package">tangram</requirement>
+    <requirement type="package">bedtools</requirement>
+  </requirements>
+  <description>VCF from detect SV</description>
+  <command>
+    tangram_filter.pl
+      --vcf $vcf_input
+      --msk $msk_file
+      --out $output
+      --type $sv_type
+      #if $advanced.advanced_select == "yes":
+          #if $advanced.rpfp!= 2:
+              --rpf $advanced.rpf
+          #end if
+          #if $advanced.srf != 2:
+              --srf $advanced.srf
+          #end if
+      #end if
+
+  </command>
+  <inputs>
+      <param name="vcf_file" type="data" format="vcf" label="Input vcf file for filtering" />
+      <param name="msk_file" type="data" format="tabular" label="Input list of mask files with window size information" />
+      <param name="sv_type" type="select" label="SV event type for filtering" >
+          <option value="MEI" selected="true">MEI</option>
+          <option value="DEL">DEL</option>
+          <option value="DUP">DUP</option>
+          <option value="INV">INV</option>
+      </param>
+
+      <conditional name="advanced">
+          <param name="advanced_select" type="select" label="Advanced options" >
+              <option value="yes">Advanced options</option>
+              <option value="no" selected="true">No</option>
+          </param>
+          <when value="yes">
+              <param name="rpf" type="integer" value="2" label="Minimum number of supporting fragments (reads) for read-pair events" help="" />
+              <param name="srf" type="integer" value="2" label="Minimum number of supporting fragments (reads) for split-read events" help="" />
+          </when>
+          <when value="no"></when>
+      </conditional>
+  </inputs>
+  <outputs>
+    <data format="vcf" name="output" label="${tool.name} on ${on_string}" />
+  </outputs>
+  <help>
+
+**What it does**
+
+Filters the output from the detect stage.
+
+...
+
+        1. This script require the installation of "bedtools" package and Unix
+           sort in the default directory.
+
+        2. Each entry of the list of mask files is a tab delimited file 
+           with following format:
+        
+           "TYPE WINDOW_SIZE FILE_NAME"
+
+           "TYPE" (string) is the type of this mask file. For a referenced MEI 
+           mask file, it must match the first two characters of the family name 
+           in the VCF file (For example AL: ALU, L1: L1, SV: SVA and HE: HERV).
+           This mask file will only be applied to the corresponding type of MEI
+           events. For example, AL mask file will only be applied to ALU insertions. 
+           The rest of the mask files, such as segmental duplication
+           mask and simple repeat mask, their "TYPE" string can be anything and
+           it will be applied to all the entries in the VCF file. No space is allowed
+           in the type name.
+
+           "WINDOW_SIZE" (integer) is the window size around each entry of
+           the mask file.
+
+           "FILE_NAME" (string) is the path to the corresponding mask file
+
+           All the mask files must be in the BED format. For detailed information
+           about this format, please check http://genome.ucsc.edu/FAQ/FAQformat.html
+
+  </help>
+</tool>

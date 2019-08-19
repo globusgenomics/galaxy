@@ -1,0 +1,126 @@
+<program xmlns="http://ci.uchicago.edu/swift/2009/02/swiftscript"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <types>
+     	<type>
+     		<typename>file</typename>
+     		<typealias>string</typealias>
+     		<typestructure></typestructure>
+     	</type>
+  </types>
+  <procedure name="job_runner" src="line 6">
+
+    <output name="olog" type="file"  xsi:nil="true"/>
+
+    <output name="elog" type="file"  xsi:nil="true"/>
+
+    <input name="cmd" type="string"  xsi:nil="true"/>
+
+    <input name="tarred" type="file"  xsi:nil="true"/>
+    <binding>
+      <application src="line 6">
+        <executable>bash</executable>
+        <stdout><function name="filename" src="line 7">
+          <variableReference>olog</variableReference></function></stdout><stderr><function name="filename" src="line 7">
+          <variableReference>elog</variableReference></function></stderr><stringConstant>-c</stringConstant><variableReference>cmd</variableReference>  </application>
+    </binding>
+  </procedure>
+  <variable name="filedir" type="string" isGlobal="false" xsi:nil="true" src="line 12"/>
+  <assign src="line 14">
+   <variableReference>filedir</variableReference>
+   <function name="arg" src="line 12">
+     <stringConstant>input_dir</stringConstant><stringConstant>Nonsense</stringConstant></function>
+  </assign>
+  <variable name="app_cmd" type="string" isGlobal="false" xsi:nil="true" src="line 14"/>
+  <assign src="line 15">
+   <variableReference>app_cmd</variableReference>
+   <function name="arg" src="line 14">
+     <stringConstant>app_cmd</stringConstant></function>
+  </assign>
+  <variable name="search_grep" type="string" isGlobal="false" xsi:nil="true" src="line 15"/>
+  <assign src="line 17">
+   <variableReference>search_grep</variableReference>
+   <function name="arg" src="line 15">
+     <stringConstant>mapper_grep</stringConstant></function>
+  </assign>
+  <variable name="inputfiles" type="file[]" isGlobal="false" src="line 17">
+    <mapping descriptor="ext">
+      <param name="exec"><stringConstant>/nfs/software/galaxy/tools/GG_tools/variant_calling/svmerge/file_mapper_svmerger.sh</stringConstant></param>
+      <param name="location"><variableReference>filedir</variableReference></param>
+      <param name="grep_file"><variableReference>search_grep</variableReference></param>
+    </mapping>
+  </variable>
+  <variable name="tarfile" type="string" isGlobal="false" xsi:nil="true" src="line 18"/>
+  <assign src="line 20">
+   <variableReference>tarfile</variableReference>
+   <function name="arg" src="line 18">
+     <stringConstant>input_tar</stringConstant><stringConstant>Nonsense</stringConstant></function>
+  </assign>
+  <foreach var="f"  indexVar="i" src="line 20">
+  <in><variableReference>inputfiles</variableReference></in>
+  <body><variable name="outlog" type="file" isGlobal="false" src="line 22">
+      <mapping descriptor="single_file_mapper">
+        <param name="file"><function name="strcat" src="line 22">
+          <stringConstant>logs/</stringConstant><function name="filename" src="line 22">
+            <variableReference>f</variableReference></function><stringConstant>.stdout.log</stringConstant></function></param>
+      </mapping>
+    </variable>
+    <variable name="errlog" type="file" isGlobal="false" src="line 23">
+      <mapping descriptor="single_file_mapper">
+        <param name="file"><function name="strcat" src="line 23">
+          <stringConstant>logs/</stringConstant><function name="filename" src="line 23">
+            <variableReference>f</variableReference></function><stringConstant>.stderr.log</stringConstant></function></param>
+      </mapping>
+    </variable>
+    <variable name="assemblyresults" type="file" isGlobal="false" src="line 24">
+      <mapping descriptor="single_file_mapper">
+        <param name="file"><variableReference>tarfile</variableReference></param>
+      </mapping>
+    </variable>
+    <variable name="cmd0" type="string" isGlobal="false" xsi:nil="true" src="line 27"/>
+    <assign src="line 29">
+     <variableReference>cmd0</variableReference>
+     <function name="regexp" src="line 27">
+       <function name="arg" src="line 27">
+         <stringConstant>app_cmd</stringConstant></function><stringConstant>(tarredFile)</stringConstant><function name="strcat" src="line 27">
+         <function name="filename" src="line 27">
+           <variableReference>assemblyresults</variableReference></function></function></function>
+    </assign>
+    <variable name="cmd1" type="string" isGlobal="false" xsi:nil="true" src="line 29"/>
+    <assign src="line 31">
+     <variableReference>cmd1</variableReference>
+     <function name="regexp" src="line 29">
+       <variableReference>cmd0</variableReference><stringConstant>(sub_merge)</stringConstant><function name="strcat" src="line 29">
+         <stringConstant>/</stringConstant><function name="filename" src="line 29">
+           <variableReference>f</variableReference></function></function></function>
+    </assign>
+    <variable name="basename" type="string" isGlobal="false" xsi:nil="true" src="line 31"/>
+    <assign src="line 35">
+     <variableReference>basename</variableReference>
+     <function name="strcut" src="line 31">
+       <function name="filename" src="line 31">
+         <variableReference>f</variableReference></function><stringConstant>.*/(.*)$</stringConstant></function>
+    </assign>
+    <variable name="outfile_flag" type="string" isGlobal="false" xsi:nil="true" src="line 35"/>
+    <assign src="line 37">
+     <variableReference>outfile_flag</variableReference>
+     <function name="strcat" src="line 35">
+       <stringConstant>outfile.</stringConstant><variableReference>basename</variableReference></function>
+    </assign>
+    <variable name="cmd" type="string" isGlobal="false" xsi:nil="true" src="line 37"/>
+    <assign src="line 39">
+     <variableReference>cmd</variableReference>
+     <function name="regexp" src="line 37">
+       <variableReference>cmd1</variableReference><stringConstant>(outfile)</stringConstant><variableReference>outfile_flag</variableReference></function>
+    </assign>
+    <call proc="trace" src="line 39">
+      <input><variableReference>cmd</variableReference></input>
+    </call>
+    <call proc="job_runner" src="line 42">
+      <output><variableReference>outlog</variableReference></output>
+      <output><variableReference>errlog</variableReference></output>
+      <input><variableReference>cmd</variableReference></input>
+      <input><variableReference>assemblyresults</variableReference></input>
+    </call></body>
+  </foreach>
+</program>

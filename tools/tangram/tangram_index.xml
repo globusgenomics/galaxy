@@ -1,0 +1,26 @@
+<tool hidden="true" id="tangram_index" name="Tangram Index" version="TANGRAM: default">
+  <requirements>
+    <requirement type="package">tangram</requirement>
+  </requirements>
+  <description>Format index reference file&quot;</description>
+  <command>
+    tangram_index
+      -ref $ref
+      -sp  &quot;\$TANGRAM_DATA/moblist_19Feb2010_sequence_length60.fa&quot; 
+      -out $tangram_index
+  </command>
+  <inputs>
+    <param format="fasta" label="input reference file" name="ref" type="data"/>
+    <!-- <param name="ref" type="data" format="fasta" label="input Reference file in Fasta format" /> -->
+  </inputs>
+  <outputs>
+    <data format="fasta" label="${tool.name} on ${on_string}: Tangram index" name="tangram_index"/>
+  </outputs>
+  <help>
+
+**What it does**
+
+tangram_bam will add ZA tags that are required for the following detection. Uses the REF file for moblist_19Feb2010_sequence_length60.fa
+
+  </help>
+</tool>

@@ -1,0 +1,111 @@
+<tool id="TPP_SpectraST_search" name="SpectraST Search" version="1.0" force_history_refresh="True">
+<description>spectral library searching</description>
+    <requirements>
+        <requirement type="package">protkgem</requirement>
+        <requirement type="package">tpp</requirement>
+        <requirement type="package">ruby</requirement>
+   </requirements>
+<command interpreter="perl">search.pl $searchParams $output;sed -i 's/value\"/value=\"/g' $output</command>
+<inputs>
+
+  <conditional name="libType">
+    <param name="type" type="select" label="select input library type">
+      <option value="single" selected="true">single spectral-library-file(sptxt)</option>
+      <option value="fileSet">spectral-library-fileSet</option>
+    </param>
+    <when value="single">
+      <!--
+      <param name="inputFile" type="data" format="mzXML" label="input file"/>
+      <param name="prettyName" type="text" size="30" value="raw file name" label="Name to use for this data file" help="make sure they are consistent with those used in the searching strategy"/>
+     -->
+      <!--
+      <param name="splib" type="data" format="splib" label="spectral library" />
+      <param name="spidx" type="data" format="spidx" label="spectral library MZ index" />
+      <param name="pepidx" type="data" format="pepidx" label="spectral library PEP index" />
+      -->
+      <param name="sptxt" type="data" format="sptxt" label="spectral library: sptxt"/>
+    </when>
+    <when value="fileSet">
+      <param name="inputLibFileSet" type="data" format="tppfileset" label="input library file set"/>
+    </when>
+  </conditional>
+
+  <param name="search_database" type="data" format="fasta" label="Specify a sequence database file" help="This will not affect the search in any way, but this information will be included in the output for any downstream data processing." />
+  <conditional name="query">
+    <param name="type" type="select" label="select input query data type">
+      <option value="single" selected="true">single mzXML-file</option>
+      <option value="fileSet">mzXML-fileSet</option>
+    </param>
+    <when value="single">
+      <param name="inputQuery" type="data" format="mzXML,mzML" label="input file"/>
+      <!--param name="inputQueryName" type="text" size="30" value="raw file name" label="Name to use for this data file" help="make sure they are consistent later" /-->
+    </when>
+    <when value="fileSet">
+      <param name="inputQuery" type="data" format="tppfileset" label="input query file set"/>
+    </when>
+  </conditional>
+</inputs>
+
+<configfiles>
+<configfile name="searchParams">
+<!--
+*+*?xml version="1.0" encoding="UTF-8"?*-*
+*+*Program name="openMS_FileFilter" program="openMSV17"*-*
+	*+*Files*-*
+	   #if $fileType.type == "single"
+		*+*File class="0" fraction="0" input="${inputFile}" output="${outputFile}"*=-*
+	   #elif $fileType.type == "fileSet"
+          	*+*File class="0" fraction="0" input="${fileType.inputFile}" output="${outputFile}" type="zippedFiles"*=-*
+           #end if
+	*+=*Files*-*
+	*+*Parameters*-*
+		*+*Attribute attributeName="rtMax" value="${rtMax}" type="Unknown" description="retention time in seconds"*=-*
+		*+*Attribute attributeName="mzMax" value="${mzMax}" type="Unknown" description=""*=-*
+		*+*Attribute attributeName="mzMin" value="${mzMin}" type="Unknown" description=""*=-*
+		*+*Attribute attributeName="rtMin" value="${rtMin}" type="Unknown" description="retention time in seconds"*=-*
+	*+=*Parameters*-*
+*+=*Program*-*
+-->
+#if $libType.type=="single"
+*+* searchParams.splibType="single" *=-*
+*+* searchParams.LibraryFile="$sptxt"*-* 
+*+* searchParams.search_database="$search_database"*-*
+
+<!--
+*+* searchParams.LibraryFile="$splib"*-* 
+*+* searchParams.MzIdx="$spidx"*-* 
+*+* searchParams.PepIdx="$pepidx"*-* 
+-->
+#elif $libType.type=="fileSet"
+*+* searchParams.splibType="fileSet"
+*+* searchParams.LibraryFile="${inputLibFileSet}"*-* 
+*+* searchParams.search_database="${search_database}"*-*
+#end if
+
+#if $query.type=="single"
+*+* searchParams.queryType="single" *=-*
+*+* searchParams.inputType="${inputQuery.ext}" *-*
+*+* searchParams.queryFile="${inputQuery}" *-*
+*+* searchParams.queryFileName="${query.inputQuery.name}" *-*
+#elif $query.type=="fileSet"
+*+* searchParams.inputType="${inputQuery.ext}" *-*
+*+* searchParams.queryType="fileSet" *=-*
+*+* searchParams.queryFile="${inputQuery}" *-*
+#end if 
+
+</configfile>
+</configfiles>
+<outputs>
+	<data name="output" format="pep.xml">
+		<change_format>
+		    <when input="libType.type" value="fileSet" format="tppfileset" />
+		</change_format>
+	</data>
+	<!--data name="outinfo" format="text"/-->
+</outputs>
+<tests>
+	<test>
+	</test>
+</tests>
+<help></help>
+</tool>

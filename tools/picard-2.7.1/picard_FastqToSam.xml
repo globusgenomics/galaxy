@@ -1,0 +1,148 @@
+<tool id="picard2.7.1_FastqToSam" name="FASTQ to BAM" version="@TOOL_VERSION@.0">
+  <description>creates an unaligned BAM file</description>
+    <macros>
+    <import>picard_macros.xml</import>
+  </macros>
+  <expand macro="requirements" />
+  <!-- Dan Blankenberg -->
+  <command>java  -XX:DefaultMaxRAMFraction=1 -XX:+UseParallelGC
+    -jar &quot;\$JAVA_JAR_PATH/picard.jar FastqToSam&quot;
+    FASTQ=&quot;${input_fastq1}&quot;
+    #if str( $input_fastq2) != &quot;None&quot;:
+        FASTQ2=&quot;${input_fastq2}&quot;
+    #end if
+    QUALITY_FORMAT=&quot;${ dict( fastqsanger='Standard', fastqcssanger='Standard', fastqillumina='Illumina', fastqsolexa='Solexa' )[ $input_fastq1.ext ] }&quot; ##Solexa, Illumina, Standard
+    OUTPUT=&quot;${output_bam}&quot;
+    READ_GROUP_NAME=&quot;${read_group_name}&quot;
+    SAMPLE_NAME=&quot;${sample_name}&quot; 
+    #if $param_type.param_type_selector == &quot;advanced&quot;:
+        #if str( $param_type.library_name ) != &quot;&quot;:
+            LIBRARY_NAME=&quot;${param_type.library_name}&quot; 
+        #end if
+        #if str( $param_type.platform_unit ) != &quot;&quot;:
+            PLATFORM_UNIT=&quot;${param_type.platform_unit}&quot;
+        #end if
+        #if str( $param_type.platform ) != &quot;&quot;:
+            PLATFORM=&quot;${param_type.platform}&quot;
+        #end if 
+        #if str( $param_type.sequencing_center ) != &quot;&quot;:
+            SEQUENCING_CENTER=&quot;${param_type.sequencing_center}&quot;
+        #end if 
+        #if str( $param_type.predicted_insert_size ) != &quot;&quot;:
+            PREDICTED_INSERT_SIZE=&quot;${param_type.predicted_insert_size}&quot;
+        #end if 
+        #if str( $param_type.description.value ) != &quot;&quot;:
+            DESCRIPTION=&quot;${param_type.description}&quot;
+        #end if 
+        #if str( $param_type.run_date ) != &quot;&quot;:
+            RUN_DATE=&quot;${param_type.run_date}&quot;
+        #end if
+        #if str( $param_type.min_q ) != &quot;&quot;:
+            MIN_Q=&quot;${param_type.min_q}&quot;
+        #end if
+        #if str( $param_type.min_q ) != &quot;&quot;:
+            MAX_Q=&quot;${param_type.max_q}&quot;
+        #end if
+        SORT_ORDER=&quot;${param_type.sort_order}&quot;
+    #else:
+        SORT_ORDER=coordinate ##unsorted, queryname, coordinate; always use coordinate
+    #end if
+  2&gt;&amp;1 
+  || echo &quot;Error running Picard FastqToSAM&quot; &gt;&amp;2
+  </command>
+  <inputs>
+    <param format="fastqsanger,fastqillumina,fastqsolexa,fastqcssanger" label="FASTQ file" name="input_fastq1" type="data"/> <!-- confirm that fastqcssanger also works -->
+    <param format="fastqsanger,fastqillumina,fastqsolexa,fastqcssanger" help="Only needed when using paired end data." label="Second FASTQ of paired end data" name="input_fastq2" optional="True" type="data">
+      <options from_parameter="tool.app.datatypes_registry.datatypes_by_extension" options_filter_attribute="ext" transform_lines="obj.keys()">
+        <column index="0" name="name"/>
+        <column index="0" name="value"/>
+        <filter column="0" ref="input_fastq1" ref_attribute="ext" type="param_value"/> 
+      </options>
+    </param>
+    <param label="Read Group Name" name="read_group_name" type="text" value="A"/>
+    <param label="Sample Name" name="sample_name" type="text" value="unknown sample"/>
+    <conditional name="param_type">
+      <param label="Basic or Advanced options" name="param_type_selector" type="select">
+        <option selected="True" value="basic">Basic</option>
+        <option value="advanced">Advanced</option>
+      </param>
+      <when value="basic">
+        <!-- Do nothing here -->
+      </when>
+      <when value="advanced">
+        <param label="Library Name" name="library_name" type="text" value=""/>
+        <param label="Platform Unit" name="platform_unit" type="text" value=""/>
+        <param label="Platform" name="platform" type="text" value=""/>
+        <param label="Sequencing Center" name="sequencing_center" type="text" value=""/>
+        <param label="Predicted Insert Size" name="predicted_insert_size" optional="True" type="integer" value=""/>
+        <param label="Description" name="description" type="text" value=""/>
+        <param label="Run Date" name="run_date" type="text" value=""/>
+        <param label="Min Q" name="min_q" optional="True" type="integer" value="0"/>
+        <param label="Max Q" name="max_q" optional="True" type="integer" value="93"/>
+        <param label="Sort order" name="sort_order" type="select">
+          <option selected="True" value="coordinate">coordinate</option>
+          <option value="queryname">queryname</option>
+          <option value="unsorted">unsorted</option>
+        </param>
+      </when>
+    </conditional>
+  </inputs>
+  <outputs>
+    <data format="bam" name="output_bam"/>
+  </outputs>
+  <tests>
+      <test>
+          <param ftype="fastqsanger" name="input_fastq1" value="bwa_wrapper_in2.fastqsanger"/>
+          <param name="input_fastq2"/>
+          <param name="read_group_name" value="A"/>
+          <param name="sample_name" value="unknown sample"/>
+          <param name="param_type_selector" value="basic"/>
+          <output file="picard_fastq_to_sam_out1.bam" ftype="bam" name="output_bam"/> 
+      </test>
+      <test>
+          <param ftype="fastqsanger" name="input_fastq1" value="bwa_wrapper_in2.fastqsanger"/>
+          <param ftype="fastqsanger" name="input_fastq2" value="bwa_wrapper_in3.fastqsanger"/>
+          <param name="read_group_name" value="A"/>
+          <param name="sample_name" value="unknown sample"/>
+          <param name="param_type_selector" value="basic"/>
+          <output file="picard_fastq_to_sam_out2.bam" ftype="bam" name="output_bam"/> 
+      </test>
+  </tests>
+  <help>
+**What it does**
+
+Picard: FastqToSam converts FASTQ files to unaligned BAM files.
+
+------
+
+Please cite the website &quot;http://picard.sourceforge.net&quot;.
+
+------
+
+
+**Input formats**
+
+FastqToSam accepts FASTQ input files. If using paired-end data, you should select two FASTQ files.
+
+------
+
+**Outputs**
+
+The output is in BAM format, see http://samtools.sourceforge.net for more details.
+
+-------
+
+**FastqToSam settings**
+
+This is list of FastqToSam options::
+
+ READ_GROUP_NAME=String	Read group name Default value: A. This option can be set to 'null' to clear the default value.
+ SAMPLE_NAME=String	Sample name to insert into the read group header Required.
+ LIBRARY_NAME=String	The library name to place into the LB attribute in the read group header Default value: null.
+ PLATFORM_UNIT=String	The platform unit (often run_barcode.lane) to insert into the read group header Default value: null.
+ PLATFORM=String	The platform type (e.g. illumina, solid) to insert into the read group header Default value: null.
+ SEQUENCING_CENTER=String	The sequencing center from which the data originated Default value: null.
+ PREDICTED_INSERT_SIZE=Integer	Predicted median insert size, to insert into the read group header Default value: null.
+ DESCRIPTION=String	Inserted into the read group header Default value: null. 
+  </help>
+</tool>

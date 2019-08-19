@@ -1,0 +1,15 @@
+<flow name="recurrences" serializer="json">
+
+	<in name="projects_in" />
+	<out name="projects_out" link="projects.projects_out" />
+
+	<module name="projects">
+		<title>Calculate projects recurrences</title>
+		<desc>Calculates projects recurrences and stores results in the internal database</desc>
+
+		<in name="projects_in" link="projects_in" />
+		<out name="projects_out" />
+
+		<run>project.py</run>
+	</module>
+</flow>

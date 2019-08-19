@@ -1,0 +1,95 @@
+<tool id="exportBigwigFilesToEuPathDB" name="Bigwig Files to EuPathDB" version="1.0.0">
+  
+<description>Export one or more bigwig files to EuPathDB where they can be viewed as tracks in the Genome Browser.</description>
+  
+  <requirements>
+    <requirement type="package">pymodules</requirement>
+  </requirements>
+  
+  <command interpreter="python" detect_errors="aggressive">
+    <![CDATA[
+    ../../bin/exportBigwigFilesToEuPathDB "$dataset_name" "$summary" "$description" "$__user_email__" "$__tool_directory__" "$output" "$overrideDbkey"
+
+    #for $bigwig_file in $bigwig_files
+      "$bigwig_file" "$bigwig_file.name" "$bigwig_file.metadata.dbkey"
+    #end for
+    ]]>
+    
+  </command>
+  
+  <inputs>
+    
+    <param name="dataset_name" type="text" size="100" value=""
+           label="My Data Set name:"
+           help="The export will create a new My Data Set in a EuPathDB site. Specify the name for the new My Data Set.">
+      <validator type="empty_field" />
+      <validator type="regex" message="Only letters, numbers, spaces and dashes are allowed in the name.">^[\w\d\s\-]*$</validator>
+      <validator type="length" message="Please restrict the name to 100 characters or less." max="100" />
+    </param>
+
+    <param name="bigwig_files" type="data" multiple="true" format="bigwig" label="Bigwig files:"
+           help="Select the files to include in the new EuPathDB My Data Set. The bigwig files you select here must be mapped to the refreence genome that you select below.">
+    </param>
+
+    <!-- I consider this a very bad idea -->
+    <param name="overrideDbkey" type="genomebuild" label="Reference genome:" 
+           help="The bigwig files you selected above must be mapped to the reference genome that you select here." />
+    
+    <param name="summary" type="text" value=""
+           label="My Data Set summary:">
+      <validator type="empty_field" />
+      <!--
+        The summary may have any printable character with the exception that double quotes must be
+        translated into single quotes since this value will be embedded in a json object
+      -->
+      <sanitizer>
+        <valid initial="string.printable">
+          <remove value="&quot;"/>
+        </valid>
+        <mapping initial="none">
+          <add source="&quot;" target="'"/>
+        </mapping>
+      </sanitizer>
+    </param>
+    
+    <param name="description" type="text" value="" area="True"
+           label="My Data Set description:">
+      <validator type="empty_field" />
+      <!--
+        The description may have any printable character with the exception that double quotes must be
+        translated into single quotes since this value will be embedded in a json object
+      -->
+      <sanitizer>
+        <valid initial="string.printable">
+          <remove value="&quot;"/>
+        </valid>
+        <mapping initial="none">
+          <add source="&quot;" target="'"/>
+        </mapping>
+      </sanitizer>
+    </param>
+    
+  </inputs>
+  
+  <outputs>
+      <data format="html" name="output" label="exportToEuPathDBInfo.html" />
+  </outputs>
+
+  <help>
+
+**What it does**
+
+This tool exports one or more bigwig files to a EuPathDB site creating a new My Data Set to contain them. The bigwig files will be available on any site for sharing and download, and on
+ that site as Genome Browser tracks.
+
+Typically the bigwig files in your data set should belong to one Study. The reference genome you specify determines which EuPathDB site the new My Data Set will be exported to. For exam
+ple, if yu choose P.falciparum 3D7 the export will be sent to PlasmoDB.
+
+Associated tutorials:
+
+1.      How to set the reference genome for bw files
+
+2.      How to use the My Data Sets page to view your bigwig files in the Genome Browser
+
+  </help>
+</tool>

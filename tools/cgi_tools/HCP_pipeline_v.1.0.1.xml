@@ -1,0 +1,57 @@
+<tool id="CGI_HCP_optimized" name="CGI HCP analysis" version="1.0.1" >
+  <description></description>
+  <!--<action class="GlobusOptimizedWorkflows" module="galaxy_ext.globus.tools.actions.globus"/>-->
+  <requirements>
+    <requirement type="package">bwa</requirement>
+    <requirement type="package">samtools</requirement>
+    <requirement type="package">picard</requirement>
+    <requirement type="package">pymodules</requirement>
+    <requirement type="package" version="1.8.0">java</requirement>
+    <requirement type="package">bedtools</requirement>
+  </requirements>
+  <command>
+    #set $interval_file = str($output_dir.extra_files_path) + "/sample.interval_list"
+    #set $bed_file =  str($output_dir.extra_files_path) + "/sample.bed"
+    mkdir $output_dir.extra_files_path;
+    ln -s $target_interval $interval_file;
+    ln -s $target_bed $bed_file;
+    python /opt/galaxy/tools/cgi_tools/HCP_pipeline.py
+      -w $output_dir.extra_files_path
+      -s $sample_name
+      --bwa-reference ${bwa_indices.fields.path}
+      --reference ${fasta_reference.fields.path}
+      -i $input_dir_obj.extra_files_path
+      -t $interval_file 
+      -b $bed_file
+      &gt;  $output_log
+  </command>
+  <inputs>
+    <param label="Sample Name" name="sample_name" type="text"/>
+    <param label="BWA reference genome" name="bwa_indices" type="select">
+      <options from_data_table="bwa_indexes">
+        <filter column="2" type="sort_by"/>
+        <validator message="No indexes are available" type="no_options"/>
+      </options>
+    </param>
+    <param help="" label="Picard reference genome" name="fasta_reference" type="select">
+      <options from_data_table="gatk3_picard_indexes">
+      </options>
+    </param>
+    <param format="txt" label="Input directory object of samples" name="input_dir_obj" type="data"/>
+    <param format="interval,tabular" label="Interval target file" name="target_interval" type="data"/>
+    <param format="bed,tabular" label="Target bed file" name="target_bed" type="data"/>
+  </inputs>
+  <outputs>
+    <data format="txt" label="${tool.name} on ${sample_name}: output DIR object" name="output_dir"/>
+    <data format="txt" label="${tool.name} on ${$sample_name}.log" name="output_log"/>
+  </outputs>
+  <tests>
+    <test>
+    </test>
+  </tests> 
+  <help>
+
+**What it does**
+
+  </help>
+</tool>

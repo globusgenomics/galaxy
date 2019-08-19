@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+
+<tool name="vcfPrinter" id="vcfPrinter_id">
+  <description>
+  </description>
+
+  <command interpreter="python">vcfPrinter.py
+   $inputVCF
+   $inputBAM
+   $inputFASTA
+   
+   #if $n:
+	-n 
+   #else:
+	none 
+   #end if
+
+   #if $p:
+	-p
+   #else:
+	none 
+   #end if
+
+   $outputVCF
+
+   #for $input_file in $input_files:
+        ${input_file.additional_inputVCF}
+        ${input_file.additional_inputBAM}
+   #end for
+
+  </command>
+
+  <inputs>
+
+    <param name="inputVCF" type="data" format="vcf" label="-i, Select a input VCF file" />
+    <param name="inputBAM" type="data" format="bam" label="-b, Select a input BAM file" help="The BAM files need to be indexed."/>
+
+    <repeat name="input_files" title="Additional VCF and BAM Input Files">
+        <param format="vcf" name="additional_inputVCF" type="data" label="VCF file" />
+        <param format="bam" name="additional_inputBAM" type="data" label="BAM file" />
+    </repeat>
+
+    <param name="inputFASTA" type="data" format="fasta" label="-r, Select a reference fasta file" />
+
+    <param name="n" type="boolean" checked="false" label="-n" help="if checked, will not run pileup, hence will only merge data from single sample VCF. Samples without at a site will not have read level information gathered from samtools pileup making it significantly faster."/>
+    <param name="p" type="boolean" checked="false" label="-p" help="if checked, will not merge non-PASS variants, based on the PASS tag in filter field"/>
+
+  </inputs>
+
+  <outputs>
+    <data name="outputVCF" format="vcf" label="Output of vcfPrinter on ${on_string}.vcf" />
+  </outputs>
+
+  <help>
+vcfPrinter_ is used to generate multi-sample Variant Call Format (VCF) file from single sample VCF files.
+ .. _vcfPrinter: http://www.hgsc.bcm.tmc.edu/cascade-tech-software_atlas2_snp_indel_calling_pipeline-ti.hgsc
+
+**Usage:**
+
+ruby vcfPrinter.rb -i "/home/user/data/file.vcf" -o /home/user/data/outfile.vcf -b "/home/user/data/file.bam" -r /home/user/ref/human_b36_male.fa
+
+
+  </help>
+
+</tool>

@@ -1,0 +1,224 @@
+<tool id="qiime_multiple_join_paired_ends" name="Join paired-end Illumina reads" version="@WRAPPER_VERSION@.0">
+    <description>on multiple files</description>
+    <macros>
+        <import>macros.xml</import>
+    </macros>
+    <expand macro="requirements">
+        <requirement type="package" >ea-utils</requirement>
+    </expand>
+    <version_command>multiple_join_paired_ends.py -v</version_command>
+    <command detect_errors="aggressive"><![CDATA[
+      #if str($min_overlap) != "":
+        echo "join_paired_ends:min_overlap	$min_overlap" > param_file.txt;
+      #end if
+      #if str($perc_max_diff) != "":
+        echo "join_paired_ends:perc_max_diff	$perc_max_diff" >> param_file.txt;
+      #end if
+      #if $input_type.type == 'directory_object'
+        ##set $input_dir = $input_type.dir_object.extra_files_path
+        input_dir=$input_type.dir_object.extra_files_path &&
+      #else:
+        input_dir=`mktemp -d` &&
+        ##set $input_dir = '/ephemeral/0/tmp/input'
+        ##mkdir $input_dir
+        &&
+        #set $match_barcodes = "no"
+        #for $i, $s in enumerate( $input_type.input_files )
+            cp '$s.r1_file' \$input_dir/forward_${i}.fastq
+            &&
+            cp '$s.r2_file' \$input_dir/reverse_${i}.fastq
+            &&
+            #if str($s.barcode['match_barcodes']) == 'yes'
+                #set $match_barcodes = "yes"
+                cp '${s.barcode.barcode_seq}' \$input_dir/barcode_${i}.fastq
+                &&
+            #end if
+        #end for
+      #end if
+      ##set $output_dir = "/ephemeral/0/tmp/output"
+      output_dir=`mktemp -d` &&
+
+      multiple_join_paired_ends.py
+            --input_dir \$input_dir
+            --output_dir \$output_dir
+##            #if $parameter_fp
+##                --parameter_fp '$parameter_fp'
+##            #end if
+            --parameter_fp param_file.txt
+            #if $input_type.type == 'directory_object' 
+              --read1_indicator '_R1_'
+              --read2_indicator '_R2_'
+            #else
+              --read1_indicator 'forward_'
+              --read2_indicator 'reverse_'
+              #if str($match_barcodes) == 'yes'
+                --match_barcodes
+                --barcode_indicator 'barcode_'
+              #end if
+            #end if
+            #if len(str($leading_text)) > 0:
+              --leading_text '$leading_text'
+            #end if
+            #if len(str($trailing_text)) > 0:
+              --trailing_text '$trailing_text'
+            #end if
+        #if $input_type.type == 'directory_object'
+          #import os, glob
+          #set $files = glob.glob("%s/*.fastq*" % $input_type.dir_object.extra_files_path)
+          #set $files = sorted($files)
+          #for $i in xrange(0,len($files),2):
+            #set $file1 = $files[$i]
+            #set $file2 = $files[$i+1]
+            #set $base = os.path.basename(str($file1)).split(".fastq")[0]
+            #set $base1 = os.path.basename(str($file1)).split("_")[0]
+            &&
+            ##cp $output_dir/$base/fastqjoin.join.fastq $output_dir/${i}_join.fastq
+            cp \$output_dir/$base/fastqjoin.join.fastq \$output_dir/${base1}_join.fastq
+           ## &&
+           ## cp $output_dir/$base/fastqjoin.un1.fastq $output_dir/${i}_un1.fastq
+           ## &&
+           ## cp $output_dir/$base/fastqjoin.un2.fastq $output_dir/${i}_un2.fastq
+          #end for
+        #else
+          #for $i, $s in enumerate( $input_type.input_files )
+            &&
+            cp \$output_dir/forward_${i}/fastqjoin.join.fastq \$output_dir/${i}_join.fastq
+            ##&&
+            ##cp $output_dir/forward_${i}/fastqjoin.un1.fastq $output_dir/${i}_un1.fastq
+            ##&&
+            ##cp $output_dir/forward_${i}/fastqjoin.un2.fastq $output_dir/${i}_un2.fastq
+            #if str($s.barcode['match_barcodes']) == 'yes'
+                &&
+                cp \$output_dir/forward_${i}/fastqjoin.join_barcodes.fastq \$output_dir/${i}_barcodes.fastq
+            #end if
+          #end for
+        #end if
+        ; cp -r \$output_dir ./output
+    ]]></command>
+    <configfiles>
+        <configfile name="param_file">
+           #if str($min_overlap) != "":
+join_paired_ends:min_overlap	$min_overlap
+           #end if
+           #if str($perc_max_diff) != "":
+join_paired_ends:perc_max_diff	$perc_max_diff
+           #end if
+        </configfile>
+    </configfiles>
+    <inputs>
+        <conditional name="input_type">
+          <param name="type" type="select" label="Select a way to provide forward and reverse fastq files ?" help="">
+            <option value="regular" selected="true">Two simple fastq files (forward and reverse)</option>
+            <option value="directory_object">Directory object - Fastq files in a directory (via Globus Transfer)</option>
+          </param>
+          <when value="regular">
+            <repeat name="input_files" title="Input files">
+              <param name="r1_file" type="data" format="fastq,fastqsanger,fastq.gz,fastqsanger.gz,fastq.bz2,fastqsanger.bz2" label="Forward reads"/>
+              <param name="r2_file" type="data" format="fastq,fastqsanger,fastq.gz,fastqsanger.gz,fastq.bz2,fastqsanger.bz2" label="Reverse reads"/>
+              <conditional name="barcode">
+                <param argument="--match_barcodes" type="select" label="Enable searching for matching barcodes?">
+                    <option value="yes">Yes</option>
+                    <option value="no" selected="True">No</option>
+                </param>
+                <when value="yes">
+                    <param name="barcode_seq" type="data" format="fastq,fastqsanger,fastq.gz,fastqsanger.gz,fastq.bz2,fastqsanger.bz2" label="Barcode sequences"/>
+                </when>
+                <when value="no"/>
+              </conditional>
+            </repeat>
+          </when>
+          <when value="directory_object">
+              <param name="dir_object" type="data" format="txt" label="Directory object containing fastq files"/>
+          </when>
+        </conditional>
+<!--        <param argument="-\-parameter_fp" type="data" format="txt" label="Parameter file" help="It specifies changes to the default behavior of join_paired_ends.py" optional="true"/>-->
+        <param argument="--leading_text" type="text" value="" label="Leading text to add to each join_paired_ends.py command"/>
+        <param argument="--trailing_text" type="text" value="" label="Trailing text to add to each join_paired_ends.py command"/>
+        <param name="min_overlap" type="text" value="" label="Minimum Overlap" help="-j, --min_overlap: Minimum allowed overlap in base-pairs required to join pairs."/>
+        <param name="perc_max_diff" type="text" value="" label="Maximum allowed % differences" help="-p, --perc_max_diff: Maximum allowed % differences within region of overlap. Must be between 1-100." />
+    </inputs>
+    <outputs>
+        <collection name="joined_seq" type="list" label="${tool.name} on ${on_string}: Joined sequences">
+             <discover_datasets pattern="(?P&lt;name&gt;.*)_join.fastq" ext="fastq" directory="output/"/>
+        </collection>
+        <!--collection name="joined_seq" type="list:list" label="${tool.name} on ${on_string}: Joined sequences">
+            <discover_datasets pattern="(?P&lt;identifier_0&gt;.+)_(?P&lt;identifier_1&gt;.+).fastq" ext="fastq" directory="output/"/>
+        </collection-->
+        <data name="log" format="txt" from_work_dir="output/log_*" label="${tool.name} on ${on_string}: Log"/>
+    </outputs>
+
+    <tests>
+        <test>
+            <repeat name="input_files">
+                <param name="r1_file" value="multiple_join_paired_ends/without_barcode/forward_1.fastq"/>
+                <param name="r2_file" value="multiple_join_paired_ends/without_barcode/reverse_1.fastq"/>
+                <conditional name="barcode">
+                    <param name="match_barcodes" value="no"/>
+                </conditional>
+            </repeat>
+            <repeat name="input_files">
+                <param name="r1_file" value="multiple_join_paired_ends/without_barcode/forward_2.fastq"/>
+                <param name="r2_file" value="multiple_join_paired_ends/without_barcode/reverse_2.fastq"/>
+                <conditional name="barcode">
+                    <param name="match_barcodes" value="no"/>
+                </conditional>
+            </repeat>
+            <param name="barcode_indicator" value="_I1_"/>
+            <param name="leading_text" value=""/>
+            <param name="trailing_text" value=""/>
+            <output_collection name="joined_seq" type="list:list">
+                <element name="0">
+                    <element name="join" file="multiple_join_paired_ends/output_without_barcode/forward_1/fastqjoin.join.fastq"/>
+                    <element name="un1" file="multiple_join_paired_ends/output_without_barcode/forward_1/fastqjoin.un1.fastq"/>
+                    <element name="un2" file="multiple_join_paired_ends/output_without_barcode/forward_1/fastqjoin.un2.fastq"/>
+                </element>
+                <element name="1">
+                    <element name="join" file="multiple_join_paired_ends/output_without_barcode/forward_2/fastqjoin.join.fastq"/>
+                    <element name="un1" file="multiple_join_paired_ends/output_without_barcode/forward_2/fastqjoin.un1.fastq"/>
+                    <element name="un2" file="multiple_join_paired_ends/output_without_barcode/forward_2/fastqjoin.un2.fastq"/>
+                </element>
+            </output_collection>
+        </test>
+        <test>
+            <repeat name="input_files">
+                <param name="r1_file" value="multiple_join_paired_ends/with_barcode/forward_1.fastq"/>
+                <param name="r2_file" value="multiple_join_paired_ends/with_barcode/reverse_1.fastq"/>
+                <conditional name="barcode">
+                    <param name="match_barcodes" value="yes"/>
+                    <param name="barcode_seq" value="multiple_join_paired_ends/with_barcode/barcode_1.fastq"/>
+                </conditional>
+            </repeat>
+            <repeat name="input_files">
+                <param name="r1_file" value="multiple_join_paired_ends/with_barcode/forward_2.fastq"/>
+                <param name="r2_file" value="multiple_join_paired_ends/with_barcode/reverse_2.fastq"/>
+                <conditional name="barcode">
+                    <param name="match_barcodes" value="yes"/>
+                    <param name="barcode_seq" value="multiple_join_paired_ends/with_barcode/barcode_2.fastq"/>
+                </conditional>
+            </repeat>
+            <param name="leading_text" value=""/>
+            <param name="trailing_text" value=""/>
+            <output_collection name="joined_seq" type="list:list">
+                <element name="0">
+                    <element name="join" file="multiple_join_paired_ends/output_with_barcode/forward_1/fastqjoin.join.fastq"/>
+                    <element name="un1" file="multiple_join_paired_ends/output_with_barcode/forward_1/fastqjoin.un1.fastq"/>
+                    <element name="un2" file="multiple_join_paired_ends/output_with_barcode/forward_1/fastqjoin.un2.fastq"/>
+                </element>
+                <element name="1">
+                    <element name="join" file="multiple_join_paired_ends/output_with_barcode/forward_2/fastqjoin.join.fastq"/>
+                    <element name="un1" file="multiple_join_paired_ends/output_with_barcode/forward_2/fastqjoin.un1.fastq"/>
+                    <element name="un2" file="multiple_join_paired_ends/output_with_barcode/forward_2/fastqjoin.un2.fastq"/>
+                </element>
+            </output_collection>
+        </test>
+    </tests>
+    <help><![CDATA[
+**What it does**
+
+In addition to using PCoA, it can be useful to cluster samples using UPGMA (Unweighted Pair Group Method with Arithmetic mean, also known as average linkage). As with PCoA, the input to this step is a distance matrix (i.e. resulting file from beta_diversity.py).
+The output is a newick formatted tree compatible with most standard tree viewing programs. Batch processing is also available, allowing the analysis of an entire directory of distance matrices.
+    ]]></help>
+    <citations>
+        <expand macro="citations"/>
+    </citations>
+</tool>

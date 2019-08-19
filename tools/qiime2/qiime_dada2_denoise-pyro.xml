@@ -1,0 +1,168 @@
+<?xml version="1.0" ?>
+<tool id="qiime_dada2_denoise-pyro" name="qiime dada2 denoise-pyro" version="022019">
+	<description> - Denoise and dereplicate single-end pyrosequences</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command><![CDATA[
+	
+  qiime dada2 denoise-pyro --p-trunc-len="$ptrunclen" --i-demultiplexed-seqs=$idemultiplexedseqs
+
+  #if $pnreadslearn:
+   --p-n-reads-learn=$pnreadslearn
+  #end if
+  
+  #if str($pchimeramethod) != 'None':
+   --p-chimera-method=$pchimeramethod
+  #end if
+  
+   --o-representative-sequences=orepresentativesequences
+  
+  #if $pminfoldparentoverabundance:
+   --p-min-fold-parent-over-abundance=$pminfoldparentoverabundance
+  #end if
+  
+  #if str($cmdconfig) != 'None':
+   --cmd-config=$cmdconfig
+  #end if
+  
+  #if $pmaxlen:
+   --p-max-len=$pmaxlen
+  #end if
+  
+   --o-table=otable
+   
+  #if $ptruncq:
+   --p-trunc-q=$ptruncq
+  #end if
+  
+  #set $pnthreads = '${GALAXY_SLOTS:-4}'
+  
+  #if str($pnthreads):
+   --p-n-threads="$pnthreads"
+  #end if
+  
+  
+  #if $ptrimleft:
+   --p-trim-left=$ptrimleft
+  #end if
+  
+  #if $phashedfeatureids:
+   --p-hashed-feature-ids
+  #end if
+  
+  #if $pmaxee:
+   --p-max-ee=$pmaxee
+  #end if
+  
+   --o-denoising-stats=odenoisingstats;
+   
+  cp orepresentativesequences.qza $orepresentativesequences;
+  cp otable.qza $otable;
+  cp odenoisingstats.qza $odenoisingstats;
+  ]]></command>
+	<inputs>
+		<param format="qza,no_unzip.zip" label="--i-demultiplexed-seqs: SampleData[SequencesWithQuality] The single-end demultiplexed pyrosequencing sequences (e.g. 454, IonTorrent) to be denoised.  [required]" name="idemultiplexedseqs" optional="False" type="data"/>
+
+		<param label="--p-trunc-len: Position at which sequences should be truncated due to decrease in quality. This truncates the 3' end of the of the input sequences, which will be the bases that were sequenced in the last cycles. Reads that are shorter than this value will be discarded. If 0 is provided, no truncation or length filtering will be performed  [required]" name="ptrunclen" optional="False" type="integer" value="0"/>
+		<param label="--p-trim-left: Position at which sequences should be trimmed due to low quality. This trims the 5' end of the of the input sequences, which will be the bases that were sequenced in the first cycles.  [default: 0]" name="ptrimleft" optional="True" type="integer" value="0"/>
+		<param label="--p-max-ee: Reads with number of expected errors higher than this value will be discarded. [default: 2.0]" name="pmaxee" optional="True" type="float" value="2.0"/>
+
+		<param label="--p-trunc-q: Reads are truncated at the first instance of a quality score less than or equal to this value. If the resulting read is then shorter than `trunc_len`, it is discarded. [default: 2]" name="ptruncq" optional="True" type="integer" value="2"/>
+
+		<param label="--p-max-len: Remove reads prior to trimming or truncation which are longer than this value. If 0 is provided no reads will be removed based on length.  [default: 0]" name="pmaxlen" optional="True" type="integer" value="0"/>
+
+		<param label="--p-chimera-method: " name="pchimeramethod" optional="True" type="select">
+			<option selected="True" value="None">Selection is Optional</option>
+			<option value="consensus">consensus</option>
+			<option value="none">none</option>
+			<option value="pooled">pooled</option>
+		</param>
+
+		<param label="--p-min-fold-parent-over-abundance: The minimum abundance of potential parents of a sequence being tested as chimeric, expressed as a fold-change versus the abundance of the sequence being tested. Values should be greater than or equal to 1 (i.e. parents should be more abundant than the sequence being tested). This parameter has no effect if chimera_method is 'none'. [default: 1.0]" name="pminfoldparentoverabundance" optional="True" type="float" value="1.0"/>
+
+		<param label="--p-n-reads-learn: The number of reads to use when training the error model. Smaller numbers will result in a shorter run time but a less reliable error model.  [default: 250000]" name="pnreadslearn" optional="True" type="integer" value="250000"/>
+
+		<param label="--p-hashed-feature-ids: --p-no-hashed-feature-ids If true, the feature ids in the resulting table will be presented as hashes of the sequences defining each feature. The hash will always be the same for the same sequence so this allows feature tables to be merged across runs of this method. You should only merge tables if the exact same parameters are used for each run.  [default: True]" name="phashedfeatureids" checked="True" type="boolean"/>
+
+		<param label="--cmd-config: Use config file for command options" name="cmdconfig" optional="True" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="qza" label="${tool.name} on ${on_string}: representative-sequences.qza" name="orepresentativesequences"/>
+		<data format="qza" label="${tool.name} on ${on_string}: table.qza" name="otable"/>
+		<data format="qza" label="${tool.name} on ${on_string}: denoising-stats.qza" name="odenoisingstats"/>
+	</outputs>
+	<help>
+ <![CDATA[
+Denoise and dereplicate single-end pyrosequences
+-------------------------------------------------
+This method denoises single-end pyrosequencing sequences, dereplicates
+them, and filters chimeras.
+
+Parameters
+----------
+demultiplexed_seqs : SampleData[SequencesWithQuality]
+    The single-end demultiplexed pyrosequencing sequences (e.g. 454,
+    IonTorrent) to be denoised.
+trunc_len : Int
+    Position at which sequences should be truncated due to decrease in
+    quality. This truncates the 3' end of the of the input sequences, which
+    will be the bases that were sequenced in the last cycles. Reads that
+    are shorter than this value will be discarded. If 0 is provided, no
+    truncation or length filtering will be performed
+trim_left : Int, optional
+    Position at which sequences should be trimmed due to low quality. This
+    trims the 5' end of the of the input sequences, which will be the bases
+    that were sequenced in the first cycles.
+max_ee : Float, optional
+    Reads with number of expected errors higher than this value will be
+    discarded.
+trunc_q : Int, optional
+    Reads are truncated at the first instance of a quality score less than
+    or equal to this value. If the resulting read is then shorter than
+    `trunc_len`, it is discarded.
+max_len : Int, optional
+    Remove reads prior to trimming or truncation which are longer than this
+    value. If 0 is provided no reads will be removed based on length.
+chimera_method : Str % Choices({'consensus', 'none', 'pooled'}), optional
+    The method used to remove chimeras. "none": No chimera removal is
+    performed. "pooled": All reads are pooled prior to chimera detection.
+    "consensus": Chimeras are detected in samples individually, and
+    sequences found chimeric in a sufficient fraction of samples are
+    removed.
+min_fold_parent_over_abundance : Float, optional
+    The minimum abundance of potential parents of a sequence being tested
+    as chimeric, expressed as a fold-change versus the abundance of the
+    sequence being tested. Values should be greater than or equal to 1
+    (i.e. parents should be more abundant than the sequence being tested).
+    This parameter has no effect if chimera_method is "none".
+n_threads : Int, optional
+    The number of threads to use for multithreaded processing. If 0 is
+    provided, all available cores will be used.
+n_reads_learn : Int, optional
+    The number of reads to use when training the error model. Smaller
+    numbers will result in a shorter run time but a less reliable error
+    model.
+hashed_feature_ids : Bool, optional
+    If true, the feature ids in the resulting table will be presented as
+    hashes of the sequences defining each feature. The hash will always be
+    the same for the same sequence so this allows feature tables to be
+    merged across runs of this method. You should only merge tables if the
+    exact same parameters are used for each run.
+
+Returns
+-------
+table : FeatureTable[Frequency]
+    The resulting feature table.
+representative_sequences : FeatureData[Sequence]
+    The resulting feature sequences. Each feature in the feature table will
+    be represented by exactly one sequence.
+denoising_stats : SampleData[DADA2Stats]
+		\
+     ]]>
+	</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

@@ -1,0 +1,57 @@
+<tool id="globus_get_data_from_ebi" name="Get Data via Globus from the EBI server">
+  <description>using your unique file identifier</description>
+  <action module="galaxy_ext.globus.tools" class="GlobusTransferInAction"/>
+  <command interpreter="python">
+    globus_transfer.py
+    --transfer-info "$transfer_info"
+    --transfer-direction "$transfer_direction"
+  </command>
+  <inputs>
+    <param name="accession" type="text" size="100" label="Enter your ENA Sample id" help=" i.e. SAMN00189025">
+      <sanitizer sanitize="False"/>
+    </param>
+    <conditional name="datatype_cond">
+        <param name="datatype" type="select" label="Data type to be transferred">
+          <option value="fastqsanger">fastq</option>
+          <option value="bam">BAM</option>
+          <option value="other">Other</option>
+        </param>
+        <when value="fastqsanger">
+          <param name="single_paired" type="select" label="Single or Paired-Ended">
+            <option value="single">Single</option>
+            <option value="paired">Paired</option>
+          </param>
+        </when>
+        <when value="bam"></when>
+        <when value="other"></when>
+    </conditional>
+    <param name="from_endpoint" type="hidden" value="ebi#public" label="Source Endpoint">
+      <sanitizer sanitize="False"/>
+    </param>
+  </inputs>
+  <outputs>
+    <data name="out_file1" type="data" format="txt"/>
+    <data name="out_file2" type="data" format="fastqsanger">
+      <filter>(datatype_cond['single_paired'] == 'paired')</filter>
+    </data>
+  </outputs>
+  <help>
+.. class:: warningmark
+    
+  **WARNING:** Be careful not to exceed disk quotas!
+    
+-----
+    
+**What it does**
+    
+  Transfers data between from Globus to your Galaxy installation
+  and creates a galaxy dataset from transfered file.
+
+-----
+    
+**Example**
+    
+  Specify your endpoints, and some paths within those endpoints.
+
+  </help>
+</tool>

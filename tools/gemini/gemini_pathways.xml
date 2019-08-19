@@ -1,0 +1,67 @@
+<tool id="gemini_pathways" name="GEMINI pathways" version="GRABIX: 0.1.3; TABIX: 0.2.6; SAMTOOLS: 0.1.19; BEDTOOLS: 2.19.1">
+    <description>Map genes and variants to KEGG pathways</description>
+    <requirements>
+            <!--<requirement type="package" version="0.10.0">gemini</requirement>-->
+            <requirement type="package">pymodules</requirement>
+            <requirement type="package" version="0.1.3">grabix</requirement>
+            <requirement type="package" version="0.2.6">tabix</requirement>
+            <requirement type="package" version="0.1.19">samtools</requirement>
+            <requirement type="package" version="2.19.1">bedtools</requirement>
+            <yield/>
+    </requirements>
+    <version_command>gemini --version</version_command>
+    <command>
+<![CDATA[
+        gemini 
+            --annotation-dir ${annotation_databases.fields.path}
+            pathways
+            -v $ensembl
+            $lof
+            "${ infile }"
+            > "${ outfile }"
+]]>
+    </command>
+    <stdio>
+            <exit_code range="1:"/>
+            <exit_code range=":-1"/>
+            <regex match="Error:"/>
+            <regex match="Exception:"/>
+    </stdio>
+    <inputs>
+        <param format="sqlite" label="GEMINI database" name="infile" type="data"/>
+
+        <param help="Supported versions: 66 to 71. use versions that match the VEP/snpEff versions of the annotated vcf for correctness. For e.g VEP v2.6 and snpEff v3.1 use Ensembl 68 version of the genomes. (-v)" label="Version of ensembl genes to use" name="ensembl" size="5" type="integer" value="68">
+            <validator max="71" min="66" type="in_range"/>
+        </param>
+
+        <param checked="False" falsevalue="" help="(--lof)" label="Report only pathways with loss-of-function variants" name="lof" truevalue="--lof" type="boolean"/>
+        <param label="Choose a gemini annotation database" name="annotation_databases" type="select">
+            <options from_data_table="gemini_databases">
+                <filter column="0" type="sort_by"/>
+                <validator message="No annotation database is available" type="no_options"/>
+            </options>
+        </param>
+    </inputs>
+    <outputs>
+        <data format="tabular" label="${tool.name} on ${on_string}" name="outfile"/>
+    </outputs>
+    <tests>
+        <test>
+        </test>
+    </tests>
+    <help>
+**What it does**
+
+Mapping genes to biological pathways is useful in understanding the function/role played by a gene. 
+Likewise, genes involved in common pathways is helpful in understanding heterogeneous diseases. 
+We have integrated the KEGG pathway mapping for gene variants, to explain/annotate variation. 
+
+This requires your VCF be annotated with either snpEff/VEP.
+
+@CITATION@
+    </help>
+    <citations>
+        <citation type="doi">10.1371/journal.pcbi.1003153</citation>
+        <yield/>
+    </citations>
+</tool>

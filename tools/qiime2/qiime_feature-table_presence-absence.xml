@@ -1,0 +1,49 @@
+<?xml version="1.0" ?>
+<tool id="qiime_feature-table_presence-absence" name="qiime feature-table presence-absence" version="022019">
+	<description> - Convert to presence/absence</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command>
+	<![CDATA[
+	qiime feature-table presence-absence --i-table=$itable
+
+	#if str($cmdconfig) != 'None':
+	 --cmd-config=$cmdconfig
+	#end if
+	 --o-presence-absence-table=opresenceabsencetable;
+
+	 cp opresenceabsencetable.qza $opresenceabsencetable;
+	]]>
+	</command>
+	<inputs>
+		<param format="qza,no_unzip.zip" label="--i-table: FeatureTable[Frequency | RelativeFrequency] The feature table to be converted into presence/absence abundances.  [required]" name="itable" optional="False" type="data"/>
+		<param label="--cmd-config: Use config file for command options" name="cmdconfig" optional="True" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="qza" label="${tool.name} on ${on_string}: presence-absence-table.qza" name="opresenceabsencetable"/>
+	</outputs>
+	<help>
+		<![CDATA[
+Convert to presence/absence
+----------------------------
+
+Convert frequencies to binary values indicating presence or absence of a
+feature in a sample.
+
+Parameters
+----------
+table : FeatureTable[Frequency | RelativeFrequency]
+    The feature table to be converted into presence/absence abundances.
+
+Returns
+-------
+presence_absence_table : FeatureTable[PresenceAbsence]
+    The resulting presence/absence feature table.
+	]]>
+	</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

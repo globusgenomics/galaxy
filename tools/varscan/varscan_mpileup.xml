@@ -1,0 +1,123 @@
+<tool id="varscan_mpileup" name="VarScan mpileup" version="VARSCAN: 2.3.5">
+  <description>
+        mutation caller for targeted, exome, and whole-genome resequencing
+  </description>
+  <requirements>
+  	<requirement type="package">varscan</requirement>
+  </requirements>
+  <command interpreter="perl">
+  	
+	varscan_mpileup.pl 
+	&quot;COMMAND::java -jar \$JAVA_JAR_PATH/VarScan.v2.3.9.jar $exe_command&quot; 
+  	&quot;INPUT::$in_file&quot;
+  	&quot;OUTPUT::$output&quot;
+  	&quot;LOG::$log&quot;
+	&quot;OPTION::--min-coverage $min_coverage&quot;
+	&quot;OPTION::--min-reads2 $min_reads2&quot;
+	&quot;OPTION::--min-avg-qual $min_avg_qual&quot;
+	&quot;OPTION::--min-var-freq $min_var_freq&quot;
+	&quot;OPTION::--min-freq-for-hom $min_freq_for_hom&quot;
+	&quot;OPTION::--p-value $p_value&quot;	
+	&quot;OPTION::--strand-filter $strand_filter&quot;	
+	&quot;OPTION::--output-vcf 1&quot;	
+	
+	#if ($vcf_sample_list):
+		&quot;OPTION::--vcf-sample-list $vcf_sample_list&quot;
+	#end if
+	&quot;OPTION::--variants $variants&quot;	
+	
+	
+  	
+  </command>
+
+  <inputs>
+  	
+	<param help="" label="Command" name="exe_command" optional="false" type="select">
+		<option value="mpileup2snp">mpileup2snp</option>
+		<option value="mpileup2indel">mpileup2indel</option>
+		<option value="mpileup2cns">mpileup2cns</option>
+	</param>
+	<param format="pileup" help="The SAMtools mpileup file" label="mpileup file" name="in_file" type="data"/>
+	<param help="" label="min-coverage" name="min_coverage" optional="true" type="integer" value="8"/>
+	<param help="" label="min-reads2" name="min_reads2" optional="true" type="integer" value="2"/>
+	<param help="" label="min-avg-qual" name="min_avg_qual" optional="true" type="integer" value="15"/>
+	<param help="" label="min-var-freq" name="min_var_freq" optional="true" type="float" value="0.01"/>
+	<param help="" label="min-freq-for-hom" name="min_freq_for_hom" optional="true" type="float" value="0.75"/>
+	<param help="" label="p-value" name="p_value" optional="true" type="text" value="0.99"/>
+	<param help="" label="strand-filter" name="strand_filter" optional="true" type="integer" value="1"/>
+	<param format="txt" help="" label="vcf-sample-list" name="vcf_sample_list" optional="true" type="data"/>
+	<param help="Set to 1 to report only variants" label="variants" name="variants" optional="true" type="integer" value="1"/>
+	
+	
+  </inputs>
+  <outputs>
+  	<data format="vcf" label="${tool.name} result on ${on_string}" name="output" type="data"/>
+  	<data format="txt" label="${tool.name} result on ${on_string} (log) " name="log" type="data"/>
+  </outputs>
+  	
+  <help> 
+
+.. class:: infomark
+
+**What it does**
+
+::
+
+ VarScan is a platform-independent mutation caller for targeted, exome, and whole-genome resequencing data generated on Illumina, SOLiD, Life/PGM, Roche/454, and similar instruments. The newest version, VarScan 2, is written in Java, so it runs on most  operating systems. It can be used to detect different types of variation:
+
+    Germline variants (SNPs an dindels) in individual samples or pools of samples.
+    Multi-sample variants (shared or private) in multi-sample datasets (with mpileup).
+    Somatic mutations, LOH events, and germline variants in tumor-normal pairs.
+    Somatic copy number alterations (CNAs) in tumor-normal exome data.
+
+
+**Input**
+
+::
+
+  mpileup file - The SAMtools mpileup file
+ 
+
+**Parameters**
+
+::
+
+  commands
+	mpileup2snp		Identify SNPs from an mpileup file
+	mpileup2indel		Identify indels an mpileup file
+	mpileup2cns		Call consensus and variants from an mpileup file
+
+  min-coverage	
+  	Minimum read depth at a position to make a call [8]
+
+  min-reads2	
+  	Minimum supporting reads at a position to call variants [2]
+
+  min-avg-qual	
+  	Minimum base quality at a position to count a read [15]
+
+  min-var-freq	
+        Minimum variant allele frequency threshold [0.01]
+
+  min-freq-for-hom
+  	Minimum frequency to call homozygote [0.75]
+  
+  p-value
+  	Default p-value threshold for calling variants [99e-02]
+  
+  strand-filter
+  	Ignore variants with &gt;90% support on one strand [1]
+  
+  output-vcf
+  	If set to 1, outputs in VCF format
+  
+  vcf-sample-list
+  	For VCF output, a list of sample names in order, one per line
+  
+  variants
+  	Report only variant (SNP/indel) positions [0]
+
+
+  
+  </help>
+</tool>

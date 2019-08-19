@@ -1,0 +1,32 @@
+<flow name="genes" serializer="json">
+<title>IntOGenSM genes analysis</title>
+<desc>Runs the second stage of the whole workflow: recurrences, OncodriveFM and OncodriveCLUST</desc>
+
+	<module name="scan_projects">
+		<title>Search for projects</title>
+		<desc>Search for projects</desc>
+
+		<out name="projects_out" />
+
+		<run>common/scan_projects.py</run>
+	</module>
+
+	<module name="core">
+		<in name="projects_in" link="scan_projects.projects_out" />
+		<out name="projects_out" />
+
+		<flow>analysis-core</flow>
+	</module>
+
+	<module name="website">
+		<in name="projects_in" link="core.projects_out" />
+
+		<flow>website-core</flow>
+	</module>
+
+	<module name="results" depends="website">
+		<in name="projects_in" link="core.projects_out" />
+
+		<flow>results-core</flow>
+	</module>
+</flow>

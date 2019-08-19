@@ -1,0 +1,68 @@
+<?xml version="1.0" ?>
+<tool id="qiime_feature-table_subsample" name="qiime feature-table subsample" version="022019">
+	<description> - Subsample table</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command>
+		<![CDATA[
+		qiime feature-table subsample --i-table=$itable --p-subsampling-depth="$psubsamplingdepth" --p-axis=$paxis
+
+	#if str($cmdconfig) != 'None':
+	 --cmd-config=$cmdconfig
+	#end if
+	 --o-sampled-table=osampledtable;
+
+	cp osampledtable.qza $osampledtable;
+	]]>
+	</command>
+	<inputs>
+		<param format="qza,no_unzip.zip" label="--i-table: FeatureTable[Frequency] The feature table to be sampled.  [required]" name="itable" optional="False" type="data"/>
+
+		<param label="--p-subsampling-depth: The total number of samples or features to be randomly sampled. Samples or features that are reduced to a zero sum will not be included in the resulting table.  [required]" name="psubsamplingdepth" optional="False" type="text"/>
+
+		<param label="--p-axis: The axis to sample over. If 'sample' then
+                                  samples will be randomly selected to be
+                                  retained. If 'feature' then a random set of
+                                  features will be selected to be retained.
+                                  [required]" name="paxis" optional="False" type="select">
+			<option value="sample">sample</option>
+			<option value="feature">feature</option>
+		</param>
+
+		<param label="--cmd-config: Use config file for command options" name="cmdconfig" optional="True" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="qza" label="${tool.name} on ${on_string}: sampled-table.qza" name="osampledtable"/>
+	</outputs>
+	<help>
+		<![CDATA[
+Subsample table
+----------------
+
+Randomly pick samples or features, without replacement, from the table.
+
+Parameters
+----------
+table : FeatureTable[Frequency]
+    The feature table to be sampled.
+subsampling_depth : Int % Range(1, None)
+    The total number of samples or features to be randomly sampled. Samples
+    or features that are reduced to a zero sum will not be included in the
+    resulting table.
+axis : Str % Choices({'feature', 'sample'})
+    The axis to sample over. If "sample" then samples will be randomly
+    selected to be retained. If "feature" then a random set of features
+    will be selected to be retained.
+
+Returns
+-------
+sampled_table : FeatureTable[Frequency]
+    The resulting subsampled feature table.
+		]]>
+	</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

@@ -1,0 +1,109 @@
+<tool description="read WFDB signal files" id="rdsamp_id" name="rdsamp" version="WFDB: 10.5.20">
+  <requirements>
+    <requirement type="package">wfdb</requirement>
+  </requirements>
+  <command interpreter="python">
+     wfdb_wrapper.py
+     --program rdsamp
+     --record $record
+     --data $datafile
+     --outputfile $outputfile
+     #if $options == &quot;advanced&quot;:
+       --begintime $options.begintime
+       --stoptime $options.stoptime
+       --resolution $options.resolution
+       --intervals $options.intervals
+       --precision $options.selectTimePrecision
+       --timeFormat $options.selectTimeFormat
+       --signalList $options.signalList
+       --signalStart $options.signalStart
+       --printHeader $options.printHeader
+       --outputFormat $options.outputFormat
+     #end if
+  </command>
+
+  <inputs>
+    <param format="hea" label="Record ID" name="record" type="data"/>
+    <param format="dat" label="Data File (*.dat)" name="datafile" type="data"/>
+    <conditional name="options">
+      <param label="Modify Options?" name="selectOptions" type="select">
+        <option selected="true" value="default">Default options</option>
+        <option value="advanced">Modify options</option>
+      </param>
+
+      <when value="default"/>
+      <when value="advanced">
+        <param help="Begin at the specified time in record (default: start of the record)." label="Start Time" name="begintime" type="text" value="0"/>
+        <param help="Process until the specified time in record (default: the end of the record)." label="Stop Time" name="stoptime" type="text" value="e"/>
+	<param checked="False" falsevalue="false" help="Read the signal files in high-resolution mode (default: standard mode). These modes are identical for ordinary records. For multifrequency records, the standard decimation of oversampled signals to the frame rate is suppressed in high-resolution mode (rather, all other signals are resampled at the highest sampling frequency)." label="High-Resolution" name="resolution" truevalue="true" type="boolean"/>
+	<param help="Limit the amount of output to the specified time interval (in standard time format; default: no limit). If both -l and -t are used, rdsamp stops at the earlier of the two limits." label="Interval to print" name="intervals" type="text"/>
+	<param label="Time Precision" name="selectTimePrecision" type="select">
+	  <option value="default">times in sample intervals and values in A/D units</option>
+	  <option value="milliseconds">times in seconds and milliseconds, and values in physical units</option>
+	  <option value="highestPrecision">Highest precision (up to 8 decimal places for seconds)</option>
+	</param>
+	<param label="Time Format" name="selectTimeFormat" type="select">
+	  <option value="day">Time of day and date</option>
+	  <option value="elapsed">Elapsed time from the beginning of the record as hh:mm:ss</option>
+	  <option value="hours">Elapsed time in hours</option>
+	  <option value="minutes">Elapsed time in minutes</option>
+	  <option value="seconds">Elapsed time in seconds</option>
+	  <option value="interval">Elapsed time in sample intervals</option>
+	</param>
+        <param help="Print only the signals named in the signal-list (one or more input signal numbers or names, separated by spaces; default: print all signals). This option may be used to re-order or duplicate signals." label="Signal list" name="signalList" type="text" value=""/>
+        <param help="Search for the first valid sample of the specified signal (a signal name or number) at or following the time specified with -f (or the beginning of the record if the -f option is not present), and begin printing at that time." label="Start at signal" name="signalStart" type="text" value=""/>
+        <param checked="False" falsevalue="false" help="Print column headings (signal names on the first line, units on the second). The names of some signals are too wide to fit in the columns; such names are shortened by omitting the initial characters (since names of related signals often differ only at the end, this helps to make the columns identifiable). Names of units are shortened when necessary by omitting the final characters, since the initial characters are usually most important for distinguishing different units." label="Print header line" name="printHeader" truevalue="true" type="boolean"/>
+        <param help="" label="Output format" name="outputFormat" type="select">
+	  <option value="tabular">Tabular</option>
+	  <option value="csv">CSV</option>
+	  <option value="xml">WFDB-XML</option>
+	</param>	
+      </when>
+    </conditional>
+  </inputs>
+
+  <outputs>
+    <data format="txt" label="Output of rdsamp" name="outputfile"/>
+  </outputs>
+
+  <help>
+
+::
+
+   rdsamp reads signal files for the specified record and writes the samples 
+   as decimal numbers on the standard output. If no options are provided, 
+   rdsamp starts at the beginning of the record and prints all samples. By 
+   default, each line of output contains the sample number and samples from 
+   each signal, beginning with channel 0, separated by tabs.
+
+
+::
+
+   usage: rdsamp -r RECORD [OPTIONS ...]
+   where RECORD is the name of the input record, and OPTIONS may include::
+
+   -c          use CSV (comma-separated value) output format
+   -f TIME     begin at specified time
+   -h          print this usage summary
+   -H          read multifrequency signals in high resolution mode
+   -l INTERVAL truncate output after the specified time interval (hh:mm:ss)
+   -p          print times and samples in physical units (default: raw units)
+   -P          same as -p, but with greater precision
+               -p and -P may be followed by a character to choose a time
+	       format;  choices are::
+
+	       -pd (or -Pd)  print time of day and date if known
+	       -pe (or -Pe)  print elapsed time as hours:minutes:seconds
+	       -ph (or -Ph)  print elapsed time in hours
+	       -pm (or -Pm)  print elapsed time in minutes
+	       -ps (or -Ps)  print elapsed time in seconds
+	       -pS (or -PS)  print elapsed time in sample intervals
+   -s SIGNAL [SIGNAL ...]  print only the specified signal(s)
+   -S SIGNAL   search for a valid sample of the specified SIGNAL at or after
+               the time specified with -f, and begin printing then
+   -t TIME     stop at specified time
+   -v          print column headings
+   -X          output in WFDB-XML format
+
+  </help>
+</tool>

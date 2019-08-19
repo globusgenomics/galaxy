@@ -1,0 +1,97 @@
+<tool id="oncofuse" name="Oncofuse" version="ONCOFUSE: oncofuse-1.0.9b2; JAVA: jre1.7.0_51">
+  <requirements>
+    <requirement type="package">oncofuse</requirement>
+    <requirement type="package">java</requirement>
+  </requirements>
+  <description>predict the oncogenic potential of fusion genes</description>
+  <command>
+    java -Xmx2g -jar \$ONCOFUSE_PATH/Oncofuse.jar $inputFile $cond_input_type.select_input_type
+    #if $cond_input_type.select_input_type == &quot;coord&quot;:
+      - 
+    #else if $cond_input_type.select_input_type == &quot;tophat&quot;:
+      $cond_input_type.tophat_select_tissue_type 
+    #else if $cond_input_type.select_input_type == &quot;tophat-post&quot;:
+      $cond_input_type.tophatpost_select_tissue_type
+    #else if $cond_input_type.select_input_type == &quot;rnastar&quot;:
+      $cond_input_type.rnastar_select_tissue_type
+    #else if $cond_input_type.select_input_type == &quot;fcatcher&quot;:
+      $cond_input_type.fcatcher_select_tissue_type
+    #end if
+    $outFile
+
+  </command>
+  <inputs>
+    <param format="tabular" help="A tab-delimited file in which each line represents a fusion gene" label="Input fusion gene list file with coordinates" name="inputFile" type="data"/>
+    <conditional name="cond_input_type">
+      <param label="Input type" name="select_input_type" type="select">
+        <option selected="True" value="coord">coord</option>
+        <option value="tophat">tophat</option>
+        <option value="tophat-post">tophat-post</option>
+        <option value="rnastar">rnastar</option>
+        <option value="fcatcher">fcatcher</option>
+      </param>
+      <when value="coord"/>
+      <when value="tophat">
+        <param label="Tissue type" name="tophat_select_tissue_type" type="select">
+          <option value="EPI">Epithelial origin</option>
+          <option value="HEM">Hematological origin</option>
+          <option value="MES">Mesenchymal origin</option>
+          <option value="AVG">Average expression</option>
+        </param>
+      </when>
+      <when value="tophat-post">
+        <param label="Tissue type" name="tophatpost_select_tissue_type" type="select">
+          <option value="EPI">Epithelial origin</option>
+          <option value="HEM">Hematological origin</option>
+          <option value="MES">Mesenchymal origin</option>
+          <option value="AVG">Average expression</option>
+        </param>
+      </when>
+      <when value="rnastar">
+        <param label="Tissue type" name="rnastar_select_tissue_type" type="select">
+          <option value="EPI">Epithelial origin</option>
+          <option value="HEM">Hematological origin</option>
+          <option value="MES">Mesenchymal origin</option>
+          <option value="AVG">Average expression</option>
+        </param>
+      </when>
+      <when value="fcatcher">
+        <param label="Tissue type" name="fcatcher_select_tissue_type" type="select">
+          <option value="EPI">Epithelial origin</option>
+          <option value="HEM">Hematological origin</option>
+          <option value="MES">Mesenchymal origin</option>
+          <option value="AVG">Average expression</option>
+        </param>
+      </when>
+    </conditional>
+  </inputs>
+  <outputs>
+    <data format="tabular" label="${tool.name} on ${on_string}" name="outFile"/>
+  </outputs>
+  <tests>
+    <test>
+    </test>
+  </tests>
+  <help>
+
+.. class:: infomark
+
+**Purpose**
+
+This tool is designed to predict the oncogenic potential of fusion genes found by Next-Generation Sequencing in cancer cells. In other words, its goal is to identify those fusion sequences with higher probability of being driver than passenger events.
+
+------
+
+.. class:: infomark
+
+**Inputs, outputs, and parameters**
+
+The output file contains information about fusions and classification results.
+
+More information can be found at oncofuseurl_
+
+.. _oncofuseurl: http://www.unav.es/genetica/oncofuse.html
+
+
+  </help>
+</tool>

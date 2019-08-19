@@ -1,0 +1,62 @@
+<?xml version="1.0" ?>
+<tool id="qiime_feature-table_merge-seqs" name="qiime feature-table merge-seqs" version="022019">
+	<description> - Combine collections of feature sequences</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command>
+		<![CDATA[
+	qiime feature-table merge-seqs
+
+	#def list_dict_to_string(list_dict):
+		#set $file_list = list_dict[0]['additional_input'].__getattr__('file_name')
+		#for d in list_dict[1:]:
+			#set $file_list = $file_list + ' --i-data=' + d['additional_input'].__getattr__('file_name')
+		#end for
+		#return $file_list
+	#end def
+
+
+	 --i-data=$list_dict_to_string($input_files_idata)
+	#if str($cmdconfig) != 'None':
+	 --cmd-config=$cmdconfig
+	#end if
+	 --o-merged-data=omergeddata;
+	 cp omergeddata.qza $omergeddata;
+	]]>
+	</command>
+	<inputs>
+		<repeat name="input_files_idata" optional="False" title="--i-data">
+			<param format="qza,no_unzip.zip" label="--i-data: PATH List[FeatureData[Sequence]] The collection of feature sequences to be merged.  [required]" name="additional_input" type="data"/>
+		</repeat>
+		<param label="--cmd-config: Use config file for command options" name="cmdconfig" optional="True" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="qza" label="${tool.name} on ${on_string}: merged-data.qza" name="omergeddata"/>
+	</outputs>
+	<help>
+		<![CDATA[
+Combine collections of feature sequences
+-----------------------------------------
+
+Combines feature data objects which may or may not contain data for the
+same features. If different feature data is present for the same feature id
+in the inputs, the data from the first will be propagated to the result.
+
+Parameters
+----------
+data : List[FeatureData[Sequence]]
+    The collection of feature sequences to be merged.
+
+Returns
+-------
+merged_data : FeatureData[Sequence]
+    The resulting collection of feature sequences containing all feature
+    sequences provided.
+		]]>
+	</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

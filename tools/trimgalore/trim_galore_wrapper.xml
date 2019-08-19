@@ -1,0 +1,382 @@
+<tool id="trim_galore" name="Trim Galore" version="CUTADAPT: 1.2; TRIM_GALORE: trim_galore_v0.4.3; FASTQC: default">
+    <description>adaptive quality and adapter trimmer</description>
+    <requirements>
+        <requirement type="package">cutadapt</requirement>
+        <requirement type="package">trim_galore</requirement>
+        <requirement type="package">FastQC</requirement>
+        <requirement type="package">perlmodules</requirement>
+        <requirement type="package">pymodules</requirement>
+    </requirements>
+    <stdio>
+        <exit_code range="1:" />
+        <exit_code range=":-1" />
+        <regex match="Error:" />
+        <regex match="Exception:" />
+        <regex match="Exception :" />
+    </stdio>
+    <command>
+        #from glob import glob
+        #import tempfile, os
+
+        ##
+        ##  Creating a temporary directory where trim_galore will store all result files
+        ##
+
+        #set $temp_dir = os.path.abspath(tempfile.mkdtemp())
+
+        
+        ## trim_galore removes .fastq and .fq file extensions of input files. 
+        ## That is essential if Galaxy provides links to files (these can have real extensions), but that behaviour is causing an inconsitency in output filenaming.
+        ## Fix: link every file to $TMP without file extension
+
+        #set $file_format = "txt"
+        #if $singlePaired.sPaired == &quot;single&quot;:
+
+            #set $f = open(str($singlePaired.input_singles), "r")
+            #set $file_start = $f.readline()
+            #if $file_start.startswith("\x1f\x8b\x08"):
+                #set $file_format = "gz"
+            #end if
+
+            #if $file_format == "txt":
+                #set $input_singles_tmp_handle = tempfile.NamedTemporaryFile( dir=$temp_dir )
+                #set $input_singles_tmp = $input_singles_tmp_handle.name
+                #silent $input_singles_tmp_handle.close()
+                #silent os.system(&quot;ln -s %s %s&quot; % (str($singlePaired.input_singles), $input_singles_tmp))
+            #else:
+                #set $input_singles_tmp_handle = tempfile.NamedTemporaryFile( dir=$temp_dir )
+                #set $input_singles_tmp = $input_singles_tmp_handle.name + ".fastq.gz"
+                #silent $input_singles_tmp_handle.close()
+                #silent os.system(&quot;ln -s %s %s&quot; % (str($singlePaired.input_singles), $input_singles_tmp))
+            #end if
+        #else:
+            #set $f = open(str($singlePaired.input_mate1), "r")
+            #set $file_start = $f.readline()
+            #if $file_start.startswith("\x1f\x8b\x08"):
+                #set $file_format = "gz"
+            #end if
+
+            #set $input_mate1_tmp_handle = tempfile.NamedTemporaryFile( dir=$temp_dir )
+            #set $input_mate2_tmp_handle = tempfile.NamedTemporaryFile( dir=$temp_dir )
+
+            #if $file_format == "txt":            
+                #set $input_mate1_tmp = $input_mate1_tmp_handle.name
+                #set $input_mate2_tmp = $input_mate2_tmp_handle.name
+            #else:
+                #set $input_mate1_tmp = $input_mate1_tmp_handle.name + ".fastq.gz"
+                #set $input_mate2_tmp = $input_mate2_tmp_handle.name + ".fastq.gz"
+            #end if
+            #silent $input_mate1_tmp_handle.close()
+            #silent $input_mate2_tmp_handle.close()
+
+            #silent os.system(&quot;ln -s %s %s&quot; % (str($singlePaired.input_mate1), $input_mate1_tmp))
+            #silent os.system(&quot;ln -s %s %s&quot; % (str($singlePaired.input_mate2), $input_mate2_tmp))
+        #end if
+
+        trim_galore
+
+        ##
+        ##  Input parameters
+        ##
+
+
+        #if $params.settingsType == &quot;custom&quot;:
+
+            ## default 20
+            --quality $params.quality
+            ## default 'AGATCGGAAGAGC'
+            #if $params.adapter.strip() != '':
+                --adapter $params.adapter
+            #end if
+            ## default 1
+            --stringency $params.stringency
+            
+            ## default 0.1
+            -e $params.error_rate
+
+            ## default 20
+            --length $params.min_length
+
+            #if int($params.clip_R1) &gt; 0:
+                --clip_R1 $params.clip_R1
+            #end if
+            
+            #if int($params.clip_R2) &gt; 0:
+                --clip_R2 $params.clip_R2
+            #end if
+
+            #if $params.retain_unpaired.settingsType == &quot;retain_unpaired_output&quot;:
+                --retain_unpaired
+                --length_1 $params.retain_unpaired.length_1
+                --length_2 $params.retain_unpaired.length_2
+            #end if
+
+        #end if
+
+        ##
+        ## RBBS specific options.
+        ##
+
+        #if $rrbs.settingsType == &quot;custom&quot;:
+
+            $rrbs.rrbs
+            $rrbs.non_directional
+
+        #end if
+
+        --output_dir $temp_dir
+        --dont_gzip
+        --suppress_warn
+
+
+        #if $singlePaired.sPaired == &quot;single&quot;:
+
+            #if $singlePaired.input_singles.ext == &quot;fastqillumina&quot;:
+                --phred64
+            #elif $singlePaired.input_singles.ext == &quot;fastqsanger&quot;:
+                --phred33
+            #end if
+
+            ##if $params.settingsType == &quot;custom&quot;:
+            ##    #if $params.report == &quot;false&quot;:
+            ##        --no_report_file
+            ##    #end if
+            ###end if
+
+            ## input sequence
+            $input_singles_tmp
+            ##$input_singles
+        #else:
+            --paired 
+            #if $singlePaired.input_mate1.ext == &quot;fastqillumina&quot;:
+                --phred64
+            #elif $singlePaired.input_mate1.ext == &quot;fastqsanger&quot;:
+                --phred33
+            #end if
+
+            $singlePaired.trim1
+            #if $singlePaired.adapter2.strip() != '':
+                --adapter2 $singlePaired.adapter2
+            #end if
+
+            ###if $params.settingsType == &quot;custom&quot;:
+            ##    #if $params.report == &quot;false&quot;:
+            ##        --no_report_file
+            ##    #end if
+            ###end if
+
+            ## input sequences
+            ##$input_mate1_tmp
+            $singlePaired.input_mate1
+            ##$input_mate2_tmp
+            $singlePaired.input_mate2
+
+        #end if
+
+        &amp;&amp;
+
+        ##
+        ##  Trim Galore! run is finished. Move the result files to the proper place
+        ##
+
+
+        #if $singlePaired.sPaired == &quot;single&quot;:
+            #set $single_end_path =  os.path.join($temp_dir, os.path.basename(str($input_singles_tmp)) + '_trimmed.fq')
+            ##set $single_end_path =  os.path.join($temp_dir, os.path.basename(str($input_singles)) + '_trimmed.fq')
+            #set $single_end_path= $single_end_path.replace(".fastq.gz", "")
+            mv $single_end_path $trimmed_reads_single;
+            #set $report_path =  os.path.join($temp_dir, os.path.basename(str($input_singles_tmp)) + '_trimming_report.txt')
+            mv $report_path $report_file;
+
+        #else:
+            #if &quot;.dat&quot; in str($input_mate1):
+                #set $paired_end_base_1 = os.path.basename(str($input_mate1))
+                #set $paired_end_base_2 = os.path.basename(str($input_mate2))
+            #else:
+                #set $paired_end_base_1 = os.path.basename(str($input_mate1)).split('.')[:-1][0]
+                #set $paired_end_base_2 = os.path.basename(str($input_mate2)).split('.')[:-1][0]
+            #end if
+
+            ##set $paired_end_path_1 =  os.path.join($temp_dir, os.path.basename(str($input_mate1_tmp)) + '_val_1.fq')
+            ##set $paired_end_path_2 =  os.path.join($temp_dir, os.path.basename(str($input_mate2_tmp)) + '_val_2.fq')
+            #set $paired_end_path_1 =  os.path.join($temp_dir, os.path.basename(str($paired_end_base_1)) + '_val_1.fq')
+            #set $paired_end_path_2 =  os.path.join($temp_dir, os.path.basename(str($paired_end_base_2)) + '_val_2.fq')
+            #set $report_path =  os.path.join($temp_dir, os.path.basename(str($input_mate1)) + '_trimming_report.txt')
+
+            #set $paired_end_path_1 = $paired_end_path_1.replace(".fastq.gz", "")
+            #set $paired_end_path_2 = $paired_end_path_2.replace(".fastq.gz", "")
+            mv $paired_end_path_1 $trimmed_reads_pair1;
+            mv $paired_end_path_2 $trimmed_reads_pair2;
+            mv $report_path $report_file;
+
+            #if $params.settingsType == &quot;custom&quot;:
+                #if $params.retain_unpaired.settingsType == &quot;retain_unpaired_output&quot;:
+                    ###set $unpaired_path_1 =  os.path.join($temp_dir, os.path.basename(str($input_mate1_tmp)) + '_unpaired_1.fq')
+                    ###set $unpaired_path_2 =  os.path.join($temp_dir, os.path.basename(str($input_mate2_tmp)) + '_unpaired_2.fq')
+                    ##set $unpaired_path_1 =  os.path.join($temp_dir, os.path.basename(str($input_mate1)) + '_unpaired_1.fq')
+                    ##set $unpaired_path_2 =  os.path.join($temp_dir, os.path.basename(str($input_mate2)) + '_unpaired_2.fq')
+                    #set $unpaired_path_1 =  os.path.join($temp_dir, os.path.basename(str($paired_end_base_1)) + '_unpaired_1.fq')
+                    #set $unpaired_path_2 =  os.path.join($temp_dir, os.path.basename(str($paired_end_base_2)) + '_unpaired_2.fq')
+                    mv $unpaired_path_1 $unpaired_reads_1;
+                    mv $unpaired_path_2 $unpaired_reads_2;
+                #end if
+            #end if
+        #end if
+
+        ## delete the temp_dir
+        rm -rf $temp_dir
+
+    </command>
+    <inputs>
+
+        <!-- Input Parameters -->
+        <conditional name="singlePaired">
+            <param label="Is this library mate-paired?" name="sPaired" type="select">
+              <option value="single">Single-end</option>
+              <option value="paired">Paired-end</option>
+            </param>
+            <when value="single">
+                <param format="fastqsanger,fastqillumina,fastq,fasta" help="FASTQ or FASTA files." label="FASTQ/FASTA file" name="input_singles" type="data"/>
+            </when>
+            <when value="paired">
+                <param format="fastqsanger,fastqillumina,fastq,fasta" help="FASTQ or FASTA files." label="FASTQ/FASTA file" name="input_mate1" type="data"/>
+                <param format="fastqsanger,fastqillumina,fastq,fasta" help="FASTQ or FASTA files." label="FASTQ/FASTA file" name="input_mate2" type="data"/>
+                <param checked="False" falsevalue="" help="" label="Trims 1 bp off every read from its 3' end." name="trim1" truevalue="--trim1" type="boolean"/>
+                <param label="Optional adapter sequence to be trimmed off read 2" name="adapter2" type="text" value="">
+                    <validator message="Adapter sequence must contain DNA characters only (A,C,T,G or N)" type="regex">^[ACTGNactgn]*$</validator>
+                </param>
+            </when>
+        </conditional>
+
+
+        <conditional name="params">
+            <param help="You can use the default settings or set custom values for any of Trim Galore's parameters." label="Trim galore! advanced settings" name="settingsType" type="select">
+              <option value="default">Use Defaults</option>
+              <option value="custom">Full parameter list</option>
+            </param>
+            <when value="default"/>
+            <!-- Full/advanced params. -->
+            <when value="custom">
+                <param help="For more information please see below." label="Trim low-quality ends from reads in addition to adapter removal." name="quality" type="integer" value="20"/>
+                <param label="Adapter sequence to be trimmed" name="adapter" type="text" value="AGATCGGAAGAGC">
+                    <validator message="Adapter sequence must contain DNA characters only (A,C,T,G or N)" type="regex">^[ACTGNactgn]*$</validator>
+                </param>
+                <param label="Overlap with adapter sequence required to trim a sequence" name="stringency" type="integer" value="1"/>
+                <param label="Maximum allowed error rate" name="error_rate" type="float" value="0.1"/>
+                <param label="Discard reads that became shorter than length INT" name="min_length" type="integer" value="20"/>
+
+                <param label="nstructs Trim Galore to remove INT bp from the 5' end of read 1" name="clip_R1" type="integer" value="0"/>
+                <param label="nstructs Trim Galore to remove INT bp from the 5' end of read 2" name="clip_R2" type="integer" value="0"/>
+
+                <!--<param name="report" type="boolean" truevalue="true" falsevalue="false" checked="False" label="Generate a report file" help="" />-->
+
+                <conditional name="retain_unpaired">
+                    <param label="specify if you would like to retain unpaired reads" name="settingsType" type="select">
+                      <option value="no_output">Do not output unpaired reads</option>
+                      <option value="retain_unpaired_output">Output unpaired reads</option>
+                    </param>
+                    <when value="no_output"/>
+                    <!-- Output params. -->
+                    <when value="retain_unpaired_output">
+                        <param label="Unpaired single-end read length cutoff needed for read 1 to be written" name="length_1" type="integer" value="35"/>
+                        <param label="Unpaired single-end read length cutoff needed for read 2 to be written" name="length_2" type="integer" value="35"/>
+                    </when>  <!-- output -->
+                </conditional>  <!-- retain_unpaired -->
+
+            </when>  <!-- full -->
+        </conditional>  <!-- params -->
+
+        <conditional name="rrbs">
+            <param label="RRBS specific settings" name="settingsType" type="select">
+              <option value="default">Use Defaults (no RRBS)</option>
+              <option value="custom">Full parameter list</option>
+            </param>
+            <when value="default"/>
+            <!-- Full/advanced params. -->
+            <when value="custom">
+                <param checked="True" falsevalue="" label="Specifies that the input file was an MspI digested RRBS sample" name="rrbs" truevalue="--rrbs" type="boolean"/>
+                <param checked="False" falsevalue="" label="Selecting this option for non-directional RRBS libraries" name="non_directional" truevalue="--non_directional" type="boolean"/>
+            </when>  <!-- full -->
+      </conditional>  <!-- params -->
+
+    </inputs>
+    <outputs>
+
+        <data format="fastq,fastqsanger" label="${tool.name} on ${on_string}: trimmed reads" name="trimmed_reads_single">
+          <filter>singlePaired['sPaired'] == &quot;single&quot;</filter>
+          <actions>
+                <action type="format">
+                  <option name="singlePaired.input_singles" param_attribute="ext" type="from_param"/>
+                </action>
+          </actions>
+        </data>
+
+        <data format="fastq,fastqsanger" label="${tool.name} on ${on_string}: trimmed reads pair 1" name="trimmed_reads_pair1">
+            <filter>singlePaired['sPaired'] == &quot;paired&quot;</filter>
+            <actions>
+                <action type="format">
+                    <option name="singlePaired.input_mate1" param_attribute="ext" type="from_param"/>
+                </action>
+          </actions>
+        </data>
+
+        <data format="fastq,fastqsanger" label="${tool.name} on ${on_string}: trimmed reads pair 2" name="trimmed_reads_pair2">
+            <filter>singlePaired['sPaired'] == &quot;paired&quot;</filter>
+            <actions>
+                <action type="format">
+                    <option name="singlePaired.input_mate1" param_attribute="ext" type="from_param"/>
+                </action>
+            </actions>
+        </data>
+
+        <data format="fastq,fastqsanger" label="${tool.name} on ${on_string}: unpaired reads (1)" name="unpaired_reads_1">
+          <filter>
+            ((
+              params['settingsType'] == &quot;custom&quot; and
+              params['retain_unpaired']['settingsType'] == &quot;retain_unpaired_output&quot;
+            ))
+          </filter>
+          <actions>
+                <action type="format">
+                  <option name="singlePaired.input_mate1" param_attribute="ext" type="from_param"/>
+                </action>
+          </actions>
+        </data>
+
+        <data format="fastq,fastqsanger" label="${tool.name} on ${on_string}: unpaired reads (2)" name="unpaired_reads_2">
+          <filter>
+            ((
+              params['settingsType'] == &quot;custom&quot; and
+              params['retain_unpaired']['settingsType'] == &quot;retain_unpaired_output&quot;
+            ))
+          </filter>
+          <actions>
+                <action type="format">
+                  <option name="singlePaired.input_mate1" param_attribute="ext" type="from_param"/>
+                </action>
+          </actions>
+        </data>
+
+        <data format="txt" label="${tool.name} on ${on_string}: report file" name="report_file">
+        </data>
+
+    </outputs>
+    <tests>
+    </tests>
+
+    <help>
+
+**What it does**
+
+TrimGalore!_ is a wrapper script that makes use of the publically available 
+adapter trimming tool Cutadapt.
+
+
+.. _TrimGalore!: http://www.bioinformatics.babraham.ac.uk/projects/trim_galore/
+
+
+It is developed by Krueger F at the Babraham Institute.
+
+
+  </help>
+</tool>

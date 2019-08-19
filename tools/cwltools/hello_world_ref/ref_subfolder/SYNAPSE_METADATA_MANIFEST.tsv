@@ -1,0 +1,10 @@
+path	parent	name	synapseStore	contentType	used	executed	activityName	activityDescription	workflows	workflowOption	workflow
+/scratch/galaxy/test/cwl/hello_world_run/input.txt	syn9630940	input.txt	True	text/plain					hello_world_workflow	all	hello_world
+/scratch/galaxy/test/cwl/hello_world_run/knownoutput.txt	syn9630940	knownoutput.txt	True	text/plain					hello_world_workflow	all	hello_world
+/scratch/galaxy/test/cwl/hello_world_run/hello_world.cwl.json	syn9630940	hello_world.cwl.json	True	text/plain					hello_world_workflow	CWL	hello_world
+/scratch/galaxy/test/cwl/hello_world_run/hello_world_checker.cwl.json	syn9630940	hello_world_checker.cwl.json	True	text/plain					hello_world_workflow	CWL	hello_world
+/scratch/galaxy/test/cwl/hello_world_run/hello_world.cwl	syn9630940	hello_world.cwl	False	text/plain					hello_world_workflow	CWL	hello_world
+/scratch/galaxy/test/cwl/hello_world_run/hello_world_submit.cwl.json	syn9630940	hello_world_submit.cwl.json	True	text/plain						CWL	hello_world
+/scratch/galaxy/test/cwl/hello_world_run/hello_world_checker.cwl	syn9630940	hello_world_checker.cwl	False	text/plain						CWL	hello_world
+/scratch/galaxy/test/cwl/hello_world_run/dockstore-tool-helloworld.cwl	syn9630940	dockstore-tool-helloworld.cwl	False	text/plain							
+/scratch/galaxy/test/cwl/hello_world_run/hello_world_ref/ref_subfolder/template.txt	syn9905590	template.txt	True	text/plain					hello_world_workflow	all	hello_world

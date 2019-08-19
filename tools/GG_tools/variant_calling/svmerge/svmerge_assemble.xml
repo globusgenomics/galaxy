@@ -1,0 +1,93 @@
+<tool id="svmerge_assemble" name="SVmerge Assemble" version="0.1">
+    <description>De novo local assemblies and alignments</description>
+    <requirements>
+        <requirement type="package">svmerge</requirement>
+        <requirement type="package">abyss</requirement>
+        <requirement type="package">velvet</requirement>
+        <requirement type="package">exonerate</requirement>
+        <requirement type="package">samtools</requirement>
+        <requirement type="package">swift</requirement>
+        <requirement type="package">perlmodules</requirement>
+        <requirement type="package">bedtools</requirement>
+    </requirements>
+    <command interpreter="python">
+        svmerge_assemble_wrapper.py
+        --bam-input $input_bam
+        #if $input_bam_index:
+            --bam-index $input_bam_index
+        #end if
+
+        --input-calls-file $calls_file
+
+        ## Handle reference file.
+        #if $refGenomeSource.genomeSource == "history":
+            --fastaRef $refGenomeSource.ownFile
+        #else:
+            --indexes-path "${refGenomeSource.index.fields.path}"
+        #end if
+
+        --species $species
+        #if $params.settingsType == "full":
+            <!-- -joblimit $params.joblimit -->
+            --checkdone $params.checkdone
+            --subseq $params.subseq
+        #else:
+            --checkdone 1
+            --subseq 1
+        #end if
+        --output $output_assembled
+        --extra-files-path $output_assembled.extra_files_path
+    </command>
+    <inputs>
+        <param name="assembler" type="select" label="What assembler to use?">
+            <option value="velvet">Velvet</option>
+            <option value="abyss">Abyss</option>
+        </param>
+	<param format="bam" name="input_bam" type="data" label="BAM file" />
+	<param format="bai" name="input_bam_index" type="data" optional="True" label="Indexed BAM file in bai format" help="If file is not supplied, one will be created"  />
+        <param name="calls_file" type="data" label="Calls input file in SVmerge BED format" format="bed,tabular" help="The file must be in the proper format required by SVmerge. You can run the Prepare Svmerge BED tool."/>
+        <conditional name="refGenomeSource">
+          <param name="genomeSource" type="select" label="Will you select a reference genome from your history or use a built-in index?" help="Built-ins were indexed using default options">
+            <option value="indexed">Use a built-in index</option>
+            <option value="history">Use one from the history</option>
+          </param>
+          <when value="indexed">
+            <param name="index" type="select" label="Select a reference genome" help="If your genome of interest is not listed, contact the Galaxy team">
+              <options from_data_table="bowtie2_indexes">
+                <filter type="sort_by" column="2"/>
+                <validator type="no_options" message="No indexes are available for the selected input dataset"/>
+              </options>
+            </param>
+          </when>
+          <when value="history">
+            <param name="ownFile" type="data" format="fasta" metadata_name="dbkey" label="Select the reference genome" />
+          </when>  <!-- history -->
+        </conditional>  <!-- refGenomeSource -->
+        <param name="species" type="select" label="Sample Species">
+            <option value="homo_sapiens">Homo Sapiens</option>
+        </param>
+        <conditional name="params">
+            <param name="settingsType" type="select" label="Parameter Settings" help="You can use the default settings or set custom values for any of Bowtie's parameters.">
+              <option value="preSet">Use Defaults</option>
+              <option value="full">Full parameter list</option>
+            </param>
+            <when value="preSet" />
+            <!-- Full/advanced params. -->
+            <when value="full">
+                <!-- <param name="joblimit" type="text" value="75" label=" Max. assembly jobs to run from a job array"/> -->
+                <param name="checkdone" type="boolean" checked="false" truevalue="1" falsevalue="0" label="Check for existing exonerate output and run only if it doesn't exist"/>
+                <param name="subseq" type="boolean" checked="true" truevalue="1" falsevalue="0" label="Align to a slice of the reference genome rather than the whole chromosome"/>
+            </when>  <!-- full -->
+      </conditional>  <!-- params -->
+    </inputs>
+
+    <outputs>
+        <data format="bed" name="output_assembled" label="${tool.name} on ${on_string}: Assembled Calls" />
+    </outputs>
+
+    <tests>
+    </tests>
+
+    <help>
+    </help>
+</tool>

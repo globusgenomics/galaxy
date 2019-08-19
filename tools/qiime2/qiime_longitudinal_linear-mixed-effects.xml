@@ -1,0 +1,156 @@
+<?xml version="1.0" ?>
+<tool id="qiime_longitudinal_linear-mixed-effects" name="qiime longitudinal linear-mixed-effects" version="022019">
+	<description> - Linear mixed effects modeling</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command>
+	<![CDATA[
+	qiime longitudinal linear-mixed-effects --p-state-column="$pstatecolumn"
+
+	#def list_dict_to_string(list_dict):
+		#set $file_list = list_dict[0]['additional_input'].__getattr__('file_name')
+		#for d in list_dict[1:]:
+			#set $file_list = $file_list + ' --m-metadata-file=' + d['additional_input'].__getattr__('file_name')
+		#end for
+		#return $file_list
+	#end def
+
+	 --m-metadata-file=$list_dict_to_string($input_files_mmetadatafile) --p-individual-id-column="$pindividualidcolumn" --p-metric="$pmetric"
+	#if str($itable) != 'None':
+	 --i-table=$itable
+	#end if
+
+	#if str($cmdconfig) != 'None':
+	 --cmd-config=$cmdconfig
+	#end if
+	 --o-visualization=ovisualization
+	#if $pci:
+	 --p-ci=$pci
+	#end if
+
+	#if str($ppalette) != 'None':
+	 --p-palette=$ppalette
+	#end if
+
+	#if str($pgroupcolumns):
+	 --p-group-columns="$pgroupcolumns"
+	#end if
+
+	#if $plowess:
+	  --p-lowess
+	#else
+	  --p-no-lowess
+	#end if
+
+	#if str($prandomeffects):
+	 --p-random-effects="$prandomeffects"
+	#end if
+	;
+
+	qiime tools export --input-path ovisualization.qzv --output-path out   && mkdir -p '$ovisualization.files_path'
+	&& cp -r out/* '$ovisualization.files_path'
+	&& mv '$ovisualization.files_path/index.html' '$ovisualization'
+	]]>
+	</command>
+	<inputs>
+		<param format="qza,no_unzip.zip" label="--i-table: FeatureTable[RelativeFrequency] Feature table to optionally use for paired comparisons.  [optional]" name="itable" optional="True" type="data"/>
+
+		<repeat name="input_files_mmetadatafile" optional="False" title="--m-metadata-file">
+			<param label="--m-metadata-file: Metadata file or artifact viewable as metadata. This option may be supplied multiple times to merge metadata. Sample metadata file containing individual_id_column.  [required]" name="additional_input" type="data" format="tabular,qza,no_unzip.zip" />
+		</repeat>
+
+		<param label="--p-metric: Dependent variable column name. Must be a column name located in the metadata or feature table files.  [required]" name="pmetric" optional="False" type="text"/>
+
+		<param label="--p-state-column: Metadata column containing state (e.g., Time) across which samples are paired. [required]" name="pstatecolumn" optional="False" type="text"/>
+
+		<param label="--p-individual-id-column: Metadata column containing IDs for individual subjects.  [required]" name="pindividualidcolumn" optional="False" type="text"/>
+		<param label="--p-group-columns: Comma-separated list (without spaces) of metadata columns to use as independent covariates used to determine mean structure of 'metric'.  [optional]" name="pgroupcolumns" optional="True" type="text"/>
+
+		<param label="--p-random-effects: Comma-separated list (without spaces) of metadata columns to use as independent covariates used to determine the variance and covariance structure (random effects) of 'metric'. To add a random slope, the same value passed to 'state_column' should be passed here. A random intercept for each individual is set by default and does not need to be passed here.  [optional]" name="prandomeffects" optional="True" type="text"/>
+
+		<param label="--p-palette: Color palette to use for generating
+                                  boxplots.  [default: Set1]" name="ppalette" optional="True" type="select">
+			<option selected="True" value="None">Selection is Optional</option>
+			<option value="Accent">Accent</option>
+			<option value="tab20">tab20</option>
+			<option value="Pastel2">Pastel2</option>
+			<option value="plasma">plasma</option>
+			<option value="viridis">viridis</option>
+			<option value="rainbow">rainbow</option>
+			<option value="Pastel1">Pastel1</option>
+			<option value="inferno">inferno</option>
+			<option value="magma">magma</option>
+			<option value="tab20b">tab20b</option>
+			<option value="Set3">Set3</option>
+			<option value="Set2">Set2</option>
+			<option value="Dark2">Dark2</option>
+			<option value="Set1">Set1</option>
+			<option value="tab10">tab10</option>
+			<option value="tab20c">tab20c</option>
+			<option value="terrain">terrain</option>
+			<option value="Paired">Paired</option>
+		</param>
+
+		<param label="--p-lowess: --p-no-lowess      Estimate locally weighted scatterplot smoothing. Note that this will eliminate confidence interval plotting.  [default: False]" name="plowess" checked="False" type="boolean"/>
+		<param label="--p-ci: Size of the confidence interval for the regression estimate.  [default: 95]" name="pci" optional="True" type="integer" value="95"/>
+
+		<param label="--cmd-config: Use config file for command options" name="cmdconfig" optional="True" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="html" label="${tool.name} on ${on_string}: visualization.qzv" name="ovisualization"/>
+	</outputs>
+	<help>
+		<![CDATA[
+Linear mixed effects modeling
+------------------------------
+
+Linear mixed effects models evaluate the contribution of exogenous
+covariates "group_columns" and "random_effects" to a single dependent
+variable, "metric". Perform LME and plot line plots of each group column. A
+feature table artifact is required input, though whether "metric" is
+derived from the feature table or metadata is optional.
+
+Parameters
+----------
+table : FeatureTable[RelativeFrequency], optional
+    Feature table to optionally use for paired comparisons.
+metadata : Metadata
+    Sample metadata file containing individual_id_column.
+metric : Str
+    Dependent variable column name. Must be a column name located in the
+    metadata or feature table files.
+state_column : Str
+    Metadata column containing state (e.g., Time) across which samples are
+    paired.
+individual_id_column : Str
+    Metadata column containing IDs for individual subjects.
+group_columns : Str, optional
+    Comma-separated list (without spaces) of metadata columns to use as
+    independent covariates used to determine mean structure of "metric".
+random_effects : Str, optional
+    Comma-separated list (without spaces) of metadata columns to use as
+    independent covariates used to determine the variance and covariance
+    structure (random effects) of "metric". To add a random slope, the same
+    value passed to "state_column" should be passed here. A random
+    intercept for each individual is set by default and does not need to be
+    passed here.
+palette : Str % Choices({'Accent', 'Dark2', 'Paired', 'Pastel1', 'Pastel2', 'Set1', 'Set2', 'Set3', 'inferno', 'magma', 'plasma', 'rainbow', 'tab10', 'tab20', 'tab20b', 'tab20c', 'terrain', 'viridis'}), optional
+    Color palette to use for generating boxplots.
+lowess : Bool, optional
+    Estimate locally weighted scatterplot smoothing. Note that this will
+    eliminate confidence interval plotting.
+ci : Float % Range(0, 100), optional
+    Size of the confidence interval for the regression estimate.
+
+Returns
+-------
+visualization : Visualization
+		\
+		]]>
+	</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

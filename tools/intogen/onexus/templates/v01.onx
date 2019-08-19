@@ -1,0 +1,888 @@
+<website>
+    <title>IntOGen Functional Mutations</title>
+    <header>css/header.html</header>
+    <bottom>${intogen_arrays}?html/bottom.html</bottom>
+    <css>css/website.css</css>
+    <login>true</login>
+    <authorization>registered</authorization>
+
+    <connection>
+        <url>/web/arrays/v04</url>
+        <title>IntOGen Arrays</title>
+    </connection>
+
+    <connection>
+        <url>/web/mutations/v04</url>
+        <title>IntOGen Mutations</title>
+    </connection>
+
+    <pages>
+        <search>
+            <id>search</id>
+            <label>Search</label>
+            <css>css/search.css</css>
+            <visible>${all_tabs}</visible>
+
+            <type>
+                <collection>${genes}</collection>
+                <fields>SYMBOL, GENE_ID, REFSEQID, SYNONYMS</fields>
+                <keys>SYMBOL, REFSEQID, GENE_ID</keys>
+                <examples>APC, HIPPO pathway | SMAD2; SMAD4; CTNNB1; APC; TGFBR2; CCND1, ENSG00000133703</examples>
+
+                <fix-link>
+                    <title>View matrix of mutations per gene and sample</title>
+                    <url>browser/mutations?pview=Matrix</url>
+                </fix-link>
+
+                <link>
+                    <title><![CDATA[<strong>Drivers.</strong> View matrix of candidate drivers.]]></title>
+                    <url>browser/mutations?pview=Matrix&amp;$filter</url>
+                    <visible>LIST</visible>
+                </link>
+
+                <figures>
+
+                    <figure-table>
+                        <title>Driver genes in the cohort</title>
+                        <description>List of most frequently mutated candidate drivers in the cohort</description>
+                        <collection>data/gene</collection>
+                        <visible>NONE</visible>
+                        <open>true</open>
+                        <link>
+                            <title>Browse details...</title>
+                            <url>browser/genes?pview=Table</url>
+                        </link>
+                        <order>
+                            <collection>data/gene</collection>
+                            <field>SAMPLE_PROP</field>
+                            <ascendent>false</ascendent>
+                        </order>
+                        <limit>10</limit>
+                        <define>m='data/gene'</define>
+                        <where><![CDATA[m.FM_QVALUE < '0.05' OR m.CLUST_QVALUE < '0.05']]></where>
+                        <columns>
+                            <column>
+                                <label>gene</label>
+                                <title>HGNC symbol of the gene overlapping the mutation</title>
+                                <collection>${genes}</collection>
+                                <fields>SYMBOL</fields>
+                            </column>
+                            <column>
+                                <title>Significance (p-value) of the FM bias computed for the gene in all the projects. It indicates how biased is the gene towards the accumulation of functional mutations (and hence its likelihood of being a driver).</title>
+                                <collection>data/gene</collection>
+                                <fields>FM_QVALUE</fields>
+                                <decorator>PVALUE(significance="0.05")</decorator>
+                            </column>
+                            <column>
+                                <title>Significance (q-value) of the CLUSTbias. Low CLUSTbias indicates that the mutations in the gene tend to be clustered in particular protein regions, which is a sign of positive selection during tumor development and thus a sign that those genes may be cancer drivers. Computed with OncodriveCLUST.</title>
+                                <collection>data/gene</collection>
+                                <fields>CLUST_QVALUE</fields>
+                                <decorator>PVALUE(significance="0.05")</decorator>
+                            </column>
+                            <column>
+                                <title>Proportion of samples with mutations in this gene in this project</title>
+                                <collection>data/gene</collection>
+                                <fields>SAMPLE_PROP</fields>
+                                <decorator>HEAT(min-value="-0.02", mid-value="-0.01", max-value="1", min-color="[255-255-255]", mid-color="[255-255-255]", max-color="[255-0-255]")</decorator>
+                            </column>
+                            <column>
+                                <collection>${cgc}</collection>
+                                <label>CGC</label>
+                                <title>Cancer Gene Census</title>
+                                <fields>MOL_GENETICS</fields>
+                                <template><![CDATA[<span class="label label-success">CGC $[MOL_GENETICS]</span>]]></template>
+                            </column>
+                            <column>
+                                <collection>data/gene</collection>
+                                <fields>INTOGEN_DRIVER</fields>
+                                <decorator>INTOGEN(intogen="/web/mutations/v04/browser/genes-site", genes="${genes}", text="Driver", tooltip="This gene is a candidate driver in IntOGen. Click to go to IntOGen to see in which cancer types.")</decorator>
+                            </column>
+                            <column>
+                                <collection>data/gene</collection>
+                                <fields>GENE_ID</fields>
+                                <visible>false</visible>
+                            </column>
+                        </columns>
+                    </figure-table>
+
+                    <figure-table>
+                        <title>Mutations in candidate driver genes</title>
+                        <description>List of the top 10 most frequent mutations in candidate driver genes in the cohort</description>
+                        <collection>data/variant_gene</collection>
+                        <visible>NONE</visible>
+                        <link>
+                            <title>Browse details...</title>
+                            <url>browser/mutations?pview=Table</url>
+                        </link>
+                        <limit>10</limit>
+
+                        <order>
+                            <collection>data/variant_gene</collection>
+                            <field>SAMPLE_FREQ</field>
+                            <ascendent>false</ascendent>
+                        </order>
+
+                        <define>m='data/gene'</define>
+                        <where><![CDATA[(m.FM_QVALUE < '0.05' OR m.CLUST_QVALUE < '0.05') AND m.INTOGEN_DRIVER = '1']]></where>
+
+                        <columns>
+
+                            <column>
+                                <label>gene</label>
+                                <title>HGNC symbol of the gene overlapping the mutation</title>
+                                <collection>${genes}</collection>
+                                <fields>SYMBOL</fields>
+                            </column>
+
+                            <column>
+                                <label>protein-change</label>
+                                <title>Protein changes</title>
+                                <collection>data/variant_gene</collection>
+                                <fields>PROTEIN_CHANGES</fields>
+                                <decorator>PROTEINCHANGE</decorator>
+                                <sortable>false</sortable>
+                            </column>
+
+                            <column>
+                                <title>Number of samples of this project where this mutation occurs and the total</title>
+                                <label>found/studied</label>
+                                <collection>data/variant_gene</collection>
+                                <fields>SAMPLE_FREQ, SAMPLE_TOTAL</fields>
+                                <visible>${all_tabs}</visible>
+                                <template>$[SAMPLE_FREQ] / $[SAMPLE_TOTAL]</template>
+                            </column>
+
+                            <column>
+                                <title>Assessment of the functional impact of the mutation on the gene overlapping it. Clicking on the items of this column opens up an explanatory details box, where the user may find details of the impact of the mutation on each transcript of the gene.</title>
+                                <collection>data/variant_gene</collection>
+                                <fields>IMPACT</fields>
+                                <decorator>IMPACT(show-details="false", field-impact="IMPACT")</decorator>
+                            </column>
+
+                        </columns>
+
+                    </figure-table>
+
+                    <figure-table>
+                        <title>Most frequent mutations in this gene</title>
+                        <description>List of the top 10 most frequent mutations in this gene</description>
+                        <collection>data/variant_gene</collection>
+
+                        <visible>SINGLE</visible>
+
+                        <link>
+                            <title>Browse details...</title>
+                            <url>browser/mutations?pview=Table&amp;$filter&amp;pwmutations-tableo=/data/variant_gene::SAMPLE_FREQ::d</url>
+                        </link>
+
+                        <limit>10</limit>
+
+                        <order>
+                            <collection>data/variant_gene</collection>
+                            <field>SAMPLE_FREQ</field>
+                            <ascendent>false</ascendent>
+                        </order>
+
+                        <empty>No mutations found in this gene</empty>
+
+                        <columns>
+
+                            <column>
+                                <label>gene</label>
+                                <title>HGNC symbol of the gene overlapping the mutation</title>
+                                <collection>${genes}</collection>
+                                <fields>SYMBOL</fields>
+                            </column>
+
+                            <column>
+                                <label>protein-change</label>
+                                <title>Protein changes</title>
+                                <collection>data/variant_gene</collection>
+                                <fields>PROTEIN_CHANGES</fields>
+                                <decorator>PROTEINCHANGE</decorator>
+                                <sortable>false</sortable>
+                            </column>
+
+                            <column>
+                                <title>Number of samples of this project where this mutation occurs and the total</title>
+                                <label>found/studied</label>
+                                <collection>data/variant_gene</collection>
+                                <fields>SAMPLE_FREQ, SAMPLE_TOTAL</fields>
+                                <visible>${all_tabs}</visible>
+                                <template>$[SAMPLE_FREQ] / $[SAMPLE_TOTAL]</template>
+                            </column>
+
+                            <column>
+                                <title>Assessment of the functional impact of the mutation on the gene overlapping it. Clicking on the items of this column opens up an explanatory details box, where the user may find details of the impact of the mutation on each transcript of the gene.</title>
+                                <collection>data/variant_gene</collection>
+                                <fields>IMPACT</fields>
+                                <decorator>IMPACT(show-details="false", field-impact="IMPACT")</decorator>
+                            </column>
+
+                        </columns>
+
+                    </figure-table>
+
+                    <figure-table>
+                        <title>Most frequent mutations in these genes</title>
+                        <description>List of the top 10 most frequent mutations in these genes</description>
+                        <collection>data/variant_gene</collection>
+
+                        <visible>LIST</visible>
+
+                        <link>
+                            <title>Browse details...</title>
+                            <url>browser/mutations?pview=Table&amp;$filter&amp;pwmutations-tableo=/data/variant_gene::SAMPLE_FREQ::d</url>
+                        </link>
+
+                        <limit>10</limit>
+
+                        <order>
+                            <collection>data/variant_gene</collection>
+                            <field>SAMPLE_FREQ</field>
+                            <ascendent>false</ascendent>
+                        </order>
+
+                        <empty>No mutations found in these genes</empty>
+
+                        <columns>
+
+                            <column>
+                                <label>gene</label>
+                                <title>HGNC symbol of the gene overlapping the mutation</title>
+                                <collection>${genes}</collection>
+                                <fields>SYMBOL</fields>
+                            </column>
+
+                            <column>
+                                <label>protein-change</label>
+                                <title>Protein changes</title>
+                                <collection>data/variant_gene</collection>
+                                <fields>PROTEIN_CHANGES</fields>
+                                <decorator>PROTEINCHANGE</decorator>
+                                <sortable>false</sortable>
+                            </column>
+
+                            <column>
+                                <title>Number of samples of this project where this mutation occurs and the total</title>
+                                <label>found/studied</label>
+                                <collection>data/variant_gene</collection>
+                                <fields>SAMPLE_FREQ, SAMPLE_TOTAL</fields>
+                                <visible>${all_tabs}</visible>
+                                <template>$[SAMPLE_FREQ] / $[SAMPLE_TOTAL]</template>
+                            </column>
+
+                            <column>
+                                <title>Assessment of the functional impact of the mutation on the gene overlapping it. Clicking on the items of this column opens up an explanatory details box, where the user may find details of the impact of the mutation on each transcript of the gene.</title>
+                                <collection>data/variant_gene</collection>
+                                <fields>IMPACT</fields>
+                                <decorator>IMPACT(show-details="false", field-impact="IMPACT")</decorator>
+                            </column>
+
+                        </columns>
+
+                    </figure-table>
+
+                    <figure-table>
+                        <title>Driver pathways in the cohort</title>
+                        <description>Mutational frequency of the top 10 driver pathways in the cohort</description>
+                        <collection>data/pathway</collection>
+                        <visible>NONE</visible>
+                        <link>
+                            <title>Browse details...</title>
+                            <url>browser/pathways?pview=Table</url>
+                        </link>
+                        <order>
+                            <collection>data/pathway</collection>
+                            <field>SAMPLE_PROP</field>
+                            <ascendent>false</ascendent>
+                        </order>
+                        <limit>10</limit>
+                        <define>m='data/pathway'</define>
+                        <where><![CDATA[m.FM_QVALUE < '0.05']]></where>
+                        <columns>
+                            <column>
+                                <label>pathway</label>
+                                <title>KEGG description of a pathway with genes found to be mutated in this project</title>
+                                <collection>${pathways}</collection>
+                                <fields>DESCRIPTION</fields>
+                            </column>
+                            <column>
+                                <title>Significance (p-value) of the FM bias computed for the pathway in the corresponding mutations project. It indicates how biased are the genes in the pathway towards the accumulation of functional mutations (and hence the likelihood of the pathway of being a driver) in this particular tumor type</title>
+                                <collection>data/pathway</collection>
+                                <fields>FM_QVALUE</fields>
+                                <decorator>PVALUE(significance="0.05")</decorator>
+                            </column>
+                            <column>
+                                <title>Number of samples of this project where somatic mutations have been identified in genes of this pathway</title>
+                                <label>found/studied</label>
+                                <collection>data/pathway</collection>
+                                <fields>SAMPLE_FREQ, SAMPLE_TOTAL</fields>
+                                <template>$[SAMPLE_FREQ] / $[SAMPLE_TOTAL]</template>
+                            </column>
+                            <column>
+                                <title>Proportion of samples with mutations in this pathways are found mutated in this project</title>
+                                <collection>data/pathway</collection>
+                                <fields>SAMPLE_PROP</fields>
+                                <decorator>HEAT(min-value="-0.02", mid-value="-0.01", max-value="1", min-color="[255-255-255]", mid-color="[255-255-255]", max-color="[255-0-255]")</decorator>
+                            </column>
+                        </columns>
+                    </figure-table>
+
+                </figures>
+
+                <filters>
+                    <title>Select multiple genes</title>
+
+                    <filter>
+                        <name>Chromatin Regulatory Factors (183 genes)</name>
+                        <collection>${genes}</collection>
+                        <define>m='${filters}/crf'</define>
+                        <where>NOT m.GENE_ID IS NULL</where>
+                    </filter>
+                    <filter>
+                        <name>p53 signaling (6 genes)</name>
+                        <collection>${genes}</collection>
+                        <define>m='${genes}'</define>
+                        <where>m.SYMBOL IN ('TP53','MDM2','MDM4','CDKN2A','CDKN2B','TP53BP1')</where>
+                    </filter>
+                    <filter>
+                        <name>DNA Damage Response (12 genes)</name>
+                        <collection>${genes}</collection>
+                        <define>m='${genes}'</define>
+                        <where>m.SYMBOL IN ('CHEK1','CHEK2','RAD51','BRCA1','BRCA2','MLH1','MSH2','ATM','ATR','MDC1','PARP1','FANCF')</where>
+                    </filter>
+                    <custom-filter>
+                        <title>Ensembl Gene identifier</title>
+                        <collection>${genes}</collection>
+                        <field>GENE_ID</field>
+                        <type>list</type>
+                    </custom-filter>
+                    <custom-filter>
+                        <title>HUGO Gene symbol</title>
+                        <collection>${genes}</collection>
+                        <field>SYMBOL</field>
+                        <type>list</type>
+                    </custom-filter>
+                </filters>
+            </type>
+
+            <type>
+                <collection>${pathways}</collection>
+                <fields>PATHWAY_ID, DESCRIPTION</fields>
+                <keys>PATHWAY_ID</keys>
+                <examples>MAPK signaling, hsa04115</examples>
+                <link>
+                    <title><![CDATA[<strong>Drivers.</strong> Matrix of candidate driver genes in the pathway]]></title>
+                    <url>browser/mutations?pview=Matrix&amp;$filter</url>
+                </link>
+                <link>
+                    <title><![CDATA[<strong>Mutations.</strong> Genes frequently mutated]]></title>
+                    <url>browser/mutations?pview=Table&amp;$filter&amp;pwmutations-tableo=/data/variant_gene::SAMPLE_FREQ::d</url>
+                </link>
+                <link>
+                    <title><![CDATA[<strong>Driver.</strong> Candidate driver genes of this pathway according to OncodriveFM]]></title>
+                    <url>browser/genes?pview=Table&amp;$filter&amp;pwgenes-tableo=/data/gene::FM_QVALUE::a</url>
+                </link>
+                <link>
+                    <title><![CDATA[<strong>Driver.</strong> Candidate driver genes of this pathway according to OncodriveClust]]></title>
+                    <url>browser/genes?pview=Table&amp;$filter&amp;pwgenes-tableo=/data/gene::CLUST_QVALUE::a</url>
+                </link>
+            </type>
+
+        </search>
+        <browser>
+            <id>browser</id>
+            <label>Browser</label>
+            <css>css/browser.css</css>
+
+            <defaultStatus>
+                <currentTabId>mutations</currentTabId>
+                <currentView>Matrix</currentView>
+            </defaultStatus>
+
+            <tabs>
+                <tab>
+                    <id>mutations</id>
+                    <title>Mutations</title>
+                    <view>
+                        <title>Table</title>
+                        <main>mutations-table</main>
+                        <top>views, map-genes2kegg</top>
+                        <topRight>mutations-table-help, genes-search, download, share</topRight>
+                    </view>
+                    <view>
+                        <title>Matrix</title>
+                        <visible>${all_tabs}</visible>
+                        <main>mutations-heatmap</main>
+                        <top>views, map-genes2kegg</top>
+                        <topRight>mutations-matrix-help, genes-search, download, share</topRight>
+                    </view>
+                </tab>
+                <tab>
+                    <id>genes</id>
+                    <title>Genes</title>
+                    <visible>${all_tabs}</visible>
+                    <view>
+                        <title>Table</title>
+                        <main>genes-table</main>
+                        <top>views, map-genes2kegg</top>
+                        <topRight>genes-table-help, genes-search, download, share</topRight>
+                    </view>
+                </tab>
+                <tab>
+                    <id>pathways</id>
+                    <title>Pathways</title>
+                    <visible>${all_tabs}</visible>
+                    <view>
+                        <title>Table</title>
+                        <main>pathways-table</main>
+                        <top>views, map-kegg2genes</top>
+                        <topRight>pathways-table-help, pathways-search, download, share</topRight>
+                    </view>
+                </tab>
+            </tabs>
+
+            <widgets>
+
+                <widget-views>
+                    <id>views</id>
+                </widget-views>
+
+                <widget-download>
+                    <id>download</id>
+                    <button><![CDATA[<i class="icon-download-alt"></i>]]></button>
+                    <width>700</width>
+                    <title>Export this data</title>
+                    <formats>xls, tsv</formats>
+                    <scripts></scripts>
+                </widget-download>
+
+                <widget-share>
+                    <id>share</id>
+                    <button><![CDATA[<i class="icon-share"></i>]]></button>
+                    <title>Share or embed this view</title>
+                </widget-share>
+
+                <viewer-table>
+                    <id>mutations-table</id>
+                    <collection>data/variant_gene</collection>
+                    <defaultStatus>
+                        <order>
+                            <collection>data/variant_gene</collection>
+                            <field>INTOGEN_DRIVER</field>
+                            <ascendent>false</ascendent>
+                        </order>
+                    </defaultStatus>
+                    <columnset>
+                        <title>default</title>
+                        <columns>
+                            <column>
+                                <label>variant</label>
+                                <title>Genomic coordinates of the mutation in the hg19 assembly and alternative allele observed in the tumor sample</title>
+                                <collection>data/variant_gene</collection>
+                                <fields>CHR, START, STRAND, ALLELE</fields>
+                                <template>$[CHR]:$[START]:$[STRAND]:$[ALLELE]</template>
+                                <sortable>false</sortable>
+                            </column>
+                            <column>
+                                <collection>${genes}</collection>
+                                <fields>GENE_ID, REFSEQID, CHROMOSOME, SYNONYMS</fields>
+                                <visible>false</visible>
+                            </column>
+                            <column>
+                                <label>gene</label>
+                                <title>HGNC symbol of the gene overlapping the mutation</title>
+                                <collection>${genes}</collection>
+                                <fields>SYMBOL</fields>
+                                <actions>BOX(decorators="FILTER:Show results related to this gene")</actions>
+                                <sortable>false</sortable>
+                            </column>
+                            <column>
+                                <label>protein-change</label>
+                                <title>Protein changes</title>
+                                <collection>data/variant_gene</collection>
+                                <fields>PROTEIN_CHANGES</fields>
+                                <decorator>PROTEINCHANGE</decorator>
+                                <sortable>false</sortable>
+                            </column>
+                            <column>
+                                <title>Number of samples of this project where this mutation occurs and the total</title>
+                                <label>found/studied</label>
+                                <collection>data/variant_gene</collection>
+                                <fields>SAMPLE_FREQ, SAMPLE_TOTAL</fields>
+                                <visible>${all_tabs}</visible>
+                                <template>$[SAMPLE_FREQ] / $[SAMPLE_TOTAL]</template>
+                                <filter>INTEGER</filter>
+                            </column>
+                            <column>
+                                <title>Proportion of samples with mutations in this gene amongst all the tumor samples of this project</title>
+                                <collection>data/variant_gene</collection>
+                                <visible>${all_tabs}</visible>
+                                <fields>SAMPLE_PROP</fields>
+                                <decorator>HEAT(min-value="-0.02", mid-value="-0.01", max-value="1", min-color="[255-255-255]", mid-color="[255-255-255]", max-color="[255-0-255]")</decorator>
+                                <filter>DOUBLE</filter>
+                            </column>
+                            <column>
+                                <title>Assessment of the functional impact of the mutation on the gene overlapping it. Clicking on the items of this column opens up an explanatory details box, where the user may find details of the impact of the mutation on each transcript of the gene.</title>
+                                <collection>data/variant_gene</collection>
+                                <fields>IMPACT</fields>
+                                <decorator>IMPACT(
+                                    show-details="true",
+                                    field-impact="IMPACT",
+                                    field-chr="CHR",
+                                    field-position="START",
+                                    field-allele="ALLELE",
+                                    field-geneid="GENE_ID",
+                                    collection-ct="/data/consequence",
+                                    collection-genes="${genes}"
+                                    )</decorator>
+                            </column>
+                            <column>
+                                <collection>data/variant_gene</collection>
+                                <fields>GENE_ID</fields>
+                                <visible>false</visible>
+                            </column>
+                            <column>
+                                <collection>data/variant_gene</collection>
+                                <fields>INTOGEN_DRIVER</fields>
+                                <decorator>INTOGEN(intogen="/web/mutations/v04/browser/genes-site", genes="${genes}", text="Driver", tooltip="This gene is a candidate driver in IntOGen. Click to go to IntOGen to see in which cancer types.")</decorator>
+                            </column>
+                            <column>
+                                <collection>${cgc}</collection>
+                                <label>CGC</label>
+                                <title>Cancer Gene Census</title>
+                                <fields>MOL_GENETICS</fields>
+                                <template><![CDATA[<span class="label label-success">CGC $[MOL_GENETICS]</span>]]></template>
+                                <actions>BOX</actions>
+                                <filter>CATEGORICAL[Dom,Rec]</filter>
+                                <visible>NOT ${all_tabs}</visible>
+                            </column>
+                            <column>
+                                <collection>${cgc}</collection>
+                                <fields>SMUTATION, GMUTATION, TUMORTYPE_SMUTATION, CANCER_SYNDROME, TISSUE, MOL_GENETICS, MUTATION_TYPE, TRANSLOCATION_PARTNER</fields>
+                                <visible>false</visible>
+                            </column>
+                            <column>
+                                <collection>${intogen_tcga}?data/gene_driver_category</collection>
+                                <fields>DRIVER_CATEGORY</fields>
+                                <decorator>DRIVER_CATEGORY</decorator>
+                                <sortable>false</sortable>
+                                <filter>CATEGORICAL[HCD,CD]</filter>
+                                <visible>NOT ${all_tabs}</visible>
+                            </column>
+                            <column>
+                                <collection>data/variant_gene</collection>
+                                <title>External references indicating if the mutation appears in other databases, such as COSMIC or dbSNP</title>
+                                <fields>XREFS</fields>
+                                <decorator>XREFS(intogen="/web/mutations/v04/browser/mutations-site", genes="${genes}", mutations="${intogen_mutations}")</decorator>
+                                <sortable>false</sortable>
+                            </column>
+                        </columns>
+                    </columnset>
+                </viewer-table>
+
+                <viewer-heatmap>
+                    <id>mutations-heatmap</id>
+                    <collection>data/gene_sample-fimpact</collection>
+                    <init>
+                        <![CDATA[
+
+                        // Default cell value
+                        heatmap.cells.selectedValue = 3;
+
+                        // Configure decorators and aggregators
+                        heatmap.cells.decorators[1] = new jheatmap.decorators.Heat({ minValue: 0, midValue: 0.5, maxValue: 1 });
+                        heatmap.cells.aggregators[1] = new jheatmap.aggregators.AbsoluteAddition();
+                        heatmap.cells.decorators[2] = new jheatmap.decorators.Heat({ minValue: 0, midValue: 0.5, maxValue: 1 });
+                        heatmap.cells.aggregators[2] = new jheatmap.aggregators.AbsoluteAddition();
+                        heatmap.cells.decorators[3] = new jheatmap.decorators.Heat({ minValue: -2, midValue: 1, maxValue: 4 });
+                        heatmap.cells.aggregators[3] = new jheatmap.aggregators.AbsoluteAddition();
+
+                        // Row annotations
+                        heatmap.rows.decorators[2] = new jheatmap.decorators.PValue({ cutoff: 0.05 });
+                        heatmap.rows.decorators[3] = new jheatmap.decorators.Linear({ ranges: [[0,1]], colors: [[[255,255,255],[255,0,255]]] });
+                        heatmap.rows.decorators[4] = new jheatmap.decorators.PValue({ cutoff: 0.05 });
+                		heatmap.rows.annotations = [2, 3, 4];
+
+                        // Mutually exclusive sorting
+                        heatmap.rows.sorter = new jheatmap.sorters.MutualExclusiveSorter(3, false);
+                        heatmap.rows.DefaultAggregationSorter = jheatmap.sorters.MutualExclusiveSorter;
+                        heatmap.cols.DefaultAggregationSorter = jheatmap.sorters.MutualExclusiveSorter;
+
+                        ]]>
+                    </init>
+
+                    <rowAnnotations>4, 5, 6, 7, 8</rowAnnotations>
+
+                    <row>
+                        <collection>${genes}</collection>
+                        <fields>SYMBOL, GENE_ID</fields>
+                    </row>
+
+                    <row>
+                        <collection>data/gene</collection>
+                        <fields>FM_QVALUE</fields>
+                    </row>
+
+                    <row>
+                        <collection>data/gene</collection>
+                        <fields>SAMPLE_PROP</fields>
+                    </row>
+                    
+                    <row>
+                        <collection>data/gene</collection>
+                        <fields>CLUST_QVALUE</fields>
+                    </row>
+
+                    <colAnnotations>0</colAnnotations>
+
+                    <column>
+                        <collection>data/gene_sample-fimpact</collection>
+                        <fields>SAMPLE</fields>
+                    </column>
+
+                    <cell>
+                        <collection>data/gene_sample-fimpact</collection>
+                        <fields>SIFT_SCORE, PPH2_SCORE, MA_SCORE</fields>
+                    </cell>
+
+                </viewer-heatmap>
+
+                <viewer-table>
+                    <id>genes-table</id>
+                    <collection>data/gene</collection>
+                    <defaultStatus>
+                        <order>
+                            <collection>data/gene</collection>
+                            <field>FM_QVALUE</field>
+                            <ascendent>true</ascendent>
+                        </order>
+                    </defaultStatus>
+                    <columnset>
+                        <title>default</title>
+                        <columns>
+                            <column>
+                                <collection>${genes}</collection>
+                                <fields>GENE_ID</fields>
+                                <visible>false</visible>
+                            </column>
+                            <column>
+                                <label>gene</label>
+                                <collection>${genes}</collection>
+                                <fields>SYMBOL</fields>
+                                <actions>BOX(decorators="FILTER:Show results related to this gene")</actions>
+                            </column>
+                            <column>
+                                <title>Significance (p-value) of the FM bias computed for the gene in all the projects. It indicates how biased is the gene towards the accumulation of functional mutations (and hence its likelihood of being a driver).</title>
+                                <collection>data/gene</collection>
+                                <fields>FM_QVALUE</fields>
+                                <decorator>PVALUE(significance="0.05")</decorator>
+                                <filter>DOUBLE</filter>
+                            </column>
+                            <column>
+                                <title>Significance (q-value) of the CLUSTbias. Low CLUSTbias indicates that the mutations in the gene tend to be clustered in particular protein regions, which is a sign of positive selection during tumor development and thus a sign that those genes may be cancer drivers. Computed with OncodriveCLUST.</title>
+                                <collection>data/gene</collection>
+                                <fields>CLUST_QVALUE</fields>
+                                <decorator>PVALUE(significance="0.05")</decorator>
+                                <filter>DOUBLE</filter>
+                            </column>
+                            <column>
+                                <title>Number of samples of this project with mutations in this gene / number of samples studied</title>
+                                <label>found/studied</label>
+                                <collection>data/gene</collection>
+                                <fields>SAMPLE_FREQ, SAMPLE_TOTAL</fields>
+                                <template>$[SAMPLE_FREQ] / $[SAMPLE_TOTAL]</template>
+                                <decorator>LINK(url="mutations?pview=Table&amp;pf=${genes}::$[GENE_ID]::de&amp;pwmutations-tableo=/data/variant_gene::SAMPLE_FREQ::d", icon="icon-zoom-in", icon-title="Click to see the mutations detected in this gene")</decorator>
+                                <filter>INTEGER</filter>
+                            </column>
+                            <column>
+                                <collection>data/gene</collection>
+                                <fields>GENE_ID</fields>
+                                <visible>false</visible>
+                            </column>
+                            <column>
+                                <title>Proportion of samples with mutations in this gene in this project</title>
+                                <collection>data/gene</collection>
+                                <fields>SAMPLE_PROP</fields>
+                                <decorator>HEAT(min-value="-0.02", mid-value="-0.01", max-value="1", min-color="[255-255-255]", mid-color="[255-255-255]", max-color="[255-0-255]")</decorator>
+                                <filter>DOUBLE</filter>
+                            </column>
+                            <column>
+                                <collection>${cgc}</collection>
+                                <label>CGC</label>
+                                <title>Cancer Gene Census</title>
+                                <fields>MOL_GENETICS</fields>
+                                <template><![CDATA[<span class="label label-success">CGC $[MOL_GENETICS]</span>]]></template>
+                                <actions>BOX</actions>
+                                <filter>CATEGORICAL[Dom,Rec]</filter>
+                            </column>
+                            <column>
+                                <collection>${cgc}</collection>
+                                <fields>SMUTATION, GMUTATION, TUMORTYPE_SMUTATION, CANCER_SYNDROME, TISSUE, MOL_GENETICS, MUTATION_TYPE, TRANSLOCATION_PARTNER</fields>
+                                <visible>false</visible>
+                            </column>
+                            <column>
+                                <collection>${intogen_tcga}?data/gene_driver_category</collection>
+                                <fields>DRIVER_CATEGORY</fields>
+                                <decorator>DRIVER_CATEGORY</decorator>
+                                <sortable>false</sortable>
+                                <filter>CATEGORICAL[HCD,CD]</filter>
+                            </column>
+                            <column>
+                                <collection>${cosmic}</collection>
+                                <label>COSMIC</label>
+                                <fields>SAMPLES</fields>
+                            </column>
+                            <column>
+                                <collection>data/gene</collection>
+                                <fields>INTOGEN_DRIVER</fields>
+                                <decorator>INTOGEN(intogen="/web/mutations/v04/browser/genes-site", genes="${genes}", text="Driver", tooltip="This gene is a candidate driver in IntOGen. Click to go to IntOGen to see in which cancer types.")</decorator>
+                            </column>
+                        </columns>
+                    </columnset>
+                </viewer-table>
+
+                <viewer-table>
+                    <id>pathways-table</id>
+                    <collection>data/pathway</collection>
+
+                    <defaultStatus>
+                        <order>
+                            <collection>data/pathway</collection>
+                            <field>SAMPLE_PROP</field>
+                            <ascendent>false</ascendent>
+                        </order>
+                    </defaultStatus>
+
+                    <columnset>
+                        <title>default</title>
+                        <columns>
+                            <column>
+                                <collection>${pathways}</collection>
+                                <fields>PATHWAY_ID</fields>
+                                <visible>false</visible>
+                            </column>
+                            <column>
+                                <label>pathway</label>
+                                <title>KEGG description of a pathway with genes found to be mutated in this project</title>
+                                <collection>${pathways}</collection>
+                                <fields>DESCRIPTION</fields>
+                                <actions>BOX(decorators="FILTER:Show results related to this pathway")</actions>
+                            </column>
+                            <column>
+                                <title>Significance (p-value) of the FM bias computed for the pathway in the corresponding mutations project. It indicates how biased are the genes in the pathway towards the accumulation of functional mutations (and hence the likelihood of the pathway of being a driver) in this particular tumor type</title>
+                                <collection>data/pathway</collection>
+                                <fields>FM_QVALUE</fields>
+                                <decorator>PVALUE(significance="0.05")</decorator>
+                                <filter>DOUBLE</filter>
+                            </column>
+                            <column>
+                                <title>Number of samples of this project where somatic mutations have been identified in genes of this pathway</title>
+                                <label>found/studied</label>
+                                <collection>data/pathway</collection>
+                                <fields>SAMPLE_FREQ, SAMPLE_TOTAL</fields>
+                                <template>$[SAMPLE_FREQ] / $[SAMPLE_TOTAL]</template>
+                                <filter>INTEGER</filter>
+                            </column>
+                            <column>
+                                <title>Proportion of samples with mutations in this pathways are found mutated in this project</title>
+                                <collection>data/pathway</collection>
+                                <fields>SAMPLE_PROP</fields>
+                                <decorator>HEAT(min-value="-0.02", mid-value="-0.01", max-value="1", min-color="[255-255-255]", mid-color="[255-255-255]", max-color="[255-0-255]")</decorator>
+                                <filter>DOUBLE</filter>
+                            </column>
+                        </columns>
+                    </columnset>
+                </viewer-table>
+
+                <widget-search>
+                    <id>pathways-search</id>
+                    <column>
+                        <collection>${pathways}</collection>
+                        <fields>PATHWAY_ID,DESCRIPTION</fields>
+                    </column>
+                </widget-search>
+
+                <widget-search>
+                    <id>genes-search</id>
+                    <column>
+                        <collection>${genes}</collection>
+                        <fields>GENE_ID,CHROMOSOME,BAND,SYMBOL,SYNONYMS</fields>
+                    </column>
+                </widget-search>
+
+                <widget-map>
+                    <id>map-genes2kegg</id>
+                    <collection>${pathway2gene}</collection>
+                    <visible>${pathways}</visible>
+                    <warning>Filtering genes by selected pathway</warning>
+                </widget-map>
+                <widget-map>
+                    <id>map-kegg2genes</id>
+                    <collection>${pathway2gene}</collection>
+                    <visible>${genes}</visible>
+                    <warning>Only pathways that contain the selected gene</warning>
+                </widget-map>
+
+                <widget-text>
+                    <id>mutations-table-help</id>
+                    <button><![CDATA[<i class="icon-info-sign"></i>]]></button>
+                    <title>Mutations tab help</title>
+                    <text><![CDATA[<p class="hero-unit" style="text-align:justify;">List of all <strong>somatic mutations</strong> and its predicted functional impact found
+                     in all tumor samples. The list may be filtered by gene, cancer site, project name or any combination thereof. Upon filtration, only
+                    mutations pertinent to the filter applied will be displayed.</p>]]></text>
+                </widget-text>
+                <widget-text>
+                    <id>mutations-matrix-help</id>
+                    <button><![CDATA[<i class="icon-info-sign"></i>]]></button>
+                    <title>Mutations tab help</title>
+                    <text><![CDATA[<p class="well" style="text-align:justify;">Heatmap visualization of the functional impact of somatic mutations found in
+                    this project. Each cell represents mutations found in a gene in a particular tumor sample. Colors towards red indicate high functional
+                    impact.<br /><br />The heatmap is interactive in several ways. Cells may be zoomed-in or out using the mouse scroll; the values of both
+                    rows and columns may be sorted (as the additional one-column heatmaps) by clicking on the header of the row or column in question.</p>]]></text>
+                </widget-text>
+                <widget-text>
+                    <id>genes-table-help</id>
+                    <button><![CDATA[<i class="icon-info-sign"></i>]]></button>
+                    <title>Genes tab help</title>
+                    <text><![CDATA[<p class="well" style="text-align:justify;">Mutated genes across samples.<br /><br />
+                    FMbias and CLUSTbias columns help identify candidate cancer genes. Low FMbias indicates that the gene is biased towards the accumulation
+                    of high functional impacting mutations, low CLUSTbias indicates that the mutations in the gene tend to be clustered in particular protein
+                    regions. Both of these are signs of positive selection during tumor development and thus a sign that those genes may be cancer drivers.<br />
+                    The genes can be easily sorted by FMbias, CLUSTbias or mutation frequency across samples.</p>]]></text>
+                </widget-text>
+                <widget-text>
+                    <id>genes-matrix-help</id>
+                    <button><![CDATA[<i class="icon-info-sign"></i>]]></button>
+                    <title>Genes tab help</title>
+                    <text><![CDATA[<p class="well" style="text-align:justify;">Heatmap visualization of FMbias, CLUSTbias and mut-freq of mutated g
+                    enes across all samples. By default FMbias is shown in cells, you can change to CLUSTbias or mut-freq using
+                     the drop-down options of Cells.<br /><br />
+                     The heatmap is interactive in several ways. Cells may be zoomed-in or out using the mouse scroll; the values of both rows
+                     and columns may be sorted by clicking on the header of the row or column in question.</p>]]></text>
+                </widget-text>
+                <widget-text>
+                    <id>pathways-table-help</id>
+                    <button><![CDATA[<i class="icon-info-sign"></i>]]></button>
+                    <title>Pathways tab help</title>
+                    <text><![CDATA[<p class="well" style="text-align:justify;">
+                    Pathways mutated across all samples.<br /><br />They may be easily sorted according
+                    to their mutation frequency or accumulated FMbias across samples.</p>]]></text>
+                </widget-text>
+                <widget-text>
+                    <id>pathways-matrix-help</id>
+                    <button><![CDATA[<i class="icon-info-sign"></i>]]></button>
+                    <title>Pathways tab help</title>
+                    <text><![CDATA[<p class="well" style="text-align:justify;">
+                    Heatmap visualization of FMbias and mut-freq of mutated pathways across all samples.
+                     By default FMbias is shown in cells, you can change to mut-freq using the drop-down options of Cells.<br /><br />
+                     The heatmap is interactive in several ways. Cells may be zoomed-in or out using the mouse scroll;
+                     the values of both rows and columns may be sorted by clicking on the header of the row or
+                     column in question.</p>]]></text>
+                </widget-text>
+            </widgets>
+        </browser>
+    </pages>
+
+</website>

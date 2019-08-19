@@ -1,0 +1,83 @@
+<?xml version="1.0" ?>
+<tool id="qiime_diversity_alpha" name="qiime diversity alpha" version="022019">
+	<description> - Alpha diversity</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command><![CDATA[
+  qiime diversity alpha --i-table=$itable --p-metric=$pmetric
+  
+  #if str($cmdconfig) != 'None':
+   --cmd-config=$cmdconfig
+  #end if
+  
+   --o-alpha-diversity=oalphadiversity;
+   
+  cp oalphadiversity.qza $oalphadiversity;
+]]></command>
+	<inputs>
+		<param format="qza,no_unzip.zip" label="--i-table: FeatureTable[Frequency] The feature table containing the samples for which alpha diversity should be computed. [required]" name="itable" optional="False" type="data"/>
+		<param label="--p-metric: The alpha diversity metric to be computed.
+                                  [required]" name="pmetric" optional="False" type="select" >
+			<option value="goods_coverage">goods_coverage</option>
+			<option value="heip_e">heip_e</option>
+			<option value="mcintosh_d">mcintosh_d</option>
+			<option value="esty_ci">esty_ci</option>
+			<option value="doubles">doubles</option>
+			<option value="michaelis_menten_fit">michaelis_menten_fit</option>
+			<option value="observed_otus">observed_otus</option>
+			<option value="kempton_taylor_q">kempton_taylor_q</option>
+			<option value="chao1_ci">chao1_ci</option>
+			<option value="shannon">shannon</option>
+			<option value="margalef">margalef</option>
+			<option value="simpson">simpson</option>
+			<option value="lladser_ci">lladser_ci</option>
+			<option value="lladser_pe">lladser_pe</option>
+			<option value="osd">osd</option>
+			<option value="menhinick">menhinick</option>
+			<option value="singles">singles</option>
+			<option value="gini_index">gini_index</option>
+			<option value="robbins">robbins</option>
+			<option value="ace">ace</option>
+			<option value="simpson_e">simpson_e</option>
+			<option value="enspie">enspie</option>
+			<option value="berger_parker_d">berger_parker_d</option>
+			<option value="fisher_alpha">fisher_alpha</option>
+			<option value="dominance">dominance</option>
+			<option value="pielou_e">pielou_e</option>
+			<option value="chao1">chao1</option>
+			<option value="mcintosh_e">mcintosh_e</option>
+			<option value="strong">strong</option>
+			<option value="brillouin_d">brillouin_d</option>
+		</param>
+		<param label="--cmd-config: Use config file for command options" name="cmdconfig" optional="True" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="qza" label="${tool.name} on ${on_string}: alpha-diversity.qza" name="oalphadiversity"/>
+	</outputs>
+	<help><![CDATA[
+Alpha diversity
+---------------
+
+Computes a user-specified alpha diversity metric for all samples in a
+feature table.
+
+Parameters
+----------
+table : FeatureTable[Frequency]
+    The feature table containing the samples for which alpha diversity
+    should be computed.
+metric : Str % Choices({'ace', 'berger_parker_d', 'brillouin_d', 'chao1', 'chao1_ci', 'dominance', 'doubles', 'enspie', 'esty_ci', 'fisher_alpha', 'gini_index', 'goods_coverage', 'heip_e', 'kempton_taylor_q', 'lladser_ci', 'lladser_pe', 'margalef', 'mcintosh_d', 'mcintosh_e', 'menhinick', 'michaelis_menten_fit', 'observed_otus', 'osd', 'pielou_e', 'robbins', 'shannon', 'simpson', 'simpson_e', 'singles', 'strong'})
+    The alpha diversity metric to be computed.
+
+Returns
+-------
+alpha_diversity : SampleData[AlphaDiversity]
+    Vector containing per-sample alpha diversities.
+    ]]>
+	</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

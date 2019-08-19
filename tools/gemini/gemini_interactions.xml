@@ -1,0 +1,86 @@
+<tool id="gemini_interactions" name="GEMINI interactions" version="GRABIX: 0.1.3; TABIX: 0.2.6; SAMTOOLS: 0.1.19; BEDTOOLS: 2.19.1">
+    <description>Find genes among variants that are interacting partners</description>
+    <requirements>
+            <!--<requirement type="package" version="0.10.0">gemini</requirement>-->
+            <requirement type="package">pymodules</requirement>
+            <requirement type="package" version="0.1.3">grabix</requirement>
+            <requirement type="package" version="0.2.6">tabix</requirement>
+            <requirement type="package" version="0.1.19">samtools</requirement>
+            <requirement type="package" version="2.19.1">bedtools</requirement>
+            <yield/>
+    </requirements>
+    <version_command>gemini --version</version_command>
+    <command>
+<![CDATA[
+        gemini 
+            --annotation-dir ${annotation_databases.fields.path}
+            #if $gene.gene_selector == 'lof':
+                ## lof interactions is a separate program
+                lof_interactions
+            #else:
+                ## use normal gemini interactions program
+                interactions
+                -g "${gene.gene}"
+            #end if
+
+            -r "${radius}"
+            $variant_mode
+            "${ infile }"
+            > "${ outfile }"
+]]>
+    </command>
+    <stdio>
+            <exit_code range="1:"/>
+            <exit_code range=":-1"/>
+            <regex match="Error:"/>
+            <regex match="Exception:"/>
+    </stdio>
+    <inputs>
+        <param format="sqlite" label="GEMINI database" name="infile" type="data"/>
+
+        <conditional name="gene">
+            <param help="" label="Studying" name="gene_selector" type="select">
+                <option value="gene">Interesting gene</option>
+                <option value="lof">All loss-of-function variants</option>
+            </param>
+            <when value="gene">
+                <param help="e.g. PTPN22 (-g)" label="Specify gene name" name="gene" type="text"/>
+            </when>
+            <when value="lof"/>
+        </conditional>
+        <param label="Choose a gemini annotation database" name="annotation_databases" type="select">
+            <options from_data_table="gemini_databases">
+                <filter column="0" type="sort_by"/>
+                <validator message="No annotation database is available" type="no_options"/>
+            </options>
+        </param>
+        <param help="(-r)" label="Set filter for Breadth-first search (BFS) in the Protein-Protein Interaction network" name="radius" size="5" type="integer" value="3">
+            <validator min="0" type="in_range"/>
+        </param>
+        <param checked="False" falsevalue="" help="(--var)" label="Returns variant info (e.g. impact, biotype) for interacting genes" name="variant_mode" truevalue="--var" type="boolean"/>
+    </inputs>
+    <outputs>
+        <data format="tabular" label="${tool.name} on ${on_string}" name="outfile"/>
+    </outputs>
+    <tests>
+        <test>
+        </test>
+    </tests>
+    <help>
+**What it does**
+
+Integrating the knowledge of the known protein-protein interactions would be useful in explaining variation data.
+Meaning to say that a damaging variant in an interacting partner of a potential protein may be equally interesting as the
+protein itself. We have used the HPRD_ binary interaction data to build a p-p network graph which can be explored by GEMINI.
+
+.. _HPRD: http://www.ncbi.nlm.nih.gov/pubmed/18988627
+
+
+@CITATION@
+    </help>
+    <citations>
+        <citation type="doi">10.1371/journal.pcbi.1003153</citation>
+        <yield/>
+    </citations>
+    <citation type="doi">10.1093/nar/gkn892</citation><!-- HPRD citation -->
+</tool>

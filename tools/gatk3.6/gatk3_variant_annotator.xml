@@ -1,0 +1,301 @@
+<tool id="gatk3.6_variant_annotator" name="Variant Annotator" version="GATK3.6: GenomeAnalysisTK-3.6; SAMTOOLS: 1.1">
+  <description/>
+  <requirements>
+      <requirement type="package" version="3.6">gatk3</requirement>
+      <requirement type="package" version="1.1">samtools</requirement>
+  </requirements>
+  <macros>
+    <import>gatk_macros.xml</import>
+  </macros>
+  <command interpreter="python">gatk3_wrapper.py
+   --max_jvm_heap_fraction &quot;1&quot;
+   --stdout &quot;${output_log}&quot;
+   #if str( $reference_source.input_bam ) != &quot;None&quot;:
+       -d &quot;-I&quot; &quot;${reference_source.input_bam}&quot; &quot;${reference_source.input_bam.ext}&quot; &quot;gatk_input&quot;
+       #if str( $reference_source.input_bam.metadata.bam_index ) != &quot;None&quot;:
+           -d &quot;&quot; &quot;${reference_source.input_bam.metadata.bam_index}&quot; &quot;bam_index&quot; &quot;gatk_input&quot; ##hardcode galaxy ext type as bam_index
+       #end if
+   #end if
+   -d &quot;--variant&quot; &quot;${reference_source.input_variant}&quot; &quot;${reference_source.input_variant.ext}&quot; &quot;input_variant&quot;
+   -p 'java 
+    -jar &quot;\$GATK3_PATH/GenomeAnalysisTK.jar&quot;
+    ##--list
+    -T &quot;VariantAnnotator&quot;
+    \$GATK3_SITE_OPTIONS
+    ## \$GATK3_NUM_THREADS
+    --num_threads 32 ##hard coded, for now
+    ##-et &quot;NO_ET&quot; -K &quot;\$GATK3_BASE/gatk3_key_file&quot; ##ET no phone home
+    ##-log &quot;${output_log}&quot; ##don't use this to log to file, instead directly capture stdout
+    #if $reference_source.reference_source_selector != &quot;history&quot;:
+        -R &quot;${reference_source.ref_file.fields.path}&quot;
+    #end if
+    -o &quot;${output_vcf}&quot;
+    #if str( $annotations_type.annotations_type_selector ) == &quot;use_all_annotations&quot;:
+        --useAllAnnotations
+    #else:
+        #if $annotations_type.annotations:
+            #for $annotation in str( $annotations_type.annotations.fields.gatk_value ).split( ',' ):
+                --annotation &quot;${annotation}&quot;
+            #end for
+        #end if
+    #end if
+    #if $exclude_annotations:
+        #for $annotation in str( $exclude_annotations.fields.gatk_value ).split( ',' ):
+            --excludeAnnotation &quot;${annotation}&quot;
+        #end for
+    #end if
+    #for $additional_annotation in $additional_annotations:
+        --annotation &quot;${additional_annotation.additional_annotation_name}&quot;
+    #end for
+    '
+    #if $reference_source.input_variant_bti:
+        -d &quot;--intervals&quot; &quot;${reference_source.input_variant}&quot; &quot;${reference_source.input_variant.ext}&quot; &quot;input_variant_bti&quot;
+    #end if
+    
+    #for $rod_binding in $comp_rod_bind:
+        -d &quot;--comp:${rod_binding.comp_rod_name},%(file_type)s&quot; &quot;${rod_binding.comp_input_rod}&quot; &quot;${rod_binding.comp_input_rod.ext}&quot; &quot;input_comp_${rod_binding.comp_rod_name}&quot;
+    #end for
+    
+    #if str( $dbsnp_rod_bind_type.dbsnp_rod_bind_type_selector ) == 'set_dbsnp':
+        -d &quot;--dbsnp:${dbsnp_rod_bind_type.dbsnp_rod_name},%(file_type)s&quot; &quot;${dbsnp_rod_bind_type.dbsnp_input_rod}&quot; &quot;${dbsnp_rod_bind_type.dbsnp_input_rod.ext}&quot; &quot;input_dbsnp_${dbsnp_rod_bind_type.dbsnp_rod_name}&quot;
+    #end if
+    
+    
+    #for $rod_binding in $resource_rod_bind:
+        -d &quot;--resource:${rod_binding.resource_rod_name},%(file_type)s&quot; &quot;${rod_binding.resource_input_rod}&quot; &quot;${rod_binding.resource_input_rod.ext}&quot; &quot;input_resource_${rod_binding.resource_rod_name}&quot;
+    #end for
+    
+    #if str( $snpEff_rod_bind_type.snpEff_rod_bind_type_selector ) == 'set_snpEff':
+        -p '--annotation &quot;SnpEff&quot;'
+        -d &quot;--snpEffFile:${snpEff_rod_bind_type.snpEff_rod_name},%(file_type)s&quot; &quot;${snpEff_rod_bind_type.snpEff_input_rod}&quot; &quot;${snpEff_rod_bind_type.snpEff_input_rod.ext}&quot; &quot;input_snpEff_${snpEff_rod_bind_type.snpEff_rod_name}&quot;
+    #else:
+        -p '--excludeAnnotation &quot;SnpEff&quot;'
+    #end if
+    
+    #for $expression in $expressions:
+        -p '--expression &quot;${expression.expression}&quot;'
+    #end for
+    
+    ##start standard gatk options
+    #if $gatk_param_type.gatk_param_type_selector == &quot;advanced&quot;:
+        #include source=$standard_gatk_options#
+    #end if
+    #if str( $reference_source.reference_source_selector ) == &quot;history&quot;:
+        -d &quot;-R&quot; &quot;${reference_source.ref_file}&quot; &quot;${reference_source.ref_file.ext}&quot; &quot;gatk_input_reference_fasta&quot;
+        --picard_jar &quot;/mnt/galaxyTools/tools/picard/1.121/CreateSequenceDictionary.jar&quot;
+    #end if
+    ##end standard gatk options
+    
+    -p '
+    #if str( $annotation_group ) != &quot;None&quot;:
+        #for $group in str( $annotation_group ).split( ',' ):
+            --group &quot;${group}&quot;
+        #end for
+    #end if
+    #if str( $family_string ) != &quot;&quot;:
+        --family_string &quot;${family_string}&quot;
+    #end if
+    --MendelViolationGenotypeQualityThreshold &quot;${mendel_violation_genotype_quality_threshold}&quot;
+        '
+  </command>
+  <inputs>
+    <conditional name="reference_source">
+      <param label="Choose the source for the reference list" name="reference_source_selector" type="select">
+        <option value="cached">Locally cached</option>
+        <option value="history">History</option>
+      </param>
+      <when value="cached">
+        <param format="vcf" help="-V,--variant &amp;lt;variant&amp;gt;" label="Variant file to annotate" name="input_variant" type="data"/>
+        <param falsevalue="" help="--intervals" label="Increase efficiency for small variant files." name="input_variant_bti" truevalue="-BTI variant" type="boolean"/>
+        <param format="bam" help="Not needed for all annotations. (-I,--input_file &amp;lt;input_file&amp;gt;)" label="BAM file" name="input_bam" optional="True" type="data">
+          <validator type="unspecified_build"/>
+          <validator message="Sequences are not currently available for the specified build." metadata_column="dbkey" metadata_name="dbkey" table_name="gatk3_picard_indexes" type="dataset_metadata_in_data_table"/> <!-- fixme!!! this needs to be a select -->
+        </param>
+        <param help="-R,--reference_sequence &amp;lt;reference_sequence&amp;gt;" label="Using reference genome" name="ref_file" type="select">
+          <options from_data_table="gatk3_picard_indexes">
+                <filter column="3" type="sort_by"/>
+
+            <filter column="dbkey" key="dbkey" ref="input_variant" type="data_meta"/>
+          </options>
+          <validator message="A built-in reference genome is not available for the build associated with the selected input file" type="no_options"/>
+        </param>
+      </when>
+      <when value="history"> <!-- FIX ME!!!! -->
+        <param format="vcf" help="-V,--variant &amp;lt;variant&amp;gt;" label="Variant file to annotate" name="input_variant" type="data"/>
+        <param falsevalue="" help="--intervals" label="Increase efficiency for small variant files." name="input_variant_bti" truevalue="-BTI variant" type="boolean"/>
+        <param format="bam" help="Not needed for all annotations. (-I,--input_file &amp;lt;input_file&amp;gt;)" label="BAM file" name="input_bam" optional="True" type="data">
+        </param>
+        <param format="fasta" help="-R,--reference_sequence &amp;lt;reference_sequence&amp;gt;" label="Using reference file" name="ref_file" type="data"/>
+      </when>
+    </conditional>
+    <conditional name="annotations_type">
+      <param label="Use all possible annotations" name="annotations_type_selector" type="select">
+        <option value="use_all_annotations">Use all</option>
+        <option selected="True" value="choose">Use selected</option>
+      </param>
+      <when value="use_all_annotations">
+          <!-- no extra options here -->
+      </when>
+      <when value="choose">
+        <param display="checkboxes" help="-A,--annotation &amp;lt;annotation&amp;gt;" label="Annotations to apply" multiple="True" name="annotations" type="select">
+          <!-- load the available annotations from an external configuration file, since additional ones can be added to local installs -->
+          <options from_data_table="gatk3_annotations">
+            <filter column="tools_valid_for" separator="," type="multiple_splitter"/>
+            <filter column="tools_valid_for" type="static_value" value="VariantAnnotator"/>
+          </options>
+        </param>
+      </when>
+    </conditional>
+    
+    <repeat help="-A,--annotation &amp;lt;annotation&amp;gt;" name="additional_annotations" title="Additional annotation">
+      <param label="Annotation name" name="additional_annotation_name" type="text" value=""/>
+    </repeat>
+    
+    <repeat help="-comp,--comp &amp;lt;comp&amp;gt;" name="comp_rod_bind" title="Binding for reference-ordered comparison data">
+      <param format="vcf" label="ROD file" name="comp_input_rod" type="data"/>
+      <param label="ROD Name" name="comp_rod_name" type="text" value="Unnamed"/>
+    </repeat>
+    
+    <conditional name="dbsnp_rod_bind_type">
+      <param help="-D,--dbsnp &amp;lt;dbsnp&amp;gt;" label="Provide a dbSNP reference-ordered data file" name="dbsnp_rod_bind_type_selector" type="select">
+        <option selected="True" value="set_dbsnp">Set dbSNP</option>
+        <option value="exclude_dbsnp">Don't set dbSNP</option>
+      </param>
+      <when value="exclude_dbsnp">
+        <!-- Do nothing here -->
+      </when>
+      <when value="set_dbsnp">
+        <param format="vcf" label="ROD file" name="dbsnp_input_rod" type="data"/>
+        <param label="ROD Name" name="dbsnp_rod_name" type="hidden" value="dbsnp"/>
+      </when>
+    </conditional>
+    
+    <repeat help="-resource,--resource &amp;lt;resource&amp;gt;" name="resource_rod_bind" title="Binding for reference-ordered resource data">
+      <param format="vcf" label="ROD file" name="resource_input_rod" type="data"/>
+      <param label="ROD Name" name="resource_rod_name" type="text" value="Unnamed"/>
+    </repeat>
+    
+    <conditional name="snpEff_rod_bind_type">
+      <param help="-snpEffFile,--snpEffFile &amp;lt;snpEffFile&amp;gt;" label="Provide a snpEff reference-ordered data file" name="snpEff_rod_bind_type_selector" type="select">
+        <option value="set_snpEff">Set snpEff</option>
+        <option selected="True" value="exclude_snpEff">Don't set snpEff</option>
+      </param>
+      <when value="exclude_snpEff">
+        <!-- Do nothing here -->
+      </when>
+      <when value="set_snpEff">
+        <param format="vcf" label="ROD file" name="snpEff_input_rod" type="data"/>
+        <param label="ROD Name" name="snpEff_rod_name" type="hidden" value="snpEff"/>
+      </when>
+    </conditional>
+    
+    <repeat help="-E,--expression &amp;lt;expression&amp;gt;" name="expressions" title="Expression">
+      <param label="Expression" name="expression" type="text" value=""/>
+    </repeat>
+    
+    <conditional name="gatk_param_type">
+      <param label="Basic or Advanced GATK options" name="gatk_param_type_selector" type="select">
+        <option selected="True" value="basic">Basic</option>
+        <option value="advanced">Advanced</option>
+      </param>
+      <when value="basic">
+        <!-- Do nothing here -->
+      </when>
+      <when value="advanced">
+        <expand macro="advanced_options" />
+      </when>
+    </conditional>
+    
+    <param display="checkboxes" help="-G,--group &amp;lt;group&amp;gt;" label="annotation interfaces/groups to apply to variant calls" multiple="True" name="annotation_group" type="select">
+      <option value="RodRequiringAnnotation">RodRequiringAnnotation</option>
+      <option value="Standard">Standard</option>
+      <option value="Experimental">Experimental</option>
+      <option value="WorkInProgress">WorkInProgress</option>
+      <option value="RankSumTest">RankSumTest</option>
+    </param>
+    <param help="--family_string" label="Family String" name="family_string" type="text" value=""/>
+    <param help="-mvq,--MendelViolationGenotypeQualityThreshold &amp;lt;MendelViolationGenotypeQualityThreshold&amp;gt;" label="genotype quality treshold in order to annotate mendelian violation ratio." name="mendel_violation_genotype_quality_threshold" type="float" value="0.0"/>
+    <param display="checkboxes" help="-XA,--excludeAnnotation &amp;lt;excludeAnnotation&amp;gt;" label="Annotations to exclude" multiple="True" name="exclude_annotations" type="select">
+      <!-- load the available annotations from an external configuration file, since additional ones can be added to local installs -->
+      <options from_data_table="gatk3_annotations">
+        <filter column="tools_valid_for" separator="," type="multiple_splitter"/>
+        <filter column="tools_valid_for" type="static_value" value="VariantAnnotator"/>
+      </options>
+    </param>
+    
+  </inputs>
+  <outputs>
+    <data format="vcf" label="${tool.name} on ${on_string} (Variant File)" name="output_vcf"/>
+    <data format="txt" label="${tool.name} on ${on_string} (log)" name="output_log"/>
+  </outputs>
+  <tests>
+      <test>
+          <param name="reference_source_selector" value="history"/>
+          <param ftype="fasta" name="ref_file" value="phiX.fasta"/>
+          <param ftype="bam" name="input_bam" value="gatk/gatk_table_recalibration/gatk_table_recalibration_out_1.bam"/>
+          <param ftype="vcf" name="input_variant" value="gatk/gatk_unified_genotyper/gatk_unified_genotyper_out_1.vcf"/>
+          <param name="input_variant_bti"/>
+          <param name="annotations_type_selector" value="choose"/>
+          <param name="annotations" value="AlleleBalance,BaseQualityRankSumTest,DepthOfCoverage,HomopolymerRun,MappingQualityRankSumTest,MappingQualityZero,QualByDepth,RMSMappingQuality,SpanningDeletions,HaplotypeScore"/>
+          <param name="additional_annotations" value="0"/>
+          <param name="dbsnp_rod_bind_type_selector" value="set_dbsnp"/>
+          <param ftype="vcf" name="dbsnp_input_rod" value="gatk/fake_phiX_variant_locations.vcf"/>
+          <param name="snpEff_rod_bind_type_selector" value="exclude_snpEff"/>
+          <param name="gatk_param_type_selector" value="basic"/>
+          <output file="gatk/gatk_variant_annotator/gatk_variant_annotator_out_1.vcf" lines_diff="4" name="output_vcf"/> 
+          <output compare="contains" file="gatk/gatk_variant_annotator/gatk_variant_annotator_out_1.log.contains" name="output_log"/>
+          <param name="comp_rod_bind" value="0"/>
+          <param name="resource_rod_bind" value="0"/>
+          <param name="expressions" value="0"/>
+          <!-- <param name="annotation_group" /> -->
+      </test>
+  </tests>
+  <help>
+**What it does**
+
+Annotates variant calls with context information.  Users can specify which of the available annotations to use.
+
+For more information on using the VariantAnnotator, see this `tool specific page &lt;http://www.broadinstitute.org/gatk/gatkdocs/org_broadinstitute_sting_gatk_walkers_annotator_VariantAnnotator.html&gt;`_.
+
+To learn about best practices for variant detection using GATK, see this `overview &lt;http://www.broadinstitute.org/gatk/guide/topic?name=best-practices&gt;`_.
+
+If you encounter errors, please view the `GATK FAQ &lt;http://www.broadinstitute.org/gatk/guide/topic?name=faqs&gt;`_.
+
+------
+
+
+**Inputs**
+
+GenomeAnalysisTK: VariantAnnotator accepts a variant input file.
+
+
+**Outputs**
+
+The output is in VCF format.
+
+
+Go `here &lt;http://www.broadinstitute.org/gatk/guide/topic?name=intro&gt;`_ for details on GATK file formats.
+
+-------
+
+**Settings**::
+
+
+ sampleName           The sample (NA-ID) corresponding to the variant input (for non-VCF input only)
+ annotation           One or more specific annotations to apply to variant calls
+ group                One or more classes/groups of annotations to apply to variant calls
+ expression           One or more specific expressions to apply to variant calls; see documentation for more details
+ useAllAnnotations    Use all possible annotations (not for the faint of heart)
+
+------
+
+**Citation**
+
+For the underlying tool, please cite `DePristo MA, Banks E, Poplin R, Garimella KV, Maguire JR, Hartl C, Philippakis AA, del Angel G, Rivas MA, Hanna M, McKenna A, Fennell TJ, Kernytsky AM, Sivachenko AY, Cibulskis K, Gabriel SB, Altshuler D, Daly MJ. A framework for variation discovery and genotyping using next-generation DNA sequencing data. Nat Genet. 2011 May;43(5):491-8. &lt;http://www.ncbi.nlm.nih.gov/pubmed/21478889&gt;`_
+
+Please also site `McKenna A, Hanna M, Banks E, Sivachenko A, Cibulskis K, Kernytsky A, Garimella K, Altshuler D, Gabriel S, Daly M, DePristo MA (2010). The Genome Analysis Toolkit: a MapReduce framework for analyzing next-generation DNA sequencing data. Genome Res. 20:1297-303. Epub 2010 Jul 19. &lt;http://www.ncbi.nlm.nih.gov/pubmed/20644199&gt;`_
+
+If you use this tool in Galaxy, please cite `Blankenberg D, Von Kuster G, Coraor N, Ananda G, Lazarus R, Mangan M, Nekrutenko A, Taylor J. Galaxy: a web-based genome analysis tool for experimentalists. Curr Protoc Mol Biol. 2010 Jan;Chapter 19:Unit 19.10.1-21. &lt;http://www.ncbi.nlm.nih.gov/pubmed/20069535&gt;`_
+
+  </help>
+</tool>

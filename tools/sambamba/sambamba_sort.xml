@@ -1,0 +1,35 @@
+<tool id="sambamba_sort" name="Sambamba Sort" version="SAMBAMBA: v0.5.4">
+  <requirements>
+    <requirement type="package">sambamba</requirement>
+  </requirements>
+  <description>BAM file</description>
+  <command interpreter="python">
+    sambamba_sort.py
+      --input=$input
+      --order=$order
+      --output=$output
+  </command>
+  <inputs>
+    <param format="bam" label="input a BAM File to sort" name="input" type="data"/>
+    <param label="What order to sort?" name="order" type="select">
+       <option selected="True" value="coordinate">coordinate</option>
+       <option value="lexicographically">lexicographic</option>
+    </param>
+  </inputs>
+  <outputs>
+    <data format="bam" label="${tool.name} on ${on_string}: sorted BAM" name="output"/>
+  </outputs>
+  <help>
+
+**What it does**
+
+This tool uses the SAMBAMBA_ toolkit to sort alignment file.
+
+.. _SAMBAMBA: http://lomereiter.github.io/sambamba/docs/sambamba-sort.html
+
+------
+
+
+
+  </help>
+</tool>

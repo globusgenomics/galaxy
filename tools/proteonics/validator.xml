@@ -1,0 +1,114 @@
+<?xml version="1.0"?>
+
+<tool name="validator" id="validator_id">
+  <description>
+  </description>
+
+  <command interpreter="python">
+     validator_mediator.py   
+   --input-file1
+    #if $Input_data1_source.InputSource == "default":
+      false "$Input_data1_source.default_input"
+    #else:
+      true  "$Input_data1_source.upload_input"
+    #end if
+
+   --input-file2
+    #if $Input_data2_source.InputSource == "none":
+      none "$Input_data2_source.none"
+    #else if $Input_data2_source.InputSource == "default":
+      default "$Input_data2_source.default_input"
+    #else:
+      upload  "$Input_data2_source.upload_input"
+    #end if
+
+   --peak-cutoff  $PEAK_CUTOFF
+   --ms1-cutoff  $MS1_CUTOFF
+   --ms2-cutoff  $MS2_CUTOFF
+   --max-peak-diff  $MAX_PEAK_DIFF
+
+    -t "$htmlfile"
+    -d "$htmlfile.files_path"
+
+  </command>
+
+  <inputs>
+    <conditional name="Input_data1_source">
+      <param name="InputSource" type="select" label="Input a DAT file" help="Will you use default input or your uploaded input file? ">
+        <option value="default" selected="true">Default input</option>
+        <option value="upload">Uploaded input</option>
+      </param>
+
+      <when value="default">
+        <param name="default_input" type="select" label="Select default input file">
+          <option value="F004642_sec_12.dat" selected="true">F004642_sec_12.dat</option>
+        </param>
+      </when>
+      <when value="upload">
+        <param name="upload_input" type="data" label="Select uploaded input file"/>
+      </when>
+    </conditional>
+
+    <conditional name="Input_data2_source">
+      <param name="InputSource" type="select" label="Input a CPAS file (optional)" help="Required for CROSSREF and QUANT to run">
+        <option value="none" selected="true">None</option>
+        <option value="default">Default input</option>
+        <option value="upload">Uploaded input</option>
+      </param>
+
+      <when value="none">
+        <param name="none" type="hidden" value=""/>
+      </when>
+      <when value="default">
+        <param name="default_input" type="select" label="Select default input file">
+          <option value="MS2Runs_E1sec12.txt" selected="true">MS2Runs_E1sec12.txt</option>
+        </param>
+      </when>
+      <when value="upload">
+        <param name="upload_input" type="data" label="Select uploaded input file"/>
+      </when>
+    </conditional>
+
+    <param name="PEAK_CUTOFF" type="float"  area="True" value="0.01" size="1x20" label="PEAK_CUTOFF"  help="Peak Cutoff value. Default is 0.01" />
+    <param name="MS1_CUTOFF" type="integer"  area="True" value="10" size="1x20" label="MS1_CUTOFF"  help="MS1 Cutoff value. Default is 10" />
+    <param name="MS2_CUTOFF" type="integer"  area="True" value="1000" size="1x20" label="MS2_CUTOFF"  help="MS2 Cutoff value. Default is 1000" />
+    <param name="MAX_PEAK_DIFF" type="float"  area="True" value="0.25" size="1x20" label="MAX_PEAK_DIFF"  help="Max Peak Difference value. Default is 0.25" />
+
+  </inputs>
+
+  <outputs>
+    <data format="html" name="htmlfile" label="Output of Validator.html" />
+  </outputs>
+
+  <help>
+Validator will take about five minutes to run for a 100mb DAT file.
+
+usage: validator_cli.py [-h] [--input-file1 DAT_FILE]
+                        [--input-file2 CPAS_FILE] 
+                        [--peak-cutoff PEAK_CUTOFF]
+                        [--ms1-cutoff MS1_CUTOFF] 
+                        [--ms2-cutoff MS2_CUTOFF]
+                        [--max-peak-diff MAX_PEAK_DIFF]
+                        [--output-folder OUTPUT_FOLDER]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --input-file1 DAT_FILE
+                        A string that points to the location of input file
+  --input-file2 CPAS_FILE
+                        A string that points to the location of cpas input
+                        file [Required for CROSSREF and QUANT to run]
+  --peak-cutoff PEAK_CUTOFF
+                        Peak Cutoff value. Default is 0.01
+  --ms1-cutoff MS1_CUTOFF
+                        MS1 Cutoff value. Default is 10
+  --ms2-cutoff MS2_CUTOFF
+                        MS2 Cutoff value. Default is 1000
+  --max-peak-diff MAX_PEAK_DIFF
+                        Max Peak Difference value. Default is 0.25
+  --output-folder OUTPUT_FOLDER
+                        Output folder location
+
+  </help>
+
+</tool>

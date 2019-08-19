@@ -1,0 +1,180 @@
+<tool id="gatk3.3_diagnose_targets" name="Diagnose Targets" version="JAVA: jre1.7.0_51; GATK3.3: GenomeAnalysisTK-3.3-0; SAMTOOLS: 1.1">
+  <description>on BAM files</description>
+  <requirements>
+      <requirement type="package">java</requirement>
+      <requirement type="package" version="3.3">gatk3</requirement>
+      <requirement type="package" version="1.1">samtools</requirement>
+  </requirements>
+  <macros>
+    <import>gatk_macros.xml</import>
+  </macros>
+  <command interpreter="python">gatk3_wrapper.py
+   --max_jvm_heap_fraction "1"
+   #for $bam_count, $input_bam in enumerate( $reference_source.input_bams ):
+     -d "-I" "${input_bam.input_bam}" "${input_bam.input_bam.ext}" "gatk_input_${bam_count}"
+     #if str( $input_bam.input_bam.metadata.bam_index ) != "None":
+       -d "" "${input_bam.input_bam.metadata.bam_index}" "bam_index" "gatk_input_${bam_count}" ##hardcode galaxy ext type as bam_index
+     #end if
+   #end for
+   -p 'java 
+    -jar "\$GATK3_PATH/GenomeAnalysisTK.jar"
+    -T "DiagnoseTargets"
+    \$GATK3_SITE_OPTIONS
+    ## \$GATK3_NUM_THREADS
+    ##-et "NO_ET" -K "/data/galaxy/appList/GenomeAnalysisTK-2.0-36-gf5c1c1a/gatk3_key_file" ##ET no phone home
+    #if $reference_source.reference_source_selector != "history":
+        -R "${reference_source.ref_file.fields.path}"
+    #end if
+    --out "${output_vcf}"
+   '
+    #for $interval_count, $input_intervals in enumerate( $input_interval_repeat ):
+      -d "--intervals" "${input_intervals.input_intervals}" "${input_intervals.input_intervals.ext}" "input_intervals_${interval_count}"
+    #end for
+ 
+    ##start standard gatk options
+    #if $gatk_param_type.gatk_param_type_selector == &quot;advanced&quot;:
+        #include source=$standard_gatk_options#
+    #end if
+    
+    #if $reference_source.reference_source_selector == "history":
+        -d "-R" "${reference_source.ref_file}" "${reference_source.ref_file.ext}" "gatk_input_reference_fasta"
+        --picard_jar "/mnt/galaxyTools/tools/picard/1.121/CreateSequenceDictionary.jar"
+    #end if
+    ##end standard gatk options
+    ##start analysis specific options
+    #if $analysis_param_type.analysis_param_type_selector == "advanced":
+        -p '
+        --maximum_coverage ${analysis_param_type.maximum_coverage}
+        --minimum_base_quality ${analysis_param_type.min_base_quality}
+        --minimum_mapping_quality ${analysis_param_type.min_mapping_quality}
+        --maximum_insert_size ${analysis_param_type.maximum_insert_size}
+        --bad_mate_status_threshold ${analysis_param_type.bad_mate_status_threshold}
+        --coverage_status_threshold ${analysis_param_type.coverage_status_threshold}
+        --excessive_coverage_status_threshold ${analysis_param_type.excessive_coverage_status_threshold}
+        --quality_status_threshold ${analysis_param_type.quality_status_threshold}
+        --voting_status_threshold ${analysis_param_type.voting_status_threshold}
+        '
+    #end if
+
+  </command>
+  <inputs>
+    <conditional name="reference_source">
+      <param label="Choose the source for the reference list" name="reference_source_selector" type="select">
+        <option value="cached">Locally cached</option>
+        <option value="history">History</option>
+      </param>
+      <when value="cached">
+        <repeat help="-I,--input_file &amp;lt;input_file&amp;gt;" min="1" name="input_bams" title="BAM file">
+            <param format="bam" label="BAM file" name="input_bam" type="data">
+              <validator type="unspecified_build"/>
+              <validator message="Sequences are not currently available for the specified build." metadata_column="dbkey" metadata_name="dbkey" table_name="gatk3_picard_indexes" type="dataset_metadata_in_data_table"/> <!-- fixme!!! this needs to be a select -->
+            </param>
+        </repeat>
+        <param help="-R,--reference_sequence &amp;lt;reference_sequence&amp;gt;" label="Using reference genome" name="ref_file" type="select">
+          <options from_data_table="gatk3_picard_indexes">
+                <filter column="3" type="sort_by"/>
+
+            <!-- <filter type="data_meta" key="dbkey" ref="input_bam" column="dbkey"/> does not yet work in a repeat...--> 
+          </options>
+          <validator message="A built-in reference genome is not available for the build associated with the selected input file" type="no_options"/>
+        </param>
+      </when>
+      <when value="history"> <!-- FIX ME!!!! -->
+        <param format="bam" label="BAM file" name="input_bam" type="data"/>
+        <param format="fasta" help="-R,--reference_sequence &amp;lt;reference_sequence&amp;gt;" label="Using reference file" name="ref_file" type="data"/>
+      </when>
+    </conditional>
+    <repeat help="-L,--intervals &amp;lt;intervals&amp;gt;" name="input_interval_repeat" title="Operate on Genomic intervals">
+      <param format="bed,gatk_interval,picard_interval_list,vcf" label="Genomic intervals" name="input_intervals" type="data"/>
+    </repeat>
+    
+    <conditional name="gatk_param_type">
+      <param label="Basic or Advanced GATK options" name="gatk_param_type_selector" type="select">
+        <option selected="True" value="basic">Basic</option>
+        <option value="advanced">Advanced</option>
+      </param>
+      <when value="basic">
+        <!-- Do nothing here -->
+      </when>
+      <when value="advanced">
+        <expand macro="advanced_options" />
+      </when>
+    </conditional>
+    
+    <conditional name="analysis_param_type">
+      <param label="Basic or Advanced Analysis options" name="analysis_param_type_selector" type="select">
+        <option selected="True" value="basic">Basic</option>
+        <option value="advanced">Advanced</option>
+      </param>
+      <when value="basic">
+        <!-- Do nothing here -->
+      </when>
+      <when value="advanced">
+        <param help="--max,maximum_coverage &amp;lt;maximum_coverage&amp;gt;" label="The maximum allowable coverage" name="maximum_coverage" type="integer" value="1073741823"/>
+        <param help="-BQ,--minimum_base_quality &amp;lt;minimum_base_quality&amp;gt;" label="Minimum quality of bases considered for calls" name="min_base_quality" type="integer" value="20"/>
+        <param help="-MQ,--minimum_mapping_quality &amp;lt;minMappingQuality&amp;gt;" label="Minimum mapping quality of reads considered for calls" name="min_mapping_quality" type="integer" value="20"/>
+        <param help="-min, --minimum_coverage &amp;lt;minCoverage&amp;gt;" label="The minimum allowable coverage, used for calling LOW_COVERAGE" name="minCoverage" type="integer" value="5"/>
+        <param help="-ins, --maximum_insert_size &amp;lt;maximum_insert_size&amp;gt;" label="The maximum allowed distance between a read and its mate" name="maximum_insert_size" type="integer" value="500"/>
+        <param help="-stBM,--bad_mate_status_threshold &amp;lt;bad_mate_status_threshold&amp;gt;" label="The proportion of the loci needed for calling BAD_MATE" name="bad_mate_status_threshold" type="float" value="0.5"/>
+        <param help="-stC,--coverage_status_threshold &amp;lt;coverage_status_threshold&amp;gt;" label="The proportion of the loci needed for calling LOW_COVERAGE and COVERAGE_GAPS" name="coverage_status_threshold" type="float" value="0.2"/>
+        <param help="-stXC,-- &amp;lt;excessive_coverage_status_threshold&amp;gt;" label="The proportion of the loci needed for calling EXCESSIVE_COVERAGE" name="excessive_coverage_status_threshold" type="float" value="0.2"/>
+        <param help="-stQ,--quality_status_threshold &amp;lt;quality_status_threshold&amp;gt;" label="The proportion of the loci needed for calling POOR_QUALITY" name="quality_status_threshold" type="float" value="0.5"/>
+        <param help="-stV,--voting_status_threshold &amp;lt;voting_status_threshold&amp;gt;" label="The needed proportion of samples containing a call for the interval to adopt the call" name="voting_status_threshold" type="float" value="0.5"/>
+      </when>
+    </conditional>
+  </inputs>
+  <outputs>
+    <data format="vcf" label="${tool.name} on ${on_string}" name="output_vcf"/>
+  </outputs>
+  <trackster_conf/>
+  <tests>
+      <test>
+      </test>
+  </tests>
+  <help>
+**What it does**
+
+This tool is useful for diagnosing regions with bad coverage, mapping, or read mate pairs. It analyzes each sample independently and aggregates results over intervals of interest.
+
+
+------
+
+**Inputs**
+
+GenomeAnalysisTK: DiagnoseTargets accepts aligned BAM input files.
+
+
+**Outputs**
+
+The output is a VCF
+
+
+Go `here &lt;http://www.broadinstitute.org/gatk/guide/topic?name=intro&gt;`_ for details on GATK file formats.
+
+-------
+
+**Settings**::
+
+ bad_mate_status_threshold		0.5		The proportion of the loci needed for calling BAD_MATE
+ coverage_status_threshold		0.2		The proportion of the loci needed for calling LOW_COVERAGE and COVERAGE_GAPS
+ excessive_coverage_status_threshold	0.2		The proportion of the loci needed for calling EXCESSIVE_COVERAGE
+ maximum_coverage			1073741823	The maximum allowable coverage, used for calling EXCESSIVE_COVERAGE
+ maximum_insert_size			500		The maximum allowed distance between a read and its mate
+ minimum_base_quality			20		The minimum Base Quality that is considered for calls
+ minimum_coverage			5		The minimum allowable coverage, used for calling LOW_COVERAGE
+ minimum_mapping_quality		20		The minimum read mapping quality considered for calls
+ quality_status_threshold		0.5		The proportion of the loci needed for calling POOR_QUALITY
+ voting_status_threshold		0.5		The needed proportion of samples containing a call for the interval to adopt the call
+
+------
+
+**Citation**
+
+For the underlying tool, please cite `DePristo MA, Banks E, Poplin R, Garimella KV, Maguire JR, Hartl C, Philippakis AA, del Angel G, Rivas MA, Hanna M, McKenna A, Fennell TJ, Kernytsky AM, Sivachenko AY, Cibulskis K, Gabriel SB, Altshuler D, Daly MJ. A framework for variation discovery and genotyping using next-generation DNA sequencing data. Nat Genet. 2011 May;43(5):491-8. &lt;http://www.ncbi.nlm.nih.gov/pubmed/21478889&gt;`_
+
+Please also site `McKenna A, Hanna M, Banks E, Sivachenko A, Cibulskis K, Kernytsky A, Garimella K, Altshuler D, Gabriel S, Daly M, DePristo MA (2010). The Genome Analysis Toolkit: a MapReduce framework for analyzing next-generation DNA sequencing data. Genome Res. 20:1297-303. Epub 2010 Jul 19. &lt;http://www.ncbi.nlm.nih.gov/pubmed/20644199&gt;`_
+
+If you use this tool in Galaxy, please cite `Blankenberg D, Von Kuster G, Coraor N, Ananda G, Lazarus R, Mangan M, Nekrutenko A, Taylor J. Galaxy: a web-based genome analysis tool for experimentalists. Curr Protoc Mol Biol. 2010 Jan;Chapter 19:Unit 19.10.1-21. &lt;http://www.ncbi.nlm.nih.gov/pubmed/20069535&gt;`_
+
+  </help>
+</tool>

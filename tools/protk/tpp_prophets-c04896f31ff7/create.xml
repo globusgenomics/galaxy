@@ -1,0 +1,159 @@
+<tool id="TPP_SpectraST_create" name="Create SpectralST Library" version="1.0">
+<description>Build Spectral Library</description>
+<command interpreter="perl">create.pl $params $output</command>
+<inputs>
+<conditional name="source">
+  <param name="type" type="select" label="select source file format">
+    <option value="pepxml" selected="true">build-from-validated-pepxml</option>
+    <option value="sptxt">build-from-library:sptxt</option>
+  </param>
+  <when value="pepxml">
+    <param name="pepxml" type="data" format="pep.xml" label="validated pepxml"/>
+    <param name="prob" type="text" size="30" label="probability threshold" value="0.9" help="trusted probability for validation"/>
+    <param name="query" type="data" format="mzXML" label="raw spectra files"/>
+  </when>
+  <when value="sptxt">
+    <param name="sptxt" type="data" format="sptxt" label="known spectral library" />
+    <conditional name="operation">
+      <param name="type" type="select" label="select input params or params-template">
+	<option value="template" selected="true">read-create-params-template</option>
+	<option value="commonDecoy">common-usage-decoy</option>
+	<option value="advanced">input-create-params</option>
+      </param>
+      <when value="commonDecoy">
+	<param name="decoyConcatenate" type="text" size="30" label="Whether or not to concatenate real and decoy libraries (true or false)" value="true"/>
+	<param name="decoySizeRatio" type="text" size="30" label="The (decoy /real) size ratio N=1,2,3..." value="1"/>
+      </when>
+      <when value="advanced">
+	<!--GENERAL-->
+	<param name="outputFileName" type="text" size="30" label="Output File Name (without extension)" value="new"/>
+	<!--PEPXML
+	<param name="minimumProbablityToInclude" type="text" size="30" label="Set the minimum probability for an identification to be imported into library" value="0.9"/>
+	<param name="datasetName" type="text" size="30" label="Dataset identifier"/>
+	-->
+	<!--LIBRARY MANIPULATION-->
+	<param name="filterCriteria" type="text" size="30" label="Filtering library by criteria"/>
+	<param name="useProbTable" type="text" size="30" label="Use probability table to filter library (and modify probabilities)"/>
+	<param name="useProteinList" type="text" size="30" label="Use protein list to filter library"/>
+	<param name="printMRMTable" type="text" size="30" label="Print MRM transition table"/>
+	<param name="combineAction" type="text" size="30" label="Combining multiple libraries. Choices are UNION, INTERSECT, SUBTRACT and SUBTRACT_HOMOLOG" value="UNION"/>
+	<param name="buildAction" type="text" size="30" label="Building libraries. Choices are CONSENSUS, BEST_REPLICATE. If not specified, all library entries will be left as is."/>
+	<param name="refreshDatabase" type="text" size="30" label="Refresh protein mappings against FASTA file specified"/>
+	<param name="refreshDeleteUnmapped" type="text" size="30" label="Whether to delete entries with unmapped peptide during refreshing" value="false"/>
+	<param name="refreshDeleteMultimapped" type="text" size="30" label="Whether to delete entries with multimapped peptide during refreshing"/>
+	<!--CONSENSUS-->
+	<param name="minimumNumReplicates" type="text" size="30" label="The minimum number of replicates for a peptide ion to be included in library" value="1"/>
+	<!--QUALITY FILTER-->
+	<param name="qualityLevelRemove" type="text" size="30" label="The quality level for removing spectra from the library" value="2"/>
+	<param name="qualityLevelMark" type="text" size="30" label="The quality level for marking spectra in the library" value="5"/>
+	<!--DECOY-->
+	<param name="decoyConcatenate" type="text" size="30" label="Whether or not to concatenate real and decoy libraries" value="false"/>
+	<param name="decoySizeRatio" type="text" size="30" label="The (decoy /real) size ratio" value="1"/>
+	<!--SEMI-EMPIRICAL SPECTRA-->
+	<param name="allowableModTokens" type="text" size="30" label="Set(s) of allowable modification tokens to generate semi-empirical spectra"/>
+	
+      </when>
+      <when value="template">
+	<param name="paramsTemplate" type="data" format="xml" label="parameters template"/>
+      </when>
+    </conditional>
+  </when>
+</conditional>
+
+<!--
+<conditional name="query">
+  <param name="type" type="select" label="select input query data type">
+    <option value="single" selected="true">single mzXML-file</option>
+    <option value="fileSet">mzXML-fileSet</option>
+  </param>
+  <when value="single">
+      <param name="inputQuery" type="data" format="mzXML" label="input file"/>
+  </when>
+  <when value="fileSet">
+      <param name="inputQuery" type="data" format="tppfileset" label="input query file set"/>
+  </when>
+</conditional>
+</inputs>
+-->
+<!--
+<repeat name="datasets" title="raw input datasets">
+	<param name="inputFile" type="data" format="mzXML" label="raw input dataset"/>
+</repeat>
+-->
+</inputs>
+
+<configfiles>
+<configfile name="params">
+<!--
+*+* params.prob="${source.prob}"*-* 
+*+* params.pepxml=$pepxml*-* 
+
+#if $query.type=="single"
+*+* params.queryType="single" *=-*
+*+* params.queryFile="${inputQuery}" *-*
+*+* params.queryFileName="${query.inputQuery.name}" *-*
+#elif $query.type=="fileSet"
+*+* params.queryType="fileSet" *=-*
+*+* params.queryFile="${inputQuery}" *-*
+#end if 
+-->
+
+#if $source.type=="pepxml"
+*+* params.source="pepxml"
+*+* params.prob="${source.prob}"
+*+* params.pepxml="${source.pepxml}"
+*+* params.queryFile="${source.query}"
+*+* params.queryFileName="${source.query.name}"
+#elif $source.type=="sptxt"
+*+* params.source="sptxt"
+*+* params.sourceFile="${source.sptxt}"
+*+*  params.operationType="${source.operation.type}"
+ #if $source.operation.type=="advanced"
+*+*  params.ourputFileName="${source.operation.outputFileName}"
+*+*  params.fileterCriteria="${source.operation.filterCriteria}"
+*+*  params.useProbTable="${source.operation.useProbTable}"
+*+*  params.useProteinList="${source.operation.useProteinList}"
+*+*  params.printMRMTable="${source.operation.printMRMTable}"
+*+*  params.combineAction="${source.operation.combineAction}"
+*+*  params.buildAction="${source.operation.buildAction}"
+*+*  params.refreshDatabase="${source.operation.refreshDatabase}"
+*+*  params.refreshDeleteUnmapped="${source.operation.refreshDeleteUnmapped}"
+*+*  params.refreshDeleteMultimapped="${source.operation.refreshDeleteMultimapped}"
+*+*  params.minimumNumReplicates="${source.operation.minimumNumReplicates}"
+*+*  params.qualityLevelRemove="${source.operation.qualityLevelRemove}"
+*+*  params.qualityLevelMark="${source.operation.qualityLevelMark}"
+*+*  params.decoyConcatenate="${source.operation.decoyConcatenate}"
+*+*  params.decoySizeRatio="${source.operation.decoySizeRatio}"
+*+*  params.allowableModTokens="${source.operation.allowableModTokens}"
+ #elif $source.operation.type=="commonDecoy"
+*+*  params.decoyConcatenate="${source.operation.decoyConcatenate}"
+*+*  params.decoySizeRatio="${source.operation.decoySizeRatio}"
+ #elif $source.operation.type=="template"
+*+*  params.opType="template"
+*+*  params.paramsTemplate="${source.operation.paramsTemplate}"
+ #end if
+#end if
+<!--
+  #for $i, $s in enumerate( $datasets )
+    $i
+    $s
+   *+* searchParams.dataset=${s.inputFile}*=-*
+  #end for
+-->
+</configfile>
+</configfiles>
+<outputs>
+  <data name="output" format="sptxt" />
+  <!--
+  <data name="output_splib" format="splib" />
+  <data name="output_sptxt" format="sptxt" />
+  <data name="output_spidx" format="spidx" />
+  <data name="output_pepidx" format="pepidx"/>
+  -->
+</outputs>
+<tests>
+	<test>
+	</test>
+</tests>
+<help></help>
+</tool>

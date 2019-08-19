@@ -1,0 +1,216 @@
+<tool id="cuffquant" name="Cuffquant" version="CUFFLINKS: 2.2.1">
+    <!-- Wrapper supports Cuffdiff versions 2.2.1 -->
+    <description>Precompute gene expression levels</description>
+    <requirements>
+        <requirement type="package" version="2.2.1">cufflinks</requirement>
+    </requirements>
+    <version_command>cuffquant 2&gt;&amp;1 | head -n 1</version_command>
+    <command>
+        cuffquant
+            --no-update-check
+            ##--num-threads=&quot;\${GALAXY_SLOTS:-4}&quot;
+	    --num-threads=8
+            ## Set advanced SE data parameters?
+            #if $additional.sAdditional == &quot;Yes&quot;:
+                -m $additional.frag_mean_len
+                -s $additional.frag_len_std_dev
+            #end if
+
+            ## Multi-read correct?
+            #if $multiread_correct :
+            -u
+            #end if
+
+            ## Bias correction?
+            #if $bias_correction.do_bias_correction == &quot;Yes&quot;:
+               -b
+                #if $bias_correction.seq_source.index_source == &quot;history&quot;:
+                    ## Custom genome from history.
+                    $bias_correction.seq_source.ref_file
+                #else:
+                    ## Built-in genome.
+                    ${__get_data_table_entry__('tophat2_indexes', 'value', $gtf_input.dbkey, 'path')}
+                #end if
+            #end if
+
+	    $length_correction
+
+	    ## Set advanced parameters for cufflinks
+ 	    #if $advanced_settings.sAdvanced == &quot;Yes&quot;:
+		#if str($advanced_settings.library_type) != 'auto':
+			--library-type=$advanced_settings.library_type
+		#end if
+		#if $advanced_settings.mask_file:
+			--mask-file=$advanced_settings.mask_file
+	    	#end if
+		--max-mle-iterations=$advanced_settings.max_mle_iterations
+		--max-bundle-frags=$advanced_settings.max_bundle_frags
+	    #end if
+            ## Inputs.
+            $gtf_input
+            #set samplestring = ','.join( [ str( $sample.sample ) for $sample in $samples ] )
+            $samplestring
+    </command>
+    <inputs>
+        <param format="gtf,gff3" help="A transcript annotation (GFF3 or GTF) file produced by cufflinks, cuffcompare, or other source." label="Transcripts" name="gtf_input" type="data"/>
+
+          <repeat min="1" name="samples" title="Replicate">
+               <param format="sam,bam" label="Add replicate" name="sample" type="data"/>
+          </repeat>
+
+
+        <param help="Tells Cufflinks to do an initial estimation procedure to more accurately weight reads mapping to multiple locations in the genome." label="Use multi-read correct" name="multiread_correct" type="boolean"/>
+
+        <conditional name="bias_correction">
+            <param help="Bias detection and correction can significantly improve accuracy of transcript abundance estimates." label="Perform Bias Correction" name="do_bias_correction" type="select">
+                <option value="No">No</option>
+                <option value="Yes">Yes</option>
+            </param>
+            <when value="Yes">
+                <conditional name="seq_source">
+                  <param label="Reference sequence data" name="index_source" type="select">
+                    <option value="cached">Locally cached</option>
+                    <option value="history">History</option>
+                  </param>
+                  <when value="cached">
+                    <param label="Using reference genome" name="index" type="select">
+                      <options from_data_table="tophat2_indexes">
+                        <filter column="1" key="dbkey" ref="gtf_input" type="data_meta"/>
+                        <validator message="No reference genome is available for the build associated with the selected input dataset" type="no_options"/>
+                      </options>
+                    </param>
+                  </when>
+                  <when value="history">
+                      <param format="fasta" label="Using reference file" name="ref_file" type="data"/>
+                  </when>
+                </conditional>
+            </when>
+            <when value="No"/>
+        </conditional>
+
+	<param help="mode of length normalization to transcript fpkm." label="apply length correction" name="length_correction" type="select">
+            <option selected="true" value="">cufflinks effective length correction</option>
+            <option value="--no-effective-length-correction">standard length correction</option>
+	    <option value="--no-length-correction">no length correction at all (use raw counts)</option>
+        </param>
+
+        <conditional name="additional">
+            <param label="Set Additional Parameters for single end reads? (not recommended for paired-end reads)" name="sAdditional" type="select">
+                <option selected="True" value="No">No</option>
+                <option value="Yes">Yes</option>
+            </param>
+            <when value="No"/>
+            <when value="Yes">
+                <param label="Average Fragment Length" name="frag_mean_len" type="integer" value="200"/>
+                <param label="Fragment Length Standard Deviation" name="frag_len_std_dev" type="integer" value="80"/>
+            </when>
+        </conditional>
+
+        <conditional name="advanced_settings">
+	    	<param label="Set Advanced Cuffquant parameters? " name="sAdvanced" type="select">
+                	<option selected="True" value="No">No</option>
+                	<option value="Yes">Yes</option>
+            	</param>
+		<when value="No"/>
+		<when value="Yes">
+			<param help="" label="Library prep used for input reads" name="library_type" type="select">
+				<option selected="True" value="auto">Auto Detect</option>
+				<option value="ff-firststrand">ff-firststrand</option>
+				<option value="ff-secondstrand">ff-secondstrand</option>
+				<option value="ff-unstranded">ff-unstranded</option>
+				<option value="fr-firststrand">fr-firststrand</option>
+				<option value="fr-secondstrand">fr-secondstrand</option>
+				<option value="fr-unstranded">fr-unstranded</option>
+				<option value="transfrags">transfrags</option>
+			</param>
+			<param format="gtf,gff3" help="Ignore all alignment within transcripts in this file" label="Mask File" name="mask_file" optional="True" type="data"/>
+			<param help="Maximum iterations allowed for Maximal Likelyhood Estimation calculations" label="Max MLE iterations" name="max_mle_iterations" type="integer" value="5000"/>
+			<param help="Sets the maximum number of fragments a locus may have before being skipped. Default: 500,000" label="Maximum number of fragments per locus" name="max_bundle_frags" type="integer" value="500000"/>
+			
+		    </when>
+		</conditional>
+    </inputs>
+
+    <stdio>
+        <regex description="Error" level="fatal" match="Error" source="both"/>
+        <regex description="tool progress" level="log" match=".*" source="both"/>
+    </stdio>
+
+    <outputs>
+
+        <!-- Standard datasets. -->
+        <data format="cxb" from_work_dir="abundances.cxb" label="${tool.name} on ${on_string}: Abundances.cxb" name="out_file"/>
+    </outputs>
+
+    <tests>
+        <test>
+                <!--
+                    cuffquant cuffcompare_out5.gtf cuffdiff_in1.sam,cuffdiff_in2.sam 
+                -->
+                <param ftype="gtf" name="gtf_input" value="cuffquant_in.gtf"/>
+                <param ftype="sam" name="sample1" value="cuffquant_in1.sam"/>
+                <param ftype="sam" name="sample2" value="cuffquant_in2.sam"/>
+		<param name="length_correction" value="cufflinks effective length correction"/>
+                <param name="do_bias_correction" value="No"/>
+                <param name="multiread_correct" value="No"/>
+                <param name="sAdditional" value="No"/>
+		<param name="sAdvanced" value="No"/>
+                <output file="cuffquant_out1.cxb" name="out_file"/>
+        </test>
+    </tests>
+
+    <help>
+**Cuffquant Overview**
+
+Cuffquant is part of Cufflinks_. Cuffquant provides pre-calculation of gene expression levels. The resulting file can be provided to cuffdiff or cuffnorm for further processing.  Please cite: Trapnell C, Williams BA, Pertea G, Mortazavi AM, Kwan G, van Baren MJ, Salzberg SL, Wold B, Pachter L. Transcript assembly and abundance estimation from RNA-Seq reveals thousands of new transcripts and switching among isoforms. Nature Biotechnology doi:10.1038/nbt.1621
+
+.. _Cufflinks: http://cufflinks.cbcb.umd.edu/
+        
+------
+
+**Know what you are doing**
+
+.. class:: warningmark
+
+There is no such thing (yet) as an automated gearshift in expression analysis. It is all like stick-shift driving in San Francisco. In other words, running this tool with default parameters will probably not give you meaningful results. A way to deal with this is to **understand** the parameters by carefully reading the `documentation`__ and experimenting. Fortunately, Galaxy makes experimenting easy.
+
+.. __: http://cufflinks.cbcb.umd.edu/manual.html#cuffdiff
+
+------
+
+**Input format**
+
+Cuffquant takes Cufflinks or Cuffcompare GTF files as input along with two or more SAM files containing the fragment alignments for two or more samples.
+
+------
+
+**Outputs**
+
+Cuffquant produces one output file:
+
+1. Transcript expression values in binary format.
+    
+-------
+
+**Settings**
+
+All of the options have a default value. You can change any of them. Most of the options in Cuffdiff have been implemented here.
+
+------
+
+**Cuffdiff parameter list**
+
+This is a list of implemented Cuffdiff options::
+
+  -m INT                         Average fragment length (SE reads); default 200
+  -s INT                         Fragment legnth standard deviation (SE reads); default 80
+  --max-mle-iterations INT       Sets the number of iterations allowed during maximum likelihood estimation of abundances. Default: 5000
+  -u                             Multi read correction tells Cufflinks to do an initial estimation procedure to more accurately weight reads mapping to multiple locations in the genome.
+  -b ref.fasta			 bias correction. Bias detection and correction can significantly improve accuracy of transcript abundance estimates.
+  --no-effective-length-correction  Use standard length correction
+  --no-length-correction         Disable all length correction.
+  --library-type                 ff-firststrand,ff-secondstrand,ff-unstranded,fr-firstrand,fr-secondstrand,fr-unstranded,transfrags
+  --mask-file (gff3/gtf)         Ignore all alignment within transcripts in this file
+  --max-bundle-frags             Sets the maximum number of fragments a locus may have before being skipped. Skipped loci are listed in skipped.gtf.
+    </help>
+</tool>

@@ -1,0 +1,39 @@
+<tool id="rs_estimate" name="rs_estimate" version="RNA-SKIM: default">
+  <requirements>
+    <requirement type="package">rna-skim</requirement>
+  </requirements>
+  <description>quantifies the abundances of transcripts based on the occurrences of sig-mers</description>
+  <command>
+    rs_estimate -count_file=$counts_file -read_length=$read_length -rs_length=$rs_length &gt; $outfile_estimation
+  </command>
+  <inputs>
+    <param format="tabular" help="" label="Counts file" name="counts_file" type="data"/>
+    <param help="default is 100" label="Read length of RNA-seq reads" name="read_length" type="int" value="100"/>
+    <param help="default is 40" label="The length of the sig-mer" name="rs_length" type="int" value="40"/>
+  </inputs>
+  <outputs>
+    <data format="tabular" label="${tool.name} on ${on_string}: estimation file" name="outfile_estimation"/>
+  </outputs>
+  <tests>
+    <test>
+    </test>
+  </tests>
+  <help>
+
+.. class:: infomark
+
+**Purpose**
+
+rs_estimate quantifies the abundances of transcripts based on the occurrences of sig-mers.
+
+This command quantifies the transcriptome based on the counts of sig-mers in the clustered_gene.fa.cf file.
+
+------
+
+.. class:: infomark
+
+**Inputs, outputs, and parameters**
+
+There are five columns in the estimation file: transcript id, the length of the transcript, the estimated number of reads reads (scaled), RPKM value of the transcript, TPM value of the transcript.
+  </help>
+</tool>

@@ -1,0 +1,87 @@
+<tool id="nguess_id" name="nguess" version="WFDB: 10.5.20">
+  <description>
+    guess the times of missing normal beats in an annotation file
+  </description>
+  <requirements>
+    <requirement type="package">wfdb</requirement>
+  </requirements>
+
+  <command interpreter="python">
+     wfdb_wrapper.py
+   --program nguess
+   --record $record
+   --annotator $annotator
+   --inAnnType ${annotator.ext}
+   --outputfile $outputfile
+   --outAnnType $outAnn
+   #if $options == &quot;advanced&quot;:
+     --begintime $options.begintime
+     --stoptime $options.stoptime
+     --insertQann $options.insertQann
+   #end if
+
+  </command>
+
+  <inputs>
+    <param format="hea" label="Record ID" name="record" type="data"/>
+    <param format="atr,qrs,wqrs" label="Annotator" name="annotator" type="data"/>
+    <param label="Output annotator type (default: nguess)" name="outAnn" type="select">
+      <option selected="true" value="nguess">nguess</option>
+      <option value="qrs">qrs</option>
+      <option value="wqrs">wqrs</option>
+      <option value="atr">atr</option>
+    </param>
+    <conditional name="options">
+      <param label="Modify Options?" name="selectOptions" type="select">
+        <option selected="true" value="default">Default options</option>
+        <option value="advanced">Modify options</option>
+      </param>
+      <when value="default"/>
+      <when value="advanced">
+        <param help="Begin at the specified time in record (default: start of the record)." label="Start Time" name="begintime" type="text" value="0"/>
+        <param help="Process until the specified time in record (default: the end of the record)." label="Stop Time" name="stoptime" type="text" value="e"/>
+        <param help="Insert Q annotations in the output at the inferred locations of sinus beats only when the input RR interval exceeds M times the predicted RR interval (default: M = 1.75). M must be greater than 1; its useful range is roughly 1.5 to 2." label="Insert number of annotations" name="insertQann" type="text" value=""/>
+      </when>
+    </conditional>
+  </inputs>
+
+  <outputs>
+    <data format="nguess" label="Output of nguess on ${on_string}" name="outputfile">
+      <change_format>
+	<when format="qrs" input="outAnn" value="qrs"/>
+	<when format="wqrs" input="outAnn" value="wqrs"/>
+	<when format="atr" input="outAnn" value="atr"/>
+      </change_format>
+    </data>
+  </outputs>
+
+  <help>
+
+::
+
+  This program copies its input (a WFDB annotation file containing beat annotations), 
+  removing annotations of events other than sinus beats, and interpolating additional
+  Q (unknown beat) annotations at times when sinus beats are expected. Intervals between
+  sinus beats are predicted using a predictor array as described by Paul Schluter
+  (&quot;The design and evaluation of a bedside cardiac arrhythmia monitor&quot;; Ph.D. thesis, 
+  MIT Dept. of Electrical Engineering, 1981). When the predictions are inconsistent with 
+  the known sinus beats, as may occur in extreme noise or in highly irregular rhythms 
+  such as atrial fibrillation, no interpolations are made.
+
+::
+
+  usage: nguess -r RECORD -a ANNOTATOR [OPTIONS ...]
+  where RECORD and ANNOTATOR specify the input, and OPTIONS may include::
+
+  -f TIME    start at specified TIME
+  -m M       insert a Q if RR &gt; M * prediction (M &gt; 1; default: M = 1.75)
+  -o OANN    write output as annotator OANN (default: nguess)
+  -t TIME    stop at specified TIME
+
+::
+
+The output contains copies of all N annotations, with additional Q
+annotations inserted at the inferred locations of missing N (sinus) beats.
+  </help>
+
+</tool>

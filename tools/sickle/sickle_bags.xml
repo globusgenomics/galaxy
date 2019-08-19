@@ -1,0 +1,174 @@
+<tool id="sickle_bags" name="Sickle" version="SICKLE: 070113">
+	<description>Windowed Adaptive Trimming of FastQ data</description>
+	<requirements>
+		<requirement type="package">sickle</requirement>
+	</requirements>
+	<command>
+ 	  sickle 
+          #if str($input_source_cond.input_source) == &quot;file&quot;:
+              $input_source_cond.readtype.single_or_paired --quiet
+
+	      #if str($input_source_cond.readtype.single_or_paired) == &quot;se&quot;:
+	        -f $input_source_cond.input_single -o $output_single
+	      #else:
+	        -f $input_source_cond.input_paired1 -r $input_source_cond.input_paired2 -o $output_paired1 -p $output_paired2 -s $output_paired_single
+	      #end if
+          #else:
+              $input_source_cond.single_or_paired --quiet
+              ## get the file names
+              #import os, glob
+              #set $path = &quot;&quot;
+              #if os.path.exists(str($input_source_cond.input_file.extra_files_path)):
+                #set $path = &quot;%s/%s&quot; % ($input_source_cond.input_file.extra_files_path, $input_source_cond.sample_name)
+              #else:
+                #set $fh = open(str($input_source_cond.input_file), &quot;r&quot;)
+                #set $path = &quot;%s/data/%s&quot; % ($fh.readline().rstrip(&quot;\n&quot;), $input_source_cond.sample_name)
+              #end if
+              #set $files = glob.glob(&quot;%s/*&quot; % $path)
+              #if str($input_source_cond.single_or_paired) == &quot;se&quot;:
+                -f $files[0] -o $output_single
+              #else:
+                #set $file1 = $files[0]
+                #set $file2 = $files[1]
+                #set $length1 = len($file1)
+                #set $length2 = len($file2)
+                #if $length1 == $length2:
+                  ## figure out which is read1 and which is read2
+                  #set $split_file1 = list($file1)
+                  #set $split_file2 = list($file2)
+                  #for $i, $j in enumerate($split_file1):
+                    #if $split_file1[$i] != $split_file2[$i]:
+                      ## assume the difference in fastq files is the 1 and 2 in their name
+                      #if $split_file1[$i] == &quot;1&quot;:
+                        #set $forward = $file1
+                        #set $reverse = $file2
+                      #else:
+                        #set $forward = $file2
+                        #set $reverse = $file1
+                      #end if
+                      -f $forward -r $reverse -o $output_paired1 -p $output_paired2 -s $output_paired_single
+                    #end if
+                  #end for
+                #end if
+              #end if
+            #end if
+
+              -t $qual_type
+	      #if str($qual_threshold) != &quot;&quot;:
+	        -q $qual_threshold
+	      #end if
+
+		#if str($length_threshold) != &quot;&quot;:
+		-l $length_threshold
+		#end if
+
+		#if $no_five_prime:
+		-x
+		#end if
+
+		#if $discard_n:
+		-n
+		#end if
+                2&gt; $output_log
+	</command>
+
+    <inputs>
+      <conditional name="input_source_cond">
+        <param label="Input Source" name="input_source" type="select">
+          <option selected="True" value="file">History</option>
+          <option value="bag">Dataset Bag</option>
+        </param>
+        <when value="file">
+          <conditional name="readtype">
+	    <param label="Single-End or Paired-End reads?" name="single_or_paired" optional="false" type="select">
+	      <option selected="true" value="se">Single-End</option>
+	      <option value="pe">Paired-End</option>
+	    </param>
+            <when value="se">
+	      <param format="fastq, fastqsanger" label="Single-End FastQ Reads" name="input_single" optional="false" type="data"/>
+	    </when>
+            <when value="pe">
+	      <param format="fastq, fastqsanger" label="Paired-End Forward Strand FastQ Reads" name="input_paired1" optional="false" type="data"/>
+	      <param format="fastq, fastqsanger" label="Paired-End Reverse Strand FastQ Reads" name="input_paired2" optional="false" type="data"/>
+	    </when>
+	  </conditional>
+        </when>
+        <when value="bag">
+          <param format="txt" label="Input directory of samples" name="input_file" type="data"/>
+          <param label="Sample Name inside the Fastq directory" name="sample_name" type="text"/>
+          <param label="Single-End or Paired-End reads?" name="single_or_paired" optional="false" type="select">
+            <option selected="true" value="se">Single-End</option>
+            <option value="pe">Paired-End</option>
+          </param>
+        </when>
+      </conditional>
+
+      <param label="Quality type" name="qual_type" optional="false" type="select">
+            <option selected="true" value="illumina">Illumina</option>
+	    <option value="solexa">Solexa</option>
+	    <option value="sanger">Sanger</option>
+      </param>
+      <param label="Quality Threshold" name="qual_threshold" optional="true" type="integer" value="20">
+	    <validator message="Minimum value is 0" min="0" type="in_range"/>
+      </param>
+      <param label="Length Threshold" name="length_threshold" optional="true" type="integer" value="20">
+	    <validator message="Minimum value is 0" min="0" type="in_range"/>
+      </param>
+      <param label="Don't do 5' trimming" name="no_five_prime" type="boolean"/>
+      <param label="Discard sequences with Ns" name="discard_n" type="boolean"/>
+    </inputs>
+
+	<outputs>
+		<data format="input" label="Single-End output of ${tool.name} on ${on_string}" name="output_single">
+                  <change_format>
+                    <when format="fastqsanger" input="qual_type" value="sanger"/>
+                    <wehn format="fastq" input="qual_type" value="solexa"/>
+                    <when format="fastqillumina" input="qual_type" value="illumina"/>
+                  </change_format>
+		<filter>(readtype['single_or_paired'] == 'se')</filter>
+		</data>
+
+		<data format="input" label="Paired-End forward strand output of ${tool.name} on ${on_string}" name="output_paired1">
+                  <change_format>
+                    <when format="fastqsanger" input="qual_type" value="sanger"/>
+                    <wehn format="fastq" input="qual_type" value="solexa"/>
+                    <when format="fastqillumina" input="qual_type" value="illumina"/>
+                  </change_format>
+		<filter>(readtype['single_or_paired'] == 'pe')</filter>
+		</data>
+
+		<data format="input" label="Paired-End reverse strand output of ${tool.name} on ${on_string}" name="output_paired2">
+                  <change_format>
+                    <when format="fastqsanger" input="qual_type" value="sanger"/>
+                    <wehn format="fastq" input="qual_type" value="solexa"/>
+                    <when format="fastqillumina" input="qual_type" value="illumina"/>
+                  </change_format>
+		<filter>(readtype['single_or_paired'] == 'pe')</filter>
+		</data>
+
+		<data format="input" label="Singletons from Paired-End output of ${tool.name} on ${on_string}" name="output_paired_single">
+                  <change_format>
+                    <when format="fastqsanger" input="qual_type" value="sanger"/>
+                    <wehn format="fastq" input="qual_type" value="solexa"/>
+                    <when format="fastqillumina" input="qual_type" value="illumina"/>
+                  </change_format>
+		<filter>(readtype['single_or_paired'] == 'pe')</filter>
+		</data>
+                <data format="txt" label="Log output of ${tool.name} on ${on_string}" name="output_log"/>
+	</outputs>
+
+	<help>
+Most modern sequencing technologies produce reads that have deteriorating quality towards the 3'-end and some towards the 5'-end as well. Incorrectly called bases in both regions negatively impact assembles, mapping, and downstream bioinformatics analyses.
+
+Sickle is a tool that uses sliding windows along with quality and length thresholds to determine when quality is sufficiently low to trim the 3'-end of reads and also determines when the quality is sufficiently high enough to trim the 5'-end of reads. It will also discard reads based upon the length threshold. It takes the quality values and slides a window across them whose length is 0.1 times the length of the read. If this length is less than 1, then the window is set to be equal to the length of the read. Otherwise, the window slides along the quality values until the average quality in the window rises above the threshold, at which point the algorithm determines where within the window the rise occurs and cuts the read and quality there for the 5'-end cut. Then when the average quality in the window drops below the threshold, the algorithm determines where in the window the drop occurs and cuts both the read and quality strings there for the 3'-end cut. However, if the length of the remaining sequence is less than the minimum length threshold, then the read is discarded entirely. 5'-end trimming can be disabled.
+
+Sickle also has an option to discard reads with any Ns in them.
+
+Sickle supports three types of quality values: Illumina, Solexa, and Sanger. Note that the Solexa quality setting is an approximation (the actual conversion is a non-linear transformation). The end approximation is close. Illumina quality refers to qualities encoded with the CASAVA pipeline between versions 1.3 and 1.7. Illumina quality using CASAVA &gt;= 1.8 is Sanger encoded.
+
+Note that Sickle will remove the 2nd fastq record header (on the &quot;+&quot; line) and replace it with simply a &quot;+&quot;. This is the default format for CASAVA &gt;= 1.8.
+
+Sickle also supports gzipped file inputs.
+	</help>
+
+</tool>

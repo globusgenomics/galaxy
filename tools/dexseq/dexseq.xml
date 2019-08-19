@@ -1,0 +1,79 @@
+<tool id="dexseq" name="DEXSeq">
+	<description>Run Differential Expression analysis from SAM To Count data</description>
+        <requirements>
+	     <requirement type="package">pymodules</requirement>
+             <requirement type="package">R</requirement>
+        </requirements>
+	<command interpreter="python">
+            #if $adjusted_conditional.adjusted == "Yes":
+		 stderr_wrapper.py Rscript /nfs/software/galaxy/tools/dexseq/dexseq_adjusted_RIN.R 
+            #else:
+                 stderr_wrapper.py Rscript /nfs/software/galaxy/tools/dexseq/dexseq_unadjusted.R 
+            #end if
+            $gtf_file
+
+            ## CovNames
+            "$covariate_keys"
+
+            ##
+            #if $adjusted_conditional.adjusted == "Yes":
+                "$adjusted_conditional.formula"
+            #else:
+                "none"
+            #end if
+
+            ## Inputs.
+            ${first_input} $sampleName "$condition"
+            #for $input_file in $input_files:
+              ${input_file.additional_input} ${input_file.additional_sampleName} "${input_file.additional_condition}"
+            #end for
+
+	</command>
+
+	<inputs>
+            <param format="gtf,gff" name="gtf_file" type="data" label="Annotations File (GTF or GFF)" help=""/>
+            <param name="covariate_keys" type="text" size="30" optional="false" label="Covariate names of the samples" help="Must be the covariates column names for the samples and comma separated (i.e. Condition,Tissue,RIM,etc)">
+                <validator type="empty_field"/>
+            </param>
+            <conditional name="adjusted_conditional">
+               <param name="adjusted" type="select" label="Perform adjusted analysis" help="">
+                     <option value="Yes" selected="true">Yes</option>
+		     <option value="No">No</option>
+               </param>
+               <when value="Yes">
+                    <param name="formula" type="text" size="30" label="Additional covariate names to take into account in analysis besides Conditon" help=""/>
+               </when>
+               <when value="No" />
+            </conditional>
+            <param format="tabular" name="first_input" type="data" label="HTSeq count file" help=""/>
+            <param name="sampleName" type="text" size="30" optional="false" label="Unique Sample Name" help="">
+		<validator type="empty_field"/>
+            </param>
+            <param name="condition" type="text" size="30" optional="false" label="Covariate values of the Sample" help="Must be in the same order as the covariates keys entered above and comma separated (i.e. treated,tissue name,RIM,etc)">
+                <validator type="empty_field"/>
+            </param>
+           <repeat name="input_files" title="Additional HTSeq-Count Input Files">
+               <param format="tabular" name="additional_input" type="data" label="HTSeq-Count file" help=""/>
+               <param name="additional_sampleName" type="text" size="30" optional="false" label="Unique Sample Name" help="">
+                   <validator type="empty_field"/>
+               </param>
+               <param name="additional_condition" type="text" size="30" optional="false" label="Covariate values of the Sample" help="Must be in the same order as the covariates keys entered above and comma separated (i.e. treated,tissue name,RIM,etc)">
+                   <validator type="empty_field"/>
+               </param>
+           </repeat>
+
+	</inputs>
+
+	<outputs>
+		<data format="pdf" name="allgenesDispEsts" from_work_dir="all.genes.DispEsts.pdf" label="${tool.name} on ${on_string}: All genes Disp Ests PDF"/>
+                <data format="pdf" name="allgenesDEU" from_work_dir="all.genes.DEU.results.pdf" label="${tool.name} on ${on_string}: All genes DEU PDF"/>
+                <data format="tabular" name="DEU_results_all_genes" from_work_dir="DEU_results_all_genes.txt" label="${tool.name} on ${on_string}: All genes results"/>
+		<data format="html" name="diagnostic_html" label="Top Table for ${tool.name} on ${on_string}"/>
+		<data format="r" name="outputr" from_work_dir="DEXSeq.all.genes.exons.RData" label="${tool.name} on ${on_string}: R script"/>
+	</outputs>
+
+	<help>
+		NOTE: This DEXseq Galaxy tool can only be run on counts files that are created from SAM files that have been aligned to a transcriptome.
+	</help>
+
+</tool>

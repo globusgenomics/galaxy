@@ -1,0 +1,55 @@
+<tool id="htseqCount" name="HTSeq Count" version="HTSEQ: default">
+        <description>Count how many reads map to each feature</description>
+        <requirements>
+            <requirement type="package">htseq</requirement>
+            <requirement type="package">pymodules</requirement>
+        </requirements>
+
+	<command>htseq-count
+		--mode $mode
+		--stranded $stranded
+		--idattr $idattr
+		--type $feature_type
+		-a $minaqual
+
+		#if $quiet == &quot;true&quot;
+			--quiet
+		#end if
+
+		$sam
+		$gff
+		&gt; $output 2&gt; $stderr_output
+	</command>
+	<inputs>
+		<param help="Mode to handle reads overlapping more than one feature" label="Mode" name="mode" type="select">
+			<option selected="true" value="union">union</option>
+			<option value="intersection-strict">intersection-strict</option>
+			<option value="intersection-nonempty">intersection-nonempty</option>
+		</param>
+		<param label="Is data from a strand-sepcific assay?" name="stranded" type="select">
+			<option value="yes">yes</option>
+			<option selected="true" value="no">no</option>
+			<option value="reverse">reverse</option>
+		</param>
+		<param help="Several GFF lines with the same feature ID will be considered as parts of the same feature. The feature ID is used to identity the counts in the output table. The default, suitable for RNA-seq and Ensembl GTF files, is gene_id." label="GFF attribute to be used as feature ID" name="idattr" type="text" value="gene_name"/>
+		<param help="All features of other type are ignored.  The default, suitable for RNA-seq and Ensembl GTF files: exon)" label="Feature type" name="feature_type" type="text" value="exon"/>
+		<param help="Skip all reads with alignment quality lower than the given minimum value" label="Minimum alignment quality" name="minaqual" type="integer" value="0"/>
+		<param checked="false" label="Supress progress report and warnings?" name="quiet" type="boolean"/>
+		<param format="sam" help="Sam format.  If paired-end data, the file must be sorted" label="Alignment file" name="sam" type="data"/>
+		<param format="gff,gtf" help="GTF/GFF format" label="Features file" name="gff" type="data"/>
+
+        </inputs>
+        <outputs>
+                <data format="tabular" label="Feature counts of ${sam.name}" name="output" type="data"/>
+                <data format="tabular" label="${tool.name} log" name="stderr_output" type="data"/>
+        </outputs>
+        <help>
+
+Given a file with aligned sequencing reads and a list of genomic features, this tool coounts how many reads map to each feature.
+
+Please see the documentation_ for more information.
+
+.. _documentation: http://www-huber.embl.de/users/anders/HTSeq/doc/count.html
+
+        </help>
+</tool>

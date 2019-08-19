@@ -1,0 +1,110 @@
+<tool id="itmi_vcfqc_optimized_with_globus_transfer" name="ITMI VCF QC Optimized Workflow With Globus Transfer" version="FastQC: 0.11.3; VCFLIB: 03.08.2016; PICARD: 1.134; VCFTOOLS: vcftools_0.1.14">
+  <description>quality control for BAM and VCF</description>
+  <action module="galaxy_ext.globus.tools.actions.globus" class="GlobusTransferMultiple"/>
+  <requirements>
+    <requirement type="package" version="0.11.3">FastQC</requirement>
+    <requirement type="package" version="03.08.2016">vcflib</requirement>
+    <requirement type="package" version="1.134">picard</requirement>
+    <requirement type="package" version="vcftools_0.1.14">vcftools</requirement>
+    <requirement type="package">pymodules</requirement>
+    <requirement type="package" version="jre1.7.0_5">java</requirement>
+  </requirements>
+  <command interpreter="python">
+    ITMI_VCFQC_optimized_with_transfer_03092016.py
+      -u $username
+      -k $userkey
+      -c $usercert
+      --goauth-token "$goauth"
+      --source-ep="$from_endpoint"
+      --destination-ep=$to_endpoint
+      --source-path-bam="$from_path1"
+      --destination-path-bam="$to_path1"
+      --source-path-vcf="$from_path2"
+      --destination-path-vcf="$to_path2"
+      --source-path-tbi="$from_path3"
+      --destination-path-tbi="$to_path3"
+      --type $path_type
+      --out-transfer-log $out_file1
+      --sample-name $sample 
+
+      ##use precomputed indexes
+      --picard-ref "${picard_index.fields.path}"
+
+      ## output vcf file
+      --output-picard-alignmentSummary $output_picard_alignmentSummary
+      --output-picard-alignmentSummary-directory $output_picard_alignmentSummary.extra_files_path
+      --output-vcflib-hethomratio $output_vcflib_hethomratio
+      --output-vcftools-tstvstats $output_vcftools_tstvstats
+      --output-fastqc-html $output_fastqc_html
+      --output-fastqc-text $output_fastqc_text
+      --output-log $output_log
+      >  $output_log
+  </command>
+  <inputs>
+    <param name="sample" type="text" label="Sample label" />
+    <!--<param name="input_bam" type="data" format="bam" label="Input BAM"/>
+    <param name="input_vcf" type="data" format="vcf" label="Input VCF"/>
+    <param name="input_tabix" type="data" format="tabix,tbi" label="Input Tabix"/>-->
+
+     <param name="goauth" type="hidden" size="100" label="Globus Auth Token">
+      <sanitizer>
+        <valid>
+          <add value="|"/>
+        </valid>
+      </sanitizer>
+    </param>
+    <param name="username" type="hidden" size="100" label="Globus Username"/>
+    <param name="userkey" type="hidden" size="100" label="Globus User Key"/>
+    <param name="usercert" type="hidden" size="100" label="Globus User Certificate"/>
+    <param name="globuscert" type="hidden" size="100" label="Globus Certificate"/>
+    <param name="get_data_flag" type="hidden" size="100" label="Send or Receive data"/>
+    <param name="path_type" type="hidden" value="receive" size="100" label="Is this a directory or a file path"/>
+    <param name="from_endpoint" type="text" label="Source Endpoint">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="to_endpoint" type="hidden" size="100" label="Destination Endpoint">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="from_path1" type="text" size="100" label="BAM Source Path">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="to_path1" type="hidden" size="100" label="Destination BAM Path">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="from_path2" type="text" size="100" label="VCF Source Path">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="to_path2" type="hidden" size="100" label="VCF Destination Path">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="from_path3" type="text" size="100" label="Tabix Source Path">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="to_path3" type="hidden" size="100" label="Tabix Destination Path">
+      <sanitizer sanitize="False"/>
+    </param>
+
+    <param help="" label="Select a Picard built-in reference genome" name="picard_index" type="select">
+      <options from_data_table="all_fasta">
+      </options>
+    </param>
+  </inputs>
+  <outputs>
+    <data format="html" label="${tool.name}: FastQC Webpage" name="output_fastqc_html"/>
+    <data format="txt" label="${tool.name}: FastQC RawData" name="output_fastqc_text"/>
+    <data format="txt" label="${tool.name}: Picard AlignmentSummary Metrics" name="output_picard_alignmentSummary"/>
+    <data format="tabular" label="${tool.name}: VCFLIB HetHom ratio" name="output_vcflib_hethomratio" />
+    <data format="tabular" label="${tool.name}: VCFTOOLS TsTv stats" name="output_vcftools_tstvstats" />
+    <data format="txt" label="${tool.name}: Log" name="output_log"/>
+    <data format="txt" label="${tool.name} on GlobusTransfer (transfer log)" name="out_file1" />
+  </outputs>
+  <tests>
+    <test>
+    </test>
+  </tests> 
+  <help>
+
+**What it does**
+
+  </help>
+</tool>

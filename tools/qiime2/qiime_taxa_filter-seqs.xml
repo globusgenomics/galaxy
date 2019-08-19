@@ -1,0 +1,128 @@
+<?xml version="1.0" ?>
+<tool id="qiime_taxa_filter-seqs" name="qiime taxa filter-seqs" version="022019">
+	<description>- Taxonomy-based feature sequence filter.</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command>
+	<![CDATA[
+	qiime taxa filter-seqs
+
+	#if str( $id_to_taxonomy_fp.selector ) == 'history'
+		#set $tax = $id_to_taxonomy_fp.taxonomy_fp
+		--i-taxonomy '$tax'
+	#else:
+		#set $tax = $id_to_taxonomy_fp.taxonomy_fp.fields.path
+		--i-taxonomy '$tax'
+	#end if
+
+		 --i-sequences=$isequences
+	#if str($pexclude):
+	 --p-exclude="$pexclude"
+	#end if
+
+	#if str($cmdconfig) != 'None':
+	 --cmd-config=$cmdconfig
+	#end if
+	 --o-filtered-sequences=ofilteredsequences
+	#if str($pmode) != 'None':
+	 --p-mode=$pmode
+	#end if
+
+	#if str($pquerydelimiter):
+	 --p-query-delimiter="$pquerydelimiter"
+	#end if
+
+	#if str($pinclude):
+	 --p-include="$pinclude"
+	#end if
+	;
+	cp ofilteredsequences.qza $ofilteredsequences
+	]]>
+	</command>
+	<inputs>
+		<param format="qza,no_unzip.zip" label="--i-sequences: FeatureData[Sequence] Feature sequences to be filtered. [required]" name="isequences" optional="False" type="data"/>
+
+		<conditional name="id_to_taxonomy_fp" optional="True">
+		   <param name="selector" type="select" label="Reference taxonomy to query">
+			  <option value="cached">Public databases</option>
+			  <option value="history">Databases from your history</option>
+		   </param>
+		   <when value="cached">
+			  <param argument="--taxonomy_fp" label="Reference taxonomy" type="select" optional="True">
+				 <options from_data_table="qiime_taxonomy" />
+			  </param>
+		   </when>
+		   <when value="history">
+			  <param argument="--taxonomy_fp" type="data" format="qza,no_unzip.zip" label="Reference databases" optional="True" />
+		   </when>
+		</conditional>
+
+		<param label="--p-include: One or more search terms that indicate which taxa should be included in the resulting sequences. If providing more than one term, terms should be delimited by the query- delimiter character. By default, all taxa will be included.  [optional]" name="pinclude" optional="True" type="text"/>
+		<param label="--p-exclude: One or more search terms that indicate which taxa should be excluded from the resulting sequences. If providing more than one term, terms should be delimited by the query- delimiter character. By default, no taxa will be excluded.  [optional]" name="pexclude" optional="True" type="text"/>
+
+		<param label="--p-query-delimiter: The string used to delimit multiple search terms provided to include or exclude. This parameter should only need to be modified if the default delimiter (a comma) is used in the provided taxonomic annotations. [default: ,]" name="pquerydelimiter" optional="True" type="text" value=","/>
+
+		<param label="--p-mode: [exact|contains]       Mode for determining if a search term matches a taxonomic annotation. 'contains' requires that the annotation has the term as a substring; 'exact' requires that the annotation is a perfect match to a search term.  [default: contains]" name="pmode" optional="True" type="select">
+			<option selected="True" value="None">Selection is Optional</option>
+			<option value="exact">exact</option>
+			<option value="contains">contains</option>
+		</param>
+
+
+		<param label="--cmd-config: Use config file for command options" name="cmdconfig" optional="True" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="qza" label="${tool.name} on ${on_string}: filteredsequences.qza" name="ofilteredsequences"/>
+	</outputs>
+	<help><![CDATA[
+Taxonomy-based feature sequence filter.
+----------------------------------------
+
+This method filters sequences based on their taxonomic annotations.
+Features can be retained in the result by specifying one or more include
+search terms, and can be filtered out of the result by specifying one or
+more exclude search terms. If both include and exclude are provided, the
+inclusion critera will be applied before the exclusion critera. Either
+include or exclude terms (or both) must be provided.
+
+Parameters
+----------
+sequences : FeatureData[Sequence]
+    Feature sequences to be filtered.
+taxonomy : FeatureData[Taxonomy]
+    Taxonomic annotations for features in the provided feature sequences.
+    All features in the feature sequences must have a corresponding
+    taxonomic annotation. Taxonomic annotations for features that are not
+    present in the feature sequences will be ignored.
+include : Str, optional
+    One or more search terms that indicate which taxa should be included in
+    the resulting sequences. If providing more than one term, terms should
+    be delimited by the query-delimiter character. By default, all taxa
+    will be included.
+exclude : Str, optional
+    One or more search terms that indicate which taxa should be excluded
+    from the resulting sequences. If providing more than one term, terms
+    should be delimited by the query-delimiter character. By default, no
+    taxa will be excluded.
+query_delimiter : Str, optional
+    The string used to delimit multiple search terms provided to include or
+    exclude. This parameter should only need to be modified if the default
+    delimiter (a comma) is used in the provided taxonomic annotations.
+mode : Str % Choices({'contains', 'exact'}), optional
+    Mode for determining if a search term matches a taxonomic annotation.
+    "contains" requires that the annotation has the term as a substring;
+    "exact" requires that the annotation is a perfect match to a search
+    term.
+
+Returns
+-------
+filtered_sequences : FeatureData[Sequence]
+    The taxonomy-filtered feature sequences.
+    	]]>
+	</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

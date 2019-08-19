@@ -1,0 +1,334 @@
+<tool id="shapeit" name="shapeit" version="SHAPEIT: v2.r837">
+    <description>is a fast and accurate method for estimation of haplotypes (aka phasing) from genotype or sequencing data</description>
+
+    <requirements>
+        <requirement type="package" version="v2.r837">shapeit</requirement>
+    </requirements>
+    <stdio>
+        <exit_code range="1:" />
+    </stdio>
+
+    <command><![CDATA[
+        shapeit
+
+        #if $input_files.input_type_select == "vcf":
+          --input-vcf ${input_files.vcf_file}
+        #else if $input_files.input_type_select == "plink_ped_map":
+          --input-ped ${input_files.plink_ped} ${input_files.plink_map}
+          #if $input_files.plink_missing_code != "0":
+            --missing_code $input_files.plink_missing_code
+          #end if
+        #else if $input_files.input_type_select == "plink_bed_bim_fam":
+          --input-bed ${input_files.plink_bed} ${input_files.plink_bim} ${input_files.plink_fam}
+        #else if $input_files.input_type_select == "oxford_gen_sample":
+          --input-gen ${input_files.oxford_gen} ${input_files.oxford_sample}
+          #if $input_files.oxford_threshold != "0.9":
+            --input-thr $input_files.oxford_threshold
+          #end if
+        #end if
+
+        #if $use_genetic_map.use_genetic_map_select == "use_genetic_map_yes":
+          --input-map $use_genetic_map.genetic_map
+        #else if $use_genetic_map.rho != "0.0004":
+          --rho $use_genetic_map.rho
+        #end if
+
+        #if $use_ref_panel.use_ref_panel_select == "use_ref_panel_yes":
+          --input-ref $use_ref_panel.ref_panel_haps $use_ref_panel.ref_panel_legend $use_ref_panel.ref_panel_sample
+          #if $use_ref_panel.disable_mcmc_iterations == "disable_mcmc_iterations_yes":
+            --no-mcmc
+          #end if
+          #if $use_ref_panel.filter_groups == "exclude_groups":
+            --exclude-grp $use_ref_panel.filter_groups.exclude_groups_file
+          #else if $use_ref_panel.filter_groups == "include_groups":
+              --include-grp $use_ref_panel.filter_groups.include_groups_file
+          #end if
+        #end if
+
+        #if $use_filters.use_filters_select == "use_filters_yes":
+          #if $use_filters.use_input_from == "use_input_from_yes":
+            --input-from $input_from
+          #end if
+          #if $use_filters.use_input_to == "use_input_to_yes":
+            --input-to $input_to
+          #end if
+          #if $use_filters.use_output_from == "use_output_from_yes":
+            --output-from $output_from
+          #end if
+          #if $use_filters.use_output_to == "use_output_to_yes":
+            --output-to $output_to
+          #end if
+          #if $use_filters.filter_individuals == "exclude_individuals":
+            --exclude-ind $use_filters.exclude_inviduals_file
+          #else if $use_filters.filter_individuals == "include_individuals":
+            --include-ind $use_filters.include_inviduals_file
+          #end if
+          #if $use_filters.filter_individuals == "exclude_SNPs":
+            --exclude-snp $use_filters.exclude_SNPs_file
+          #else if $use_filters.filter_SNPs == "include_SNPs":
+            --include-snp $use_filters.include_SNPs_file
+          #end if
+        #end if
+
+        #if $use_advanced_parameters.use_advanced_parameters_select == "use_advanced_parameters_yes":
+          #if $use_advanced_parameters.chrX == "chrX_yes":
+            --chrX
+          #end if
+          #if $use_advanced_parameters.noped == "noped_yes":
+            --noped
+          #end if
+          #if $use_advanced_parameters.states != "100":
+            --states $use_advanced_parameters.states
+          #end if
+          #if $use_advanced_parameters.window != "2.0":
+            --window $use_advanced_parameters.window
+          #end if
+          #if $use_advanced_parameters.model_version1 == "use_v1_yes":
+            --model-version1
+          #end if
+          #if $use_advanced_parameters.eff_size.eff_size_select == "eff_size_european":
+            --effective-size 11418
+          #else if $use_advanced_parameters.eff_size.eff_size_select == "eff_size_african":
+            --effective-size 17469
+          #else if $use_advanced_parameters.eff_size.eff_size_select == "eff_size_asian":
+            --effective-size 14269
+          #else if $use_advanced_parameters.eff_size.eff_size_select == "eff_size_mixedpop":
+            --effective-size $use_advanced_parameters.eff_size.eff_size_mixed
+          #end if
+          #if $use_advanced_parameters.burn != "7":
+            --burn $use_advanced_parameters.burn
+          #end if
+          #if $use_advanced_parameters.prune != "8":
+            --prune $use_advanced_parameters.prune
+          #end if
+          #if $use_advanced_parameters.main != "20":
+            --main $use_advanced_parameters.main
+          #end if
+          #if $use_advanced_parameters.threads != "1":
+            --threads $use_advanced_parameters.threads
+          #end if
+          #if $use_advanced_parameters.set_rng_seed.set_rng_seed_select == "set_rng_seed_yes":
+            --seed $use_advanced_parameters.rng_seed
+          #end if
+        #end if
+        --thread 8
+        --output-max $out_haps $out_sample
+        ##--output-graph $out_graph
+        ##--output-log $out_log
+    ]]></command>
+
+    <inputs>
+      <conditional name="input_files">
+        <param name="input_type_select" type="select" label="Please specify your input files.">
+          <option value="vcf" selected="True">VCF Variant Call Format</option>
+          <option value="plink_ped_map">Plink PED/MAP format</option>
+          <option value="plink_bed_bim_fam">Plink BED/BIM/FAM format</option>
+          <option value="oxford_gen_sample">Oxford GEN/SAMPLE format</option>
+        </param>
+        <when value="plink_ped_map">
+          <param name="plink_ped" type="data" label="Specify text genotype file (.ped)"/>
+          <param name="plink_map" type="data" label="Specify SNP map file (.map)"/>
+          <param name="plink_missing_code" type="text" label="Missing data labeled as" value="0" default="0"/>
+        </when>
+        <when value="plink_bed_bim_fam">
+          <param name="plink_bed" type="data" label="Specify binary genotype file (.bed)"/>
+          <param name="plink_bim" type="data" label="Specify SNP map file (.bim)"/>
+          <param name="plink_fam" type="data" label="Specify individual information file (.fam)"/>
+        </when>
+        <when value="oxford_gen_sample">
+          <param name="oxford_gen" type="data" label="Specify text genotype file (.gen)"/>
+          <param name="oxford_sample" type="data" label="Specify individual information file (.sample)"/>
+          <param name="oxford_threshold" type="float" label="SNP Probability threshold" default="0.9" value="0.9"/>
+        </when>
+        <when value="vcf">
+          <param name="vcf_file" type="data" label="Specify Variant Call Format file (.vcf)"/>
+        </when>
+      </conditional>
+
+      <conditional name="use_genetic_map">
+        <param name="use_genetic_map_select" type="select" label="Do you want to use a genetic map?">
+          <option value="use_genetic_map_yes" selected="True">Yes</option>
+          <option value="use_genetic_map_no">No</option>
+        </param>
+        <when value="use_genetic_map_yes">
+          <param name="genetic_map" type="data" label="Genetic map file (.gmap)" />
+        </when>
+        <when value="use_genetic_map_no">
+          <param name="rho" type="float" value="0.0004" default="0.0004" label="Adjust recombination rate (--rho) for human data (0.001)"/>
+        </when>
+      </conditional>
+
+      <conditional name="use_ref_panel">
+        <param name="use_ref_panel_select" type="select" label="Do you want to use a reference panel?">
+          <option value="use_ref_panel_yes">Use a reference panel</option>
+          <option value="use_ref_panel_no" selected="True">Do not use reference panel</option>
+        </param>
+        <when value="use_ref_panel_yes">
+          <param name="ref_panel_haps" type="data" label="Specify reference haplotypes file (.haps)" />
+          <param name="ref_panel_legend" type="data" label="Specify SNP map file (.legend)" />
+          <param name="ref_panel_sample" type="data" label="Specify individual information file (.sample)" />
+
+          <conditional name="disable_mcmc_iterations">
+            <param name="disable_mcmc_iterations_select" type="select" label="Disable MCMC iterations">
+              <option value="disable_mcmc_iterations_yes">Yes</option>
+              <option value="disable_mcmc_iterations_no" selected="True">No</option>
+            </param>
+          </conditional>
+
+          <conditional name="filter_groups">
+            <param name="filter_groups_select" type="select" label="Do you want to filter groups?">
+              <option value="no_individual_filter" selected="True">No filtering</option>
+              <option value="exclude_groups">Exclude list of groups</option>
+              <option value="include_groups">Limit list of groups</option>
+            </param>
+            <when value="exclude_groups">
+              <param name="exclude_inviduals_file" type="data" label="Specify file with excluded groups (.exc)"/>
+            </when>
+            <when value="include_groups">
+              <param name="include_inviduals_file" type="data" label="Specify file with limited groups (.inc)"/>
+            </when>
+          </conditional>
+
+        </when>
+      </conditional>
+
+      <conditional name="use_advanced_parameters">
+        <param name="use_advanced_parameters_select" type="select" label="Set parameters">
+          <option value="use_advanced_parameters_yes">Use advanced parameters</option>
+          <option value="use_advanced_parameters_no" selected="True">Use standard parameters</option>
+        </param>
+
+        <when value="use_advanced_parameters_yes">
+          <param name="chrX" type="select" label="Use X chromosomal genotypes?">
+            <option value="chrX_yes">Yes</option>
+            <option value="chrX_no" selected="True">No</option>
+          </param>
+
+          <param name="noped" type="select" label="Discard pedigree/family information?">
+            <option value="noped_yes">Yes</option>
+            <option value="noped_no" selected="True">No</option>
+          </param>
+
+          <param name="states" type="integer" label="Number of conditioning haplotypes used during phasing (--states)" default="100" value="100"/>
+          <param name="window" type="float" label="Window size [Mb] in which conditioning haplotypes are defined" default="2.0" value="2.0"/>
+          <param name="model_version1" type="select" label="Use SHAPEIT v1 graphical model">
+            <option value="use_v1_yes">Yes</option>
+            <option value="use_v1_no" selected="True">No</option>
+          </param>
+
+          <conditional name="eff_size">
+            <param name="eff_size_select" type="select" label="Effective population size for phasing">
+              <option value="eff_size_european">European population (11418)</option>
+              <option value="eff_size_african">African population (17469)</option>
+              <option value="eff_size_asian">Asian population (14269)</option>
+              <option value="eff_size_mixed_option" selected="True">Mixed population</option>
+            </param>
+            <when value="eff_size_mixed_option">
+              <param name="eff_size_mixed" type="integer" label="Specify effective population size, depending on proportions [11418,17469]" default="14443" value="14443"/>
+            </when>
+          </conditional>
+
+          <param name="burn" type="integer" default="7" value="7" label="Number of burn-in iterations to find good starting point"/>
+          <param name="prune" type="integer" default="8" value="8" label="Number of pruning iterations to find parsimonious graphs"/>
+          <param name="main" type="integer" default="20" value="20" label="Number of iterations to compute transition probabilities"/>
+          <param name="threads" type="integer" default="1" value="1" label="Specify number of threads"/>
+
+          <conditional name="set_rng_seed">
+            <param name="set_rng_seed_select" type="select" label="Set seed for random number generator (RNG)">
+              <option value="set_rng_seed_yes">Yes</option>
+              <option value="set_rng_seed_no" selected="True">No</option>
+            </param>
+            <when value="set_rng_seed_yes">
+              <param name="rng_seed" type="integer" default="18011981" value="18011981" label="RNG seed" />
+            </when>
+          </conditional>
+        </when>
+      </conditional>
+
+      <conditional name="use_filters">
+        <param name="use_filters_select" type="select" label="Apply filtering">
+          <option value="use_filters_yes">Yes</option>
+          <option value="use_filters_no" selected="True">No</option>
+        </param>
+        <when value="use_filters_yes">
+
+          <conditional name="use_input_from">
+            <param name="use_input_from_select" type="select" label="Only consider genotypes above a position?">
+              <option value="use_input_from_yes">Yes</option>
+              <option value="use_input_from_no" selected="True">No</option>
+            </param>
+            <when value="use_input_from_yes">
+              <param name="input_from" type="integer" value="1" default="1" label="Set position:"/>
+            </when>
+          </conditional>
+
+          <conditional name="use_input_to">
+            <param name="use_input_to_select" type="select" label="Only consider genotypes above a position?">
+              <option value="use_input_to_yes">Yes</option>
+              <option value="use_input_to_no" selected="True">No</option>
+            </param>
+            <when value="use_input_to_yes">
+              <param name="input_to" type="integer" value="1" default="1" label="Set position:"/>
+            </when>
+          </conditional>
+
+          <conditional name="use_output_from">
+            <param name="use_output_from_select" type="select" label="Only output genotypes above a position?">
+              <option value="use_output_from_yes">Yes</option>
+              <option value="use_output_from_no" selected="True">No</option>
+            </param>
+            <when value="use_output_from_yes">
+              <param name="output_from" type="integer" value="1" default="1" label="Set position:"/>
+            </when>
+          </conditional>
+
+          <conditional name="use_output_to">
+            <param name="use_output_to_select" type="select" label="Only output genotypes above a position?">
+              <option value="use_output_to_yes">Yes</option>
+              <option value="use_output_to_no" selected="True">No</option>
+            </param>
+            <when value="use_output_to_yes">
+              <param name="output_to" type="integer" value="1" default="1" label="Set position:"/>
+            </when>
+          </conditional>
+
+          <conditional name="filter_individuals">
+            <param name="filter_individuals_select" type="select" label="Do you want to filter individuals?">
+              <option value="no_individual_filter" selected="True">No filtering</option>
+              <option value="exclude_individuals">Exclude list of individuals</option>
+              <option value="include_individuals">Limit list of individuals</option>
+            </param>
+            <when value="exclude_individuals">
+              <param name="exclude_inviduals_file" type="data" label="Specify file with excluded individuals (.exc)"/>
+            </when>
+            <when value="include_individuals">
+              <param name="include_inviduals_file" type="data" label="Specify file with limited individuals (.inc)"/>
+            </when>
+          </conditional>
+
+          <conditional name="filter_SNPs">
+            <param name="filter_SNPs_select" type="select" label="Do you want to filter SNPs?">
+              <option value="no_individual_filter" selected="True">No filtering</option>
+              <option value="exclude_SNPs">Exclude list of SNPs</option>
+              <option value="include_SNPs">Limit list of SNPs</option>
+            </param>
+            <when value="exclude_SNPs">
+              <param name="exclude_inviduals_file" type="data" label="Specify file with excluded SNPs (.exc)"/>
+            </when>
+            <when value="include_SNPs">
+              <param name="include_inviduals_file" type="data" label="Specify file with limited SNPs (.inc)"/>
+            </when>
+          </conditional>
+        </when>
+      </conditional>
+
+    </inputs>
+    <outputs>
+      <data name="out_haps" format="tabular" label="${tool.name} on ${on_string} haplotypes (.haps)"/>
+      <data name="out_sample" format="tabular" label="${tool.name} on ${on_string} additional information (.sample)"/>
+      <!--data name="out_graph" format="text" label="${tool.name} on ${on_string} haplotype graphs (.hgraph)"/-->
+      <!--data name="out_log" format="text" label="${tool.name} on ${on_string} logfile (.log)"/-->
+    </outputs>
+    <help><![CDATA[
+    ]]></help>
+</tool>

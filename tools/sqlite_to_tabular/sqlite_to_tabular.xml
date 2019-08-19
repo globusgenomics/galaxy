@@ -1,0 +1,105 @@
+<?xml version="1.0"?>
+<tool id="sqlite_to_tabular" name="SQLite to tabular" version="0.0.1">
+    <description>for SQL query</description>
+    <requirements>
+     <requirement type="package">pymodules</requirement>
+    </requirements>
+    <stdio>
+        <exit_code range="1:" level="fatal" description="Error" />
+    </stdio>
+    <command interpreter="python"><![CDATA[
+    sqlite_to_tabular.py 
+    --sqlitedb="$sqlitedb" 
+    --query_file="$query_file"
+    $no_header 
+    --output="$query_results"
+    ]]></command>
+    <configfiles>
+        <configfile name="query_file">
+$sqlquery
+        </configfile>
+    </configfiles>
+    <inputs>
+        <param name="sqlitedb" type="data" format="sqlite" label="SQLite Database"/>
+        <param name="sqlquery" type="text" area="True" size="120x20" label="SQL query">
+            <validator type="regex">(?ims)^\s*SELECT\s.*\sFROM\s.*$</validator>
+            <sanitizer sanitize="False"/>
+        </param>
+        <param name="no_header" type="boolean" truevalue="-n" falsevalue="" checked="False" label="Omit column headers"/>
+    </inputs>
+    <outputs>
+        <data name="query_results" format="tabular" />
+    </outputs>
+    <tests>
+        <test>
+            <param name="sqlitedb" ftype="sqlite" value="testdb.sqlite" />
+            <param name="sqlquery" value="SELECT first_name, last_name, age FROM contacts WHERE first_name = 'Sam'" />
+            <output name="query_results">
+                <assert_contents>
+                    <has_text text="Smith" />
+                    <not_has_text text="Doe" />
+                </assert_contents>
+            </output>
+        </test>
+    </tests>
+    <help><![CDATA[
+Outputs the results of a query on a SQLite_ Database as a tabular file. 
+
+In addition to the standard SQLite_functions_ regular_expression_ functions are included.
+
+For example, with SQLite table "customers":
+
+    =========== ========== ========== ===================== ========== ============
+    #CustomerID FirstName  LastName   Email                 BirthDate  Phone
+    =========== ========== ========== ===================== ========== ============
+    1           John       Smith      John.Smith@yahoo.com  1968-02-04 626 222-2222
+    2           Steven     Goldfish   goldfish@fishhere.net 1974-04-04 323 455-4545
+    3           Paula      Brown      pb@herowndomain.org   1978-05-24 416 323-3232
+    4           James      Smith      jim@supergig.co.uk    1980-10-20 416 323-8888
+    =========== ========== ========== ===================== ========== ============
+
+  ::
+
+    matching:      re_match('pattern',column) 
+
+    SELECT FirstName, LastName
+    FROM customers
+    WHERE re_match('^.*\.(net|org)$',Email)
+
+  Results:
+
+    =========== ==========
+    #FirstName  LastName
+    =========== ==========
+    Steven      Goldfish
+    Paula       Brown
+    =========== ==========
+
+
+  ::
+
+    searching:     re_search('pattern',column)
+    substituting:  re_sub('pattern','replacement,column)
+
+    SELECT FirstName, LastName, re_sub('^\d{2}(\d{2})-(\d\d)-(\d\d)','\3/\2/\1',BirthDate) as "DOB"
+    FROM customers
+    WHERE re_search('[hp]er',Email)
+
+  Results:
+
+    =========== ========== ==========
+    #FirstName  LastName   DOB
+    =========== ========== ==========
+    Steven      Goldfish   04/04/74
+    Paula       Brown      24/05/78
+    James       Smith      20/10/80
+    =========== ========== ==========
+
+
+
+.. _Regular_expression: https://docs.python.org/release/2.7/library/re.html
+.. _SQLite: http://www.sqlite.org/index.html
+.. _SQLite_functions: http://www.sqlite.org/docs.html
+
+    ]]></help>
+</tool>

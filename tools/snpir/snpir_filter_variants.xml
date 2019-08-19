@@ -1,0 +1,65 @@
+<tool id="snpir_filter_variants" name="Filter variants in repetitive regions" version="BEDTOOLS: 2.17.0">
+  <requirements>
+    <requirement type="package">bedtools</requirement>
+  </requirements>
+  <description/>
+  <command>
+      awk '{OFS=&quot;\t&quot;;\$2=\$2-1&quot;\t&quot;\$2;print \$0}' $inputFile | \
+	intersectBed -a stdin -b $RepeatMasker -v | \
+	cut -f1,3-7 &gt; $out_dir/raw_variants.rmhex.rmsk.txt
+  </command>
+  <inputs>
+    <param format="bam" label="BAM File to Convert" name="input1" type="data"/>
+    <param checked="False" falsevalue="" label="Include header in output" name="header" truevalue="--header" type="boolean"/>
+  </inputs>
+  <outputs>
+    <data format="sam" label="${tool.name} on ${on_string}: converted SAM" name="output1"/>
+  </outputs>
+  <tests>
+    <test>
+      <!--
+      Bam-to-Sam command:
+      samtools view -o bam_to_sam_out1.sam test-data/bam_to_sam_in1.bam
+      bam_to_sam_in1.bam can be created from bam_to_sam_in1.sam
+      -->
+      <param ftype="bam" name="input1" value="bam_to_sam_in1.bam"/>
+      <param name="header" value=""/>
+      <output file="bam_to_sam_out1.sam" name="output1" sorted="True"/>
+    </test>
+    <test>
+      <!--
+      Bam-to-Sam command:
+      samtools view -o bam_to_sam_out2.sam test-data/bam_to_sam_in2.bam
+      bam_to_sam_in2.bam can be created from bam_to_sam_in2.sam
+      -->
+      <param ftype="bam" name="input1" value="bam_to_sam_in2.bam"/>
+      <param name="header" value=""/>
+      <output file="bam_to_sam_out2.sam" name="output1" sorted="True"/>
+    </test>
+    <test>
+      <!--
+      Bam-to-Sam command:
+      samtools view -h -o bam_to_sam_out3.sam test-data/bam_to_sam_in1.bam
+      bam_to_sam_in1.bam can be created from bam_to_sam_in1.sam
+      -->
+      <param ftype="bam" name="input1" value="bam_to_sam_in1.bam"/>
+      <param name="header" value="--header"/>
+      <output file="bam_to_sam_out3.sam" lines_diff="6" name="output1" sorted="True"/><!-- header param not working in func tests so won't produce correct 6-line header (fine in browser) -->
+    </test>
+  </tests>
+  <help>
+
+**What it does**
+
+This tool uses the SAMTools_ toolkit to produce a SAM file from a BAM file.
+
+.. _SAMTools: http://samtools.sourceforge.net/samtools.shtml
+
+------
+
+**Citation**
+
+For the underlying tool, please cite `Li H, Handsaker B, Wysoker A, Fennell T, Ruan J, Homer N, Marth G, Abecasis G, Durbin R; 1000 Genome Project Data Processing Subgroup. The Sequence Alignment/Map format and SAMtools. Bioinformatics. 2009 Aug 15;25(16):2078-9. &lt;http://www.ncbi.nlm.nih.gov/pubmed/19505943&gt;`_
+
+  </help>
+</tool>

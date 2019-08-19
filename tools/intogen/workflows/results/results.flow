@@ -1,0 +1,24 @@
+<flow name="results-core" serializer="json">
+    <title>Results</title>
+    <desc>Prepare the results and clean files</desc>
+
+	<in name="projects_in" />
+
+	<module name="zip">
+        <title>Pack results</title>
+        <desc>Generate a compressed file with the results</desc>
+
+		<in name="projects_in" link="projects_in" />
+
+        <run>zip.py</run>
+    </module>
+
+    <module name="finish" depends="zip">
+        <title>Finish</title>
+        <desc>Create project.conf and remove temporary files</desc>
+
+		<in name="projects_in" link="projects_in" />
+
+        <run>finish.py</run>
+    </module>
+</flow>

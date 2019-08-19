@@ -1,0 +1,49 @@
+<tool id="bgzip" name="bgzip" version="TABIX: 0.2.6">
+    <description>Block compression/decompression utility. Required for use of tabix.</description>
+    <requirements>
+        <requirement type="package" version="0.2.6">tabix</requirement>
+    </requirements>
+    <command>
+        bgzip 
+
+        #if str($virtualOffset) != &quot;None&quot;
+            -b $virtualOffset
+        #end if
+
+        #if str($size) != &quot;None&quot;
+            -s $size
+        #end if
+
+        -c $input &gt; $output
+    </command>
+    <inputs>
+        <param label="Input file" name="input" type="data"/>
+        <param label="Virtual Offset" name="virtualOffset" optional="yes" type="text"/>
+        <param label="Size" name="size" optional="yes" type="text"/>
+    </inputs>
+
+    <outputs>
+        <data format="bgz" name="output"/>
+    </outputs>
+
+    <help>
+**What it does:** 
+
+The input data file is sorted and compressed by bgzip which has a gzip(1) like interface. Tabix requires the file to be compressed using this tool first.
+
+**Citation:**
+
+Tabix was written by Heng Li. The BGZF library was originally implemented by Bob Handsaker and modified by Heng Li for remote file access and in-memory caching.
+
+http://samtools.sourceforge.net/tabix.shtml
+
+**Example:**
+
+(grep ^&quot;#&quot; in.gff; grep -v ^&quot;#&quot; in.gff | sort -k1,1 -k4,4n) | bgzip &gt; sorted.gff.gz;
+
+tabix -p gff sorted.gff.gz;
+
+tabix sorted.gff.gz chr1:10,000,000-20,000,000;
+
+    </help>
+</tool>

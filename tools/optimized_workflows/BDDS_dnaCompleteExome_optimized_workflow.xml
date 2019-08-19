@@ -1,0 +1,83 @@
+<tool id="BDDS_dnaCompleteExome_optimized" name="DNA Exome Variant Analisys Optimized Workflow (BDDS)" version="BWA: 0.7.12; SAMTOOLS: 1.2; SAMBAMBA: v0.5.4; PICARD: 1.134; GATK3: GenomeAnalysisTK-3.4-46; JAVA: jre1.7.0_51">
+  <description/>
+  <!--<action class="GlobusOptimizedWorkflows" module="galaxy_ext.globus.tools.actions.globus"/>-->
+  <parallelism method="basic"/>
+  <requirements>
+    <requirement type="package">bwa</requirement>
+    <requirement type="package">samtools</requirement>
+    <requirement type="package">sambamba</requirement>
+    <requirement type="package">picard</requirement>
+    <requirement type="package">gatk3</requirement>
+    <requirement type="package">pymodules</requirement>
+    <requirement type="package">java</requirement>
+  </requirements>
+  <command interpreter="python">
+     BDDS_dnaCompleteExome_optimized_09212015.py 
+      #if str($input_source_cond.input_source) == "file":
+        --bam $input_source_cond.input1
+      #else:
+        ## get the file names
+        #import os, glob
+        #set $path = ""
+        #if os.path.exists(str($input_source_cond.input_file.extra_files_path)):
+          #set $path = "%s/%s" % ($input_source_cond.input_file.extra_files_path, $input_source_cond.sample_name)
+        #else:
+          #set $fh = open(str($input_source_cond.input_file), "r")
+          #set $path = "%s/data/%s" % ($fh.readline().rstrip("\n"), $input_source_cond.sample_name)
+        #end if
+        #set $files = glob.glob("%s/*" % $path)
+        --bam $files[0]
+      #end if
+
+      ## GATK reference files
+      --gatk-ref "${gatk_ref_file.fields.path}"
+
+      ## BED file
+      --bed $bed_file
+      --ip $ip
+
+      ## output vcf file
+      --output-bam $output_bam
+      --output-vcf $output_vcf
+      --output-csv $output_csv
+      --output-log $output_log
+      &gt;  $output_log
+  </command>
+  <inputs>
+    <conditional name="input_source_cond">
+      <param label="Input Source" name="input_source" type="select">
+        <option selected="True" value="file">History</option>
+        <option value="bag">Dataset Bag</option>
+      </param>
+      <when value="file">
+        <param format="bam" help="" label="BAM input file" name="input1" type="data"/>
+      </when>
+      <when value="bag">
+        <param format="txt" label="Input directory of samples" name="input_file" type="data"/>
+        <param label="Sample Name" name="sample_name" type="text"/>
+      </when>
+    </conditional>
+ 
+    <param help="It should match up with the reference used in BWA step" label="GATK reference genome" name="gatk_ref_file" type="select">
+      <options from_data_table="gatk3_picard_indexes"/>
+    </param>
+    <param format="bed" label="BED file for GATK" name="bed_file" type="data"/>
+    <param label="GATK: Amount of padding (in bp) to add to each interval" name="ip" type="text" value="0"/>
+    <param label="Just the hidden name" name="hidden_name" type="hidden" value="OUTPUT_NAME"/>
+  </inputs>
+  <outputs>
+    <data format="bam" label="${tool.name} on ${$hidden_name}.bam" name="output_bam"/>
+    <data format="vcf" label="${tool.name} on ${$hidden_name}.vcf" name="output_vcf"/>
+    <data format="csv" label="${tool.name} on ${$hidden_name}.csv" name="output_csv"/>
+    <data format="txt" label="${tool.name} on ${$hidden_name}.log" name="output_log"/>
+  </outputs>
+  <tests>
+    <test>
+    </test>
+  </tests> 
+  <help>
+
+**What it does**
+
+  </help>
+</tool>

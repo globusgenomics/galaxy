@@ -1,0 +1,185 @@
+<?xml version="1.0" ?>
+<tool id="qiime_gneiss_dendrogram-heatmap" name="qiime gneiss dendrogram-heatmap" version="022019">
+	<description> - Dendrogram heatmap.</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command>
+		<![CDATA[
+	qiime gneiss dendrogram-heatmap --i-table=$itable
+	#def list_dict_to_string(list_dict):
+		#set $file_list = list_dict[0]['additional_input'].__getattr__('file_name')
+		#for d in list_dict[1:]:
+			#set $file_list = $file_list + ',' + d['additional_input'].__getattr__('file_name')
+		#end for
+		#return $file_list
+	#end def
+	 --m-metadata-file=$list_dict_to_string($input_files_mmetadatafile) --m-metadata-column="$mmetadatacolumn" --i-tree=$itree
+	#if str($cmdconfig) != 'None':
+	 --cmd-config=$cmdconfig
+	#end if
+
+	#if $pndim:
+	 --p-ndim=$pndim
+	#end if
+
+	#if str($pcolormap) != 'None':
+	 --p-color-map=$pcolormap
+	#end if
+	 --o-visualization=ovisualization
+	#if str($pmethod) != 'None':
+	 --p-method=$pmethod
+	#end if
+	;
+	qiime tools export --input-path ovisualization.qzv --output-path out   && mkdir -p '$ovisualization.files_path'
+	&& cp -r out/* '$ovisualization.files_path'
+	&& mv '$ovisualization.files_path/index.html' '$ovisualization'
+]]>
+	</command>
+	<inputs>
+		<param format="qza,no_unzip.zip" label="--i-table: FeatureTable[Composition] The feature table that will be plotted as a heatmap. This table is assumed to have strictly positive values.  [required]" name="itable" optional="False" type="data"/>
+		<param format="qza,no_unzip.zip" label="--i-tree: Hierarchy A hierarchy of feature identifiers where each tipcorresponds to the feature identifiers in the table. This tree can contain tip ids that are not present in the table, but all feature ids in the table must be present in this tree.  [required]" name="itree" optional="False" type="data"/>
+
+		<repeat name="input_files_mmetadatafile" optional="False" title="--m-metadata-file">
+			<param label="--m-metadata-file: Metadata file or artifact viewable as metadata. This option may be supplied multiple times to merge metadata. [required]" name="additional_input" type="data" format="tabular,qza,no_unzip.zip" />
+		</repeat>
+		<param label="--m-metadata-column: MetadataColumn[Categorical] Column from metadata file or artifact viewable as metadata. Categorical metadata column to group the samples.  [required]" name="mmetadatacolumn" optional="False" type="text"/>
+
+		<param label="--p-ndim: Number of dimensions to highlight. [default: 10]" name="pndim" optional="True" type="integer" value="10"/>
+
+		<param label="--p-method: Specifies how the data should be normalized
+                                  for display.Options include 'log' or 'clr'
+                                  (default='clr').  [default: clr]" name="pmethod" optional="True" type="select">
+			<option selected="True" value="None">Selection is Optional</option>
+			<option value="log">log</option>
+			<option value="clr">clr</option>
+		</param>
+
+		<param label="--p-color-map: Specifies the color map for plotting the
+                                  heatmap. See https://matplotlib.org/examples
+                                  /color/colormaps_reference.html for more
+                                  details.  [default: viridis]" name="pcolormap" optional="True" type="select">
+			<option selected="True" value="None">Selection is Optional</option>
+			<option value="gist_heat">gist_heat</option>
+			<option value="plasma">plasma</option>
+			<option value="PiYG">PiYG</option>
+			<option value="Pastel2">Pastel2</option>
+			<option value="nipy_spectral">nipy_spectral</option>
+			<option value="inferno">inferno</option>
+			<option value="YlGn">YlGn</option>
+			<option value="bone">bone</option>
+			<option value="YlGnBu">YlGnBu</option>
+			<option value="hsv">hsv</option>
+			<option value="summer">summer</option>
+			<option value="Set1">Set1</option>
+			<option value="BrBG">BrBG</option>
+			<option value="magma">magma</option>
+			<option value="Paired">Paired</option>
+			<option value="Vega10">Vega10</option>
+			<option value="brg">brg</option>
+			<option value="PuBu">PuBu</option>
+			<option value="Spectral">Spectral</option>
+			<option value="YlOrBr">YlOrBr</option>
+			<option value="GnBu">GnBu</option>
+			<option value="PuOr">PuOr</option>
+			<option value="ocean">ocean</option>
+			<option value="Reds">Reds</option>
+			<option value="prism">prism</option>
+			<option value="Vega20">Vega20</option>
+			<option value="PuRd">PuRd</option>
+			<option value="seismic">seismic</option>
+			<option value="Dark2">Dark2</option>
+			<option value="RdBu">RdBu</option>
+			<option value="Accent">Accent</option>
+			<option value="Set2">Set2</option>
+			<option value="terrain">terrain</option>
+			<option value="coolwarm">coolwarm</option>
+			<option value="gnuplot">gnuplot</option>
+			<option value="CMRmap">CMRmap</option>
+			<option value="gnuplot2">gnuplot2</option>
+			<option value="gist_ncar">gist_ncar</option>
+			<option value="flag">flag</option>
+			<option value="OrRd">OrRd</option>
+			<option value="RdYlGn">RdYlGn</option>
+			<option value="rainbow">rainbow</option>
+			<option value="gist_rainbow">gist_rainbow</option>
+			<option value="RdGy">RdGy</option>
+			<option value="Pastel1">Pastel1</option>
+			<option value="gist_earth">gist_earth</option>
+			<option value="Set3">Set3</option>
+			<option value="BuPu">BuPu</option>
+			<option value="PRGn">PRGn</option>
+			<option value="pink">pink</option>
+			<option value="Purples">Purples</option>
+			<option value="PuBuGn">PuBuGn</option>
+			<option value="Vega20c">Vega20c</option>
+			<option value="winter">winter</option>
+			<option value="bwr">bwr</option>
+			<option value="Vega20b">Vega20b</option>
+			<option value="hot">hot</option>
+			<option value="afmhot">afmhot</option>
+			<option value="viridis">viridis</option>
+			<option value="RdPu">RdPu</option>
+			<option value="spring">spring</option>
+			<option value="RdYlBu">RdYlBu</option>
+			<option value="Greens">Greens</option>
+			<option value="autumn">autumn</option>
+			<option value="cubehelix">cubehelix</option>
+			<option value="cool">cool</option>
+			<option value="Blues">Blues</option>
+			<option value="BuGn">BuGn</option>
+			<option value="Greys">Greys</option>
+			<option value="YlOrRd">YlOrRd</option>
+			<option value="Oranges">Oranges</option>
+			<option value="gray">gray</option>
+			<option value="jet">jet</option>
+			<option value="gist_stern">gist_stern</option>
+			<option value="copper">copper</option>
+		</param>
+
+		<param label="--cmd-config: Use config file for command options" name="cmdconfig" optional="True" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="html" label="${tool.name} on ${on_string}: visualization.qzv" name="ovisualization"/>
+	</outputs>
+	<help><![CDATA[
+Dendrogram heatmap.
+--------------------
+
+Visualize the feature table as a heatmap, with samples sorted along a
+specified categorical metadata column and features clustered together
+specified by the tree.
+
+Parameters
+----------
+table : FeatureTable[Composition]
+    The feature table that will be plotted as a heatmap. This table is
+    assumed to have strictly positive values.
+tree : Hierarchy
+    A hierarchy of feature identifiers where each tipcorresponds to the
+    feature identifiers in the table. This tree can contain tip ids that
+    are not present in the table, but all feature ids in the table must be
+    present in this tree.
+metadata : MetadataColumn[Categorical]
+    Categorical metadata column to group the samples.
+ndim : Int, optional
+    Number of dimensions to highlight.
+method : Str % Choices({'clr', 'log'}), optional
+    Specifies how the data should be normalized for display.Options include
+    'log' or 'clr' (default='clr').
+color_map : Str % Choices({'Accent', 'Blues', 'BrBG', 'BuGn', 'BuPu', 'CMRmap', 'Dark2', 'GnBu', 'Greens', 'Greys', 'OrRd', 'Oranges', 'PRGn', 'Paired', 'Pastel1', 'Pastel2', 'PiYG', 'PuBu', 'PuBuGn', 'PuOr', 'PuRd', 'Purples', 'RdBu', 'RdGy', 'RdPu', 'RdYlBu', 'RdYlGn', 'Reds', 'Set1', 'Set2', 'Set3', 'Spectral', 'Vega10', 'Vega20', 'Vega20b', 'Vega20c', 'YlGn', 'YlGnBu', 'YlOrBr', 'YlOrRd', 'afmhot', 'autumn', 'bone', 'brg', 'bwr', 'cool', 'coolwarm', 'copper', 'cubehelix', 'flag', 'gist_earth', 'gist_heat', 'gist_ncar', 'gist_rainbow', 'gist_stern', 'gnuplot', 'gnuplot2', 'gray', 'hot', 'hsv', 'inferno', 'jet', 'magma', 'nipy_spectral', 'ocean', 'pink', 'plasma', 'prism', 'rainbow', 'seismic', 'spring', 'summer', 'terrain', 'viridis', 'winter'}), optional
+    Specifies the color map for plotting the heatmap. See
+    https://matplotlib.org/examples/color/colormaps_reference.html for more
+    details.
+
+Returns
+-------
+visualization : Visualization
+		\
+		]]>
+	</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

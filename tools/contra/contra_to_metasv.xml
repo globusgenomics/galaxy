@@ -1,0 +1,18 @@
+<tool id="contra_to_metasv" name="Convert Contra output to metasv input format" version="0.0.1">
+  <description>: Convert Contra output to metasv input format </description>
+  <requirements>   
+  </requirements>
+  <command interpreter="python">
+      contra_to_metasv_run.py  
+      --fin=$input  
+      --fout=$output
+  </command>
+	<inputs>
+           <param format="vcf" type="data" label="Input VCF" name="input"/>
+	</inputs>
+	<outputs>
+                <data format="vcf" label="${tool.name} on ${on_string}: (vcf)" name="output"/>
+	</outputs>
+	<help>
+	</help>
+</tool>

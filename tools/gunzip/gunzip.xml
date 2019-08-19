@@ -1,0 +1,18 @@
+<tool id="gunzip" description="Gunzip a single .gz file. e.g: fastq.gz file" name="Gunzip" version="1.0">
+  <command>
+    /bin/zcat $gz_file > $output
+
+  </command>
+  <inputs>
+    <param name="gz_file" type="data" format="gz" label="Input .gz file" help="Creates a new cmpy of the uncompressed file and preserves the original .gz file in the previous step."/>
+  </inputs>
+
+  <outputs>
+    <data format="fastqsanger" name="output"/>
+  </outputs>
+
+  <help>
+  
+  </help>
+</tool>
+

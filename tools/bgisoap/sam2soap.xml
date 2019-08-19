@@ -1,0 +1,22 @@
+<tool id="sam2soap" name="sam2soap" version="0.1">
+  <description>Converts a SAM file into SOAP format</description>
+  <command interpreter="python">sam2soap.py $samfile > $soapout</command>
+  <inputs>
+    <param format="sam"
+           name="samfile"
+           type="data"
+           label="SAM file"/>
+  </inputs>
+  <outputs>
+    <data format="soap"
+          name="soapout"/>
+  </outputs>
+  <tests>
+  </tests>
+  <help>
+**What it does**
+
+SAM2SOAP converts sequence alignments in SAM format into SOAP format.
+
+  </help>
+</tool>

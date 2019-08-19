@@ -1,0 +1,78 @@
+<tool id="pindel2vcf" name="Pindel2Vcf" version="0.6.3">
+    <description>convert Pindel to VCF and index</description>
+    <requirements>
+        <requirement type="package" version="0.2.5b7">pindel</requirement>
+        <requirement type="package" version="12.19.2016">igvtools</requirement>
+        <requirement type="package" version="1.8.0">java</requirement>
+    </requirements>
+    <stdio>
+        <exit_code range="1:"/>
+    </stdio>
+    <command><![CDATA[
+    pindel2vcf
+    -p "$input_file"
+        ##Ref Genome
+        #if $genomeSource.refGenomeSource == "history":
+          -r ${genomeSource.ownFile}
+          -R "${genomeSource.official_reference_name}"
+        #else:
+        ##use precomputed indexes
+          -r ${genomeSource.indices.fields.path}
+          -R "${genomeSource.indices.fields.name}"
+        #end if
+
+    -d 00000000
+    --gatk_compatible
+    -v "$input_file".pre.vcf &&
+    #if $genomeSource.refGenomeSource != "history":
+      java -jar /mnt/galaxyTools/tools/picard/2.7.1/picard.jar CreateSequenceDictionary R="${genomeSource.indices.fields.path}" O=file.dict &&
+      java -jar /mnt/galaxyTools/tools/picard/2.7.1/picard.jar UpdateVcfSequenceDictionary I="$input_file".pre.vcf O="$input_file".vcf SD=file.dict &&
+      mv "$input_file".vcf "$vcf_file"
+    #else
+      mv "$input_file".pre.vcf "$vcf_file"
+    #end if
+]]></command>
+    <inputs>
+        <param name="input_file" type="data" format="txt" label="File to be converted"/>
+      <conditional name="genomeSource">
+        <param label="Will you select a reference from your history or use a built-in fasta file?" name="refGenomeSource" type="select">
+          <option value="indexed">Use a built-in index</option>
+          <option value="history">Use one from the history</option>
+        </param>
+        <when value="indexed">
+          <param label="Select a reference genome" name="indices" type="select">
+            <options from_data_table="all_fasta">
+              <filter column="2" type="sort_by"/>
+              <validator message="No indexes are available" type="no_options"/>
+            </options>
+          </param>
+        </when>
+        <when value="history">
+          <param format="fasta" label="Select a reference from history" name="ownFile" type="data"/>
+          <param name="official_reference_name" type="text" label="Official Name for Reference Genome"/>
+        </when>
+      </conditional>
+    </inputs>
+    <outputs>
+        <data name="vcf_file" type="tabular" format="vcf" label="${input_file.name}.vcf"/>
+    </outputs>
+    <tests>
+        <test>
+            <param name="input_file" value="X_Hum1_D" ftype="txt"/>
+            <param name="reference" value="dm6.fa" ftype="fasta"/>
+            <param name="official_reference_name" value="dmel_r6.10_FB2016_02" ftype="text"/>
+            <output name="vcf_file" file="X_Hum1_D.vcf" ftype="vcf"/>
+        </test>
+    </tests>
+    <help>
+        This tool converts Pindel output files to VCF format.
+        The following inputs are required:
+        - File(s) to be converted
+        - Reference genome in fasta format
+        - Official Name for Reference genome
+        - Date the reference genome was created
+    </help>
+    <citations>
+        <citation type="doi">doi:10.1093/bioinformatics/btp394</citation>
+    </citations>
+</tool>

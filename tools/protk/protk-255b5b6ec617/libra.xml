@@ -1,0 +1,47 @@
+<tool id="libra" name="Libra" version="0.1.0">
+  <requirements>
+    <requirement type="package">protkgem</requirement>
+    <requirement type="package">ruby</requirement>
+    <requirement type="package">tpp</requirement>
+  </requirements>
+  <description>Run Libra on ProteinProphet results</description>
+  <command>libra.rb --galaxy $protxml
+    #if $quant_type == "itraq_4plex":
+      --reagent="114.1"
+      --reagent="115.1"
+      --reagent="116.1"
+      --reagent="117.1"
+    #else:
+      --reagent="113.1"
+      --reagent="114.1"
+      --reagent="115.1"
+      --reagent="116.1"
+      --reagent="117.1"   
+      --reagent="118.1"
+      --reagent="119.1"
+      --reagent="120.1"
+    #end if
+  </command>
+  <inputs>
+    <param name="protxml" type="data" format="protxml" label="ProteinProphet Results" help=""/>
+    <param name="quant_type" type="select" label="Quantification Type" help="">
+      <option value="itraq_4plex">iTRAQ 4-Plex</option>
+      <option value="itraq_8plex">iTRAQ 8-Plex</option>
+    </param>
+  </inputs>
+  <outputs>
+    <!-- Quantitation Table -->
+    <data format="protxml" name="output_protxml" label="Libra Protein Level Analysis of ${on_string}" from_work_dir="interact.prot.xml"/>
+    <data format="pepxml" name="output_pepxml" label="Libra Peptide Level Analysis of  ${on_string}" from_work_dir="interact.xml"/>
+  </outputs>
+
+  <help>
+**What it does**
+
+----
+
+**Citation**
+
+  </help>
+  
+</tool>

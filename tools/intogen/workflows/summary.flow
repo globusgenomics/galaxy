@@ -1,0 +1,17 @@
+<flow name="summary" serializer="json">
+
+	<module name="scan_projects">
+		<title>Search for projects</title>
+		<desc>Search for projects</desc>
+
+		<out name="projects_out" />
+
+		<run>common/scan_projects.py</run>
+	</module>
+
+	<module name="core">
+		<in name="projects_in" link="scan_projects.projects_out" />
+
+		<flow>summary-core</flow>
+	</module>
+</flow>

@@ -1,0 +1,47 @@
+<tool id="cwl_runner_with_download_minid_output" name="CWL Runner with Download and MINID output">
+  <description>cwl runner with download</description>
+  <action module="galaxy_ext.globus.tools.actions.globus" class="HistoryManagement"/>
+  <command interpreter="python"> 
+    cwl_runner_with_download_minid_output.to_s3.py
+    --cwl-file '$cwl_file'
+    --inputs '$inputs'
+    --output "$output"
+    --stdout $stdout_output
+    --stderr $stderr_output
+    --output-dir "$stdout_output.extra_files_path"
+    -t "$goauth_token"
+  </command>
+  <requirements>
+    <requirement type="package">cwltool</requirement>
+    <requirement type="package">pymodules</requirement>
+  </requirements>
+  <inputs>
+    <param name="cwl_file" type="text" size="100" label="CWL File">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="inputs" type="text" size="100" label="Inputs JSON">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="goauth_token" type="hidden" value= "**" size="100" label="Globus Auth Token">
+        <sanitizer>
+        <valid>
+          <add value="|"/>
+        </valid>
+      </sanitizer>
+    </param>
+  </inputs>
+  <outputs>
+    <data name="output" type="data" format="txt" label="Minid for history"/>
+    <data name="stdout_output" type="data" format="txt" label="CWL run stdout"/>
+    <data name="stderr_output" type="data" format="txt" label="CWL run stderr"/>
+  </outputs>
+  <stdio>
+    <regex match=".*" source="both" level="log" description="tool progress"/>
+  </stdio>
+  <help>
+
+**What it does**
+Accept a cwl workflow and a json input file, execute cwl-runner
+
+  </help>
+</tool>

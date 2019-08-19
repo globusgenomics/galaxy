@@ -1,0 +1,135 @@
+<tool id="repo_installer" name="repo_installer">
+  <description>Install multiple repositories from tool sheds on Galaxy instances.</description>
+  <command interpreter="python">repo_installer.py
+    -u
+    #if str($shed.toolshedurl) != 'other'
+    $shed.toolshedurl
+    #else
+    $shed.othershed
+    -p $shed.privatetoolshedlist
+    #end if
+
+    -l
+    #for $each in $instances
+    $each.galaxyurl
+    #end for
+
+    -a 
+    #for $each2 in $instances
+    $each2.api
+    #end for
+
+    -n
+    #for $each3 in $tools
+    $each3.tool
+    #end for
+
+    #if $toolshedlist
+    -s $toolshedlist
+    #end if
+
+    #if $testtoolshedlist
+    -t $testtoolshedlist
+    #end if
+
+    -o
+    #for $each4 in $tools
+    #if str($each4.owner) == ""
+    none
+    #else
+    $each4.owner
+    #end if
+    #end for
+
+    #if $panel_name
+    --panel-section-name
+    $panel_name
+    #end if
+
+    $install_tool_dependencies
+    $install_repository_dependencies
+    >output.txt
+  </command>
+  <inputs>
+    <repeat name="instances" title="Galaxy Instance">
+      <param name= "galaxyurl" type="text" label="Instance URL"/>
+      <param name="api" type="text" label="API Key"/>
+    </repeat>
+
+    <conditional name='shed'>
+      <param name="toolshedurl" type="select" label="Tool Shed">
+        <option value="http://toolshed.g2.bx.psu.edu/" selected="true">Galaxy tool shed</option>
+        <option value="http://testtoolshed.g2.bx.psu.edu/">Galaxy test tool shed</option>
+        <option value="other">Other tool shed...</option>
+      </param>
+        <when value="other">
+          <param name='othershed' type="text" label="Tool shed URL" help= "User MUST add tool shed URL to tool_sheds_conf.xml file in galaxy-dist folder."/>
+          <param name="privatetoolshedlist" type="select" multiple="true" optional="true" label="Private Tool Shed Repos to Install (List)" help="Lists can be generated and updated from tool_info_grabber tool.">
+            <options from_file="privatetoolshedinfo.txt">
+              <column name="value" index="0"/>
+            </options>
+          </param>
+        </when>
+    </conditional>
+
+    <repeat name="tools" title="Repos to Install (Manual)">
+      <param name='tool' type='text' label="Tool"/>
+      <param name='owner' type='text' label="Owner (optional)" optional="true" help="Specify owner if there are multiple owners for a single repository."/>
+    </repeat>
+
+    <param name="toolshedlist" type="select" multiple="true" optional="true" label="Tool Shed Repos to Install (List)">
+      <options from_file="toolshedinfo.txt">
+        <column name="value" index="0"/>
+      </options>
+    </param>
+
+    <param name="testtoolshedlist" type="select" multiple="true" optional="true" label="Test Tool Shed Repos to Install (List)" help="Lists can be generated and updated from tool_info_grabber tool.">
+      <options from_file="testtoolshedinfo.txt">
+        <column name="value" index="0"/>
+      </options>
+    </param>
+
+    <param name="panel_name" type="text" optional='yes' label='New/Existing tool panel section (optional)' help="Puts installed repositories in user-specified tool panel folder."/>  
+
+    <param name="install_repository_dependencies" type='boolean' checked="yes" truevalue="--repository-deps" falsevalue="" label="Install Repository Dependencies?" />
+
+    <param name="install_tool_dependencies" type='boolean' checked='yes' truevalue="--tool-deps" falsevalue="" label="Install Tool Dependencies?" />
+  </inputs>
+  <outputs>
+    <data format="txt" name="output" label= "Repo Results" from_work_dir="output.txt"/>
+  </outputs>
+
+  <help>
+Tool created by Nick Prozorovsky, utilizing Galaxy API commands.
+Remotely add repositories and tools from tool sheds to galaxy instances.
+
+.. class:: warningmark
+
+In order to use any dynamically generated lists, tool_grabber_info tool must be executed.
+
+.. class:: infomark
+
+**OPTIONS**:
+
+**Galaxy Instances:**
+Input the galaxy URL the server is being run on and an admin API key, which can be obtained through the user tab in the Galaxy browser. Tools can be installed on any number of instances.
+
+**Tool Shed:**
+The Galaxy Tool shed is selected by default, but the user can select the the Galaxy Test Tool Shed or input a custom tool shed URL. If a custom tool shed URL is selected, a list of tools can be generated from the tool_info_grabber tool. 
+
+**Repos to Install:**
+Any number of repositories can be added manually. If no owner is specified, all repositories with that name will be downloaded. If there are multiple owners for a single repository and an owner is specified by the user, only that single repository will be downloaded.
+
+**Lists:**
+Dynamic lists can be obtained and updated through the tool_info_grabber tool only. Multiple tools can be added to install.
+
+**New/Existing tool panel section:**
+Creates a user-titled folder in the tool panel on the left for the selected repositories to be installed into. If left blank, repositories will appear at the bottom of the tool panel.
+
+**Install Repository/Tool Dependencies:**
+Check the box if the dependencies associated with each tool/repository are desired.
+
+---For further help, comments, or suggestions, contact:
+nick.prozorovsky@gmail.com
+  </help>
+</tool>

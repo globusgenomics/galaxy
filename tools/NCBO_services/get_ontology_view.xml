@@ -1,0 +1,40 @@
+<tool id="get_ontology_view" name="Get a concrete view of an ontology" version="1.0.1">
+	<description>Retrieves a view of an ontology using the view id</description>
+	<command>java -jar ${__tool_data_path__}/shared/jars/get_ontology_view.jar $api_key $ontologyviewid > $output </command>  
+
+	<inputs>
+		<param name="api_key" type="text" size="100" label="BioPortal API key" />
+		<param name="ontologyviewid" type="text" size="100" label="Ontology view ID" />
+	</inputs>
+	<outputs>
+		<data format="text" name="output" />
+	</outputs>
+	<tests>
+		<test>
+			<param name="api_key"/>
+		</test>
+	</tests>
+	<help>
+
+**What it does**
+
+It retrieves a view from an ontology contained in BioPortal.
+
+**Parameters**
+
+* Bioportal API key: to obtain an API key, open an account in http://bioportal.bioontology.org.
+* Ontology view ID: it can be obtained from BioPortal, in the Ontology page, on the views section, by looking at the view URL. For example, it is 41014 for the generic Gene Ontology slim.
+
+**Contact**
+
+Please send any request or comment to mikel.egana.aranguren@gmail.com.
+    
+**More information**
+
+http://bioportal.bioontology.org
+  
+http://www.bioontology.org/wiki/index.php/BioPortal_REST_services
+
+	</help>
+
+</tool>

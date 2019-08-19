@@ -1,0 +1,118 @@
+<?xml version="1.0"?>
+
+<tool name="vcfPrinter" id="vcfPrinter_id_1.1" version="1.1">
+  <requirements>
+    <requirement>ruby</requirement>
+  </requirements>
+  <description>
+    Generates multi-sample Variant Call Format VCF file from single sample VCF files
+  </description>
+
+  <command interpreter="python">
+    vcfPrinter_1.1.py
+    
+    ## source of input entries
+    #if $input_source.source_type == "history":
+      --inputVCF=$input_source.inputVCF
+
+      #for $input_file in $input_files:
+        --inputVCF=${input_file.additional_inputVCF}
+      #end for
+
+    #elif $input_source.source_type == "config":
+      --config=$input_source.input_config
+      --vcfdir=$input_source.input_config.extra_files_path
+    #else:
+      --vcfdir=$input_source.input_vcfdir
+    #end if
+
+    #if $pileup.pileup_available == "yes":
+      #if $pileup_source.file_source == "history":
+        --inputPileup=$pileup_source.inputPileup
+        #for $input_Pileup in $input_pileups:
+          --inputPileup=${input_Pileup.additional_inputPileup}
+        #end for
+      #else:
+        --pileupdir=$pileup_source.input_pileupdir
+      #end if
+    #end if
+
+    #if $pass_variants:
+	-p
+    #end if
+
+    #if $region:
+	-s $region
+    #end if
+
+   --outputVCF=$outputVCF
+
+  </command>
+
+  <inputs>
+    <conditional name="input_source">
+      <param name="source_type" type="select" label="Where are input VCF files?" help="">
+	<option value="history">From History</option>
+	<option value="config">From Config File</option>
+	<option value="path">Input path</option>
+      </param>
+      <when value="history">
+	<param name="inputVCF" type="data" format="vcf" label="Select an input VCF file" />
+	<repeat name="input_files" title="Additional VCF Input Files">
+	  <param format="vcf" name="additional_inputVCF" type="data" label="VCF file" />
+	</repeat>
+      </when>
+      <when value="config">
+	<param format="data" name="input_config" type="data" label="Config File" help="Config file containing location VCF directories." />
+      </when>
+      <when value="path">
+	<param type="text" name="input_vcfdir" label="Input VCF directory path" help="Directory path in server with all VCF files."/>
+      </when>
+    </conditional>
+
+    <conditional name="pileup">
+      <param name="pileup_available" type="select" label="Provide pileup/mpileup files" help="If not provided, will only merge data from single sample VCF and will not include read level information.">
+	<option value="no">No</option>
+	<option value="yes">Yes</option>
+      </param>
+      <when value="no" />
+      <when value="yes">
+	<conditional name="pileup_source">
+	  <param name="file_source" type="select" label="Where are input pileup/mpileup files?">
+	    <option value="history">History</option>
+	    <option value="path">Input path</option>
+	  </param>
+	  <when value="history">
+	    <param name="inputPileup" type="data" format="pileup,mpileup" label="Select an input pileup/mpileup file" />
+	    <repeat name="input_files" title="Additional pileup/mpileup Input Files">
+	      <param format="pileup,mpileup" name="additional_inputPileup" type="data" label="pileup/mpileup file" />
+	    </repeat>
+	  </when>
+	  <when value="path">
+	    <param type="text" name="input_pileupdir" label="Input pileup/mpileup directory path" help="Directory path in server with all pileup files."/>
+	  </when>
+	</conditional>
+      </when>
+    </conditional>
+
+    <param name="region" type="text" label="Specific region (chr:start-end)" />
+    <param name="pass_variants" type="boolean" checked="false" label="Ignore non-Pass variants" help="if checked, will not merge non-PASS variants, based on the PASS tag in filter field"/>
+
+  </inputs>
+
+  <outputs>
+    <data name="outputVCF" format="vcf" label="${tool.name} on merged.vcf" />
+  </outputs>
+
+  <help>
+vcfPrinter_ is used to generate multi-sample Variant Call Format (VCF) file from single sample VCF files.
+ .. _vcfPrinter: http://www.hgsc.bcm.tmc.edu/cascade-tech-software_atlas2_snp_indel_calling_pipeline-ti.hgsc
+
+**Usage:**
+
+ruby vcfPrinter.rb -i "/home/user/data/file.vcf" -o /home/user/data/outfile.vcf
+
+
+  </help>
+
+</tool>

@@ -1,0 +1,178 @@
+<tool id="blastxml_to_tabular_selectable" name="BLAST XML to selected tabular columns" version="1.0.0">
+    <description>Convert BLAST XML output to tabular</description>
+    <command interpreter="python">
+      blastxml_to_tabular_selectable.py -o $tabular_file 
+      #if $output.out_format == 'cols' and $output.columns:
+        -c '$output.columns'
+      #else
+        -c '$output.out_format' 
+      #end if
+      $qdef
+      $allqueries
+      #if $unmatched:
+        -u $unmatched_file
+      #end if
+      #if $maxhits.__str__ != '':
+        --maxhits $maxhits
+      #end if
+      #if $maxhsps.__str__ != '':
+        --maxhsps $maxhsps
+      #end if
+      #for i in $blastxml_file#${i} #end for#
+      ## $blastxml_file 
+    </command>
+    <inputs>
+        <param name="blastxml_file" type="data" format="blastxml" multiple="true" label="BLAST results as XML"/> 
+        <param name="qdef" type="boolean" truevalue="-d" falsevalue="" checked="False" label="Use Iteration_query-def value for qseqid"/>
+        <param name="allqueries" type="boolean" truevalue="-a" falsevalue="" checked="False" label="Output all queries including those with no hits"/>
+        <param name="unmatched" type="boolean" truevalue="-u" falsevalue="" checked="False" label="Output a list with queries having no hits"/>
+        <param name="maxhits" type="integer" value="1" optional="true" label="Maximum number of Hits to display for a query">
+          <validator type="in_range" min="1" />
+        </param>
+        <param name="maxhsps" type="integer" value="1" optional="true" label="Maximum number of HSPs to display for a Hit">
+          <validator type="in_range" min="1" />
+        </param>
+      
+        <conditional name="output">
+          <param name="out_format" type="select" label="Output format">
+            <option value="std" selected="True">Tabular (standard 12 columns)</option>
+            <option value="ext">Tabular (extended 25 columns)</option>
+            <option value="cols">Tabular (select columns to output)</option>
+          </param>
+          <when value="std"/>
+          <when value="ext"/>
+          <when value="cols">
+            <param name="columns" type="select" multiple="true" display="checkboxes" label="Output columns">
+              <option value="qseqid"> 1 qseqid     Query Seq-id (ID of your sequence)</option>
+              <option value="sseqid"> 2 sseqid     Subject Seq-id (ID of the database hit)</option>
+              <option value="pident"> 3 pident     Percentage of identical matches</option>
+              <option value="length"> 4 length     Alignment length</option>
+              <option value="mismatch"> 5 mismatch   Number of mismatches</option>
+              <option value="gapopen"> 6 gapopen    Number of gap openings</option>
+              <option value="qstart"> 7 qstart     Start of alignment in query</option>
+              <option value="qend"> 8 qend       End of alignment in query</option>
+              <option value="sstart"> 9 sstart     Start of alignment in subject (database hit)</option>
+              <option value="send">10 send       End of alignment in subject (database hit)</option>
+              <option value="evalue">11 evalue     Expectation value (E-value)</option>
+              <option value="bitscore">12 bitscore   Bit score</option>
+              <option value="sallseqid">13 sallseqid  All subject Seq-id(s), separated by a ';'</option>
+              <option value="score">14 score      Raw score</option>
+              <option value="nident">15 nident     Number of identical matches</option>
+              <option value="positive">16 positive   Number of positive-scoring matches</option>
+              <option value="gaps">17 gaps       Total number of gaps</option>
+              <option value="ppos">18 ppos       Percentage of positive-scoring matches</option>
+              <option value="qframe">19 qframe     Query frame</option>
+              <option value="sframe">20 sframe     Subject frame</option>
+              <option value="qseq">21 qseq       Aligned part of query sequence</option>
+              <option value="sseq">22 sseq       Aligned part of subject sequence</option>
+              <option value="qlen">23 qlen       Query sequence length</option>
+              <option value="slen">24 slen       Subject sequence length</option>
+              <option value="salltitles">25 salltitles = All subject title(s), separated by a '&lt;&gt;'</option>
+            </param>
+          </when>
+        </conditional>
+    </inputs>
+    <outputs>
+        <data name="tabular_file" format="tabular" label="BLAST results as tabular for ${on_string}" />
+        <data name="unmatched_file" format="tabular" label="Query sequences with no hits for ${on_string}">
+          <filter>unmatched == True</filter>
+        </data>
+    </outputs>
+    <requirements>
+    </requirements>
+    <tests>
+        <test>
+            <param name="blastxml_file" value="blastp_rhodopsin_proteins.xml" ftype="blastxml" />
+            <param name="out_format" value="std" />
+            <output name="tabular_file" file="blastp_rhodopsin_proteins_std.tabular" ftype="tabular" />
+        </test>
+        <test>
+            <param name="blastxml_file" value="blastp_rhodopsin_proteins.xml" ftype="blastxml" />
+            <param name="out_format" value="ext" />
+            <output name="tabular_file" file="blastp_rhodopsin_proteins_ext.tabular" ftype="tabular" />
+        </test>
+        <test>
+            <param name="blastxml_file" value="blastp_rhodopsin_proteins.xml" ftype="blastxml" />
+            <param name="out_format" value="cols" />
+            <param name="columns" value="qseqid,sseqid,length,bitscore" />
+            <output name="tabular_file" file="blastp_rhodopsin_proteins_selcol.tabular" ftype="tabular" />
+        </test>
+        <test>
+            <param name="blastxml_file" value="blastp_rhodopsin_proteins.xml" ftype="blastxml" />
+            <param name="out_format" value="ext" />
+            <param name="maxhits" value="10" />
+            <param name="maxhsps" value="10" />
+            <output name="tabular_file" file="blastp_rhodopsin_proteins_ext_allhits.tabular" ftype="tabular" />
+        </test>
+        <test>
+            <param name="blastxml_file" value="blastp_rhodopsin_proteins.xml" ftype="blastxml" />
+            <param name="out_format" value="ext" />
+            <param name="maxhits" value="1" />
+            <param name="maxhsps" value="1" />
+            <param name="unmatched" value="True" />
+            <param name="allqueries" value="True" />
+            <output name="tabular_file" file="blastp_rhodopsin_proteins_ext_allqueries.tabular" ftype="tabular" />
+            <output name="unmatched_file" file="unmatched_queries.tabular" ftype="tabular" />
+        </test>
+    </tests>
+    <help>
+    
+**What it does**
+
+NCBI BLAST+ (and the older NCBI 'legacy' BLAST) can output in a range of
+formats including tabular and a more detailed XML format. A complex workflow
+may need both the XML and the tabular output - but running BLAST twice is
+slow and wasteful.
+
+This tool takes the BLAST XML output and by default converts it into the
+standard 12 column tabular equivalent:
+
+====== ========= ============================================
+Column NCBI name Description
+------ --------- --------------------------------------------
+     1 qseqid    Query Seq-id (ID of your sequence)
+     2 sseqid    Subject Seq-id (ID of the database hit)
+     3 pident    Percentage of identical matches
+     4 length    Alignment length
+     5 mismatch  Number of mismatches
+     6 gapopen   Number of gap openings
+     7 qstart    Start of alignment in query
+     8 qend      End of alignment in query
+     9 sstart    Start of alignment in subject (database hit)
+    10 send      End of alignment in subject (database hit)
+    11 evalue    Expectation value (E-value)
+    12 bitscore  Bit score
+====== ========= ============================================
+
+The BLAST+ tools can optionally output additional columns of information,
+but this takes longer to calculate. Most (but not all) of these columns are
+included by selecting the extended tabular output. The extra columns are
+included *after* the standard 12 columns. This is so that you can write
+workflow filtering steps that accept either the 12 or 22 column tabular
+BLAST output.
+
+====== ============= ===========================================
+Column NCBI name     Description
+------ ------------- -------------------------------------------
+    13 sallseqid     All subject Seq-id(s), separated by a ';'
+    14 score         Raw score
+    15 nident        Number of identical matches
+    16 positive      Number of positive-scoring matches
+    17 gaps          Total number of gaps
+    18 ppos          Percentage of positive-scoring matches
+    19 qframe        Query frame
+    20 sframe        Subject frame
+    21 qseq          Aligned part of query sequence
+    22 sseq          Aligned part of subject sequence
+    23 qlen          Query sequence length
+    24 slen          Subject sequence length
+    25 salltitles    All subject title(s), separated by a '&lt;&gt;'
+====== ============= ===========================================
+
+Beware that the XML file (and thus the conversion) and the tabular output
+direct from BLAST+ may differ in the presence of XXXX masking on regions
+low complexity (columns 21 and 22), and thus also calculated figures like
+the percentage idenity (column 3).
+
+    </help>
+</tool>

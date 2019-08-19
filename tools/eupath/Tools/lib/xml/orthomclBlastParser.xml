@@ -1,0 +1,23 @@
+<tool id="orthomclBlastParser" name="OrthoMCL Reformat Blast" version="1.0.0">
+  <description>Reformat an NCBI BLAST tabular output file into the tabular format required by OrthoMCL</description>
+  <command interpreter="perl" detect_errors="aggressive">
+    ../../bin/orthomclBlastParserTabular "$ncbi_blast_file" TAXON "$output"
+  </command>
+  <inputs>
+    <param name="ncbi_blast_file" type="data" format="tabular"
+           label="NCBI BLAST tabular output:"
+           help="An NCBI BLAST tabular output file">
+    </param>
+  </inputs>
+  <outputs>
+      <data format="tabular" name="output" label="reformat ${ncbi_blast_file.name}" />
+  </outputs>
+
+  <help>
+
+**What it does**
+
+This tool parses NCBI BLAST tabular output (24 columns) to the simpler format required by OrthoMCL.
+
+  </help>
+</tool>

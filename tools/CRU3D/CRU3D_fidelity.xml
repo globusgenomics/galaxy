@@ -1,0 +1,30 @@
+<tool id="cru3d_fidelity" name="Compute Spark Fidelity/Leak">
+	<description></description>
+<requirements>
+  <requirement type="package">pymodules</requirement>
+</requirements>
+<command interpreter="python">
+  CRU3D_fidelity.py --output_file "$outfile" --simulation "$simulation.extra_files_path" --ryrs_per_cell $ryrs_per_cell --cyto_volume $cyto_volume --ryr_thresh $ryr_thresh
+</command>
+<inputs>
+  <param name="simulation" type="data" format="html" label="Simulation data"/>
+  <param name="ryr_thresh" type="integer" min="2" value="4" label="RyR spark threshold" help="Threshold number of open RyRs to count as a spark." />
+  <param name="ryrs_per_cell" type="float" min="0" value="1.25e6" label="RyRs per cell"/>
+  <param name="cyto_volume" type="float" min="0" value="18e-12" label="Cytoplasm volume [L]"/>
+    </inputs>
+	<outputs>
+		<data format="html" name="outfile" label="CRU3DFidelity.html" />
+	</outputs>
+	<help>
+
+
+.. class:: warningmark
+
+The input dataset must be the output of a fidelity/leak simulation.
+
+-----
+
+This tool computes fidelity and leak.
+
+	</help>
+</tool>

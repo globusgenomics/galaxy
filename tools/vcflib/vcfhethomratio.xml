@@ -1,0 +1,25 @@
+<tool id="vcfhethomratio" description="Calculate het/hot ration for a VCF file" name="vcfhethomratio" version="1.0">
+  <requirements>
+  <requirement type="package">vcflib</requirement>
+  </requirements>
+  <command >
+    #set $input_vcf = $input_vcf_file
+    #set $input_vcf_link = "input_vcf_file.vcf.gz"
+    #set $input_tabix = $input_tabix_file
+    #set $input_tabix_link = "input_vcf_file.vcf.gz.tbi"
+    ln -s $input_vcf $input_vcf_link; ln -s $input_tabix $input_tabix_link; vcfhethomratio $input_vcf_link > $output_txt
+  </command>
+  <inputs>
+    <param name="input_vcf_file" format="vcf" type="data" label="Input VCF" help="compressed format"/>
+    <param name="input_tabix_file" format="tabix" type="data" label="Input Tabix file" help="compressed format"/>
+  </inputs>
+
+  <outputs>
+    <data format="txt" name="output_txt"/>
+  </outputs>
+
+  <help>
+  
+  </help>
+</tool>
+

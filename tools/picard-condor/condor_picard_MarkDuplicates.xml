@@ -1,0 +1,133 @@
+<tool id="condor_picard_MarkDuplicates" name="Mark Duplicates (via Condor)" version="PICARD: 1.56.0">
+  <requirements><requirement type="package" version="1.56.0">picard</requirement></requirements>
+  <command interpreter="python">condor_run.py
+    ${GALAXY_DATA_INDEX_DIR}/../tools/picard-condor/picard_wrapper.py
+      --input=&quot;$input_file&quot;
+      --remove-dups=&quot;$remDups&quot;
+      --read-regex=&quot;$readRegex&quot;
+      --opt-dup-dist=&quot;$optDupeDist&quot;
+      --output-format=$outputFormat
+      --output-txt=$outMetrics
+      #if str( $outputFormat ) == &quot;sam&quot;
+        #if str( $remDups ) == &quot;true&quot;
+          --output-sam=$outFileSamRemoved
+        #else
+          --output-sam=$outFileSamMarked
+        #end if
+      #else if str( $outputFormat ) == &quot;bam&quot;
+        #if str( $remDups ) == &quot;true&quot;
+          --output-sam=$outFileBamRemoved
+        #else
+          --output-sam=$outFileBamMarked
+        #end if
+      #end if
+      -j &quot;${GALAXY_DATA_INDEX_DIR}/shared/jars/picard/&quot;
+      --picard-cmd=&quot;MarkDuplicates&quot;
+  </command>
+  <inputs>
+    <param format="bam,sam" help="If the select list is empty, you need to upload or import some aligned short read data from a shared library" label="SAM/BAM dataset to mark duplicates in" name="input_file" type="data"/>
+    <param checked="False" falsevalue="false" help="If true do not write duplicates to the output file instead of writing them with appropriate flags set" label="Remove duplicates from output file" name="remDups" truevalue="true" type="boolean"/>
+    <param help="Names are parsed to extract: tile/region, x coordinate and y coordinate, to estimate optical duplication rate" label="Regular expression that can be used to parse read names in the incoming SAM file" name="readRegex" size="80" type="text" value="[a-zA-Z0-9]+:[0-9]:([0-9]+):([0-9]+):([0-9]+).*">
+      <sanitizer>
+        <valid initial="string.printable">
+         <remove value="'"/>
+        </valid>
+        <mapping initial="none">
+          <add source="'" target="__sq__"/>
+        </mapping>
+      </sanitizer>
+    </param>
+    <param help="Common range 5-10 pixels. Later Illumina software versions multiply pixel values by 10, in which case 50-100" label="The maximum offset between two duplicate clusters in order to consider them optical duplicates" name="optDupeDist" size="5" type="text" value="100"/>
+    <param checked="True" falsevalue="sam" help="Uncheck for sam output" label="Output bam instead of sam" name="outputFormat" truevalue="bam" type="boolean"/>
+  </inputs>
+  <outputs>
+    <data format="txt" label="${tool.name} on ${on_string}: metrics" name="outMetrics"/>
+    <data format="sam" label="${tool.name} on ${on_string}: duplicates marked sam" name="outFileSamMarked">
+      <filter>outputFormat is False</filter>
+      <filter>remDups is False</filter>
+    </data>
+    <data format="sam" label="${tool.name} on ${on_string}: duplicates removed sam" name="outFileSamRemoved">
+      <filter>outputFormat is False</filter>
+      <filter>remDups is True</filter>
+    </data>
+    <data format="bam" label="${tool.name} on ${on_string}: duplicates marked bam" name="outFileBamMarked">
+      <filter>outputFormat is True</filter>
+      <filter>remDups is False</filter>
+    </data>
+    <data format="bam" label="${tool.name} on ${on_string}: duplicates removed bam" name="outFileBamRemoved">
+      <filter>outputFormat is True</filter>
+      <filter>remDups is True</filter>
+    </data>
+  </outputs>
+  <tests>
+    <!-- Functional tests with Picard bam outputs currently aren't working
+    <test>
+    -->
+      <!-- Command to run:
+      java -jar MarkDuplicates.jar VALIDATION_STRINGENCY=LENIENT I=test-data/picard_input_tiny_coord.bam METRICS_FILE=picard_MD_output1.txt OUTPUT=picard_MD_output2.bam REMOVE_DUPLICATES=false ASSUME_SORTED=true READ_NAME_REGEX="[a-zA-Z0-9]+:[0-9]:([0-9]+):([0-9]+):([0-9]+).*" OPTICAL_DUPLICATE_PIXEL_DISTANCE=100
+      -->
+    <!--
+      <param name="input_file" value="picard_input_tiny_coord.bam" />
+      <param name="remDups" value="false" />
+      <param name="readRegex" value="[a-zA-Z0-9]+:[0-9]:([0-9]+):([0-9]+):([0-9]+).*" />
+      <param name="optDupeDist" value="100" />
+      <param name="outputFormat" value="bam" />
+      <output name="outMetrics" file="picard_MD_output1.txt" ftype="txt" lines_diff="4" />
+      <output name="outFileBamMarked" file="picard_MD_output2.bam" ftype="bam" />
+    </test>
+    -->
+    <test>
+      <!-- Command to run:
+      java -jar MarkDuplicates.jar VALIDATION_STRINGENCY=LENIENT I=test-data/picard_input_tiny_coord.sam METRICS_FILE=picard_MD_output3.txt O=picard_MD_output4.sam REMOVE_DUPLICATES=true ASSUME_SORTED=true READ_NAME_REGEX="[a-zA-Z0-9]+:[0-9]:([0-9]+):([0-9]+):([0-9]+).*" OPTICAL_DUPLICATE_PIXEL_DISTANCE=100
+      -->
+      <param name="input_file" value="picard_input_tiny_coord.sam"/>
+      <param name="remDups" value="true"/>
+      <param name="readRegex" value="[a-zA-Z0-9]+:[0-9]:([0-9]+):([0-9]+):([0-9]+).*"/>
+      <param name="optDupeDist" value="100"/>
+      <param name="outputFormat" value="sam"/>
+      <output file="picard_MD_output3.txt" ftype="txt" lines_diff="4" name="outMetrics"/>
+      <output file="picard_MD_output4.sam" ftype="sam" name="outFileSamRemoved"/>
+    </test>
+  </tests>
+  
+  <help>
+
+.. class:: infomark
+
+**Purpose**
+
+MarkDuplicates examines aligned records in the supplied sam or bam file to identify duplicate molecules.
+
+**Picard documentation**
+
+This is a Galaxy interface for MarkDuplicates, a part of Picard-tools_, which is closely related to SAMTools_.
+
+ .. _Picard-tools: http://picard.sourceforge.net/index.shtml
+ .. _SAMTools: http://samtools.sourceforge.net/
+
+------
+
+**Input**
+
+Either a sam file or a bam file is required. If a bam file is used, it must be coordinate-sorted.
+
+**Outputs**
+
+This tool provides two outputs. The first contains the marked (or kept) records and is either bam (the default) or sam, according to user selection. Bam is recommended since it is smaller. The second output is the metrics file, which is a text file containing information about the duplicates. 
+
+**MarkDuplicates parameters**
+
+The two main parameters to be concerned with are the flag for removing duplicates and the regular expression needed to identify reads. If it is set to remove duplicates, they will not be written to the output file; otherwise they will appear in the output but will be flagged appropriately. The read name regular expression is used to parse read names from the input sam file. Read names are parsed to extract three variables: tile/region, x coordinate, and y coordinate. These values are used to estimate the rate of optical duplication in order to give a more accurate estimated library size. The regular expression should contain three capture groups for the three variables, in order (capture groups are enclosed in parentheses). Default value: [a-zA-Z0-9]+:[0-9]:([0-9]+):([0-9]+):([0-9]+).*. 
+
+One other parameter that can be set is the maximum offset between two duplicate clusters in order for them to be considered optical duplicates. Later versions of the Illumina pipeline that multiply pixel values by 10 should generally use 50-100 pixels; otherwise 5-10 is normal. The default is set to 100. 
+
+One parameter that Picard's MarkDuplicates offers that is automatically set by Galaxy is the ASSUME_SORTED, which is set to true because Galaxy bam should always be coordinate-sorted.
+
+**Note on the use of regular expressions for read name parsing**
+
+The regular expression (regex) is used to parse the read names, so it's important to get it exactly right (so you probably don't want to edit this unless you know exactly what you're doing). The three parts of the read names identified are tile/region, x coordinate, and y coordinate, which are used in conjunction with the optical duplication rate to more accurately estimate library size.
+
+
+
+  </help>
+</tool>

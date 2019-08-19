@@ -1,0 +1,70 @@
+<tool id="tab_to_svmergeBed" name="Prepare SVmerge BED" version="0.1">
+    <description>Modify and input tabular, BED or VCF file to SVmerge BED format</description>
+    <requirements>
+    </requirements>
+    <command interpreter="python">
+        tab_to_svmergeBed_wrapper.py
+        --bam-input $input_bam
+
+        #if $callsFormat.callsFormat_select == "file":
+            --input-calls-file $callsFormat.calls_file
+            #if $callsFormat.svTypeColumnAvailable.svTypeColumnAvailable_select == "yes":
+                --svtype-column $callsFormat.svTypeColumnAvailable.svTypeColumn
+            #end if
+            #if $callsFormat.svTypeColumnAvailable.svTypeColumnAvailable_select == "no":
+                --svtype $callsFormat.svTypeColumnAvailable.svType
+            #end if
+        #else:
+            --input-calls-dataset $callsFormat.calls_dataset
+        #end if
+        --species $species
+        --output $output_svmergeBed
+    </command>
+    <inputs>
+	<param format="bam" name="input_bam" type="data" label="BAM file" />
+        <conditional name="callsFormat">
+            <param name="callsFormat_select" type="select" label="How are the inputs stored?" help="File can be supplied as a Bed or tabular format; Dataset must be supplied as an Html format">
+                <option value="file" selected="true">File</option>
+                <option value="dataset">Dataset</option>
+            </param>
+            <when value="file">
+                <param name="calls_file" type="data" label="Calls input file in BED or Tabular format" format="bed,tabular" help="the file must be in the proper format required by SVmerge"/>
+                <conditional name="svTypeColumnAvailable">
+                    <param name="svTypeColumnAvailable_select" type="select" label="Is SV Type available in one of your file's columns?" help="SV Type is DEL, DUP, GAIN, INV, INS, LOSS. If no, then all rows must be the same SV Type" >
+                        <option value="yes">Yes</option>
+                        <option value="no">No</option>
+                    </param>
+                    <when value="yes">
+                        <param name="svTypeColumn" label="" type="data_column" data_ref="calls_file" />
+                    </when>
+                    <when value="no">
+                        <param name="svType" type="select" label="SV Type for input file">
+                            <option value="DEL">DEL</option>
+                            <option value="DUP">DUP</option>
+                            <option value="GAIN">GAIN</option>
+                            <option value="INV">INV</option>
+                            <option value="INS">INS</option>
+                            <option value="LOSS">LOSS</option>
+                        </param>
+                    </when>
+                </conditional>
+            </when>
+            <when value="dataset">
+                <param name="calls_dataset" type="data" label="Calls input dataset in HTML format" format="html" help="Dataset inputs are currently only accepted from forestSV (SV type: DUP, DEL)  or from RepeatMasker (SV type: INS)"/>
+            </when>
+        </conditional>
+        <param name="species" type="select" label="Sample Species">
+            <option value="homo_sapiens">Homo Sapiens</option>
+        </param>
+    </inputs>
+
+    <outputs>
+        <data format="bed" name="output_svmergeBed" label="${tool.name} on ${on_string}: Calls in BED format" />
+    </outputs>
+
+    <tests>
+    </tests>
+
+    <help>
+    </help>
+</tool>

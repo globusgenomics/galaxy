@@ -1,0 +1,66 @@
+<tool id="s3_send_data" name="S3 Send Data">
+  <description>Send data to S3</description>
+  <action module="galaxy_ext.globus.tools.actions.globus" class="S3TransferOut"/>
+  <command interpreter="python"> 
+    s3_transfer_out.py
+    --transfer-info "$transfer_info"
+  </command>
+  <inputs>
+    <param name="from_dataset" type="data" label="Send this dataset"/>
+    <param name="bucket" type="text" size="100" label="S3 Bucket">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="to_path" type="text" size="100" label="To Path (directory)">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="aws_access_key_id" type="text" label="AWS Access Key ID">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="aws_secret_access_key" type="text" label="AWS Secret Access Key">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="rename" type="text" label="Rename the Object (Optional)">
+      <sanitizer sanitize="False"/>
+    </param>
+    <repeat name="tags" title="Add tags (Optional)" min="0">
+      <param name="key" type="text" label="Key">
+        <sanitizer sanitize="False"/>
+      </param>
+      <param name="value" type="text" label="Value">
+        <sanitizer sanitize="False"/>
+      </param>
+    </repeat>
+    <param name="transfer_info" type="hidden" value="**" label="Transfer Info">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="sse" type="boolean" checked="true" truevalue="yes" falsevalue="no" label="ServerSideEncryption (AES256)"/>
+  </inputs>
+  <outputs>
+    <data name="out_file1" type="data" format="txt"/>
+  </outputs>
+  <help>
+
+**What it does**
+
+Transfer a dataset to S3.
+
+It requires five inputs:
+
+Dataset: choose a dataset to send.
+
+S3 Bucket: the name of the bucket to send to.
+
+To Path: path to the "directory" in the bucket the dataset will be sent to.
+
+AWS Access Key ID and AWS Secrect Access Key: credentials to access the bucket, they can be created in IAM user, the tool won’t record the keys, but make sure to limit the IAM user’s access privilege, the tool requires s3:ListBucket and s3:PutObject.
+
+Other inouts:
+
+Rename the Object: choose a name for the object to be transferred to S3, instead of using the default name.
+
+Add tags: add tags to the objects you are sending on S3. Tagging requires s3:PutObjectTagging permission.
+
+ServerSideEncryption(AES256): server-side encryption of the object in S3.
+
+  </help>
+</tool>

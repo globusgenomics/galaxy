@@ -1,0 +1,39 @@
+<tool id="globus_publish" name="Globus Publication" tool_type="globus_multi_datasource"
+      force_history_refresh="True">
+   <description>Fetch datasets from the Globus Data Publication service.</description>
+    <action module="galaxy.tools.actions.globus" class="PublishTransfer"/>
+   <command interpreter="python">
+    transfer_from_publish.py 
+       --session $sess
+       --token "$token" 
+       --epname $epname
+       --eppath $eppath
+       --dest_epname $dest_epname
+       --dest_eppath $dest_eppath
+       $outfile  $outfile.id  $__new_file_path__
+   </command>
+   <inputs>
+     <param name="token" type="hidden" value="" >
+     <sanitizer>
+        <valid>
+          <add value="|"/>
+        </valid>
+      </sanitizer>
+     </param>
+	<param name="hostname" type="hidden" value="" />
+     <param name="sess" type="hidden"/>
+     <param name="epname" type="hidden" value="" label="" />
+     <param name="eppath" type="hidden" value="" label="" />
+     <param name="dest_epname" type="hidden" value="" label="" />
+     <param name="dest_eppath" type="hidden" value="" label="" />
+     <param name="query" type="text" label="Query" size="25"/>
+     <param name="dataset_id" type="globus_publication" /> 
+     <param name="dataset_name" type="hidden" label="" />
+   </inputs>
+   <outputs>
+     <data name="outfile" type="data" format="txt" />
+   </outputs>
+   <help>
+     Fetch datasets from the Globus Data Publication service.
+   </help>
+</tool>

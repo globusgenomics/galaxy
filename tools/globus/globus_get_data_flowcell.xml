@@ -1,0 +1,67 @@
+<tool id="globus_get_data_flowcell_text" name="Get Flowcell sample FastQ per lane via Globus">
+  <description>Transfer FASTQ from Globus to Galaxy</description>
+  <action module="galaxy_ext.globus.tools" class="GlobusTransferInAction"/>
+  <command interpreter="python">
+    globus_transfer.py
+    --transfer-info "$transfer_info"
+    --transfer-direction "$transfer_direction"
+  </command>
+  <inputs>
+    <param name="from_endpoint" type="text" size="100" label="Source Endpoint">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="from_path1" type="text" size="100" label="Source Path L1">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="from_path2" type="text" size="100" label="Source Path L2">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="from_path3" type="text" size="100" label="Source Path L3">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="from_path4" type="text" size="100" label="Source Path L4">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="from_path5" type="text" size="100" label="Source Path L5">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="from_path6" type="text" size="100" label="Source Path L6">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="from_path7" type="text" size="100" label="Source Path L7">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="from_path8" type="text" size="100" label="Source Path L8">
+      <sanitizer sanitize="False"/>
+    </param>
+  </inputs>
+  <outputs>
+    <data name="out_file1" type="data" format="txt"/>
+    <data name="out_file2" type="data" format="txt"/>
+    <data name="out_file3" type="data" format="txt"/>
+    <data name="out_file4" type="data" format="txt"/>
+    <data name="out_file5" type="data" format="txt"/>
+    <data name="out_file6" type="data" format="txt"/>
+    <data name="out_file7" type="data" format="txt"/>
+    <data name="out_file8" type="data" format="txt"/>
+  </outputs>
+  <help>
+.. class:: warningmark
+    
+  **WARNING:** Be careful not to exceed disk quotas!
+    
+-----
+    
+**What it does**
+    
+  Transfers data between from Globus to your Galaxy installation
+  and creates a galaxy dataset from transfered file.
+
+-----
+    
+**Example**
+    
+  Specify your endpoints, and some paths within those endpoints.
+
+  </help>
+</tool>

@@ -1,0 +1,71 @@
+<tool id="read_distribution" name="Read Distribution" version="RSEQC: 2.3.3">
+	<description>calculates how mapped reads were distributed over genome feature</description>
+	<requirements>
+		<requirement type="package">rseqc</requirement>
+                <requirement type="package">pymodules</requirement>
+	</requirements>
+	<command> read_distribution.py -i $input -r $refgene &gt; $output 2&gt; $outputlog
+	</command>
+	<inputs>
+		<param format="bam,sam" label="input bam/sam file" name="input" type="data"/>
+		<param format="bed" label="reference gene model" name="refgene" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="txt" label="${tool.name} on ${on_string}" name="output"/>
+                <data format="txt" label="${tool.name} on ${on_string}: log" name="outputlog"/>
+	</outputs>
+	<help>
+.. image:: https://code.google.com/p/rseqc/logo?cct=1336721062
+
+-----
+
+About RSeQC
++++++++++++
+
+The RSeQC package provides a number of useful modules that can comprehensively evaluate high throughput sequence data especially RNA-seq data. “Basic modules” quickly inspect sequence quality, nucleotide composition bias, PCR bias and GC bias, while “RNA-seq specific modules” investigate sequencing saturation status of both splicing junction detection and expression estimation, mapped reads clipping profile, mapped reads distribution, coverage uniformity over gene body, reproducibility, strand specificity and splice junction annotation.
+
+The RSeQC package is licensed under the GNU GPL v3 license.
+
+Inputs
+++++++++++++++
+
+Input BAM/SAM file
+	Alignment file in BAM/SAM format.
+
+Reference gene model
+	Gene model in BED format.
+
+Sample Output
+++++++++++++++
+
+::
+
+	Total Read: 44,826,454 ::
+
+	Total Tags: 50,023,249 ::
+
+	Total Assigned Tags: 36,057,402 ::
+
+	Group	Total_bases	Tag_count	Tags/Kb
+	CDS_Exons	33302033	20022538	601.24
+	5'UTR_Exons	21717577	4414913	203.29
+	3'UTR_Exons	15347845	3641689	237.28
+	Introns	1132597354	6312099	5.57
+	TSS_up_1kb	17957047	215220	11.99
+	TSS_up_5kb	81621382	392192	4.81
+	TSS_up_10kb	149730983	769210	5.14
+	TES_down_1kb	18298543	266157	14.55
+	TES_down_5kb	78900674	730072	9.25
+	TES_down_10kb	140361190	896953	6.39
+
+Note:
+- &quot;Total Reads&quot;: This does NOT include those QC fail,duplicate and non-primary hit reads
+- &quot;Total Tags&quot;: reads spliced once will be counted as 2 tags, reads spliced twice will be counted as 3 tags, etc. And because of this, &quot;Total Fragments&quot; &gt;= &quot;Total Reads&quot;
+- &quot;Total Assigned Tags&quot;: number of tags that can be unambiguously assigned the 10 groups (above table).
+- Tags assigned to &quot;TSS_up_1kb&quot; were also assigned to &quot;TSS_up_5kb&quot; and &quot;TSS_up_10kb&quot;, tags assigned to &quot;TSS_up_5kb&quot; were also assigned to &quot;TSS_up_10kb&quot;. Therefore, &quot;Total Assigned Tags&quot; = CDS_Exons + 5'UTR_Exons + 3'UTR_Exons + Introns + TSS_up_10kb + TES_down_10kb.
+- When assigning tags to genome features, each tag is represented by its middle point.
+- RSeQC cannot assign those reads that: 1) hit to intergenic regions that beyond region starting from TSS upstream 10Kb to TES downstream 10Kb. 2) hit to regions covered by both 5'UTR and 3' UTR. This is possible when two head-to-tail transcripts are overlapped in UTR regions. 3) hit to regions covered by both TSS upstream 10Kb and TES downstream 10Kb.
+
+
+	</help>
+</tool>

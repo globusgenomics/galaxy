@@ -1,0 +1,59 @@
+<?xml version="1.0" ?>
+<tool id="qiime_diversity_alpha-phylogenetic" name="qiime diversity alpha-phylogenetic" version="022019">
+	<description> - Alpha diversity (phylogenetic)</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command><![CDATA[
+  qiime diversity alpha-phylogenetic --i-phylogeny=$iphylogeny --i-table=$itable --p-metric=$pmetric
+  
+  #if str($cmdconfig) != 'None':
+   --cmd-config=$cmdconfig
+  #end if
+  
+   --o-alpha-diversity=oalphadiversity;
+   
+  cp oalphadiversity.qza  $oalphadiversity;
+  ]]></command>
+	<inputs>
+		<param format="qza,no_unzip.zip" label="--i-table: FeatureTable[Frequency] The feature table containing the samples for which alpha diversity should be computed. [required]" name="itable" optional="False" type="data"/>
+		<param format="qza,no_unzip.zip" label="--i-phylogeny: Phylogeny[Rooted] Phylogenetic tree containing tip identifiers that correspond to the feature identifiers in the table. This tree can contain tip ids that are not present in the table, but all feature ids in the table must be present in this tree.  [required]" name="iphylogeny" optional="False" type="data"/>
+		<param label="--p-metric: " name="pmetric" optional="False" type="select" >
+			<option value="faith_pd">faith_pd</option>
+		</param>
+		<param label="--cmd-config: Use config file for command options" name="cmdconfig" optional="True" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="qza" label="${tool.name} on ${on_string}: alpha-diversity.qza" name="oalphadiversity"/>
+	</outputs>
+	<help><![CDATA[
+Alpha diversity (phylogenetic)
+------------------------------
+
+Computes a user-specified phylogenetic alpha diversity metric for all
+samples in a feature table.
+
+Parameters
+----------
+table : FeatureTable[Frequency]
+    The feature table containing the samples for which alpha diversity
+    should be computed.
+phylogeny : Phylogeny[Rooted]
+    Phylogenetic tree containing tip identifiers that correspond to the
+    feature identifiers in the table. This tree can contain tip ids that
+    are not present in the table, but all feature ids in the table must be
+    present in this tree.
+metric : Str % Choices({'faith_pd'})
+    The alpha diversity metric to be computed.
+
+Returns
+-------
+alpha_diversity : SampleData[AlphaDiversity] % Properties(['phylogenetic'])
+    Vector containing per-sample alpha diversities.
+    ]]>
+	</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

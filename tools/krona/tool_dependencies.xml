@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<tool_dependency>
+   <package name="krona-tools" version="2.6"> 
+        <install version="1.0">
+            <actions>                    
+                <action type="download_by_url">https://github.com/marbl/Krona/releases/download/v2.6/KronaTools-2.6.tar</action>
+                <action type="shell_command"> ./install.pl --prefix=.</action>
+                <action type="shell_command"> ls </action>
+                <action type="shell_command"> chmod a+x scripts/* </action>
+                <action type="shell_command"> cp -R * $INSTALL_DIR </action>                 
+                <action type="set_environment">
+                    <environment_variable name="PATH" action="prepend_to">$INSTALL_DIR</environment_variable>
+                    <environment_variable name="PATH" action="prepend_to">$INSTALL_DIR/scripts</environment_variable>
+                </action>
+                <action type="shell_command"> cd $INSTALL_DIR/scripts </action>
+                <action type="shell_command"> ls </action>
+                <action type="shell_command"> cd $INSTALL_DIR/scripts; for filename in *; do ln -s "$filename" "kt${filename%.pl}"; done;    </action>
+           </actions>
+        </install>
+        <readme>
+           Downloads and installs KronaTools. 
+        </readme>
+    </package>      
+</tool_dependency>
+

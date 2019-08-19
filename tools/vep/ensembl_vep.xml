@@ -1,0 +1,126 @@
+<tool id="ensembl_vep" name="Ensembl Variant Effect Predictor" version="1.0">
+<requirements>
+  <requirement type="package" version="version95">vep</requirement>
+  <requirement type="package" version="1.8">samtools</requirement>
+  <requirement type="package">perlmodules</requirement>
+  <requirement type="package">R</requirement>
+</requirements>
+    <!--<stdio>
+        <regex description="tool progress" level="log" match=".*" source="both"/>
+    </stdio>-->
+<command interpreter="python">
+    ./ensembl_vep.py --input ${input} --assembly ${assembly}  --output ${output}
+    #if $select_db.db_options == "everything":
+      --options everything
+    #else:
+      --options ${select_db.vep_options} 
+    #end if
+    #if $output_format == "vcf":
+        --vcf
+    #end if
+</command>
+
+<inputs>
+    <param name="input" format="vcf" type="data" label="VCF file"/>
+    <param name="assembly" type="select" label="Select cached Human Genome Assembly" >
+      <option value="GRCh37">GRCh37</option>
+      <option value="GRCh38">GRCh38</option>
+    </param>
+
+    <conditional name="select_db">
+      <param name="db_options" type="select" label="Select shortcut or individual database options" help="Everything option is a shortcut for flag to switch on all of the following: --sift b, --polyphen b, --ccds, --uniprot, --hgvs, --symbol, --numbers, --domains, --regulatory, --canonical, --protein, --biotype, --uniprot, --tsl, --appris, --gene_phenotype --af, --af_1kg, --af_esp, --af_gnomad, --max_af, --pubmed, --variant_class">
+        <option value="everything">Shortcut for everything (--everything)</option>
+        <option value="individual">Select individual options</option>
+      </param>
+      <when value="everything"></when>
+      <when value="individual">
+        <param name="vep_options" type="select" display="checkboxes" multiple="True" optional="true" value="" label="Select VEP options" help="For best output we strongly recommend that you have sift, polyphen, condel and check_existing ticked. Some other options severley limit the output">
+
+          <option value="sift">Display Sift output</option>
+          <option value="polyphen">Display PolyPhen output</option>
+##TODO: Its no longer accepted in vep. its now a plugin?
+<!--    <option value="condel">Display Condel output</option> -->
+          <option value="regulatory">Display Regulatory output</option>
+          <option value="protein">Display Protein output</option>
+          <option value="hgnc">Display HGNC output</option>
+          <option value="most_severe">Display Most Severe output</option>
+          <option value="summary">Display Summary output</option>
+          <option value="per_gene">Display Per-gene output</option>
+          <option value="coding_only">Display Coding Region Only</option>
+          <option value="check_existing">Check Existing Snps</option>
+          <option value="check_alleles">When checking for existing variants, only report a co-located variant if none of the alleles supplied are novel</option>
+        </param>   
+      </when>
+    </conditional>
+    <param name="output_format" label="Output in VCF format" type="select" help="Default is tabular format">
+      <option value="tabular" selected="True">No</option>
+      <option value="vcf">Yes - VCF</option>
+    </param>
+</inputs>
+
+<outputs>
+    <data name="output" format="txt" type="data" >
+      <change_format>
+        <when input="output_format" value="vcf" format="vcf" />
+      </change_format>
+    </data>
+</outputs>
+
+<help>
+-- Sift --
+
+SIFT predicts whether an amino acid substitution affects protein function based on sequence homology and the physical properties of amino acids. The VEP can output the prediction term, score or both. Using SIFT requires a database connection - while it can be used with --cache, the database will still be accessed to retrieve SIFT data.
+
+-- Polyphen --
+
+PolyPhen is a tool which predicts possible impact of an amino acid substitution on the structure and function of a human protein using straightforward physical and comparative considerations. The VEP can output the prediction term, score or both. Using PolyPhen requires a database connection - while it can be used with --cache, the database will still be accessed to retrieve PolyPhen data.
+
+-- Condel --
+
+Condel computes a weighted average of the scores (WAS) of several computational tools aimed at classifying missense mutations as likely deleterious or likely neutral.
+
+-- Regulatory --
+
+Look for overlaps with regulatory regions. The script can also call if a variant falls in a high information position within a transcription factor binding site. Output lines have a Feature type of RegulatoryFeature or MotifFeature.
+
+-- Protein --
+
+Add the Ensembl protein identifier to the output where appropriate.
+
+-- HGNC --
+
+Adds the HGNC gene identifer (where available) to the output.
+
+-- Most Severe --
+
+Output only the most severe consequence per variation. Transcript-specific columns will be left blank.
+
+-- Summary --
+
+Output only a comma-separated list of all observed consequences per variation. Transcript-specific columns will be left blank.
+
+-- Per Gene --
+
+Output only the most severe consequence per gene. The transcript selected is arbitrary if more than one has the same predicted consequence.
+
+-- Coding Only --
+
+Only return consequences that fall in the coding regions of transcripts.
+
+-- Check Existing --
+
+Checks for the existence of variants that are co-located with your input. By default the alleles are not compared - to do so, use --check_alleles.
+
+-- Check Alleles --
+
+When checking for existing variants, only report a co-located variant if none of the alleles supplied are novel. For example, if the user input has alleles A/G, and an existing co-located variant has alleles A/C, the co-located variant will not be reported.
+
+Strand is also taken into account - in the same example, if the user input has alleles T/G but on the negative strand, then the co-located variant will be reported since its alleles match the reverse complement of user input.
+
+Credits-
+
+The VEP perl script is written by ensembl. http://www.ensembl.org/index.html
+
+
+</help>
+</tool>

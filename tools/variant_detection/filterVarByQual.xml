@@ -1,0 +1,17 @@
+<tool id="filterVarByQual" name="Filter variants by quality">
+	<description></description>
+	<command>awk '(\$3=="*"&amp;&amp;\$6>=$min_indel_quality)||(\$3!="*"&amp;&amp;\$6>=$min_snp_quality)' $input > $filtered_output</command>
+	<inputs>
+		<param name="input" type="data" label="List of variants" help="List of variants in pileup format" optional="false"/>
+		<param name="min_indel_quality" type="float" label="Minimum indel quality" help="Indels that have a quality less than this will be removed" value="20.0"/>
+		<param name="min_snp_quality" type="float" label="Minimum SNP quality" help="SNPs that have a quality less than this will be removed" value="50.0"/>
+	</inputs>
+	<outputs>
+		<data name="filtered_output" type="data" label="${input.name} filtered by quality"/>
+	</outputs>
+	<help>
+
+This tool filters out low quality SNPs and indels.
+
+	</help>
+</tool>

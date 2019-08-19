@@ -1,0 +1,203 @@
+<tool id="fastqc_bags" name="FastQC" version="FASTQC: 0.11.3">
+    <description>Read Quality reports</description>
+    <requirements>
+        <requirement type="package">FastQC</requirement>
+    </requirements>
+    <stdio>
+        <exit_code range="1:"/>
+        <exit_code range=":-1"/>
+        <regex match="Error:"/>
+        <regex match="Exception:"/>
+    </stdio>
+    <command interpreter="python">
+    rgFastQC.py
+    #if str($input_source_cond.input_source) == &quot;file&quot;:
+      -i $input_source_cond.input_file
+      -j $input_source_cond.input_file.name
+      -f $input_source_cond.input_file.ext
+    #else:
+      -f &quot;fastqsanger&quot;
+      #import os, glob
+      #set $path = &quot;&quot;
+      #if os.path.exists(str($input_source_cond.input_file.extra_files_path)):
+        #set $path = &quot;%s/%s&quot; % ($input_source_cond.input_file.extra_files_path, $input_source_cond.sample_name)
+      #else: 
+          #set $fh = open(str($input_source_cond.input_file), &quot;r&quot;)
+          #set $path = &quot;%s/data/%s&quot; % ($fh.readline().rstrip(&quot;\n&quot;), $input_source_cond.sample_name)
+      #end if
+      #set $files = glob.glob(&quot;%s/*&quot; % $path)
+      #if str($single_paired_cond.single_paired) == &quot;paired&quot;:
+        #set $file1 = $files[0]
+        #set $file2 = $files[1]
+        #set $length1 = len($file1)
+        #set $length2 = len($file2)
+        #if $length1 == $length2:
+          ## figure out which is read1 and which is read2
+          #set $split_file1 = list($file1)
+          #set $split_file2 = list($file2)
+          #for $i, $j in enumerate($split_file1):
+            #if $split_file1[$i] != $split_file2[$i]:
+              ## assume the difference in fastq files is the 1 and 2 in their name
+              #if str($single_paired_cond.strand) == &quot;forward&quot;:
+                #if $split_file1[$i] == &quot;1&quot;:
+                  #set $file_to_use = $file1
+                #else:
+                  #set $file_to_use = $file2
+                #end if
+              #else:
+                #if $split_file1[$i] == &quot;2&quot;:
+                  #set $file_to_use = $file1
+                #else:
+                  #set $file_to_use = $file2
+                #end if
+              #end if
+            #end if
+          #end for
+          -i $file_to_use
+          #set $base = $file_to_use.split(&quot;/&quot;)[-1]
+          -j $base
+        #end if
+      #end if
+    #end if
+
+    -d &quot;$html_file.files_path&quot;
+    -o &quot;$html_file&quot;
+    -t &quot;$text_file&quot;
+    -e &quot;\$FASTQC_JAR_PATH/fastqc&quot;
+    #if $contaminants.dataset and str($contaminants) &gt; ''
+        -c &quot;$contaminants&quot;
+    #end if
+    #if $limits.dataset and str($limits) &gt; ''
+        -l &quot;$limits&quot;
+    #end if
+    </command>
+    <inputs>
+      <conditional name="input_source_cond">
+        <param label="Input Source" name="input_source" type="select">
+          <option selected="True" value="file">History</option>
+          <option value="bag">Dataset Bag</option>
+        </param>
+        <when value="file">
+          <param format="fastqsanger,fastq,bam,sam" label="Short read data from your current history" name="input_file" type="data"/>
+        </when>
+        <when value="bag">
+          <param format="txt" label="Input directory of samples" name="input_file" type="data"/>
+          <param label="Sample Name inside the Fastq directory" name="sample_name" type="text"/>
+        </when>
+      </conditional>
+      <conditional name="single_paired_cond">
+        <param label="Single-End or Paired-End reads" name="single_paired" type="select">
+          <option selected="True" value="single">Single-End</option>
+          <option value="paired">Paired-End</option>
+        </param>
+        <when value="single"/>
+        <when value="paired">
+          <param help="You can only run either the forward or reverse strand at a time" label="Use Forward or Reverse strand" name="strand" type="select">
+            <option value="forward">Forward</option>
+            <option value="reverse">Reverse</option>
+          </param>
+        </when>
+      </conditional>
+      <param format="tabular" help="tab delimited file with 2 columns: name and sequence.  For example: Illumina Small RNA RT Primer CAAGCAGAAGACGGCATACGA" label="Contaminant list" name="contaminants" optional="true" type="data"/>
+      <param format="txt" help="a file that specifies which submodules are to be executed (default=all) and also specifies the thresholds for the each submodules warning parameter" label="Submodule and Limit specifing file" name="limits" optional="true" type="data"/>
+    </inputs>
+    <outputs>
+        <data format="html" label="${tool.name} on ${on_string}: Webpage" name="html_file"/>
+        <data format="txt" label="${tool.name} on ${on_string}: RawData" name="text_file"/>
+    </outputs>
+    <tests>
+        <test>
+            <param name="input_file" value="1000gsample.fastq"/>
+            <param ftype="tabular" name="contaminants" value="fastqc_contaminants.txt"/>
+            <output file="fastqc_report.html" ftype="html" lines_diff="100" name="html_file"/>
+            <output file="fastqc_data.txt" ftype="txt" lines_diff="100" name="text_file"/>
+        </test>
+        <test>
+            <param name="input_file" value="1000gsample.fastq"/>
+            <param ftype="txt" name="limits" value="fastqc_customlimits.txt"/>
+            <output file="fastqc_report2.html" ftype="html" lines_diff="100" name="html_file"/>
+            <output file="fastqc_data2.txt" ftype="txt" lines_diff="100" name="text_file"/>
+        </test>
+    </tests>
+    <help>
+
+.. class:: infomark
+
+**Purpose**
+
+FastQC aims to provide a simple way to do some quality control checks on raw
+sequence data coming from high throughput sequencing pipelines. 
+It provides a modular set of analyses which you can use to give a quick
+impression of whether your data has any problems of 
+which you should be aware before doing any further analysis.
+
+The main functions of FastQC are:
+
+- Import of data from BAM, SAM or FastQ files (any variant)
+- Providing a quick overview to tell you in which areas there may be problems
+- Summary graphs and tables to quickly assess your data
+- Export of results to an HTML based permanent report
+- Offline operation to allow automated generation of reports without running the interactive application
+
+
+-----
+
+
+.. class:: infomark
+
+**FastQC**
+
+This is a Galaxy wrapper. It merely exposes the external package FastQC_ which is documented at FastQC_
+Kindly acknowledge it as well as this tool if you use it.
+FastQC incorporates the Picard-tools_ libraries for sam/bam processing.
+
+The contaminants file parameter was borrowed from the independently developed
+fastqcwrapper contributed to the Galaxy Community Tool Shed by J. Johnson.
+Adaption to version 0.11.2 by T. McGowan.
+
+-----
+
+.. class:: infomark
+
+**Inputs and outputs**
+
+FastQC_ is the best place to look for documentation - it's very good. 
+A summary follows below for those in a tearing hurry.
+
+This wrapper will accept a Galaxy fastq, sam or bam as the input read file to check.
+It will also take an optional file containing a list of contaminants information, in the form of
+a tab-delimited file with 2 columns, name and sequence. As another option the tool takes a custom
+limits.txt file that allows setting the warning thresholds for the different modules and also specifies
+which modules to include in the output.
+
+The tool produces a basic text and a HTML output file that contain all of the results, including the following:
+
+- Basic Statistics
+- Per base sequence quality
+- Per sequence quality scores
+- Per base sequence content
+- Per base GC content
+- Per sequence GC content
+- Per base N content
+- Sequence Length Distribution
+- Sequence Duplication Levels
+- Overrepresented sequences
+- Kmer Content
+
+All except Basic Statistics and Overrepresented sequences are plots.
+ .. _FastQC: http://www.bioinformatics.bbsrc.ac.uk/projects/fastqc/
+ .. _Picard-tools: http://picard.sourceforge.net/index.shtml
+
+    </help>
+    <citations>
+        <citation type="bibtex">
+        @ARTICLE{andrews_s,
+            author = {Andrews, S.},
+            keywords = {bioinformatics, ngs, qc},
+            priority = {2},
+            title = {{FastQC A Quality Control tool for High Throughput Sequence Data}},
+            url = {http://www.bioinformatics.babraham.ac.uk/projects/fastqc/}
+        }
+        </citation>
+    </citations>
+</tool>

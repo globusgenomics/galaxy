@@ -1,0 +1,53 @@
+<tool id="group_batch_by_RG" name="Group BAM Batch by RG" version="SAMTOOLS: 1.2">
+  <description>PU or ID information</description>
+  <requirements>
+	<requirement name="samtools" type="package">samtools</requirement>
+  </requirements>
+  <command interpreter="python">
+    group_bams_by_RG.py 
+      --bams $input.extra_files_path
+      --group-field $group_field
+      #if str($group_keyword.group) == "yes":
+        --keyword-separator $group_keyword.separator
+        --keyword-field-order $group_keyword.field_order
+      #end if
+      --output-dir $output.extra_files_path
+      --output $output
+  </command>
+    <inputs>
+      <param format="tabular,html,txt" help="File should point to location of input BAM files." name="input" label="BAM files to group" type="data"/>		
+      <param name="group_field" type="select" label="Read Group field to group BAMs by" >
+        <option value="ID">ID</option>
+        <option value="CN">CN</option>
+        <option value="DS">DS</option>
+        <option value="DT">DT</option>
+        <option value="FO">FO</option>
+        <option value="KS">KS</option>
+        <option value="LB">LB</option>
+        <option value="PG">PG</option>
+        <option value="PI">PI</option>
+        <option value="PL">PL</option>
+        <option value="PM">PM</option>
+        <option value="PU">PU</option>
+        <option value="SM">SM</option>
+      </param>
+      <conditional name="group_keyword">
+        <param name="group" type="select" label="Does label in the RG field contain a keyword that should be separated" help="i.e. MEGA1_N100, MEGA1_N102, MEGA2_N105 where MEGA1 and MEGA2 are the different groups that need to be created" >
+          <option value="no" selected="True">No</option>
+          <option value="yes">Yes</option>
+        </param>
+        <when value="no"></when>
+        <when value="yes">
+          <param name="separator" type="text" label="Separator character" help="The character that should be used to separate in the BAM RG field name. I.E. In the above example the underscore character (_) would be the separator." />
+          <param name="field_order" value="1" type="integer" label="Field number that contains the Group name" help="I.E. In the above example the field number would be 1 because we want to use the first part of the ID field (MEGA) to group BAMs by." />
+        </when>
+      </conditional>
+    </inputs>
+    <outputs>
+      <data format="tabular" label="${tool.name} on ${on_string}" name="output"/>
+    </outputs>
+    <help>
+
+
+    </help>
+</tool>

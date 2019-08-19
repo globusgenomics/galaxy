@@ -1,0 +1,276 @@
+<tool id="bbmap" name="Map with BBMap" version="PIGZ: pigz-2.3.1; BBMAP: bbmap_34.94; SAMTOOLS: 1.2">
+  <requirements>
+    <requirement type="package">pigz</requirement>
+    <requirement type="package">bbmap</requirement>
+    <requirement type="package">samtools</requirement>
+  </requirements>
+  <description/>
+  <command>
+    #import tempfile
+    #set $tmpdir = tempfile.mkdtemp()
+    #set $tmp_sam_output =  &quot;%s/output.sam&quot; % $tmpdir
+    bbmap.sh threads=16 -Xmx28G nodisk=t $noheader $sam $cigar overwrite=t 
+      outu=$unmapped_output
+      outm=$tmp_sam_output
+      intronlen=$intronlen
+      #if $genomeSource.refGenomeSource == &quot;history&quot;
+        ref=${genomeSource.ownFile}
+      #else
+        ref=${genomeSource.indices.fields.path}
+      #end if
+
+      ## input file(s)
+      in=&quot;${paired.in}&quot;
+      #if $paired.sPaired == &quot;single&quot;
+        $paired.interleaved
+      #else
+        in2=&quot;${paired.in2}&quot;
+      #end if
+
+      #if $readGroup.specReadGroup == &quot;yes&quot;
+        rgid=&quot;${readGroup.rgid}&quot;
+        rgsm=&quot;${readGroup.rgsm}&quot;
+        rgpl=&quot;${readGroup.rgpl}&quot;
+        rglb=&quot;${readGroup.rglb}&quot;
+        rgpu=&quot;${readGroup.rgpu}&quot;
+      #end if
+
+      ## run parameters
+      #if $params.source_select != &quot;pre_set&quot;
+        $params.unpigz
+        $params.pigz
+        
+        #if str($params.sensitivitydMode) != &quot;default&quot;
+          ${params.sensitivitydMode}
+        #end if
+        maxindel=${params.maxindel}
+        ${params.strictmaxindel}
+        ${params.local}
+        minid=${params.minid}
+        minhits=${params.minhits}
+        k=${params.k}
+
+        #if str($params.perfectMode) != &quot;default&quot;
+          ${params.perfectMode}
+        #end if
+        ${params.ambiguous}
+        ${params.samestrandpairs}
+        ${params.requirecorrectstrand}
+        ${params.killbadpairs}
+        ${params.pairedonly}
+        ${params.rcompmate}
+        pairlen=${params.pairlen}
+        maxsites2=${params.maxsites2}
+
+        #if str($params.trim_params.qtrim) != &quot;none&quot;
+          ${params.trim_params.qtrim}
+          ${params.trim_params.untrim}
+          trimq=${params.trim_params.trimq}
+          mintrimlength=${params.trim_params.mintrimlength}
+        #end if
+        ##minaveragequality=${params.minaveragequality}
+      #end if
+    2&gt; $log; samtools view -Sb -@ 8 $tmp_sam_output | samtools sort -m 8G -f -@ 24 - $bam_output; rm -rf $tmpdir
+  </command>
+
+  <inputs>
+    <conditional name="genomeSource">
+      <param label="Will you select a reference genome from your history or use a built-in index?" name="refGenomeSource" type="select">
+        <option value="indexed">Use a built-in index</option>
+        <option value="history">Use one from the history</option>
+      </param>
+      <when value="indexed">
+        <param label="Select a reference genome" name="indices" type="select">
+          <options from_data_table="all_fasta">
+            <filter column="2" type="sort_by"/>
+            <validator message="No indexes are available" type="no_options"/>
+          </options>
+        </param>
+      </when>
+      <when value="history">
+        <param format="fasta" label="Select a reference from history" metadata_name="dbkey" name="ownFile" type="data"/>
+      </when>
+    </conditional>
+    <conditional name="paired">
+      <param label="Is this library mate-paired?" name="sPaired" type="select">
+        <option value="single">Single-end or interleaved paired-end</option>
+        <option value="paired">Paired-end</option>
+      </param>
+      <when value="single">
+        <param format="fastqsanger,fastqillumina" help="FASTQ with either Sanger-scaled quality values (fastqsanger) or Illumina-scaled quality values (fastqillumina)" label="FASTQ file" name="in" type="data"/>
+        <param checked="false" falsevalue="" label="FASTQ file consists of interleaved paired-end sequences (-p)" name="interleaved" truevalue="interleaved=t" type="boolean"/>
+      </when>
+      <when value="paired">
+        <param format="fastqsanger,fastqillumina" help="FASTQ with either Sanger-scaled quality values (fastqsanger) or Illumina-scaled quality values (fastqillumina)" label="Forward FASTQ file" name="in" type="data"/>
+        <param format="fastqsanger,fastqillumina" help="FASTQ with either Sanger-scaled quality values (fastqsanger) or Illumina-scaled quality values (fastqillumina)" label="Reverse FASTQ file" name="in2" type="data"/>
+      </when>
+    </conditional>
+    <param checked="false" falsevalue="" help="BWA produces SAM with several lines of header information" label="Suppress the header in the output SAM file" name="noheader" truevalue="noheader=t" type="boolean"/>
+    <param checked="false" falsevalue="sam=1.4" help="Default set to 1.4" label="Set to 1.3 to write Sam version 1.3 cigar strings," name="sam" truevalue="sam=1.3" type="boolean"/>
+    <param checked="false" falsevalue="" help="faster" label="Skip generation of cigar strings" name="cigar" truevalue="cigar=f" type="boolean"/>
+    <param help="Set to a lower number like 10 to change 'D' to 'N' in cigar strings for deletions of at least that length. (intronlen)" label="Threshold Intron Length" name="intronlen" type="integer" value="999999999"/>
+    <conditional name="readGroup">
+      <param label="Specify the read group for this file? (-R)" name="specReadGroup" type="select">
+        <option value="yes">Yes</option>
+        <option selected="True" value="no">No</option>
+      </param>
+      <when value="yes">
+        <param help="Required if RG specified. Read group IDs may be modified when merging SAM files in order to handle collisions." label="Read group identifier (ID). Each @RG line must have a unique ID. The value of ID is used in the RG tags of alignment records. Must be unique among all read groups in header section." name="rgid" size="25" type="text">
+          <validator type="empty_field"/>
+        </param>
+        <param label="Platform/technology used to produce the reads (PL)" name="rgpl" type="select">
+          <option value="CAPILLARY">CAPILLARY</option>
+          <option value="LS454">LS454</option>
+          <option value="ILLUMINA">ILLUMINA</option>
+          <option value="SOLID">SOLID</option>
+          <option value="HELICOS">HELICOS</option>
+          <option value="IONTORRENT">IONTORRENT</option>
+          <option value="PACBIO">PACBIO</option>
+        </param>
+        <param help="Required if RG specified" label="Library name (LB)" name="rglb" size="25" type="text">
+          <validator type="empty_field"/>
+        </param>
+        <param help="Required if RG specified. Use pool name where a pool is being sequenced" label="Sample (SM)" name="rgsm" size="25" type="text">
+          <validator type="empty_field"/>
+        </param>
+        <param help="Optional. Unique identifier (e.g. flowcell-barcode.lane for Illumina or slide for SOLiD)" label="Platform unit (PU)" name="rgpu" size="25" type="text"/>
+      </when>
+      <when value="no"/>
+    </conditional>
+
+    <conditional name="params">
+      <param help="For most mapping needs use Commonly Used settings. If you want full control use Full Parameter List" label="BBmap settings to use" name="source_select" type="select">
+        <option value="pre_set">Commonly Used</option>
+        <option value="full">Full Parameter List</option>
+      </param>
+      <when value="pre_set"/>
+      <when value="full">
+        <param checked="false" falsevalue="" label="Spawn a pigz (parallel gzip) process for faster input decompression" name="unpigz" truevalue="unpigz=t" type="boolean"/>
+        <param checked="false" falsevalue="" label="Spawn a pigz (parallel gzip) process for faster output compression" name="pigz" truevalue="pigz=t" type="boolean"/>
+        <param help="This flag is a macro which sets other paramters to run at different speeds for variable sensitivity" label="Sensitivity" name="sensitivitydMode" type="select">
+          <option selectec="True" value="default">Default</option>
+          <option value="fast=t">Fast</option>
+          <option value="slow=t">Slow</option>
+          <option value="vslow=t">Very Slow</option>
+        </param>
+        <param help="Don't look for indels longer than this. Lower is faster. Set to less than or equal to 100k for RNAseq with long introns like mammals." label="Max Indel length" name="maxindel" type="integer" value="16000"/>
+        <param checked="false" falsevalue="" help="When enabled, do not allow indels longer than Max indel length. By default these are not sought, but may be found anyway." label="Strict Max Indel" name="strictmaxindel" truevalue="strictmaxindel=t" type="boolean"/>
+        <param help="Higher is faster and less sensitive." label="Minimum alignment identity" name="minid" type="float" value="0.76"/>
+        <param help="Higher is faster" label="Minimum number of seed hits required for candidate sites" name="minhits" type="integer" value="1"/>
+        <param help="Lower is slower, more sensitive and less RAM used. Range is 7 to 15." label="Kmer length of index" max="15" min="7" name="k" type="integer" value="13"/>
+        <param checked="false" falsevalue="" help="By default it uses global alignments. Using local alignments will soft-clip ugly ends of poor alignments." label="Use local alignment" name="local" truevalue="local=t" type="boolean"/>
+        <param help="Perfect: Allow only perfect mappings; Semiperfect: Allows perfect and semiperfect." label="Mappings allowed" name="perfectMode" type="select">
+          <option selectec="True" value="default">Default</option>
+          <option value="perfectmode=t">Perfect</option>
+          <option value="semiperfectmode=t">Semiperfect</option>
+        </param>
+        <param help="" label="Set behavior on ambiguously-mapped reads" name="ambiguous" type="select">
+          <option selectec="True" value="ambiguous=best">Best - use the first best site</option>
+          <option value="ambiguous=toss">toss - consider unmapped</option>
+          <option value="ambiguous=random">random - select one top-scoring site randomly</option>
+          <option value="ambiguous=all">all - retain all top-scoring sties</option>
+        </param>
+        <param checked="false" falsevalue="" help="Specify whether paired reads should map to the same strand or opposite strands." label="Map to same pairs" name="samestrandpairs" truevalue="samestrandpairs=t" type="boolean"/>
+        <param checked="true" falsevalue="requirecorrectstrand=f" help="Set to false for long-mate-pair libraries." label="Forbid pairing of reads without correct strand orientation" name="requirecorrectstrand" truevalue="requirecorrectstrand=t" type="boolean"/>
+        <param checked="false" falsevalue="" help="If a read pair is mapped with an inappropriate insert size or orientation, the read with the lower mapping quality is marked unmapped." label="Discard bad pairs" name="killbadpairs" truevalue="killbadpairs=t" type="boolean"/>
+        <param checked="false" falsevalue="" label="Treat unpaired reads as unmapped" name="pairedonly" truevalue="pairedonly=t" type="boolean"/>
+        <param checked="false" falsevalue="" label="Reverse complement second read in each pair prior to mapping" name="rcompmate" truevalue="rcompmate=t" type="boolean"/>
+        <param help="(insert size)=(pairlen)+(read1 length)+(read2 length)" label="Max allowed distance between paired reads" name="pairlen" type="integer" value="32000"/>
+        <param help="" label="Max alignments to print per read" name="maxsites2" type="integer" value="800"/>
+        <conditional name="trim_params">
+          <param help="" label="Quality-trim ends before mapping" name="qtrim" type="select">
+            <option selectec="True" value="none">No trimming</option>
+            <option value="qtrim=l">left</option>
+            <option value="qtrim=r">right</option>
+            <option value="qtrim=lr">both</option>
+          </param>
+          <when value="none"/>
+          <when value="qtrim=l">
+            <param checked="false" falsevalue="" help="Untrimmed bases will be soft-clipped in cigar strings" label="Undo trimming after mapping" name="untrim" truevalue="untrim=t" type="boolean"/>
+            <param help="" label="Treshold average quality value to trim sequences" name="trimq" type="integer" value="6"/>
+            <param help="" label="Minimum read length to trim" name="mintrimlength" type="integer" value="60"/>
+          </when>
+          <when value="qtrim=r">
+            <param checked="false" falsevalue="" help="Untrimmed bases will be soft-clipped in cigar strings" label="Undo trimming after mapping" name="untrim" truevalue="untrim=t" type="boolean"/>
+            <param help="" label="Treshold average quality value to trim sequences" name="trimq" type="integer" value="6"/>
+            <param help="" label="Minimum read length to trim" name="mintrimlength" type="integer" value="60"/>
+          </when>
+          <when value="qtrim=lr">
+            <param checked="false" falsevalue="" help="Untrimmed bases will be soft-clipped in cigar strings" label="Undo trimming after mapping" name="untrim" truevalue="untrim=t" type="boolean"/>
+            <param help="" label="Treshold average quality value to trim sequences" name="trimq" type="integer" value="6"/>
+            <param help="" label="Minimum read length to trim" name="mintrimlength" type="integer" value="60"/>
+          </when>
+        </conditional>
+        <!--<param name="minaveragequality" type="integer" value="0" label="Minimum average quality value" help="Reads with lower value than this will be discarded" />-->
+      </when>
+    </conditional>
+  </inputs>
+
+  <outputs>
+    <data format="bam" label="${tool.name} on ${on_string}: mapped BAM" name="bam_output">
+      <actions>
+        <conditional name="genomeSource.refGenomeSource">
+          <when value="indexed">
+            <action name="dbkey" type="metadata">
+              <option column="1" name="all_fasta" type="from_data_table">
+                <filter column="0" compare="startswith" keep="False" type="param_value" value="#"/>
+                <filter column="0" ref="genomeSource.indices" type="param_value"/>
+              </option>
+            </action>
+          </when>
+          <when value="history">
+            <action name="dbkey" type="metadata">
+              <option name="genomeSource.ownFile" param_attribute="dbkey" type="from_param"/>
+            </action>
+          </when>
+        </conditional>
+      </actions>
+    </data>
+    <data format="fastqsanger" label="${tool.name} on ${on_string}: unmapped reads" name="unmapped_output">
+      <actions>
+        <conditional name="genomeSource.refGenomeSource">
+          <when value="indexed">
+            <action name="dbkey" type="metadata">
+              <option column="1" name="all_fasta" type="from_data_table">
+                <filter column="0" compare="startswith" keep="False" type="param_value" value="#"/>
+                <filter column="0" ref="genomeSource.indices" type="param_value"/>
+              </option>
+            </action>
+          </when>
+          <when value="history">
+            <action name="dbkey" type="metadata">
+              <option name="genomeSource.ownFile" param_attribute="dbkey" type="from_param"/>
+            </action>
+          </when>
+        </conditional>
+      </actions>
+    </data>
+
+    <data format="txt" label="${tool.name} on ${on_string}: log" name="log"/>
+  </outputs>
+
+  <tests>
+    <test>
+    </test>
+    <test>
+    </test>
+    <test>
+    </test>
+  </tests>
+  <help>
+**What it does**
+
+
+------
+
+**Input formats**
+
+BBMap accepts files in either Sanger FASTQ format (galaxy type *fastqsanger*) or Illumina FASTQ format (galaxy type *fastqillumina*). Use the FASTQ Groomer to prepare your files.
+
+------
+
+**License and citation**
+
+
+  </help>
+</tool>

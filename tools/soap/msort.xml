@@ -1,0 +1,94 @@
+<tool id="msort" name="msort" version="BGISOAP: default">
+    <description>- sort tabular data by multiple fields</description>
+    <command interpreter="python">
+        msort.py
+
+        ## Inputs
+        --infile=$infile
+        --sort_specified_fields=$sort_specified_fields
+
+        ##Output
+        --outfile=$outfile
+
+        ## Check if using default or custom parameters
+        --default_full_settings_type=$default_full_settings.settings_type
+        #if $default_full_settings.settings_type == &quot;full&quot;:
+            --line_delimiters=$default_full_settings.line_delimiters
+            --num_lines_per_block=$default_full_settings.num_lines_per_block
+            --field_delimiters=$default_full_settings.field_delimiters
+            ##--reverse_sort=$default_full_settings.reverse_sort
+            ##--ignore_char_case=$default_full_settings.ignore_char_case
+            ##--treat_fields_as_num=$default_full_settings.treat_fields_as_num
+            ##--treat_fields_as_num_or_string=$default_full_settings.treat_fields_as_num_or_string
+        #end if
+    </command>
+    <requirements>
+        <requirement type="package">bgisoap</requirement>
+    </requirements>
+    <inputs>
+        <param format="input" label="Input table for sorting" name="infile" type="data"/>
+        <param label="Specify fields for sorting" name="sort_specified_fields" type="text" value="n9"/>
+        <conditional name="default_full_settings">
+            <param help="For full control of this function, please use Full Parameter List" label="msort settings to use" name="settings_type" type="select">
+                <option value="default">Default</option>
+                <option value="full">Full parameter list</option>
+            </param>
+            <when value="default"/>
+            <when value="full">
+                <param label="Specify line delimiters used in input file" name="line_delimiters" type="text"/>
+                <param label="Specify multiple lines as blocks" name="num_lines_per_block" type="integer" value="1"/>
+                <param label="Specify delimiters for fields" name="field_delimiters" type="text" value="tab"/>
+                <!-- Need to sort out the drop down menus for these 4 params -->
+                <!--
+                <param name="reverse_sort" type="text" label="Sort input data in reverse"/>
+                <param name="ignore_char_case" type="text" label="Ignore character cases"/>
+                <param name="treat_fields_as_num" type="text" label="Treat fields as numbers"/>
+                <param name="treat_fields_as_num_or_string" type="text" label="Treat fields as numbers or strings"/>
+                -->           
+            </when>
+        </conditional>
+    </inputs>
+    <outputs>
+        <data format="Tabular" label="Sorted data" name="outfile"/>
+    </outputs>
+    <tests>
+        <test>
+            <!--
+                GapCloser –b config_file –a scaffold_file –o output_file
+            -->
+            <param name="refGenomeSource" value="indexed"/>
+            <param name="indices" value="phiX"/>
+            <param name="sPaired" value="single"/>
+            <param ftype="fastqsanger" name="input1" value="bwa_wrapper_in1.fastqsanger"/>
+            <param name="source_select" value="pre_set"/>
+            <param name="suppressHeader" value="true"/>
+            <output file="bwa_wrapper_out1.sam" ftype="sam" name="output" sort="True"/>
+        </test>
+    </tests>
+    <help>
+**What it does**
+
+msort is a tool for sorting text files containing tabular data by rows.
+
+**How it works**
+
+A notation is used for specifying fields to be sorted, e.g.:
+
+rn10[2-6]: reverse sort rows 2-6 (include 6) of column 10, treat it as number
+n11: sort column 11, treat it as number
+f2[6-]: sort 6-end of column 2, treat it as string, ignore case
+rfm3: reverse sort column 3, treat it as string or number, ignore string case
+f3{red green blue}: sort column 3 , treat it as enum, ignore string case
+
+**Attribution**
+
+Msort was written by Ruan Jue at BGI-SZ.
+
+**More information**
+
+For test data and more detailed information, click here_.
+
+.. _here: http://soap.genomics.org.cn/about.html#resource2
+
+    </help>
+</tool>

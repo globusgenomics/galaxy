@@ -1,0 +1,79 @@
+<?xml version="1.0" ?>
+<tool id="qiime_gneiss_lme-regression" name="qiime gneiss lme-regression" version="022019">
+	<description> - Simplicial Linear mixed effects regression</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command>
+	<![CDATA[
+	qiime gneiss lme-regression --i-table=$itable
+
+	#def list_dict_to_string(list_dict):
+		#set $file_list = list_dict[0]['additional_input'].__getattr__('file_name')
+		#for d in list_dict[1:]:
+			#set $file_list = $file_list + ',' + d['additional_input'].__getattr__('file_name')
+		#end for
+		#return $file_list
+	#end def
+
+	 --m-metadata-file=$list_dict_to_string($input_files_mmetadatafile) --i-tree=$itree --p-groups="$pgroups" --p-formula="$pformula"
+	#if str($cmdconfig) != 'None':
+	 --cmd-config=$cmdconfig
+	#end if
+	 --o-visualization=ovisualization;
+
+	qiime tools export --input-path ovisualization.qzv --output-path out   && mkdir -p '$ovisualization.files_path'
+	&& cp -r out/* '$ovisualization.files_path'
+	&& mv '$ovisualization.files_path/index.html' '$ovisualization'
+	]]>
+	</command>
+	<inputs>
+		<param format="qza,no_unzip.zip" label="--i-table: FeatureTable[Balance] The feature table containing the samples in which simplicial regression with mixed effects will be performedwill be performed. [required]" name="itable" optional="False" type="data"/>
+		<param format="qza,no_unzip.zip" label="--i-tree: Hierarchy A hierarchy of feature identifiers where each tipcorresponds to the feature identifiers in the table. This tree can contain tip ids that are not present in the table, but all feature ids in the table must be present in this tree.  [required]" name="itree" optional="False" type="data"/>
+		<repeat name="input_files_mmetadatafile" optional="False" title="--m-metadata-file">
+			<param label="--m-metadata-file: Metadata file or artifact viewable as metadata. This option may be supplied multiple times to merge metadata. Metadata information that contains the covariates of interest.  [required]" name="additional_input" type="data" format="tabular,qza,no_unzip.zip" />
+		</repeat>
+
+		<param label="--p-formula: Statistical formula specifying the statistical model.  [required]" name="pformula" optional="False" type="text"/>
+		<param label="--p-groups: [required]" name="pgroups" optional="False" type="text"/>
+
+		<param label="--cmd-config: Use config file for command options" name="cmdconfig" optional="True" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="html" label="${tool.name} on ${on_string}: visualization.qzv" name="ovisualization"/>
+	</outputs>
+	<help>
+		<![CDATA[
+Simplicial Linear mixed effects regression
+-------------------------------------------
+
+Build and run linear mixed effects model on balances.
+
+Parameters
+----------
+table : FeatureTable[Balance]
+    The feature table containing the samples in which simplicial regression
+    with mixed effects will be performedwill be performed.
+tree : Hierarchy
+    A hierarchy of feature identifiers where each tipcorresponds to the
+    feature identifiers in the table. This tree can contain tip ids that
+    are not present in the table, but all feature ids in the table must be
+    present in this tree.
+metadata : Metadata
+    Metadata information that contains the covariates of interest.
+formula : Str
+    Statistical formula specifying the statistical model.
+groups : Str
+    \
+
+Returns
+-------
+visualization : Visualization
+		\
+		]]>
+	</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

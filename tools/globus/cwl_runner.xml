@@ -1,0 +1,30 @@
+<tool id="cwl_runner" name="CWL Runner">
+  <description>cwl runner</description>
+  <command interpreter="python"> 
+    cwl_runner.py
+    --cwl-file '$cwl_file'
+    --inputs "$inputs"
+    --output "$output"
+  </command>
+  <requirements>
+    <requirement type="package">cwltool</requirement>
+  </requirements>
+  <inputs>
+    <param name="cwl_file" type="text" size="100" label="CWL File">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="inputs" type="data" label="Inputs JSON file"/>
+  </inputs>
+  <outputs>
+    <data name="output" type="data"/>
+  </outputs>
+  <stdio>
+    <regex match=".*" source="both" level="log" description="tool progress"/>
+  </stdio>
+  <help>
+
+**What it does**
+Accept a cwl workflow and a json input file, execute cwl-runner
+
+  </help>
+</tool>

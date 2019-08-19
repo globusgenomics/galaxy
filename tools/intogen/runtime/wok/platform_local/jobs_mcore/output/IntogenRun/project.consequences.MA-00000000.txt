@@ -1,0 +1,7 @@
+2014-09-19 20:15:26 wok.data             [WARNING] The MongoDB data provider can not be loaded.
+2014-09-19 20:15:26 wok.data             [WARNING] This data provider is necessary only if you are going to use a MongoDB database.
+2014-09-19 20:15:26 wok.data             [WARNING] To install it run the following command: pip install pymongo-2.5.2
+2014-09-19 20:15:26 MA-00000000          [INFO   ] --- [IntogenRun @ 0] --------------------------------------------
+2014-09-19 20:15:26 MA-00000000          [INFO   ] Running Mutation assessor in local mode.
+2014-09-19 20:15:26 MA-00000000          [INFO   ] Querying Mutation assessor for 'missense_variant' consequences ...
+2014-09-19 20:15:26 MA-00000000          [INFO   ] Elapsed time: 0:00:00.170045

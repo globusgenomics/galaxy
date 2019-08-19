@@ -1,0 +1,32 @@
+<tool id="vcfstreamsort" description="Sort a VCF file by physical position." name="vcfstreamsort" version="1.0">
+  <description>Sort a VCF file by physical position.</description>
+
+  <command interpreter="bash">
+    vcfstreamsort.sh
+
+    #if str( $input_vcf ):
+      $input_vcf
+    #else:
+      none
+    #end if
+
+    #if str( $input_vcf ):
+      $input_vcf
+    #else:
+      none
+    #end if
+
+  </command>
+  <inputs>
+    <param name="input_vcf" type="data"/>
+  </inputs>
+
+  <outputs>
+    <data format="vcf" name="output_vcf"/>
+  </outputs>
+
+  <help>
+  
+  </help>
+</tool>
+

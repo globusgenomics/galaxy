@@ -1,0 +1,158 @@
+<tool id="metasv_swift" name="metasv (Swift)" version="METASV: v0.5">
+  <description>An accurate and integrative structural-variant caller for next generation sequencing</description>
+  <requirements>
+    <requirement type="package">pymodules</requirement>
+    <requirement type="package" version="3.6.2">spades</requirement>
+    <requirement type="package" version="02-22-2016">age</requirement>
+    <requirement type="package">swift</requirement>
+    <requirement type="package">bedtools</requirement>
+  </requirements>
+  <command interpreter="python">
+        metasv_swift.py
+        --output $output_log
+        --out-dir $output_log.extra_files_path
+        --log $output_swift_log
+
+        #if $softclip.run == "yes":
+            -p "--boost_sc --keep_standard_contigs"
+            -p "--spades spades.py"
+            -p "--age age_align"
+ 
+            ## input bams
+            #if $softclip.input_bam_dir_source.input_dir_source_type == "text":
+                --input_bam_dir ${softclip.input_bam_dir_source.input_directory_path}
+            #else if $softclip.input_bam_dir_source.input_dir_source_type == "file":
+                --input_bam_dir_file ${softclip.input_bam_dir_source.input_directory_path_file}
+            #else:
+                --input_bam_files "
+                #for i in $softclip.input_bam_dir_source.tumorbams#${i} #end for#
+            #end if
+         #else:
+             -p "--disable_assembly --filter_gaps --keep_standard_contigs"
+         #end if
+ 
+       ## reference genome 
+         #if $softclip.in_type.input_type == "built-in":
+             -p '--reference $softclip.in_type.genome.fields.path'
+        #else:
+            -p '--reference $softclip.in_type.input1'
+        #end if
+
+        ## input vcf files
+        #for $i, $s in enumerate( $sv ):
+          #if $s.input_dir_source.input_dir_source_type == "file":
+            --input_dir "$s.tool" "${s.input_dir_source.input_directory_path_file.extra_files_path}"
+          #else:
+            --input_dir "$s.tool" "${s.input_dir_source.input_directory_path}"
+          #end if
+        #end for
+  </command>
+
+  <stdio>
+    <exit_code range="1:" level="fatal" description="Error" />
+  </stdio>
+
+  <inputs>
+    <conditional name="softclip">
+       <param name="run" type="select" label="Would you run with soft-clip to boost insertion detection sensitivity?">
+         <option value="yes">Yes</option>
+         <option value="no">No</option>
+       </param>
+       <when value="yes">
+         <conditional name="input_bam_dir_source">
+           <param help="If you choose the file based method, it must contain only one line with the path for your files" label="How will you enter the directory path for your BAM/BAI files?" name="input_dir_source_type" type="select">
+             <option selected="True" value="text">Text Field</option>
+             <option value="file">File</option>
+             <option value="history">History</option>
+           </param>
+           <when value="text">
+             <param area="True" help="Please input the full path of the directory that contains a set of BAM files. All the BAM files will be used as input datasets." label="BAM directory path" name="input_directory_path" size="2x40" type="text"/>
+           </when>
+           <when value="file">
+             <param format="txt" help="Must contain only one line with the path for your files" label="File containing path of the directory containing the BAM files" name="input_directory_path_file" type="data"/>
+           </when>
+           <when value="history">
+             <param format="bam" name="tumorbams" type="data" label="Tumor BAM file(s)" multiple="true"/>
+           </when>
+         </conditional>
+
+         <conditional name="in_type">
+           <param name="input_type" type="select" label="Use a built-in FASTA file or one from the history?">
+             <option value="built-in">Built-in</option>
+             <option value="history">History file</option>
+           </param>
+           <when value="built-in">
+             <param name="genome" type="select" label="Select a built-in genome" help="if your genome of interest is not listed - please contact globus genomics team">
+               <options from_data_table="all_fasta_metasv" />
+             </param>
+           </when>
+           <when value="history">
+             <param name="input1" type="data" format="fasta" label="Input genome (FASTA format)" />
+           </when>
+         </conditional>
+      </when>
+      <when value="no">
+         <conditional name="in_type">
+           <param name="input_type" type="select" label="Use a built-in FASTA file or one from the history?">
+             <option value="built-in">Built-in</option>
+             <option value="history">History file</option>
+           </param>
+           <when value="built-in">
+             <param name="genome" type="select" label="Select a built-in genome" help="if your genome of interest is not listed - contact Galaxy team">
+               <options from_data_table="all_fasta_metasv" />
+             </param>
+           </when>
+           <when value="history">
+             <param name="input1" type="data" format="fasta" label="Input genome (FASTA format)" />
+           </when>
+         </conditional>
+     </when>
+    </conditional>
+    <!--conditional name="input_dir_source">
+         <param help="If you choose the file based method, it must contain only one line with the path for your files" label="How will you enter the directory path for your BAM/BAI files?" name="input_dir_source_type" type="select">
+           <option value="text">Text Field</option>
+           <option selected="True" value="file">File</option>
+           <option value="history">History</option>
+         </param>
+         <when value="text">
+           <param area="True" help="Please input the full path of the directory that contains a set of BAM files. All the BAM files will be used as input datasets." label="BAM directory path" name="input_directory_path" size="2x40" type="text"/>
+         </when>
+         <when value="file">
+           <param format="txt" help="Must contain only one line with the path for your files" label="File containing path of the directory containing the BAM files" name="input_directory_path_file" type="data"/>
+         </when>
+         <when value="history">
+           <param format="bam" name="tumorbams" type="data" label="Tumor BAM file(s)" multiple="true"/>
+         </when>
+    </conditional-->
+     
+     <repeat name="sv" title="sv calling tools" label="" min="1">
+      <param help="" label="tool" name="tool" type="select">
+        <options from_data_table='sv_tool' />
+      </param>
+      <conditional name="input_dir_source">
+        <param help="If you choose the file based method, it must contain only one line with the path for your files" label="How will you enter the directory path for your VCF files?" name="input_dir_source_type" type="select">
+          <option value="text">Text Field</option>
+          <option selected="True" value="file">File</option>
+        </param>
+        <when value="text">
+          <param area="True" help="Please input the full path of the directory that contains a set of VCF files. All the VCF files will be used as input datasets." label="VCF directory path" name="input_directory_path" size="2x40" type="text"/>
+        </when>
+        <when value="file">
+          <param format="txt" help="Must contain only one line with the path for your files" label="The directory path containing the VCF files" name="input_directory_path_file" type="data"/>
+        </when>
+      </conditional>
+    </repeat>
+   </inputs>
+
+   <outputs>
+    <data format="html" label="${tool.name} on ${on_string} (log)" name="output_log"/>
+    <data format="pdf" label="${tool.name} on ${on_string} (summary)" name="output_swift_log"/>
+   </outputs>
+   <tests>
+     <test>
+     </test>
+   </tests>
+   <help>
+
+   </help>
+</tool>

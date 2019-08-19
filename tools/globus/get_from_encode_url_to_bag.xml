@@ -1,0 +1,16 @@
+<tool id="get_from_encode_url" name="Get FASTQ from ENCODE URL">
+  <description>transfer data given an ENCODE URL to a bag dataset object</description>
+  <command interpreter="python">get_from_encode_url_to_bag.py 
+  -u '$input' 
+  -o '$output1' -d '$output1.extra_files_path'
+  </command>
+   <inputs>
+    <param name="input" type="text" label="ENCODE URL where path is" help="Multiple paths can be given separated by comma. Will be placed in same dataset object. If multiple fastq files are paired-end, specify in order (R1, R2)"/>
+   </inputs>
+   <outputs>
+     <data format="txt" name="output1" label="${tool.name} on ${input}"/>
+   </outputs>
+<help>
+
+</help>
+</tool>

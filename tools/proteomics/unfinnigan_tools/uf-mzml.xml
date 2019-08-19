@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+
+<tool name="RAW to mzml" id="uf_mzml_id">
+  <description> Convert RAW files to mzml files. </description>
+  <requirements>
+      <requirement type="package">unfinnigan_tools</requirement>
+      <requirement type="package">perlmodules</requirement>
+  </requirements>
+  <command>
+    uf-mzml
+    $upload_input > $mzMLFile 2> $mzML_log
+  </command>
+  
+  <inputs>
+	<param name="upload_input" type="data" format="raw,RAW" label="Select RAW file"/>
+  </inputs> 
+  
+  <outputs>
+    <data format="mzml" name="mzMLFile" label="${tool.name} on ${on_string}.mzml" />
+    <data format="text" name="mzML_log" label="${tool.name} on ${on_string}.log" />
+  </outputs>
+
+  <help>
+Using the tool, uf-mzml, to transfer raw to mzML format. The basic format using uf-mzml is "uf-mzxml [opti
+ons] file". Several parameters can be used by uf-mzml, including -a, -c, -r, -q. In this pipelin, the uf-m
+zml is running as the format "uf-mzml -q file". So, uf-mzml convert the entire file, using profiles from t
+hose scans where both profiles and centroids are present and centroids where there are no profiles and sup
+pressing the instrument error messages because Galaxy will interrupt only if there is any content in Strer
+r. 
+-q[uiet]:Suppress the instrument error messages stored in the input file. Without this option, the error m
+essages will be printed to STDERR. 
+  </help>
+
+</tool>
+

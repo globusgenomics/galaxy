@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+
+<tool name="Index GFF" id="index_GFF_id">
+  <description>Index the given GFF</description>
+
+  <requirements>
+    <requirement type="package">pymodules</requirement>
+  </requirements>
+  <command interpreter="python">
+     miso_index_GFF.py   
+   $INDEX_GFF  $htmlout
+
+  </command>
+
+  <inputs>
+    <param name="INDEX_GFF" type="data" label="Select a GFF file"/>
+  </inputs>
+
+  <outputs>
+    <data format="html" name="htmlout" label="Output of Index GFF.html" />
+  </outputs>
+
+  <help>
+Usage: index_gff.py [options]
+
+Options:
+  --index=INDEX_GFF  Index the given GFF. Takes as arguments as GFF filename
+                     and an output directory.
+
+  </help>
+
+</tool>

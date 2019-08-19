@@ -1,0 +1,33 @@
+<tool id="SummarizeLowCovAreas" name="Summarize low coverage areas">
+	<description></description>
+	<command interpreter="perl">summarizeLowCovAreas.pl $coverage_file $target_file > $output</command>
+	<inputs>
+		<param name="coverage_file" type="data" format="bed" label="Bed file of interest" help="Bed file containing regions on interest, e.g., the low coverage exons" optional="false"/>
+		<param name="target_file" type="data" format="bed" label="Target bed file" help="Bed file containing targeted regions of interest, e.g., the exome-seq capture probe locations" optional="false"/>
+	</inputs>
+	<outputs>
+		<data name="output" format="text" label="Summary of bed files on ${on_string}"/>
+	</outputs>
+	<help>
+
+Summarizes 1) the regions covered by a bed file of interest and a target bed file and 2) the regions covered just by the targed bed file
+
+-----
+
+** Example output file**
+
+COVERAGE GAPS
+
+
+   Gap = 5 exons
+
+chrY    2734874 2735083 chrY    2734874 2735083 0       209
+2709953..2710162 2710219..2710410 2712182..2712382 2713575..2713760 2722769..2722889
+
+   Gap = 6 exons
+
+chrY    2846894 2847014 chrY    2846894 2847014 0       120
+2821957..2822166 2829175..2829345 2829415..2829745 2843062..2843235 2843457..2843678 2844736..2844915
+
+	</help>
+</tool>

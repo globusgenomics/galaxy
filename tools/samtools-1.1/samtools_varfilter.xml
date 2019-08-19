@@ -1,0 +1,14 @@
+<tool id="samtoolsVarFilter" name="Samtools Variant Filter">
+	<description>filters SNPs and short indels</description>
+	<command interpreter="perl">samtools.pl varFilter -D99999 $input > $output</command>
+	<inputs>
+		<param name="input" type="data" label="Variant pileup file" help="List of of variants in pileup format" optional="false"/>
+	</inputs>
+	<outputs>
+		<data name="output" type="data" label="Filtered ${input.name}"/>
+	</outputs>
+        <help>
+        </help>
+
+</tool>
+

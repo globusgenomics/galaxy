@@ -1,0 +1,34 @@
+<tool id="create_batch_for_fastqSamples" name="Create batch for fastq Samples" version="1.0">
+    <action module="galaxy_ext.globus.tools.actions.globus" class="BatchSubmit"/>
+    <description></description>
+
+    <requirements>
+        <requirement type="package">pymodules</requirement>
+    </requirements>
+
+    <command interpreter="python">
+        create_batch_for_fastqSamples.py
+            --workflow-name "$workflow_name"
+            --history-id "$historyid"
+            --history-item "$input_file.name"
+            --input-dir $input_file.extra_files_path
+            --output $batch_file
+            --key $userapi
+            --url "$url"
+            --username $username
+    </command>
+    <inputs>
+        <param name="input_file" type="data" format="tabular,txt" label="Fastq location" help="This should be the FASTQ output file from the BCL2Fastq tool"/>
+        <param name="workflow_name" type="text" label="User Workflow Name to create batch for" help="" value="Optimized-Isaac-align-per-sample-Fastq"/>
+        <param name="url" type="hidden" label="URL"/>
+        <param name="userapi" type="hidden" size="100" label="Key"/>
+        <param name="historyid" type="hidden" size="100" label="History id"/>
+        <param name="username" type="hidden" size="100" label="Globus Username"/>
+    </inputs>
+    <outputs>
+        <data name="batch_file" format="txt" label="Batch submit file on ${on_string}" />
+    </outputs>
+
+    <help>
+    </help>
+</tool>

@@ -1,0 +1,46 @@
+<tool id="extract" name="Extract a branch from an ontology" version="1.0.1">
+	<description>Retrieves a subtree from an ontology using a root concept</description>
+	<command>java -jar /nfs/software/galaxy/tool-data/shared/jars/extract.jar $api_key $ontologyversionid $conceptid $filterrelations $ontologyname > $output </command>  
+
+	<inputs>
+		<param name="api_key" type="text" size="100" label="BioPortal API key" />
+		<param name="ontologyversionid" type="text" size="100" label="Ontology version ID" />
+		<param name="conceptid" type="text" size="100" label="Concept id" />
+		<param name="filterrelations" type="text" value="None" size="100" label="Filter relations" />
+		<param name="ontologyname" type="text" size="100" label="Ontology name" />
+	</inputs>
+	<outputs>
+		<data format="text" name="output" />
+	</outputs>
+	<tests>
+		<test>
+<!--			<param name="api_key"/>    -->
+		</test>
+	</tests>
+	<help>
+
+**What it does**
+
+It extracts a subtree from an ontology contained in BioPortal, and retrieves such subtree as an OWL ontology.
+
+**Parameters**
+
+* Bioportal API key: to obtain an API key, open an account in http://bioportal.bioontology.org.
+* Ontology version ID: it can be obtained from BioPortal, in the Ontology page, on the versions column, by looking at the version URL. For example, it is 46754 for the Gene Ontology.
+* Concept ID: the root term. For example, GO:0051179.
+* Filter relations: for example "is_a,part_of".
+* Ontology name: the URI for the new ontology. For example http://go_redux_is_a.owl.
+
+**Contact**
+
+Please send any request or comment to mikel.egana.aranguren@gmail.com.
+    
+**More information**
+
+http://bioportal.bioontology.org
+  
+http://www.bioontology.org/wiki/index.php/BioPortal_REST_services
+
+	</help>
+
+</tool>

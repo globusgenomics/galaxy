@@ -1,0 +1,14 @@
+Krona visualistion on generic hierarchy files. 
+
+Input file must be a tab-delimited file with first column being a count, rest the hierarchy, for example::
+
+    2	Fats	Saturated fat  
+    3	Fats	Unsaturated fat	Monounsaturated fat  
+    3	Fats	Unsaturated fat	Polyunsaturated fat  
+    13	Carbohydrates	Sugars  
+    4	Carbohydrates	Dietary fiber  
+    21	Carbohydrates  
+    5	Protein  
+    4  
+
+Would yield the following graph: http://krona.sourceforge.net/examples/text.krona.html

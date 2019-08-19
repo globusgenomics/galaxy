@@ -1,0 +1,2632 @@
+type		NYS Code	Octal Code		SpoDB3 -Most probable family	Random-Initalized -Most probable family
+0		S00000	000000000000000		M. canettii
+451		S00001	777777477760771		M. tuberculosis H37Rv	Family N24
+53		S00002	777777777760771		M. tuberculosis T1	Family N24
+119		S00003	777776777760771		M. tuberculosis X1	Family N44
+490		S00004	767776777760771		M. tuberculosis X1	Family N44
+50		S00005	777777777720771		M. tuberculosis Haarlem3	Family N24
+352		S00006	777776777760711		M. tuberculosis X1	Family N44
+na		S00007	777736777760731		M. tuberculosis X1	Family N44
+439		S00008	777376777760601		M. tuberculosis X2	Family N6
+137		S00009	777776777760601		M. tuberculosis X2	Family N6
+na		S00010	777777677723600		Family33	Family N13
+194		S00011	677737607760731		M. tuberculosis LAM2	Family N19
+459		S00012	777777777410331		M. tuberculosis EAI5	Family N14
+na		S00013	777777767400071		M. tuberculosis Haarlem3	Family N34
+776		S00014	777777777410771		M. tuberculosis EAI5	Family N14
+236		S00015	777777777413771		M. tuberculosis EAI5	Family N14
+48		S00016	777777777413731		Family33	Family N33
+458		S00017	777777777403771		M. tuberculosis EAI5	Family N14
+517		S00018	777777777413711		M. tuberculosis EAI5	Family N14
+139		S00019	777777774413771		M. tuberculosis EAI4	Family N14
+na		S00020	777777775413700		M. tuberculosis EAI5	Family N14
+na		S00021	774177677413771		M. tuberculosis EAI5	Family N14
+1395		S00022	474377767413771		M. tuberculosis EAI5	Family N47
+na		S00023	777777777600011		M. tuberculosis T2	Family N23
+na		S00024	774057607777071		M. africanum	Family N17
+482		S00025	676773777777600		M. bovis-BCG	Family N7
+181		S00026	770777777777671		M. africanum	Family N18
+202		S00027	701776777760601		M. tuberculosis X2	Family N6
+91		S00028	700036777760771		M. tuberculosis X3	Family N20
+92		S00029	700076777760771		M. tuberculosis X3	Family N20
+197		S00030	700036777760731		M. tuberculosis X3	Family N20
+546		S00031	700036777560771		M. tuberculosis X3	Family N20
+200		S00032	700076777760700		M. tuberculosis X3	Family N20
+na		S00033	700036007760771		M. tuberculosis X3	Family N20
+1		S00034	000000000003771		M. tuberculosis Beijing	Family N3
+52		S00035	777777777760731		M. tuberculosis T1	Family N24
+135		S00036	777777777760730		M. tuberculosis T1	Family N24
+na		S00037	700377707776671		M. africanum	Family N18
+420		S00038	637774777760730		M. tuberculosis X1	Family N44
+437		S00039	774077777775071		M. africanum	Family N17
+438		S00040	774077777777071		M. africanum	Family N17
+na		S00041	770757777767671		M. africanum	Family N18
+na		S00042	770637777767671		M. africanum	Family N18
+187		S00043	770777777767671		M. africanum	Family N18
+326		S00044	770777707777671		M. africanum	Family N18
+new		S00045	774677607777071		M. africanum	Family N13
+331		S00046	774077607777071		M. africanum	Family N17
+new		S00047	777777717760571		M. tuberculosis T1	Family N24
+336		S00048	777776777760731		M. tuberculosis X1	Family N44
+408		S00049	157756777760771		M. tuberculosis X1	Family N44
+210		S00050	776037777760771		M. tuberculosis S	Family N39
+new		S00051	676537777777600		M. bovis-BCG	Family N7
+new		S00052	677773777777600		Family33	Family N7
+456		S00053	777777774413711		M. tuberculosis EAI4	Family N14
+551		S00054	737777777760610		M. tuberculosis T2	Family N30
+239		S00055	777777777760031		M. tuberculosis T1	Family N24
+518		S00056	777777777660031		M. tuberculosis T1	Family N24
+411		S00057	407777777760771		M. tuberculosis T1	Family N24
+216		S00058	777717607760771		M. tuberculosis LAM9	Family N19
+554		S00059	757700777760771		M. tuberculosis X1	Family N44
+576		S00060	777776777360771		M. tuberculosis X1	Family N44
+new		S00061	776776777360771		M. tuberculosis X1	Family N44
+219		S00062	777740777760771		M. tuberculosis X1	Family N44
+217		S00063	777736777760771		M. tuberculosis X1	Family N44
+899		S00064	670000777760771		M. tuberculosis T3	Family N28
+431		S00065	717777774020771		M. tuberculosis Haarlem1	Family N5
+435		S00066	763777607760771		M. tuberculosis LAM9	Family N19
+419		S00067	630000207760771		M. tuberculosis T3	Family N32
+new		S00068	703777740001171		M. tuberculosis CAS	Family N8
+190		S00069	000000000003731		M. tuberculosis Beijing	Family N3
+new		S00070	777777477753771		Family33	Family N13
+18		S00071	677776777760601		M. tuberculosis X2	Family N6
+70		S00072	700076777760671		M. tuberculosis X3	Family N20
+288		S00073	700377740003771		M. tuberculosis CAS	Family N8
+17		S00074	677737607760771		M. tuberculosis LAM2	Family N19
+38		S00075	777776407760601		M. tuberculosis LAM4	Family N4
+new		S00076	777700000000071		Family35	Family N29
+193		S00077	677737607660771		M. tuberculosis LAM2	Family N19
+new		S00078	776737777760731		M. tuberculosis T1	Family N48
+44		S00079	777777757760771		M. tuberculosis T1	Family N24
+64		S00080	777777607560771		M. tuberculosis LAM9	Family N19
+29		S00081	760001400000171		M. tuberculosis LAM7	Family N43
+new		S00082	656573277777600		M. bovis-BCG	Family N7
+new		S00083	677707477412771		M. tuberculosis EAI2	Family N10
+434		S00084	760777777740371		M. tuberculosis T1	Family N24
+new		S00085	757777607760771		M. tuberculosis LAM9	Family N19
+42		S00086	777777607760771		M. tuberculosis LAM9	Family N19
+new		S00089	700076757760771		M. tuberculosis X3	Family N20
+new		S00090	636573777777600		M. bovis-BCG	Family N7
+416		S00091	477777777413071		M. tuberculosis EAI3	Family N1
+493		S00092	774177777413731		M. tuberculosis EAI5	Family N14
+256		S00093	777777777413671		M. tuberculosis EAI5	Family N14
+37		S00094	777737777760771		M. tuberculosis T1	Family N24
+new		S00095	577777677561771		M. tuberculosis T1	Family N13
+20		S00096	677777607760771		M. tuberculosis LAM1	Family N19
+new		S00097	676573777777600		M. bovis-BCG	Family N7
+444		S00113	777740001760771		M. tuberculosis T4	Family N16
+new		S00114	777777774412071		M. tuberculosis EAI4	Family N14
+415		S00115	477777777413771		M. tuberculosis EAI5	Family N14
+new		S00116	577777777413711		M. tuberculosis EAI5	Family N14
+468		S00117	067777777413031		M. tuberculosis EAI3	Family N1
+new		S00118	477777177413071		M. tuberculosis EAI3	Family N1
+new		S00119	077777777413011		M. tuberculosis EAI3	Family N1
+new		S00120	477477777413071		M. tuberculosis EAI3	Family N1
+new		S00121	777700777413700		M. tuberculosis EAI5	Family N14
+5		S00122	000677777760771		M. tuberculosis T1	Family N9
+172		S00123	777777777740771		M. tuberculosis T1	Family N24
+398		S00124	777777607760631		M. tuberculosis LAM9	Family N19
+355		S00125	477777777413031		M. tuberculosis EAI3	Family N1
+new		S00126	477774377413071		M. tuberculosis EAI3	Family N1
+6		S00127	077777777413731		M. tuberculosis EAI5	Family N47
+349		S00128	777737777413731		M. tuberculosis EAI5	Family N14
+new		S00129	777776775413700		M. tuberculosis EAI5	Family N14
+new		S00130	414367777413771		M. tuberculosis EAI5	Family N47
+489		S00131	767776777760601		M. tuberculosis X2	Family N6
+new		S00132	777716777760601		M. tuberculosis X2	Family N6
+new		S00133	777376776360601		M. tuberculosis X2	Family N6
+478		S00134	617776777760601		M. tuberculosis X2	Family N6
+new		S00135	777776407760611		M. tuberculosis LAM9	Family N19
+new		S00136	646573777777600		M. bovis-BCG	Family N7
+475		S00137	477776077411771		M. tuberculosis EAI2	Family N10
+new		S00138	407777777413071		M. tuberculosis EAI3	Family N1
+new		S00139	700036774000011		M. tuberculosis X3	Family N20
+347		S00140	777736777760601		M. tuberculosis X2	Family N6
+436		S00141	770376777760601		M. tuberculosis X2	Family N6
+new		S00142	776036777760771		M. tuberculosis S	Family N39
+new		S00143	700026777760771		M. tuberculosis X3	Family N20
+new		S00144	476000377413071		M. tuberculosis EAI3	Family N1
+421		S00145	676600000000371		Family35	Family N29
+234		S00146	777777777413371		M. tuberculosis EAI5	Family N14
+new		S00147	777777760000031		M. tuberculosis EAI1	Family N22
+new		S00148	677777607740011		M. tuberculosis LAM1	Family N19
+new		S00149	776573777777600		M. bovis-BCG	Family N7
+new		S00150	177776777760601		M. tuberculosis X2	Family N6
+new		S00151	700036777740031		M. tuberculosis X3	Family N20
+new		S00152	777774777760601		M. tuberculosis X2	Family N6
+523		S00153	777777777777771		Family33	Family N13
+new		S00154	500076000000000		M. tuberculosis LAM7	Family N37
+12		S00155	500036777760771		M. tuberculosis X3	Family N20
+new		S00156	613776777760601		M. tuberculosis X2	Family N6
+33		S00157	776177607760771		M. tuberculosis LAM3	Family N2
+new		S00158	777777777420771		M. tuberculosis Haarlem3	Family N34
+93		S00159	777737607760771		M. tuberculosis LAM9	Family N19
+new		S00160	777737677760771		M. tuberculosis T1	Family N24
+new		S00161	777777777320731		M. tuberculosis Haarlem3	Family N24
+8		S00162	400037777413771		M. tuberculosis EAI5	Family N11
+249		S00163	777640007760771		M. tuberculosis T4	Family N16
+new		S00164	777037777413731		M. tuberculosis EAI5	Family N14
+new		S00165	700036777760471		M. tuberculosis X3	Family N20
+new		S00166	700036777760730		M. tuberculosis X3	Family N20
+173		S00167	777767677760771		M. tuberculosis T1	Family N24
+413		S00168	477777477413771		M. tuberculosis EAI2	Family N10
+54		S00169	777777777763771		Family33	Family N13
+284		S00170	037637777760771		M. tuberculosis T1	Family N24
+481		S00171	676773677777600		M. bovis-BCG	Family N7
+479		S00172	640013777777600		M. bovis-BCG	Family N12
+409		S00173	264073777777600		M. bovis-BCG	Family N12
+new		S00174	477777757413771		M. tuberculosis EAI5	Family N47
+new		S00175	777737606760771		M. tuberculosis LAM9	Family N19
+414		S00176	477777767413071		M. tuberculosis EAI3	Family N1
+new		S00177	577777677760771		M. tuberculosis T1	Family N24
+new		S00178	577777677720771		M. tuberculosis Haarlem3	Family N24
+new		S00179	640013377777600		M. bovis-BCG	Family N12
+441		S00180	777700277760771		M. tuberculosis X1	Family N44
+new		S00181	777776777760401		M. tuberculosis X2	Family N6
+2		S00182	000000004020771		M. tuberculosis Haarlem2	Family N25
+245		S00183	777777777760671		M. tuberculosis T1	Family N24
+new		S00184	777737777760671		M. tuberculosis T1	Family N24
+335		S00185	777777607720771		M. tuberculosis LAM9	Family N19
+new		S00186	007777607760771		M. tuberculosis LAM1	Family N19
+496		S00187	777460007760771		M. tuberculosis T4	Family N16
+266		S00188	775740003760771		M. tuberculosis T4	Family N16
+264		S00189	777740003760771		M. tuberculosis T4	Family N16
+495		S00190	776760003760771		M. tuberculosis T4	Family N16
+new		S00191	777760007760731		M. tuberculosis T4	Family N16
+254		S00192	777760007760771		M. tuberculosis T4	Family N16
+new		S00193	777740003763771		M. tuberculosis T4	Family N16
+new		S00194	777600000060771		M. tuberculosis T4	Family N16
+new		S00195	000036777760771		M. tuberculosis X3	Family N20
+58		S00196	777777557760771		M. tuberculosis T1	Family N24
+19		S00197	677777477413771		M. tuberculosis EAI2	Family N10
+new		S00198	477777775413760		M. tuberculosis EAI5	Family N14
+269		S00199	000000000000771		M. tuberculosis Beijing	Family N3
+265		S00200	000000000003371		M. tuberculosis Beijing	Family N3
+290		S00201	777777606760771		M. tuberculosis LAM9	Family N19
+51		S00202	777777777760700		M. tuberculosis T2	Family N30
+505		S00203	777737777760700		M. tuberculosis T2	Family N30
+204		S00204	737777777413771		M. tuberculosis EAI5	Family N14
+new		S00205	777777757760711		M. tuberculosis T1	Family N24
+new		S00206	773776407760601		M. tuberculosis LAM4	Family N4
+new		S00207	477777737413071		M. tuberculosis EAI3	Family N1
+403		S00208	777777743760731		M. tuberculosis LAM10	Family N21
+new		S00209	777777777760561		M. tuberculosis T1	Family N24
+26		S00210	703777740003771		M. tuberculosis CAS	Family N8
+new		S00211	702377740003771		M. tuberculosis CAS	Family N8
+477		S00212	577777777413731		M. tuberculosis EAI5	Family N14
+474		S00213	467777777413031		M. tuberculosis EAI3	Family N1
+9		S00214	401776777760601		M. tuberculosis X2	Family N6
+new		S00215	777776777560731		M. tuberculosis X1	Family N44
+new		S00216	577677777760771		M. tuberculosis T1	Family N24
+46		S00217	777777770000000		Family34	Family N22
+new		S00218	774000017760771		M. tuberculosis T3	Family N28
+new		S00219	777737770000071		M. tuberculosis Haarlem1	Family N5
+260		S00220	000000000003171		M. tuberculosis Beijing	Family N3
+new		S00221	777773776760771		M. tuberculosis T1	Family N24
+new		S00222	777773676760730		M. tuberculosis T1	Family N24
+new		S00223	777777677763771		Family33	Family N13
+246		S00224	777777777777731		Family33	Family N13
+452		S00225	777777606360771		M. tuberculosis LAM9	Family N19
+406		S00226	000000000000731		M. tuberculosis Beijing	Family N3
+449		S00227	777776757760771		M. tuberculosis X1	Family N44
+new		S00228	777777407760771		M. tuberculosis LAM9	Family N19
+new		S00229	077777777760771		M. tuberculosis T1	Family N24
+new		S00230	700076700000071		M. tuberculosis CAS	Family N8
+new		S00231	757776777760771		M. tuberculosis X1	Family N44
+41		S00232	777777404760771		M. tuberculosis LAM9	Family N19
+new		S00233	777600774413771		M. tuberculosis EAI4	Family N14
+new		S00234	777740777760731		M. tuberculosis X1	Family N44
+440		S00235	777607607760771		M. tuberculosis LAM9	Family N19
+new		S00236	767777777760471		M. tuberculosis T1	Family N24
+425		S00237	700076774160771		M. tuberculosis X3	Family N20
+49		S00238	777777777720731		M. tuberculosis Haarlem3	Family N24
+34		S00239	776377777760771		M. tuberculosis S	Family N39
+new		S00240	707777607760771		M. tuberculosis LAM9	Family N19
+47		S00241	777777774020771		M. tuberculosis Haarlem1	Family N5
+new		S00242	664073777777600		M. bovis-BCG	Family N12
+new		S00243	656573777777600		M. bovis-BCG	Family N7
+446		S00244	777760016760601		M. tuberculosis LAM4	Family N36
+457		S00245	777777777320771		M. tuberculosis Haarlem3	Family N24
+237		S00246	777777777700000		M. tuberculosis T2	Family N23
+25		S00247	703777740003171		M. tuberculosis CAS	Family N8
+new		S00248	770000757760771		M. tuberculosis T3	Family N28
+new		S00249	737776777760731		M. tuberculosis X1	Family N44
+new		S00250	657776777760771		M. tuberculosis X1	Family N44
+new		S00251	776377770760731		M. tuberculosis S	Family N39
+new		S00252	777777747413731		M. tuberculosis EAI5	Family N14
+new		S00253	377776777760711		M. tuberculosis X1	Family N44
+new		S00254	477777374003771		M. tuberculosis EAI4	Family N14
+new		S00255	577767076640651		M. tuberculosis H37Rv	Family N24
+new		S00256	177776407760401		M. tuberculosis LAM4	Family N4
+new		S00257	776137607760631		M. tuberculosis LAM3	Family N2
+405		S00258	777777000000011		M. tuberculosis EAI1	Family N29
+3		S00259	000000007720771		Family36	Family N32
+new		S00260	077757607760731		M. tuberculosis LAM1	Family N19
+new		S00261	377740777760771		M. tuberculosis X1	Family N44
+508		S00262	777776377760771		M. tuberculosis X1	Family N44
+new		S00263	776377770760771		M. tuberculosis S	Family N39
+159		S00264	777740017760771		M. tuberculosis T4	Family N16
+new		S00265	675737607760771		M. tuberculosis LAM2	Family N19
+		S00266_corrected	777737607700371		M. tuberculosis LAM5	Family N38
+153		S00267	757777777760731		M. tuberculosis T1	Family N24
+new		S00268	700076657760771		M. tuberculosis X3	Family N20
+59		S00269	777777606060771		M. tuberculosis LAM8	Family N27
+7		S00270	377777777760771		M. tuberculosis T1	Family N24
+new		S00271	477777777013771		M. tuberculosis EAI5	Family N47
+new		S00272	477777077413771		M. tuberculosis EAI2	Family N10
+450		S00273	777776770000000		Family34	Family N22
+new		S00274	600000177760711		M. tuberculosis X3	Family N20
+199		S00275	700076760000011		M. tuberculosis EAI1	Family N22
+new		S00276	777777374020771		M. tuberculosis Haarlem1	Family N5
+new		S00277	037777777000371		M. tuberculosis EAI5	Family N34
+154		S00278	757777777760771		M. tuberculosis T1	Family N24
+new		S00279	777777777740071		M. tuberculosis T1	Family N24
+new		S00280	037775770060771		M. tuberculosis Haarlem1	Family N5
+272		S00281	037777777760771		M. tuberculosis T1	Family N24
+61		S00282	777777743760771		M. tuberculosis LAM10	Family N21
+new		S00283	777737206060771		M. tuberculosis LAM8	Family N27
+new		S00284	777740777760531		M. tuberculosis X1	Family N44
+new		S00285	676753777677600		M. bovis-BCG	Family N7
+new		S00286	777737774413771		M. tuberculosis EAI4	Family N14
+455		S00287	777777760360771		M. tuberculosis T1	Family N24
+340		S00288	474377777413771		M. tuberculosis EAI5	Family N47
+new		S00289	676177607760771		M. tuberculosis LAM3	Family N2
+new		S00290	330777777767671		M. africanum	Family N18
+new		S00291	777776777760701		M. tuberculosis X1	Family N44
+new		S00292	777600777760700		M. tuberculosis T2	Family N30
+138		S00293	777777777413700		M. tuberculosis EAI5	Family N14
+501		S00294	777700377760771		M. tuberculosis X1	Family N44
+new		S00295	777737607700031		M. tuberculosis LAM5	Family N38
+519		S00296	777777777740371		M. tuberculosis T1	Family N24
+new		S00297	777777777777601		Family33	Family N13
+new		S00298	377777374413771		M. tuberculosis EAI4	Family N14
+new		S00299	700037776360771		M. tuberculosis X3	Family N20
+445		S00300	777756777760601		M. tuberculosis X2	Family N6
+new		S00301	700036777763771		M. tuberculosis X3	Family N13
+new		S00302	777777777770331		M. tuberculosis T1	Family N13
+465		S00303	777417737700000		M. tuberculosis T2	Family N23
+453		S00304	777777677560771		M. tuberculosis T1	Family N24
+new		S00305	777737777413771		M. tuberculosis EAI5	Family N14
+new		S00306	777777777413730		M. tuberculosis EAI5	Family N14
+497		S00307	777677777413771		M. tuberculosis EAI5	Family N14
+new		S00308	777577777413771		M. tuberculosis EAI5	Family N14
+new		S00309	717777477413731		M. tuberculosis EAI5	Family N10
+new		S00310	700076777760600		M. tuberculosis X3	Family N20
+new		S00311	617777774020771		M. tuberculosis Haarlem1	Family N5
+new		S00312	477740001760771		M. tuberculosis T4	Family N16
+new		S00313	777500003760771		M. tuberculosis T4	Family N16
+new		S00314	777000000000371		Family35	Family N29
+252		S00315	777477607760771		M. tuberculosis LAM9	Family N19
+499		S00316	777700000060771		M. tuberculosis T4	Family N16
+500		S00317	777700001760771		M. tuberculosis T4	Family N16
+278		S00318	777777777760761		M. tuberculosis T1	Family N24
+new		S00319	777774004020771		M. tuberculosis LAM8	Family N27
+new		S00320	777772777760601		M. tuberculosis X2	Family N6
+150		S00321	777767607760771		M. tuberculosis LAM9	Family N19
+176		S00322	777737607560771		M. tuberculosis LAM9	Family N19
+new		S00323	777777663760731		M. tuberculosis T1	Family N24
+new		S00324	777637777420771		M. tuberculosis Haarlem3	Family N34
+new		S00325	003777607760771		M. tuberculosis LAM1	Family N19
+506		S00326	777760003760771		M. tuberculosis T4	Family N16
+new		S00327	777740000160771		M. tuberculosis T4	Family N16
+new		S00328	777740007760771		M. tuberculosis T4	Family N16
+417		S00329	577777770060771		M. tuberculosis Haarlem1	Family N5
+476		S00330	577776777760601		M. tuberculosis X2	Family N6
+432		S00331	735777777760731		M. tuberculosis T1	Family N24
+new		S00332	775775757760771		M. tuberculosis T1	Family N24
+new		S00333	440013777777600		M. bovis-BCG	Family N12
+new		S00334	777737776413731		M. tuberculosis EAI5	Family N14
+new		S00335	300036777760771		M. tuberculosis X3	Family N20
+new		S00336	777777764120771		M. tuberculosis Haarlem3	Family N24
+new		S00337	763777777413700		M. tuberculosis EAI5	Family N14
+39		S00338	777777347760471		M. tuberculosis T1	Family N24
+280		S00339	770000777760771		M. tuberculosis T3	Family N28
+494		S00340	776377777760711		M. tuberculosis S	Family N39
+new		S00341	777777677560671		M. tuberculosis T1	Family N24
+36		S00342	777737777720771		M. tuberculosis Haarlem3	Family N24
+513		S00343	777777717760731		M. tuberculosis T1	Family N24
+new		S00344	677737607700771		M. tuberculosis LAM5	Family N38
+new		S00345	757776777760571		M. tuberculosis X1	Family N44
+new		S00346	777774377740771		M. tuberculosis X1	Family N44
+new		S00347	770777777747671		M. africanum	Family N18
+new		S00348	747773777460771		M. tuberculosis T1	Family N24
+new		S00349	777777774020760		M. tuberculosis Haarlem1	Family N5
+487		S00350	740000004020771		M. tuberculosis LAM7	Family N25
+516		S00351	777777777360771		M. tuberculosis T1	Family N24
+new		S00352	776377777720771		M. tuberculosis S	Family N39
+new		S00353	776176607760771		M. tuberculosis LAM3	Family N2
+new		S00354	777775774020771		M. tuberculosis Haarlem1	Family N5
+new		S00355	777777400000371		M. tuberculosis LAM8	Family N27
+new		S00356	560000007760771		M. tuberculosis T3	Family N32
+430		S00357	704003347760471		M. tuberculosis T3	Family N40
+new		S00358	777777740003171		M. tuberculosis EAI4	Family N14
+new		S00359	777177000020771		M. tuberculosis LAM8	Family N27
+73		S00360	777737777760731		M. tuberculosis T1	Family N48
+433		S00361	757777777320771		M. tuberculosis Haarlem3	Family N24
+new		S00362	777777607760711		M. tuberculosis LAM9	Family N19
+163		S00363	777777607760700		M. tuberculosis LAM9	Family N19
+130		S00364	776177607760731		M. tuberculosis LAM3	Family N2
+new		S00365	777777607000771		M. tuberculosis LAM9	Family N27
+new		S00366	000000000003031		M. tuberculosis Beijing	Family N3
+334		S00367	577777777760771		M. tuberculosis T1	Family N24
+124		S00368	777777777700771		M. tuberculosis Haarlem3	Family N24
+100		S00369	777777777773771		Family33	Family N13
+295		S00370	776377763760771		M. tuberculosis S	Family N39
+96		S00371	777777750003371		M. tuberculosis EAI4	Family N14
+62		S00372	777777774020731		M. tuberculosis Haarlem1	Family N5
+new		S00373	000200000000000		M. microti	Family N37
+21		S00374	703377400001771		M. tuberculosis CAS	Family N15
+32		S00375	776000000000171		M. tuberculosis LAM7	Family N29
+new		S00376	770000740020771		M. tuberculosis T3	Family N28
+new		S00377	777776777740001		M. tuberculosis X2	Family N6
+488		S00378	760777774020771		M. tuberculosis Haarlem1	Family N5
+new		S00379	000000007777731			Family N40
+522		S00380	777777777760770		M. tuberculosis T1	Family N24
+191		S00381	177777777760771		M. tuberculosis T1	Family N24
+507		S00382	777776037760771		M. tuberculosis H37Rv	Family N44
+new		S00383	773777777760031		M. tuberculosis T1	Family N24
+new		S00384	400177777760771		M. tuberculosis X3	Family N39
+new		S00385	774077743760771		M. tuberculosis S	Family N21
+189		S00386	777741777760771		M. tuberculosis T1	Family N24
+new		S00387	777777773760771		M. tuberculosis T1	Family N24
+40		S00388	777777377760771		M. tuberculosis T1	Family N24
+new		S00389	777737777423771		Family33	Family N13
+new		S00390	777735777423771		Family33	Family N13
+251		S00391	774000000760771		M. tuberculosis T3	Family N16
+new		S00392	777777770003171		M. tuberculosis EAI4	Family N14
+new		S00393	777737777420731		M. tuberculosis Haarlem3	Family N34
+new		S00394	777700000000011		Family35	Family N29
+new		S00395	000000000003711		M. tuberculosis Beijing	Family N3
+new		S00396	000000000000600		M. microti	Family N3
+new		S00397	074000030000600		M. tuberculosis T3	Family N28
+new		S00398	777777744020771		M. tuberculosis Haarlem1	Family N5
+new		S00399	677737606760771		M. tuberculosis LAM2	Family N19
+new		S00400	677737607720771		M. tuberculosis LAM2	Family N19
+new		S00401	776077777760771		M. tuberculosis S	Family N39
+new		S00402	777774177720771		M. tuberculosis Haarlem3	Family N24
+new		S00403	777777677760770		M. tuberculosis T1	Family N24
+175		S00404	777777677760731		M. tuberculosis T1	Family N24
+new		S00405	766377777760771		M. tuberculosis S	Family N39
+448		S00406	777767777720731		M. tuberculosis Haarlem3	Family N24
+521		S00407	777777777760611		M. tuberculosis T1	Family N24
+new		S00408	777760047760071		M. tuberculosis T4	Family N16
+485		S00409	703777400003771		M. tuberculosis CAS	Family N15
+new		S00410	677777607740771		M. tuberculosis LAM1	Family N19
+370		S00411	777777747760471		M. tuberculosis T1	Family N24
+1922		S00412	777702777760771		M. tuberculosis X1	Family N44
+new		S00413	677777607060731		M. tuberculosis LAM1	Family N19
+new		S00414	777757757413371		M. tuberculosis EAI5	Family N14
+new		S00415	767777777760571		M. tuberculosis T1	Family N24
+207		S00416	767777777720771		M. tuberculosis Haarlem3	Family N24
+new		S00417	777777777763571		Family33	Family N13
+4		S00418	000000007760771		Family36	Family N32
+new		S00419	017777600000371		M. tuberculosis LAM8	Family N27
+492		S00420	773777607760771		M. tuberculosis LAM9	Family N19
+new		S00421	760777607760771		M. tuberculosis LAM9	Family N19
+new		S00422	777777606060731		M. tuberculosis LAM8	Family N27
+new		S00423	777776777560771		M. tuberculosis X1	Family N44
+102		S00424	777703777760771		M. tuberculosis T1	Family N24
+new		S00425	771777777720771		M. tuberculosis Haarlem3	Family N24
+new		S00426	437777607760771		M. tuberculosis LAM1	Family N19
+1933		S00427	777777607760770		M. tuberculosis LAM9	Family N19
+new		S00428	777767477760771		M. tuberculosis H37Rv	Family N24
+376		S00429	376177607760771		M. tuberculosis LAM3	Family N2
+new		S00430	777776777760700		M. tuberculosis T2	Family N30
+new		S00431	607777637760771		M. tuberculosis T1	Family N24
+480		S00432	674777477411771		M. tuberculosis EAI2	Family N10
+410		S00433	377774077760771		M. tuberculosis H37Rv	Family N44
+new		S00434	777777777420731		M. tuberculosis Haarlem3	Family N34
+new		S00435	773603774360771		M. tuberculosis T1	Family N24
+new		S00436	677737477413771		M. tuberculosis EAI2	Family N10
+469		S00437	077777607760771		M. tuberculosis LAM1	Family N19
+new		S00438	757777777420771		M. tuberculosis Haarlem3	Family N34
+new		S00439	777606777760771		M. tuberculosis X1	Family N44
+149		S00440	777000377760771		M. tuberculosis T3	Family N28
+new		S00441	700076777763771		Family33	Family N13
+427		S00442	703707740003771		M. tuberculosis CAS	Family N8
+127		S00443	577777777420771		M. tuberculosis Haarlem3	Family N34
+412		S00444	437777606060600		M. tuberculosis LAM8	Family N27
+new		S00445	743777700003371		M. tuberculosis CAS	Family N8
+new		S00446	777703700003371		M. tuberculosis EAI4	Family N14
+new		S00447	437777777720771		M. tuberculosis Haarlem3	Family N24
+418		S00448	617777777720771		M. tuberculosis Haarlem3	Family N24
+463		S00449	777777777720571		M. tuberculosis Haarlem3	Family N24
+515		S00450	777777776760731		M. tuberculosis T1	Family N24
+new		S00451	737777777403771		M. tuberculosis EAI5	Family N14
+new		S00452	774777777760771		M. tuberculosis T1	Family N24
+new		S00453	777777777413631		M. tuberculosis EAI5	Family N14
+new		S00454	777776407360601		M. tuberculosis LAM4	Family N4
+514		S00455	777777774413731		M. tuberculosis EAI4	Family N14
+new		S00456	700036776060771		M. tuberculosis X3	Family N20
+new		S00457	777777707760771		M. tuberculosis LAM9	Family N19
+new		S00458	700076377760771		M. tuberculosis X3	Family N20
+new		S00459	720036777760731		M. tuberculosis X3	Family N20
+new		S00460	471777777413071		M. tuberculosis EAI3	Family N1
+473		S00461	401777777413071		M. tuberculosis EAI3	Family N1
+new		S00462	777767777413600		M. tuberculosis EAI5	Family N14
+new		S00463	777737400413731		M. tuberculosis EAI4	Family N14
+new		S00464	737777777401761		M. tuberculosis EAI5	Family N14
+462		S00465	777777777560771		M. tuberculosis T1	Family N24
+new		S00466	740076777760601		M. tuberculosis X3	Family N20
+442		S00467	777737377760771		M. tuberculosis T1	Family N24
+460		S00468	777777777413751		M. tuberculosis EAI5	Family N14
+new		S00469	677777477413700		M. tuberculosis EAI2	Family N10
+new		S00470	777777744720771		M. tuberculosis Haarlem3	Family N24
+77		S00471	743777777760771		M. tuberculosis T1	Family N24
+new		S00472	676673757777600		M. bovis-BCG	Family N7
+new		S00473	776177607360731		M. tuberculosis LAM3	Family N2
+471		S00474	303777740003771		M. tuberculosis CAS	Family N8
+new		S00475	017703777760771		M. tuberculosis T1	Family N24
+new		S00476	677737607760700		M. tuberculosis LAM2	Family N19
+new		S00477	777773607760731		M. tuberculosis LAM9	Family N19
+new		S00478	777737777320771		M. tuberculosis Haarlem3	Family N24
+424		S00479	677777477413711		M. tuberculosis EAI2	Family N10
+292		S00480	777777757413371		M. tuberculosis EAI5	Family N14
+new		S00481	776277777760771		M. tuberculosis S	Family N39
+new		S00482	477777777760731		M. tuberculosis T1	Family N24
+new		S00483	777737777760031		M. tuberculosis T1	Family N48
+60		S00484	777777607760731		M. tuberculosis LAM9	Family N19
+new		S00485	656573377777600		M. bovis-BCG	Family N7
+new		S00486	300036777763771		M. tuberculosis X3	Family N13
+356		S00487	703777600001771		M. tuberculosis CAS	Family N8
+new		S00488	703777700003171		M. tuberculosis CAS	Family N8
+new		S00489	677777607760671		M. tuberculosis LAM1	Family N19
+71		S00490	776337777760771		M. tuberculosis S	Family N39
+new		S00491	773777774020771		M. tuberculosis Haarlem1	Family N5
+new		S00492	776776707760601		M. tuberculosis X2	Family N6
+470		S00493	177777777413771		M. tuberculosis EAI5	Family N14
+89		S00494	674000003413771		M. tuberculosis EAI2	Family N41
+new		S00495	777777377413771		M. tuberculosis EAI5	Family N14
+new		S00496	777777000000371		M. tuberculosis LAM8	Family N27
+new		S00497	741737777760731		M. tuberculosis T1	Family N48
+new		S00498	754377607760700		M. tuberculosis LAM9	Family N19
+new		S00499	741737777760671		M. tuberculosis T1	Family N24
+78		S00500	777777777760711		M. tuberculosis T1	Family N24
+new		S00501	477777437413771		M. tuberculosis EAI2	Family N10
+new		S00502	600000000760731		Family36	Family N32
+new		S00503	747737777760731		M. tuberculosis T1	Family N48
+484		S00504	700036777740171		M. tuberculosis X3	Family N20
+new		S00505	777760004020731		M. tuberculosis T4	Family N16
+new		S00506	777703077760771		M. tuberculosis H37Rv	Family N24
+397		S00507	777777600000771		M. tuberculosis LAM8	Family N27
+101		S00508	774077606767071		M. africanum	Family N17
+422		S00509	676773667777600		M. bovis-BCG	Family N7
+new		S00510	577743777760771		M. tuberculosis T1	Family N24
+520		S00511	777777777760571		M. tuberculosis T1	Family N24
+new		S00512	477777777720771		M. tuberculosis Haarlem3	Family N24
+316		S00513	777777770020731		M. tuberculosis Haarlem1	Family N5
+new		S00514	777777743413311		M. tuberculosis EAI5	Family N14
+105		S00515	776160000000071		M. tuberculosis LAM7	Family N29
+99		S00516	757777777720771		M. tuberculosis Haarlem3	Family N24
+276		S00517	777777770060771		M. tuberculosis Haarlem1	Family N5
+new		S00518	777777607760431		M. tuberculosis LAM9	Family N19
+new		S00519	777777663560771		M. tuberculosis T1	Family N24
+new		S00520	777760077760771		M. tuberculosis H37Rv	Family N16
+new		S00521	737777774020771		M. tuberculosis Haarlem1	Family N5
+new		S00522	757777707720671		M. tuberculosis Haarlem3	Family N24
+371		S00523	777777007720771		M. tuberculosis LAM9	Family N19
+472		S00524	377777777720771		M. tuberculosis Haarlem3	Family N24
+new		S00525	775777777720751		M. tuberculosis Haarlem3	Family N24
+new		S00526	776777577720771		M. tuberculosis Haarlem3	Family N24
+283		S00527	777777704020771		M. tuberculosis LAM8	Family N27
+new		S00528	777767760000000		Family34	Family N22
+511		S00529	777777700020771		M. tuberculosis LAM8	Family N27
+new		S00530	767777770000771		M. tuberculosis Haarlem1	Family N5
+new		S00531	777743777760771		M. tuberculosis T1	Family N24
+new		S00532	777777147720771		M. tuberculosis Haarlem3	Family N24
+new		S00533	777777777413571		M. tuberculosis EAI5	Family N14
+428		S00534	703777740003371		M. tuberculosis CAS	Family N8
+255		S00535	000000000003671		M. tuberculosis Beijing	Family N3
+423		S00536	677774207760771		M. tuberculosis LAM1	Family N19
+429		S00537	703777740003731		M. tuberculosis CAS	Family N8
+new		S00538	740777676000011		M. tuberculosis EAI1	Family N23
+new		S00539	777777404020771		M. tuberculosis LAM8	Family N27
+new		S00540	776377777740731		M. tuberculosis S	Family N39
+new		S00541	717777607760771		M. tuberculosis LAM9	Family N19
+new		S00542	663600007400071		M. tuberculosis T4	Family N16
+498		S00543	777677777760771		M. tuberculosis T1	Family N24
+180		S00544	677777777720771		M. tuberculosis Haarlem3	Family N24
+new		S00545	767777777760771		M. tuberculosis T1	Family N24
+373		S00546	777777767760771		M. tuberculosis T1	Family N24
+68		S00547	775777757760771		M. tuberculosis T1	Family N24
+new		S00548	777777757760751		M. tuberculosis T1	Family N24
+503		S00549	777737377760731		M. tuberculosis T1	Family N48
+35		S00550	777737777420771		M. tuberculosis Haarlem3	Family N34
+new		S00551	777737677420771		M. tuberculosis Haarlem3	Family N34
+45		S00552	777777764020771		M. tuberculosis Haarlem1	Family N5
+new		S00553	777777777000371		M. tuberculosis Haarlem3	Family N34
+31		S00554	774037777760700		M. tuberculosis S	Family N35
+new		S00555	774003774020771		M. tuberculosis Haarlem1	Family N5
+new		S00556	000000007160771		Family36	Family N32
+426		S00557	700377600003771		M. tuberculosis CAS	Family N8
+new		S00558	500740007774671		M. africanum	Family N42
+407		S00559	000036040003771		M. tuberculosis CAS	Family N8
+new		S00560	777737207760771		M. tuberculosis LAM9	Family N19
+new		S00561	336177607760771		M. tuberculosis LAM3	Family N2
+483		S00562	677777477413701		M. tuberculosis EAI2	Family N10
+new		S00563	700036777760031		M. tuberculosis X3	Family N20
+357		S00564	703777740000771		M. tuberculosis CAS	Family N8
+491		S00565	773776777760601		M. tuberculosis X2	Family N6
+new		S00566	774000370020771		M. tuberculosis T3	Family N28
+new		S00567	007776777760771		M. tuberculosis X1	Family N44
+new		S00568	177777764020771		M. tuberculosis Haarlem1	Family N5
+new		S00569	757737604020771		M. tuberculosis LAM8	Family N27
+new		S00570	770016777760771		M. tuberculosis S	Family N39
+65		S00571	777777777760471		M. tuberculosis T1	Family N24
+504		S00572	777737737760771		M. tuberculosis T1	Family N24
+new		S00573	417777607760771		M. tuberculosis LAM1	Family N19
+new		S00574	677740017413771		M. tuberculosis EAI2	Family N10
+502		S00575	777727737760771		M. tuberculosis T1	Family N24
+new		S00576	700000007177771		Family36	Family N40
+new		S00577	777777742760771		M. tuberculosis LAM10	Family N21
+new		S00578	777777377013771		M. tuberculosis EAI5	Family N14
+109		S00579	477777377413771		M. tuberculosis EAI5	Family N47
+510		S00580	777777700003531		M. tuberculosis EAI4	Family N14
+new		S00581	777777700000371		M. tuberculosis LAM8	Family N27
+486		S00582	703777740000371		M. tuberculosis CAS	Family N8
+new		S00583	477777777411071		M. tuberculosis EAI3	Family N1
+new		S00584	763777777413771		M. tuberculosis EAI5	Family N14
+new		S00585	777777757760611		M. tuberculosis T1	Family N24
+new		S00586	777777717720731		M. tuberculosis Haarlem3	Family N24
+new		S00587	777437777760700		M. tuberculosis T2	Family N30
+new		S00588	777617404760771		M. tuberculosis LAM9	Family N19
+205		S00589	737777777760771		M. tuberculosis T1	Family N24
+306		S00590	777777601560771		M. tuberculosis LAM9	Family N19
+new		S00591	777774000000371		M. tuberculosis LAM8	Family N29
+512		S00592	777777707720771		M. tuberculosis Haarlem3	Family N24
+467		S00593	000000000020771		M. tuberculosis Haarlem2	Family N25
+454		S00594	777777736760731			Family N24
+464		S00595	777777777747771		Family33	Family N13
+447		S00596	777760377760771		M. tuberculosis X1	Family N44
+na		S00597	277777607760771		M. tuberculosis LAM1	Family N19
+na		S00598	703777740023771		M. tuberculosis CAS	Family N8
+567		S00599	777760007763771		M. tuberculosis T4	Family N16
+536		S00600	700000377776671		M. africanum	Family N40
+911		S00601	777777600060771		M. tuberculosis LAM8	Family N27
+na		S00602	777776777760600		M. tuberculosis X2	Family N6
+509		S00603	777777605760771		M. tuberculosis LAM9	Family N19
+1581		S00604	577477777420771		M. tuberculosis Haarlem3	Family N34
+na		S00605	770777774377671		M. africanum	Family N18
+1880		S00606	037603607400011		M. tuberculosis EAI1	Family N26
+562		S00607	777737600000000		Family34	Family N22
+1929		S00608	777777777760300		M. tuberculosis T2	Family N30
+		S00609	777777777600471		M. tuberculosis Haarlem3	Family N24
+		S00610	767777774020731		M. tuberculosis Haarlem1	Family N5
+		S00611	775700007760771		M. tuberculosis T4	Family N16
+		S00612	677177477413771		M. tuberculosis EAI2	Family N10
+		S00613	777774077560771		M. tuberculosis H37Rv	Family N44
+		S00614	777777600020771		M. tuberculosis LAM8	Family N27
+		S00615	637777607760771		M. tuberculosis LAM1	Family N19
+		S00616	777737607700171		M. tuberculosis LAM5	Family N38
+		S00617	777777601560731		M. tuberculosis LAM9	Family N19
+		S00618	677777777413371		M. tuberculosis EAI5	Family N14
+		S00619	700000007175771		Family36	Family N40
+		S00620	664073677777200		M. bovis-BCG	Family N12
+		S00621	737777777413731		M. tuberculosis EAI5	Family N14
+		S00622	777577777003731		M. tuberculosis EAI5	Family N14
+		S00623	777777777700171		M. tuberculosis Haarlem3	Family N24
+		S00624	377737777760771		M. tuberculosis T1	Family N24
+		S00625	777777767720771		M. tuberculosis Haarlem3	Family N24
+		S00626	676600000000771		Family35	Family N29
+		S00627	500076777760771		M. tuberculosis X3	Family N20
+		S00628	777777037720771		M. tuberculosis H37Rv	Family N24
+		S00629	737777777760571		M. tuberculosis T1	Family N24
+		S00630	777736777360771		M. tuberculosis X1	Family N44
+		S00631	771777737760771		M. tuberculosis T1	Family N24
+		S00632	777777407560731		M. tuberculosis LAM9	Family N19
+		S00633	777721607560731		M. tuberculosis LAM6	Family N19
+		S00634	037777770060771		M. tuberculosis Haarlem1	Family N5
+		S00635	777740007760531		M. tuberculosis T4	Family N16
+		S00636	737777777000731		M. tuberculosis Haarlem3	Family N34
+		S00637	477777777412071		M. tuberculosis EAI3	Family N1
+		S00638	477777777410071		M. tuberculosis EAI3	Family N1
+		S00639	477776377413071		M. tuberculosis EAI3	Family N1
+		S00640	741737777760771		M. tuberculosis T1	Family N24
+		S00641	777777777760760		M. tuberculosis T1	Family N24
+		S00642	477775777413071		M. tuberculosis EAI3	Family N1
+		S00643	477777777412771		M. tuberculosis EAI5	Family N47
+		S00644	777777770020751		M. tuberculosis Haarlem1	Family N5
+		S00645	077757607760771		M. tuberculosis LAM1	Family N19
+		S00646	776377777760731		M. tuberculosis S	Family N39
+		S00647	777777777720751		M. tuberculosis Haarlem3	Family N24
+		S00648	703740000000760		Family35	Family N37
+		S00649	477777677413071		M. tuberculosis EAI3	Family N1
+		S00650	777776404360601		M. tuberculosis LAM4	Family N4
+		S00651	703777740002331		M. tuberculosis CAS	Family N8
+		S00652	677777607760740		M. tuberculosis LAM1	Family N19
+		S00653	577777607760771		M. tuberculosis LAM9	Family N19
+		S00654	000000177760771		M. tuberculosis T3	Family N40
+		S00655	777740000020771		M. tuberculosis T4	Family N16
+		S00656	017777607760771		M. tuberculosis LAM1	Family N19
+		S00657	777737607560731		M. tuberculosis LAM9	Family N19
+		S00658	777676777760771		M. tuberculosis X1	Family N44
+		S00659	777774047560771		M. tuberculosis H37Rv	Family N16
+		S00660	777767777760771		M. tuberculosis T1	Family N24
+		S00661	777767776760731		M. tuberculosis T1	Family N24
+		S00662	577761777740371		M. tuberculosis T1	Family N24
+		S00663	776177400000171		M. tuberculosis LAM7	Family N29
+		S00664	777760047760771		M. tuberculosis T4	Family N16
+		S00665	737777777720771		M. tuberculosis Haarlem3	Family N24
+		S00666	777777407720771		M. tuberculosis LAM9	Family N19
+		S00667	773777623760771		M. tuberculosis T1	Family N24
+		S00668	677777477403771		M. tuberculosis EAI2	Family N10
+		S00669	703400000000000		Family35	Family N37
+		S00670	000000000002171		M. tuberculosis Beijing	Family N3
+		S00671	776377777760431		M. tuberculosis S	Family N39
+		S00672	777776001760771		M. tuberculosis LAM9	Family N19
+		S00673	607777776000371		M. tuberculosis Haarlem1	Family N5
+		S00674	676177477413771		M. tuberculosis EAI2	Family N10
+		S00675	777766407760601		M. tuberculosis LAM4	Family N4
+		S00676	777777777740171		M. tuberculosis T1	Family N24
+		S00677	777773777760771		M. tuberculosis T1	Family N24
+		S00678	777777357760771		M. tuberculosis T1	Family N24
+		S00679	777737677720731		M. tuberculosis Haarlem3	Family N24
+		S00680	777037777760611		M. tuberculosis T1	Family N48
+		S00681	777600377413731		M. tuberculosis EAI5	Family N14
+		S00682	777717777760731		M. tuberculosis T1	Family N48
+		S00683	777766777760771		M. tuberculosis X1	Family N44
+		S00684	777777777660771		M. tuberculosis T1	Family N24
+		S00685	776267777760771		M. tuberculosis S	Family N39
+		S00686	777766777760601		M. tuberculosis X2	Family N6
+		S00687	177777606400371		M. tuberculosis LAM9	Family N19
+		S00688	770177774020771		M. tuberculosis Haarlem1	Family N5
+		S00689	437777777400171		M. tuberculosis EAI5	Family N34
+		S00690	740000007560771		M. tuberculosis T3	Family N32
+		S00691	777777607760071		M. tuberculosis LAM9	Family N19
+		S00692	777777037760771		M. tuberculosis H37Rv	Family N24
+		S00693	670177607760731		M. tuberculosis LAM3	Family N2
+		S00694	777775747413771		M. tuberculosis EAI5	Family N14
+		S00695	777777774020671		M. tuberculosis Haarlem1	Family N5
+		S00696	730000777760771		M. tuberculosis T3	Family N28
+		S00697	707777770060731		M. tuberculosis Haarlem1	Family N5
+		S00698	703777740000731		M. tuberculosis CAS	Family N8
+		S00699	703777740003571		M. tuberculosis CAS	Family N8
+		S00700	377700000020731		M. tuberculosis T4	Family N16
+		S00701	777700004020771		M. tuberculosis T4	Family N16
+		S00702	777730000000771		M. tuberculosis LAM8	Family N29
+		S00703	770000770000000		Family34	Family N22
+		S00704	677777777660771		M. tuberculosis T1	Family N24
+		S00705	777776777760571		M. tuberculosis X1	Family N44
+		S00706	777717377760771		M. tuberculosis T1	Family N24
+		S00707	707777777760771		M. tuberculosis T1	Family N24
+		S00708	777767777760671		M. tuberculosis T1	Family N24
+		S00709	577637777420771		M. tuberculosis Haarlem3	Family N34
+		S00710	677737777760771		M. tuberculosis T1	Family N24
+		S00711	777717777760771		M. tuberculosis T1	Family N24
+		S00712	770000003760771		M. tuberculosis T3	Family N32
+		S00713	677777607560771		M. tuberculosis LAM1	Family N19
+		S00714	776137607760771		M. tuberculosis LAM3	Family N2
+		S00715	777777000760771		M. tuberculosis LAM9	Family N19
+		S00716	777577777760771		M. tuberculosis T1	Family N24
+		S00717	776377760360771		M. tuberculosis S	Family N39
+		S00718	776377770000731		M. tuberculosis Haarlem1	Family N5
+		S00719	777777606000771		M. tuberculosis LAM8	Family N27
+		S00720	777737404020771		M. tuberculosis LAM8	Family N27
+		S00721	557767777413700		M. tuberculosis EAI5	Family N14
+		S00722	477770377413071		M. tuberculosis EAI3	Family N1
+		S00723	577777757413771		M. tuberculosis EAI5	Family N14
+		S00724	700367740003771		M. tuberculosis CAS	Family N8
+		S00725	703767740003771		M. tuberculosis CAS	Family N8
+		S00726	777777754020771		M. tuberculosis Haarlem1	Family N5
+		S00727	777777777320571		M. tuberculosis Haarlem3	Family N24
+		S00728	376377777760771		M. tuberculosis S	Family N39
+		S00729	577777777060771		M. tuberculosis T1	Family N24
+		S00730	777777777360700		M. tuberculosis T2	Family N30
+		S00731	777777757413271		M. tuberculosis EAI5	Family N14
+		S00732	777777743413331		M. tuberculosis EAI5	Family N14
+		S00733	677774477413771		M. tuberculosis EAI2	Family N10
+		S00734	777777606000031		M. tuberculosis EAI1	Family N27
+		S00735	777737607460771		M. tuberculosis LAM9	Family N19
+		S00736	774067700001071		M. africanum	Family N17
+		S00737	777776776760601		M. tuberculosis X2	Family N6
+		S00738	637777777700371		M. tuberculosis Haarlem3	Family N24
+		S00739	777777761720740		M. tuberculosis Haarlem3	Family N24
+		S00740	000177777420771		M. tuberculosis X3	Family N9
+		S00741	557767777720771		M. tuberculosis Haarlem3	Family N24
+		S00742	777767777720771		M. tuberculosis Haarlem3	Family N24
+		S00743	777767775760771		M. tuberculosis T1	Family N24
+		S00744	777777774413471		M. tuberculosis EAI4	Family N14
+		S00745	777777777760631		M. tuberculosis T1	Family N24
+		S00746	457767777413071		M. tuberculosis EAI3	Family N1
+		S00747	557767763660771		M. tuberculosis T1	Family N24
+		S00748	777737405777731		Family33	Family N13
+		S00749	403567740001320		M. tuberculosis CAS	Family N8
+		S00750	757777757413771		M. tuberculosis EAI5	Family N14
+		S00751	000000000000371		M. tuberculosis Beijing	Family N3
+		S00752	741774047560771		M. tuberculosis H37Rv	Family N42
+		S00753	777777770020771		M. tuberculosis Haarlem1	Family N5
+		S00754	777777750060771		M. tuberculosis Haarlem1	Family N5
+		S00755	777777377720771		M. tuberculosis Haarlem3	Family N24
+		S00756	037677500020771		M. tuberculosis LAM8	Family N46
+		S00757	777777607660771		M. tuberculosis LAM9	Family N19
+		S00758	777077037720771		M. tuberculosis H37Rv	Family N24
+		S00759	776017400000171		M. tuberculosis LAM7	Family N29
+		S00760	777777477413771		M. tuberculosis EAI2	Family N10
+		S00761	777777777520771		M. tuberculosis Haarlem3	Family N24
+		S00762	777777737660771		M. tuberculosis T1	Family N24
+		S00763	777777017760771		M. tuberculosis H37Rv	Family N24
+		S00764	777737757420771		M. tuberculosis Haarlem3	Family N34
+		S00765	676763777777600		M. bovis-BCG	Family N7
+		S00766	577776774360601		M. tuberculosis X2	Family N6
+		S00767	777773777410331		M. tuberculosis EAI5	Family N14
+		S00768	474377777412771		M. tuberculosis EAI5	Family N47
+		S00769	777743557760771		M. tuberculosis T1	Family N24
+		S00770	774777777420771		M. tuberculosis Haarlem3	Family N34
+		S00771	777700000001731		Family35	Family N29
+		S00772	777377777760771		M. tuberculosis T1	Family N24
+		S00773	677777477413731		M. tuberculosis EAI2	Family N10
+		S00774	677777477013771		M. tuberculosis EAI2	Family N10
+		S00775	777734077560771		M. tuberculosis H37Rv	Family N44
+		S00776	703776740003771		M. tuberculosis CAS	Family N8
+		S00777	676003477413771		M. tuberculosis EAI2	Family N10
+		S00778	577437757413771		M. tuberculosis EAI5	Family N14
+		S00779	777777776700000		M. tuberculosis T2	Family N23
+		S00780	703774000003771		M. tuberculosis CAS	Family N15
+		S00781	677777774020771		M. tuberculosis Haarlem1	Family N5
+		S00782	577736777760601		M. tuberculosis X2	Family N6
+		S00783	700037607760771		M. tuberculosis X3	Family N45
+		S00784	774177777413771		M. tuberculosis EAI5	Family N14
+		S00785	776377770360771		M. tuberculosis S	Family N39
+		S00786	777777740660771		M. tuberculosis LAM10	Family N21
+		S00787	777760377720771		M. tuberculosis Haarlem3	Family N24
+		S00788	777677777413731		M. tuberculosis EAI5	Family N14
+		S00789	770000000003671		Family35	Family N41
+		S00790	777777777760751		M. tuberculosis T1	Family N24
+		S00791	676773777777200		M. bovis-BCG	Family N7
+		S00792	777776774020771		M. tuberculosis Haarlem1	Family N5
+		S00793	677777775760771		M. tuberculosis T1	Family N24
+		S00794	703777700000371		M. tuberculosis CAS	Family N8
+		S00795	777777774760771		M. tuberculosis T1	Family N24
+		S00796	777777404720571		M. tuberculosis LAM9	Family N19
+		S00797	603777740003771		M. tuberculosis CAS	Family N8
+		S00798	776377760000371		M. tuberculosis Haarlem1	Family N5
+		S00799	777377577360771		M. tuberculosis T1	Family N24
+		S00800	703777747777771		Family33	Family N42
+		S00801	700337740003771		M. tuberculosis CAS	Family N8
+		S00802	701740007774671		Family33	Family N42
+		S00803	703677740003771		M. tuberculosis CAS	Family N8
+		S00804	000000007777771		Family36	Family N40
+		S00805	777777777760011		M. tuberculosis T2	Family N24
+		S00806	777776757412771		M. tuberculosis EAI5	Family N14
+		S00807	676501777177600		M. bovis-BCG	Family N7
+		S00808	777777776013731		M. tuberculosis EAI5	Family N14
+		S00809	777741777413731		M. tuberculosis EAI5	Family N14
+		S00810	777774377413731		M. tuberculosis EAI5	Family N14
+		S00811	476377777720771		M. tuberculosis S	Family N39
+		S00812	777603347760471		M. tuberculosis T1	Family N24
+		S00813	703777740003451		M. tuberculosis CAS	Family N8
+		S00814	703717700000371		M. tuberculosis CAS	Family N8
+		S00815	657737607760771		M. tuberculosis LAM2	Family N19
+		S00816	477737607760771		M. tuberculosis LAM2	Family N19
+		S00817	677577457413771		M. tuberculosis EAI2	Family N10
+		S00818	777734277700771		M. tuberculosis Haarlem3	Family N24
+		S00819	777700003760771		M. tuberculosis T4	Family N16
+		S00820	177777607560740		M. tuberculosis LAM9	Family N19
+		S00821	777777777620771		M. tuberculosis Haarlem3	Family N24
+		S00822	407777607760771		M. tuberculosis LAM1	Family N19
+		S00823	777703737760771		M. tuberculosis T1	Family N24
+		S00824	576377777420771		M. tuberculosis S	Family N34
+		S00825	777000377760731		M. tuberculosis T3	Family N28
+		S00826	777777777413031		M. tuberculosis EAI5	Family N14
+		S00827	403777777760771		M. tuberculosis T1	Family N24
+		S00828	777777737720771		M. tuberculosis Haarlem3	Family N24
+		S00829	777777770023771		Family33	Family N13
+		S00830	777777730020771		M. tuberculosis Haarlem1	Family N5
+		S00831	777777370020771		M. tuberculosis Haarlem1	Family N5
+		S00832	777760177760771		M. tuberculosis X1	Family N44
+		S00833	776377777420771		M. tuberculosis S	Family N34
+		S00834	777777600760771		M. tuberculosis LAM9	Family N19
+		S00835	776167607760771		M. tuberculosis LAM3	Family N2
+		S00836	603777607560771		M. tuberculosis LAM1	Family N19
+		S00837	577777743760771		M. tuberculosis LAM10	Family N21
+		S00838	777777404760731		M. tuberculosis LAM9	Family N19
+		S00839	677776037413771		M. tuberculosis EAI2	Family N10
+		S00840	777777400000731		M. tuberculosis LAM8	Family N27
+		S00841	777000337760771		M. tuberculosis T3	Family N28
+		S00842	000000000003631		M. tuberculosis Beijing	Family N3
+		S00843	703707740001771		M. tuberculosis CAS	Family N8
+		S00844	704003347560471		M. tuberculosis T3	Family N40
+		S00845	767776037760771		M. tuberculosis H37Rv	Family N44
+		S00846	676773677777200		M. bovis-BCG	Family N7
+		S00847	677777477413751		M. tuberculosis EAI2	Family N10
+		S00848	777737774020731		M. tuberculosis Haarlem1	Family N5
+		S00849	037777777520771		M. tuberculosis Haarlem3	Family N24
+		S00850	777777777720711		M. tuberculosis Haarlem3	Family N24
+		S00851	677777607060771		M. tuberculosis LAM1	Family N19
+		S00852	741737607560771		M. tuberculosis LAM9	Family N19
+		S00853	777777677760771		M. tuberculosis T1	Family N24
+		S00854	677773477413771		M. tuberculosis EAI2	Family N10
+		S00855	777737770020731		M. tuberculosis Haarlem1	Family N5
+		S00856	774000007763771		M. tuberculosis T4	Family N16
+		S00857	774177407760771		M. tuberculosis LAM3	Family N2
+		S00858	777777600560771		M. tuberculosis LAM9	Family N19
+		S00859	777777600000371		M. tuberculosis LAM8	Family N27
+		S00860	473776077411771		M. tuberculosis EAI2	Family N10
+		S00861	557767607540771		M. tuberculosis LAM9	Family N19
+		S00862	777776777760740		M. tuberculosis X1	Family N44
+		S00863	702777740003771		M. tuberculosis CAS	Family N8
+		S00864	777777757720771		M. tuberculosis Haarlem3	Family N24
+		S00865	703777740001771		M. tuberculosis CAS	Family N8
+		S00866	777777777413431		M. tuberculosis EAI5	Family N14
+		S00867	777317777760731		M. tuberculosis T1	Family N48
+		S00868	777734377760771		M. tuberculosis X1	Family N44
+		S00869	777777743440771		M. tuberculosis LAM10	Family N21
+		S00870	777763777760771		M. tuberculosis T1	Family N24
+		S00871	777777477400001		M. tuberculosis EAI1	Family N23
+		S00872	676377736000131		M. tuberculosis Haarlem1	Family N5
+		S00873	777777777777331		Family33	Family N13
+		S00874	777747777413731		M. tuberculosis EAI5	Family N14
+		S00875	777777776000371		M. tuberculosis Haarlem1	Family N5
+		S00876	774006777760771		M. tuberculosis S	Family N39
+		S00877	776000000160771		M. tuberculosis T4	Family N16
+		S00878	777777607760371		M. tuberculosis LAM9	Family N19
+		S00879	700036776360771		M. tuberculosis X3	Family N20
+		S00880	777777777762771		Family33	Family N13
+		S00881	677737777760731		M. tuberculosis T1	Family N48
+		S00882	676773777677600		M. bovis-BCG	Family N7
+		S00883	777770777760771		M. tuberculosis X1	Family N44
+		S00884	777776775760571		M. tuberculosis X1	Family N44
+		S00885	757777774020771		M. tuberculosis Haarlem1	Family N5
+		S00886	777774607760771		M. tuberculosis LAM9	Family N19
+		S00887	477777777413701		M. tuberculosis EAI5	Family N47
+		S00888	700377740001771		M. tuberculosis CAS	Family N8
+		S00889	000037777760770		M. tuberculosis X3	Family N9
+		S00890	772700000003631		Family35	Family N29
+		S00891	477777777760771		M. tuberculosis T1	Family N24
+		S00892	776377577760771		M. tuberculosis S	Family N39
+		S00893	777777607760751		M. tuberculosis LAM9	Family N19
+		S00894	777777607560731		M. tuberculosis LAM9	Family N19
+		S00895	777761777760771		M. tuberculosis T1	Family N24
+		S00896	577777774020771		M. tuberculosis Haarlem1	Family N5
+		S00897	776177775413731		M. tuberculosis EAI5	Family N14
+		S00898	077777606000031		M. tuberculosis EAI1	Family N27
+		S00899	403777740003771		M. tuberculosis CAS	Family N8
+		S00900	703740000000771		Family35	Family N15
+		S00901	777770000000731		M. tuberculosis LAM8	Family N29
+		S00902	000000000003751		M. tuberculosis Beijing	Family N3
+		S00903	000000007700171		Family36	Family N32
+		S00904	777777777760600		M. tuberculosis T2	Family N30
+		S00905	636377607760771		M. tuberculosis LAM1	Family N19
+		S00906	747777747413771		M. tuberculosis EAI5	Family N14
+		S00907	700076777760770		M. tuberculosis X3	Family N20
+		S00908	770777703017671		M. africanum	Family N18
+		S00909	777777400000171		M. tuberculosis LAM8	Family N27
+		S00910	777777757410371		M. tuberculosis EAI5	Family N14
+591		S00911	777777757413771		M. tuberculosis EAI5	Family N14
+		S00912	777737774020771		M. tuberculosis Haarlem1	Family N5
+		S00913	777777777760400		M. tuberculosis T2	Family N30
+		S00914	777777777700011		M. tuberculosis T2	Family N23
+		S00915	757761777720771		M. tuberculosis Haarlem3	Family N24
+		S00916	777777774020770		M. tuberculosis Haarlem1	Family N5
+		S00917	600000000000000		Family35	Family N37
+		S00918	777477777740371		M. tuberculosis T1	Family N24
+		S00919	777776417760771		M. tuberculosis H37Rv	Family N44
+		S00920	774337607760700		M. tuberculosis LAM9	Family N19
+		S00921	777557757003331		M. tuberculosis EAI5	Family N14
+		S00922	757777630760771		M. tuberculosis T1	Family N24
+		S00923	777617777777771		Family33	Family N13
+		S00924	777737757412371		M. tuberculosis EAI5	Family N14
+		S00925	700000007720771		Family36	Family N32
+		S00926	777777607700771		M. tuberculosis LAM9	Family N19
+		S00927	677777470000000		Family34	Family N22
+		S00928	600076777760771		M. tuberculosis X3	Family N20
+		S00929	657777607160771		M. tuberculosis LAM1	Family N19
+		S00930	703777740000000		Family34	Family N22
+		S00931	703737740003771		M. tuberculosis CAS	Family N8
+		S00932	677757477413771		M. tuberculosis EAI2	Family N10
+		S00933	777777663760771		M. tuberculosis T1	Family N24
+		S00934	776177607763771		Family33	Family N13
+		S00935	777736407760601		M. tuberculosis LAM4	Family N4
+		S00936	717777757760771		M. tuberculosis T1	Family N24
+		S00937	777737777740731		M. tuberculosis T1	Family N48
+		S00938	000000000000031		M. tuberculosis Beijing	Family N3
+		S00939	703777740003071		M. tuberculosis CAS	Family N8
+		S00940	777777764020731		M. tuberculosis Haarlem1	Family N5
+		S00941	776177607773771		Family33	Family N13
+		S00942	776777777760731		M. tuberculosis T1	Family N24
+		S00943	037777407560731		M. tuberculosis LAM1	Family N19
+		S00944	700777740003771		M. tuberculosis CAS	Family N8
+		S00945	774037777760300		M. tuberculosis S	Family N35
+		S00946	777760057760771		M. tuberculosis T4	Family N16
+		S00947	574777777420771		M. tuberculosis Haarlem3	Family N34
+		S00948	776777774020771		M. tuberculosis Haarlem1	Family N5
+		S00949	757776777760601		M. tuberculosis X2	Family N6
+		S00950	776777777760771		M. tuberculosis T1	Family N24
+		S00951	677777777720571		M. tuberculosis Haarlem3	Family N24
+		S00952	777777777743771		Family33	Family N13
+		S00953	776377677760771		M. tuberculosis S	Family N39
+		S00954	777757777760771		M. tuberculosis T1	Family N24
+		S00955	577737777760571		M. tuberculosis T1	Family N24
+		S00956	477767777413071		M. tuberculosis EAI3	Family N1
+		S00957	770777777777661		M. africanum	Family N18
+		S00958	777736707760771		M. tuberculosis LAM9	Family N19
+		S00959	700076777760731		M. tuberculosis X3	Family N20
+		S00960	777767607560771		M. tuberculosis LAM9	Family N19
+		S00961	777777760000071		M. tuberculosis Haarlem1	Family N5
+		S00962	000000007760331		Family36	Family N32
+		S00963	001776777760771		M. tuberculosis X1	Family N44
+		S00964	777777754413771		M. tuberculosis EAI4	Family N14
+		S00965	777777777677771		Family33	Family N13
+		S00966	777777777677731		Family33	Family N13
+		S00967	777777774000371		M. tuberculosis Haarlem1	Family N5
+		S00968	777017577420771		M. tuberculosis Haarlem3	Family N34
+		S00969	777017777420771		M. tuberculosis Haarlem3	Family N34
+		S00970	777737776000131		M. tuberculosis Haarlem1	Family N34
+		S00971	776177607760740		M. tuberculosis LAM3	Family N2
+		S00972	776000003760771		M. tuberculosis T3	Family N16
+		S00973	417763607760771		M. tuberculosis LAM1	Family N19
+		S00974	637764777760730		M. tuberculosis X1	Family N44
+		S00975	777777207760771		M. tuberculosis LAM9	Family N19
+		S00976	773777777760771		M. tuberculosis T1	Family N24
+		S00977	467777774000071		M. tuberculosis Haarlem1	Family N5
+		S00978	777637777410171		M. tuberculosis EAI5	Family N14
+		S00979	775777777720771		M. tuberculosis Haarlem3	Family N24
+		S00980	177777603760771		M. tuberculosis LAM9	Family N19
+		S00981	770000777740171		M. tuberculosis T3	Family N28
+		S00982	757700000003371		Family35	Family N29
+		S00983	777737737420771		M. tuberculosis Haarlem3	Family N34
+		S00984	774037777360700		M. tuberculosis S	Family N35
+		S00985	777777437760731		M. tuberculosis H37Rv	Family N24
+		S00986	777777403760771		M. tuberculosis LAM9	Family N19
+		S00987	777775777760700		M. tuberculosis T2	Family N30
+		S00988	777777760020771		M. tuberculosis Haarlem1	Family N5
+		S00989	772174607760771		M. tuberculosis LAM3	Family N2
+		S00990	777777777000271		M. tuberculosis Haarlem3	Family N34
+		S00991	377777777000031		M. tuberculosis EAI1	Family N34
+		S00992	777700077760771		M. tuberculosis H37Rv	Family N16
+		S00993	037677777760771		M. tuberculosis T1	Family N24
+		S00994	737777757760771		M. tuberculosis T1	Family N24
+		S00995	700000004020711		Family36	Family N25
+		S00996	777777674020771		M. tuberculosis Haarlem1	Family N5
+		S00997	777777775720771		M. tuberculosis Haarlem3	Family N24
+		S00998	776377777720071		M. tuberculosis S	Family N39
+		S00999	773737777760771		M. tuberculosis T1	Family N24
+		S01000	776377377760731		M. tuberculosis S	Family N39
+		S01001	777737777700000		M. tuberculosis T2	Family N23
+		S01002	777763770000000		Family34	Family N22
+		S01003	777737760000151		M. tuberculosis Haarlem1	Family N5
+		S01004	000000007760770		Family36	Family N32
+		S01005	777537777420771		M. tuberculosis Haarlem3	Family N34
+		S01006	574077607777071		M. africanum	Family N17
+		S01007	703776600003771		M. tuberculosis CAS	Family N8
+		S01008	777777400020771		M. tuberculosis LAM8	Family N27
+		S01009	477777774000071		M. tuberculosis Haarlem1	Family N5
+		S01010	777777776000071		M. tuberculosis Haarlem1	Family N5
+		S01011	777777743460771		M. tuberculosis LAM10	Family N21
+		S01012	703777740002771		M. tuberculosis CAS	Family N8
+		S01013	777777377740371		M. tuberculosis T1	Family N24
+		S01014	600000077413771		M. tuberculosis EAI2	Family N40
+		S01015	674000000000171		M. tuberculosis LAM7	Family N29
+		S01016	777717761720771		M. tuberculosis Haarlem3	Family N24
+		S01017	777777747413371		M. tuberculosis EAI5	Family N14
+		S01018	777777607600171		M. tuberculosis LAM9	Family N19
+		S01019	777777777020771		M. tuberculosis Haarlem3	Family N34
+		S01020	577777777720771		M. tuberculosis Haarlem3	Family N24
+		S01021	777417777400000		M. tuberculosis T2	Family N23
+		S01022	757777777413731		M. tuberculosis EAI5	Family N14
+		S01023	677777607760071		M. tuberculosis LAM1	Family N19
+		S01024	277737607760771		M. tuberculosis LAM2	Family N19
+		S01025	741703777760771		M. tuberculosis T1	Family N24
+		S01026	777737037760771		M. tuberculosis H37Rv	Family N24
+		S01027	603777740000771		M. tuberculosis CAS	Family N8
+		S01028	677777777413671		M. tuberculosis EAI5	Family N14
+		S01029	774777377420771		M. tuberculosis Haarlem3	Family N34
+		S01030	777737407777731		Family33	Family N13
+		S01031	777756777760731		M. tuberculosis X1	Family N44
+		S01032	577677606060771		M. tuberculosis LAM8	Family N27
+		S01033	700037000020700		M. tuberculosis LAM7	Family N37
+		S01034	777777207600331		M. tuberculosis LAM9	Family N19
+		S01035	777737607760371		M. tuberculosis LAM9	Family N19
+		S01036	377777607760771		M. tuberculosis LAM9	Family N19
+		S01037	703337400001771		M. tuberculosis CAS	Family N15
+		S01038	601777606060771		M. tuberculosis LAM8	Family N27
+		S01039	677777607760731		M. tuberculosis LAM1	Family N19
+		S01040	777776607760771		M. tuberculosis LAM9	Family N19
+		S01041	777417607760700		M. tuberculosis LAM9	Family N19
+		S01042	777637777413771		M. tuberculosis EAI5	Family N14
+		S01043	777600777720771		M. tuberculosis Haarlem3	Family N24
+		S01044	503777000003771		M. tuberculosis CAS	Family N15
+		S01045	777740000000000		Family35	Family N29
+		S01046	776177777760771		M. tuberculosis S	Family N39
+		S01047	677777747760731		M. tuberculosis T1	Family N24
+		S01048	777777777600071		M. tuberculosis Haarlem3	Family N24
+		S01049	777777770000771		M. tuberculosis Haarlem1	Family N5
+		S01050	777377757413371		M. tuberculosis EAI5	Family N14
+		S01051	277775477413771		M. tuberculosis EAI2	Family N10
+		S01052	777777607460771		M. tuberculosis LAM9	Family N19
+		S01053	777737770000000		Family34	Family N22
+		S01054	376377777420770		M. tuberculosis S	Family N34
+		S01055	777700077760600		M. tuberculosis X2	Family N6
+		S01056	677317607760771		M. tuberculosis LAM2	Family N19
+		S01057	777737700020731		M. tuberculosis LAM8	Family N27
+		S01058	777777763560731		M. tuberculosis T1	Family N24
+		S01059	777777777700131		M. tuberculosis Haarlem3	Family N24
+		S01060	757703777760731		M. tuberculosis T1	Family N48
+		S01061	767776377003731		M. tuberculosis EAI5	Family N14
+		S01062	700000000003771		Family36	Family N15
+		S01063	000000004020731		M. tuberculosis Haarlem2	Family N25
+		S01064	703777700003771		M. tuberculosis CAS	Family N8
+		S01065	776177607760471		M. tuberculosis LAM3	Family N2
+		S01066	763777607560771		M. tuberculosis LAM9	Family N19
+		S01067	776377777760611		M. tuberculosis S	Family N39
+		S01068	777737747413771		M. tuberculosis EAI5	Family N14
+		S01069	776777777720771		M. tuberculosis Haarlem3	Family N24
+		S01070	776321777760771		M. tuberculosis S	Family N39
+		S01071	737637400020771		M. tuberculosis LAM8	Family N27
+		S01072	677777207760771		M. tuberculosis LAM1	Family N19
+		S01073	000000000003740		M. tuberculosis Beijing	Family N3
+		S01074	777777607760671		M. tuberculosis LAM9	Family N19
+		S01075	777777604020771		M. tuberculosis LAM8	Family N27
+		S01076	777377347760400		M. tuberculosis T2	Family N30
+		S01077	674000000000071		M. tuberculosis LAM7	Family N29
+		S01078	777777607760411		M. tuberculosis LAM9	Family N19
+		S01079	777777600000000		Family34	Family N22
+		S01080	777770177413700		M. tuberculosis EAI5	Family N14
+		S01081	776777607760731		M. tuberculosis LAM9	Family N19
+		S01082	777376777760771		M. tuberculosis X1	Family N44
+		S01083	777577607760771		M. tuberculosis LAM9	Family N19
+		S01084	017777777320771		M. tuberculosis Haarlem3	Family N24
+		S01085	777777760160731		M. tuberculosis T1	Family N24
+		S01086	477774777413071		M. tuberculosis EAI3	Family N1
+		S01087	077577757003371		M. tuberculosis EAI5	Family N47
+		S01088	777775774413771		M. tuberculosis EAI4	Family N14
+		S01089	477777607760771		M. tuberculosis LAM1	Family N19
+		S01090	770777507777671		M. africanum	Family N18
+		S01091	770737777777671		M. africanum	Family N18
+		S01092	777737777413701		M. tuberculosis EAI5	Family N14
+		S01093	677777777760730		M. tuberculosis T1	Family N24
+		S01094	777777177413371		M. tuberculosis EAI5	Family N14
+		S01095	677777607760711		M. tuberculosis LAM1	Family N19
+		S01096	777777340020771		M. tuberculosis Haarlem1	Family N5
+		S01097	777776777600171		M. tuberculosis Haarlem3	Family N24
+		S01098	740777607760771		M. tuberculosis LAM9	Family N19
+		S01099	777777777720671		M. tuberculosis Haarlem3	Family N24
+		S01100	717777777413700		M. tuberculosis EAI5	Family N14
+		S01101	177777777760731		M. tuberculosis T1	Family N24
+		S01102	777777737760771		M. tuberculosis T1	Family N24
+		S01103	777777777160771		M. tuberculosis T1	Family N24
+		S01104	777777757767771		Family33	Family N13
+		S01105	777776607760700		M. tuberculosis LAM9	Family N19
+		S01106	703777744034771		Family33	Family N42
+		S01107	677767477403631		M. tuberculosis EAI2	Family N10
+		S01108	774077007777071		M. africanum	Family N17
+		S01109	700076750000071		M. tuberculosis X3	Family N20
+		S01110	760000007760771		M. tuberculosis T3	Family N32
+		S01111	000000000003600		M. tuberculosis Beijing	Family N3
+		S01112	736177607760741		M. tuberculosis LAM3	Family N2
+		S01113	777417777760731		M. tuberculosis T1	Family N48
+		S01114	777774077560731		M. tuberculosis H37Rv	Family N44
+		S01115	777377774020771		M. tuberculosis Haarlem1	Family N5
+		S01116	770740777777671		M. africanum	Family N18
+		S01117	003777740003771		M. tuberculosis CAS	Family N8
+		S01118	703777400001771		M. tuberculosis CAS	Family N15
+		S01119	776174000060771		M. tuberculosis LAM8	Family N27
+		S01120	700775747413771		M. tuberculosis EAI5	Family N42
+		S01121	777737767760771		M. tuberculosis T1	Family N24
+		S01122	777777760060771		M. tuberculosis Haarlem1	Family N5
+		S01123	703777747770371		M. tuberculosis T1	Family N42
+		S01124	477777277413771		M. tuberculosis EAI5	Family N47
+		S01125	777777777413071		M. tuberculosis EAI5	Family N14
+		S01126	477673777410771		M. tuberculosis EAI5	Family N47
+		S01127	656773777777600		M. bovis-BCG	Family N7
+		S01128	700036777400071		M. tuberculosis X3	Family N20
+		S01129	577777000000011		M. tuberculosis EAI1	Family N29
+		S01130	000002777760731		M. tuberculosis X3	Family N20
+		S01131	454000003413661		M. tuberculosis EAI2	Family N41
+		S01132	674000003413710		M. tuberculosis EAI2	Family N41
+		S01133	777773607760771		M. tuberculosis LAM9	Family N19
+		S01134	677777777760771		M. tuberculosis T1	Family N24
+		S01135	777777640000000		Family34	Family N22
+		S01136	777777604360771		M. tuberculosis LAM9	Family N19
+		S01137	777777437720771		M. tuberculosis H37Rv	Family N24
+		S01138	737777777760631		M. tuberculosis T1	Family N24
+		S01139	737737777760731		M. tuberculosis T1	Family N48
+		S01140	761777777760731		M. tuberculosis T1	Family N24
+		S01141	777777034020771		M. tuberculosis Haarlem1	Family N5
+		S01142	777767777413631		M. tuberculosis EAI5	Family N14
+		S01143	777347777413671		M. tuberculosis EAI5	Family N14
+		S01144	736177607700171		M. tuberculosis LAM3	Family N2
+		S01145	770077637760731		M. tuberculosis S	Family N39
+		S01146	776000607760771		M. tuberculosis T3	Family N28
+		S01147	777740004720771		M. tuberculosis T4	Family N16
+		S01148	003777740002771		M. tuberculosis CAS	Family N8
+		S01149	763777777760771		M. tuberculosis T1	Family N24
+		S01150	777776777420771		M. tuberculosis Haarlem3	Family N34
+		S01151	777777677760700		M. tuberculosis T2	Family N30
+		S01152	737776777760601		M. tuberculosis X2	Family N6
+		S01153	777737774403431		M. tuberculosis EAI4	Family N14
+		S01154	777770607760771		M. tuberculosis LAM9	Family N19
+		S01155	737377677760771		M. tuberculosis T1	Family N24
+		S01156	776177607560771		M. tuberculosis LAM3	Family N2
+		S01157	664073777700600		M. bovis-BCG	Family N12
+		S01158	777737606060731		M. tuberculosis LAM8	Family N27
+		S01159	616733777777600		M. bovis-BCG	Family N7
+		S01160	666772057777200		M. bovis-BCG	Family N7
+		S01161	777777775760771		M. tuberculosis T1	Family N24
+		S01162	477774200013071		M. tuberculosis EAI3	Family N1
+		S01163	777777776760771		M. tuberculosis T1	Family N24
+		S01164	703777744037771		Family33	Family N42
+		S01165	776377777760071		M. tuberculosis S	Family N39
+		S01166	777137777760731		M. tuberculosis T1	Family N48
+		S01167	777347777763671		Family33	Family N13
+		S01168	750037747760471		M. tuberculosis S	Family N39
+		S01169	763777777760731		M. tuberculosis T1	Family N24
+		S01170	077737777413771		M. tuberculosis EAI5	Family N47
+		S01171	777776207760771		M. tuberculosis LAM9	Family N19
+		S01172	700000000000371		Family35	Family N25
+		S01173	777777347760400		M. tuberculosis T2	Family N30
+		S01174	400777777620731		M. tuberculosis Haarlem3	Family N24
+		S01175	776177770000000		Family34	Family N22
+		S01176	777777777720770		M. tuberculosis Haarlem3	Family N24
+		S01177	777777774020751		M. tuberculosis Haarlem1	Family N5
+		S01178	737777777760731		M. tuberculosis T1	Family N24
+		S01179	757777637760771		M. tuberculosis T1	Family N24
+		S01180	777774063560771		M. tuberculosis H37Rv	Family N44
+		S01181	777777674020371		M. tuberculosis Haarlem1	Family N5
+		S01182	777603607400011		M. tuberculosis EAI1	Family N23
+		S01183	777777737760731		M. tuberculosis T1	Family N24
+		S01184	777776777060771		M. tuberculosis X1	Family N44
+		S01185	777777601760771		M. tuberculosis LAM9	Family N19
+		S01186	777777607760761		M. tuberculosis LAM9	Family N19
+		S01187	674777470001771		M. tuberculosis EAI2	Family N10
+		S01188	757740005720771		M. tuberculosis T4	Family N16
+		S01189	777603405760471		M. tuberculosis LAM9	Family N19
+		S01190	757777777760571		M. tuberculosis T1	Family N24
+		S01191	777773377760771		M. tuberculosis T1	Family N24
+		S01192	677777777413771		M. tuberculosis EAI5	Family N14
+		S01193	777377706001371		M. tuberculosis EAI5	Family N14
+		S01194	574077607177071		M. africanum	Family N17
+		S01195	000003777377600		M. bovis-BCG	Family N12
+		S01196	000000000003151		M. tuberculosis Beijing	Family N3
+		S01197	000000007720731		Family36	Family N32
+		S01198	677777770020771		M. tuberculosis Haarlem1	Family N5
+		S01199	701777740003771		M. tuberculosis CAS	Family N8
+		S01200	017700007702400		M. tuberculosis T4	Family N16
+		S01201	776377777400071		M. tuberculosis S	Family N34
+		S01202	000000007400000		Family36	Family N32
+		S01203	777737606060771		M. tuberculosis LAM8	Family N27
+		S01204	777737607760711		M. tuberculosis LAM9	Family N19
+		S01205	777777777761771		M. tuberculosis T1	Family N13
+		S01206	777777777760131		M. tuberculosis T1	Family N24
+		S01207	776377777413731		M. tuberculosis EAI5	Family N14
+		S01208	776177607020771		M. tuberculosis LAM3	Family N2
+		S01209	777777777760411		M. tuberculosis T1	Family N24
+		S01210	577777776000371		M. tuberculosis Haarlem1	Family N5
+		S01211	077773477413771		M. tuberculosis EAI2	Family N10
+		S01212	477017777413071		M. tuberculosis EAI3	Family N1
+		S01213	477776077411171		M. tuberculosis EAI2	Family N10
+		S01214	740177777013731		M. tuberculosis EAI5	Family N14
+		S01215	777777757760731		M. tuberculosis T1	Family N24
+		S01216	777776777600000		M. tuberculosis T2	Family N23
+		S01217	777177777760771		M. tuberculosis T1	Family N24
+		S01218	700377700003771		M. tuberculosis CAS	Family N8
+		S01219	777736777560731		M. tuberculosis X1	Family N44
+		S01220	640013776377600		M. bovis-BCG	Family N12
+		S01221	736300000020771		M. tuberculosis T4	Family N16
+		S01222	703777347760471		M. tuberculosis T1	Family N42
+		S01223	637403607760671		M. tuberculosis LAM2	Family N19
+		S01224	777777607400371		M. tuberculosis LAM9	Family N19
+		S01225	700036776760771		M. tuberculosis X3	Family N20
+		S01226	400027777413671		M. tuberculosis EAI5	Family N11
+		S01227	256423777402600		M. bovis-BCG	Family N7
+		S01228	757767777413631		M. tuberculosis EAI5	Family N14
+		S01229	475777677413771		M. tuberculosis EAI5	Family N47
+		S01230	770537777777671		M. africanum	Family N18
+		S01231	777777777723771		Family33	Family N13
+		S01232	777777777771771		Family33	Family N13
+		S01233	777777777760371		M. tuberculosis T1	Family N24
+		S01234	777177777760731		M. tuberculosis T1	Family N24
+		S01235	570737777777670		M. africanum	Family N18
+		S01236	000000000003761		M. tuberculosis Beijing	Family N3
+		S01237	377777777760731		M. tuberculosis T1	Family N24
+		S01238	760777777760731		M. tuberculosis T1	Family N24
+		S01239	770077607560771		M. tuberculosis LAM3	Family N2
+		S01240	477776377413771		M. tuberculosis EAI5	Family N47
+		S01241	770777777747071		M. africanum	Family N18
+		S01242	776303777760771		M. tuberculosis S	Family N39
+		S01243	777777700003371		M. tuberculosis EAI4	Family N14
+		S01244	703757740000371		M. tuberculosis CAS	Family N8
+		S01245	770777707777651		M. africanum	Family N18
+		S01246	677777477413761		M. tuberculosis EAI2	Family N10
+		S01247	703777740003010		M. tuberculosis CAS	Family N8
+		S01248	777737347760411		M. tuberculosis T1	Family N48
+		S01249	777774007720771		M. tuberculosis LAM9	Family N19
+		S01250	777776774020601		M. tuberculosis Haarlem1	Family N5
+		S01251	637760007760771		M. tuberculosis T4	Family N16
+		S01252	767777607760771		M. tuberculosis LAM9	Family N19
+		S01253	777737743760771		M. tuberculosis LAM10	Family N21
+		S01254	671777707413731		M. tuberculosis EAI5	Family N14
+		S01255	703777000000031		M. tuberculosis EAI1	Family N15
+		S01256	777777143760771		M. tuberculosis LAM10	Family N21
+		S01257	557777607760771		M. tuberculosis LAM9	Family N19
+		S01258	770777577377671		M. africanum	Family N18
+		S01259	777700000000000		Family35	Family N29
+		S01260	777777607740171		M. tuberculosis LAM9	Family N19
+		S01261	077777606060771		M. tuberculosis LAM8	Family N27
+		S01262	103777740000371		M. tuberculosis CAS	Family N8
+		S01263	777776757413371		M. tuberculosis EAI5	Family N14
+		S01264	477777777613071		M. tuberculosis EAI3	Family N1
+		S01265	777406777760771		M. tuberculosis X1	Family N44
+		S01266	700177777413731		M. tuberculosis EAI5	Family N14
+		S01267	407777740003171		M. tuberculosis CAS	Family N8
+		S01268	740000007320771		M. tuberculosis T3	Family N32
+		S01269	767774077560771		M. tuberculosis H37Rv	Family N44
+		S01270	077777707760731		M. tuberculosis LAM9	Family N19
+		S01271	177777774003731		M. tuberculosis EAI4	Family N14
+		S01272	774777770020771		M. tuberculosis Haarlem1	Family N5
+		S01273	077777607760730		M. tuberculosis LAM1	Family N19
+		S01274	700037750060771		M. tuberculosis X3	Family N45
+		S01275	760000004020771		M. tuberculosis LAM7	Family N32
+		S01276	777777317760571		M. tuberculosis T1	Family N24
+		S01277	777776776360711		M. tuberculosis X1	Family N44
+		S01278	777777606160771		M. tuberculosis LAM9	Family N19
+		S01279	777777774060771		M. tuberculosis Haarlem1	Family N5
+		S01280	677777474003771		M. tuberculosis EAI2	Family N10
+		S01281	703777600003771		M. tuberculosis CAS	Family N8
+		S01282	777700000001631		Family35	Family N29
+		S01283	676377777760771		M. tuberculosis S	Family N39
+		S01284	777736777760671		M. tuberculosis X1	Family N44
+		S01285	077776775760731		M. tuberculosis X1	Family N44
+		S01286	776177407760771		M. tuberculosis LAM3	Family N2
+		S01287	777774606060731		M. tuberculosis LAM8	Family N27
+		S01288	777777604060731		M. tuberculosis LAM8	Family N27
+		S01289	774037707760700		M. tuberculosis S	Family N35
+		S01290	776370001760731		M. tuberculosis LAM9	Family N16
+		S01291	000000000003700		M. tuberculosis Beijing	Family N3
+		S01292	477776770000000		Family34	Family N22
+		S01293	677737470413771		M. tuberculosis EAI2	Family N10
+1737		S01294	777760017760771		M. tuberculosis T4	Family N16
+		S01295	777777777700031		M. tuberculosis Haarlem3	Family N24
+		S01296	776377777740771		M. tuberculosis S	Family N39
+		S01297	777477777760731		M. tuberculosis T1	Family N24
+		S01298	776370001760331		M. tuberculosis LAM9	Family N16
+		S01299	777577777013371		M. tuberculosis EAI5	Family N14
+		S01300	677003477413771		M. tuberculosis EAI2	Family N10
+		S01301	703777740003011		M. tuberculosis CAS	Family N8
+		S01302	577777002060771		M. tuberculosis LAM8	Family N27
+		S01303	677777607763771		Family33	Family N13
+		S01304	477001777413771		M. tuberculosis EAI5	Family N47
+		S01305	777707760000171		M. tuberculosis Haarlem1	Family N5
+		S01306	774077407777071		M. africanum	Family N17
+		S01307	477777777403071		M. tuberculosis EAI3	Family N1
+209		S01308	776017607760771		M. tuberculosis LAM3	Family N2
+		S01309	777777770060731		M. tuberculosis Haarlem1	Family N5
+		S01310	776377776760771		M. tuberculosis S	Family N39
+		S01311	000000000002771		M. tuberculosis Beijing	Family N3
+		S01312	777777677777671		Family33	Family N13
+		S01313	740077777777671		M. africanum	Family N18
+		S01314	700036777760671		M. tuberculosis X3	Family N20
+		S01315	777777434020771		M. tuberculosis Haarlem1	Family N5
+		S01316	177777677766171		Family33	Family N13
+		S01317	543777607760771		M. tuberculosis LAM9	Family N19
+		S01318	737377777760771		M. tuberculosis T1	Family N24
+		S01319	703777740003600		M. tuberculosis CAS	Family N8
+		S01320	777777600040771		M. tuberculosis LAM8	Family N27
+		S01321	377777743760771		M. tuberculosis LAM10	Family N21
+		S01322	777774602760731		M. tuberculosis LAM9	Family N19
+		S01323	774077600000031		M. tuberculosis EAI1	Family N27
+		S01324	637757637760771		M. tuberculosis T1	Family N24
+		S01325	777737607700351		M. tuberculosis LAM5	Family N38
+		S01326	416773777000600		M. tuberculosis T2	Family N30
+		S01327	760760047700771		M. tuberculosis T4	Family N16
+		S01328	777777423560771		M. tuberculosis H37Rv	Family N24
+		S01329	773776607760771		M. tuberculosis LAM9	Family N19
+		S01330	703777740000011		M. tuberculosis EAI1	Family N8
+		S01331	077776117413771		M. tuberculosis EAI5	Family N47
+		S01332	777774077020771		M. tuberculosis H37Rv	Family N34
+		S01333	777773777760571		M. tuberculosis T1	Family N24
+		S01334	576777777720771		M. tuberculosis Haarlem3	Family N24
+		S01335	703777740000171		M. tuberculosis CAS	Family N8
+		S01336	777777600000171		M. tuberculosis LAM8	Family N27
+		S01337	776357777760771		M. tuberculosis S	Family N39
+		S01338	777740207760771		M. tuberculosis LAM9	Family N19
+		S01339	677774207760711		M. tuberculosis LAM1	Family N19
+		S01340	370177607760771		M. tuberculosis LAM3	Family N2
+		S01341	777777774020571		M. tuberculosis Haarlem1	Family N5
+		S01342	377777606060771		M. tuberculosis LAM8	Family N27
+		S01343	703637740003771		M. tuberculosis CAS	Family N8
+		S01344	003777400000771		M. tuberculosis CAS	Family N15
+		S01345	777777743413371		M. tuberculosis EAI5	Family N14
+		S01346	777777747613771		Family33	Family N13
+		S01347	777777760020611		M. tuberculosis Haarlem1	Family N5
+		S01348	777770077700771		M. tuberculosis H37Rv	Family N24
+		S01349	774037607777071		M. africanum	Family N17
+		S01350	000000007760731		Family36	Family N32
+		S01351	677777471413771		M. tuberculosis EAI2	Family N10
+		S01352	703737740001171		M. tuberculosis CAS	Family N8
+		S01353	777737737760600		M. tuberculosis T2	Family N30
+		S01354	760000003760771		M. tuberculosis T3	Family N32
+		S01355	603777400001771		M. tuberculosis CAS	Family N15
+		S01356	677777470003731		M. tuberculosis EAI2	Family N10
+		S01357	376147607760771		M. tuberculosis LAM3	Family N2
+		S01358	600017607760771		M. tuberculosis X3	Family N45
+		S01359	776376777760601		M. tuberculosis X2	Family N6
+		S01360	776377607760771		M. tuberculosis LAM9	Family N19
+		S01361	777777747413771		M. tuberculosis EAI5	Family N14
+		S01362	777676777760601		M. tuberculosis X2	Family N6
+		S01363	777777777520731		M. tuberculosis Haarlem3	Family N24
+		S01364	707776777760771		M. tuberculosis X1	Family N44
+		S01365	657777477413771		M. tuberculosis EAI2	Family N10
+		S01366	747377777760771		M. tuberculosis T1	Family N24
+		S01367	764137607720771		M. tuberculosis LAM3	Family N2
+		S01368	776177600000000		Family34	Family N22
+		S01369	777777345760471		M. tuberculosis T1	Family N24
+		S01370	717776777760771		M. tuberculosis X1	Family N44
+		S01371	000000174020771		M. tuberculosis T3	Family N40
+		S01372	777377777760731		M. tuberculosis T1	Family N24
+		S01373	677737607620771		M. tuberculosis LAM2	Family N19
+		S01374	774003777775071		M. africanum	Family N17
+		S01375	776177607700171		M. tuberculosis LAM3	Family N2
+		S01376	177777777413731		M. tuberculosis EAI5	Family N14
+		S01377	777737777760500		M. tuberculosis T2	Family N30
+		S01378	674000001613771		M. tuberculosis T4	Family N41
+		S01379	000000000003071		M. tuberculosis Beijing	Family N3
+		S01380	777776777560601		M. tuberculosis X2	Family N6
+		S01381	777777740020731		M. tuberculosis Haarlem1	Family N5
+		S01382	777777777000071		M. tuberculosis Haarlem3	Family N34
+		S01383	674001777677600		M. bovis-BCG	Family N7
+		S01384	703677740003171		M. tuberculosis CAS	Family N8
+		S01385	703743740003471		M. tuberculosis CAS	Family N8
+1938		S01386	776377777760770		M. tuberculosis S	Family N39
+		S01387	770777777700670		M. tuberculosis Haarlem3	Family N24
+		S01388	603777677520771		M. tuberculosis Haarlem3	Family N24
+		S01389	777637763660771		M. tuberculosis T1	Family N24
+		S01390	700076777760271		M. tuberculosis X3	Family N20
+		S01391	000000000003401		M. tuberculosis Beijing	Family N3
+		S01392	777777607760571		M. tuberculosis LAM9	Family N19
+		S01393	777737777760371		M. tuberculosis T1	Family N24
+		S01394	777776776360771		M. tuberculosis X1	Family N44
+		S01395	777777777400011		M. tuberculosis EAI1	Family N23
+		S01396	477777376013771		M. tuberculosis EAI5	Family N14
+		S01397	437777774020771		M. tuberculosis Haarlem1	Family N5
+		S01398	703776040000771		M. tuberculosis CAS	Family N8
+		S01399	477776077413771		M. tuberculosis EAI2	Family N10
+		S01400	637777777720771		M. tuberculosis Haarlem3	Family N24
+		S01401	677767777760071		M. tuberculosis T1	Family N24
+		S01402	774777374020771		M. tuberculosis Haarlem1	Family N5
+		S01403	703700340003771		M. tuberculosis CAS	Family N8
+		S01404	000000000003000		M. tuberculosis Beijing	Family N3
+		S01405	776377777360771		M. tuberculosis S	Family N39
+		S01406	777777774020700		M. tuberculosis Haarlem1	Family N5
+		S01407	417777777620771		M. tuberculosis Haarlem3	Family N24
+		S01408	777767774020731		M. tuberculosis Haarlem1	Family N5
+		S01409	437777777720731		M. tuberculosis Haarlem3	Family N24
+		S01410	777777603760771		M. tuberculosis LAM9	Family N19
+		S01411	637737607760771		M. tuberculosis LAM2	Family N19
+		S01412	700777747413771		M. tuberculosis EAI5	Family N42
+		S01413	777740607760771		M. tuberculosis LAM9	Family N19
+		S01414	474367777413771		M. tuberculosis EAI5	Family N47
+		S01415	703777740003111		M. tuberculosis CAS	Family N8
+		S01416	400000004760771		Family36	Family N32
+		S01417	000000000060731		Family36	Family N32
+		S01418	577777777760371		M. tuberculosis T1	Family N24
+		S01419	773777207760771		M. tuberculosis LAM9	Family N19
+		S01420	703777400000771		M. tuberculosis CAS	Family N15
+		S01421	777737607760731		M. tuberculosis LAM9	Family N19
+		S01422	777777607460731		M. tuberculosis LAM9	Family N19
+		S01423	777777750400371		M. tuberculosis EAI4	Family N14
+		S01424	777777740000771		M. tuberculosis Haarlem1	Family N5
+		S01425	377777037720771		M. tuberculosis H37Rv	Family N24
+		S01426	777737743720771		M. tuberculosis LAM10	Family N21
+		S01427	777777743360771		M. tuberculosis LAM10	Family N21
+		S01428	777777607540761		M. tuberculosis LAM9	Family N19
+		S01429	777700770000071		M. tuberculosis Haarlem1	Family N5
+		S01430	077777776020731		M. tuberculosis Haarlem1	Family N5
+		S01431	677777404760771		M. tuberculosis LAM1	Family N19
+		S01432	777777777600131		M. tuberculosis Haarlem3	Family N24
+		S01433	777577777760731		M. tuberculosis T1	Family N24
+		S01434	077777777720731		M. tuberculosis Haarlem3	Family N24
+		S01435	777757777720771		M. tuberculosis Haarlem3	Family N24
+		S01436	777377777720771		M. tuberculosis Haarlem3	Family N24
+		S01437	700777777760771		M. tuberculosis T1	Family N24
+		S01438	777776004760771		M. tuberculosis LAM9	Family N19
+		S01439	177777607760771		M. tuberculosis LAM9	Family N19
+		S01440	676377737760771		M. tuberculosis S	Family N39
+		S01441	777776757413771		M. tuberculosis EAI5	Family N14
+		S01442	657636207760771		M. tuberculosis LAM2	Family N19
+		S01443	777777776360771		M. tuberculosis T1	Family N24
+		S01444	707777777720771		M. tuberculosis Haarlem3	Family N24
+		S01445	674000017000771		M. tuberculosis T3	Family N28
+		S01446	000000007700371		Family36	Family N32
+		S01447	773777600000771		M. tuberculosis LAM8	Family N27
+		S01448	077737777413740		M. tuberculosis EAI5	Family N47
+		S01449	717777777760771		M. tuberculosis T1	Family N24
+		S01450	703777740003031		M. tuberculosis CAS	Family N8
+		S01451	377777763760771		M. tuberculosis T1	Family N24
+		S01452	777737404760771		M. tuberculosis LAM9	Family N19
+		S01453	777760007760751		M. tuberculosis T4	Family N16
+		S01454	776017407760771		M. tuberculosis LAM3	Family N2
+		S01455	777777400060771		M. tuberculosis LAM8	Family N27
+		S01456	777777707760351		M. tuberculosis LAM9	Family N19
+		S01457	777777747760771		M. tuberculosis T1	Family N24
+		S01458	777777763660771		M. tuberculosis T1	Family N24
+		S01459	777677777760731		M. tuberculosis T1	Family N24
+		S01460	777771777760771		M. tuberculosis T1	Family N24
+		S01461	704377747413371		M. tuberculosis EAI5	Family N14
+		S01462	000076777760671		M. tuberculosis X3	Family N9
+		S01463	777777707760371		M. tuberculosis LAM9	Family N19
+		S01464	777737777700171		M. tuberculosis Haarlem3	Family N24
+		S01465	577737777420771		M. tuberculosis Haarlem3	Family N34
+		S01466	676077477413771		M. tuberculosis EAI2	Family N10
+		S01467	777377777413731		M. tuberculosis EAI5	Family N14
+		S01468	600174207760771		M. tuberculosis LAM3	Family N42
+		S01469	737700777413700		M. tuberculosis EAI5	Family N14
+		S01470	776367777760731		M. tuberculosis S	Family N39
+		S01471	777777006720771		M. tuberculosis LAM9	Family N19
+		S01472	776777606020771		M. tuberculosis LAM8	Family N27
+		S01473	477773777413071		M. tuberculosis EAI3	Family N1
+		S01474	703601740003771		M. tuberculosis CAS	Family N8
+		S01475	577700777760771		M. tuberculosis X1	Family N44
+		S01476	777337577360771		M. tuberculosis T1	Family N24
+		S01477	777777776020771		M. tuberculosis Haarlem1	Family N5
+		S01478	400003743760771		M. tuberculosis X3	Family N45
+		S01479	700040777760771		M. tuberculosis X3	Family N20
+		S01480	703777740003760		M. tuberculosis CAS	Family N8
+		S01481	777777677720771		M. tuberculosis Haarlem3	Family N24
+		S01482	077777777760731		M. tuberculosis T1	Family N24
+		S01483	761777777760771		M. tuberculosis T1	Family N24
+		S01484	677777771760771		M. tuberculosis T1	Family N24
+		S01485	674177777413751		M. tuberculosis EAI5	Family N14
+		S01486	777617757413371		M. tuberculosis EAI5	Family N14
+		S01487	674000003413731		M. tuberculosis EAI2	Family N41
+		S01488	577777606060771		M. tuberculosis LAM8	Family N27
+		S01489	000037607760771		M. tuberculosis X3	Family N45
+		S01490	777764606060731		M. tuberculosis LAM8	Family N27
+		S01491	633774477760730		M. tuberculosis H37Rv	Family N44
+		S01492	743577777760731		M. tuberculosis T1	Family N24
+		S01493	701377400001771		M. tuberculosis CAS	Family N15
+		S01494	774003607740071		M. tuberculosis T3	Family N2
+		S01495	774077777037071		M. africanum	Family N17
+		S01496	777767743760771		M. tuberculosis LAM10	Family N21
+		S01497	777775743760771		M. tuberculosis LAM10	Family N21
+		S01498	377777777560731		M. tuberculosis T1	Family N24
+		S01499	477777743760771		M. tuberculosis LAM10	Family N21
+		S01500	777777743460731		M. tuberculosis LAM10	Family N21
+		S01501	774067600000071		M. tuberculosis LAM7	Family N27
+		S01502	777767606060771		M. tuberculosis LAM8	Family N27
+		S01503	777727606060771		M. tuberculosis LAM8	Family N27
+		S01504	777775777760731		M. tuberculosis T1	Family N24
+		S01505	000000007413771		Family36	Family N40
+		S01506	777076777760731		M. tuberculosis X1	Family N44
+		S01507	477777777401071		M. tuberculosis EAI3	Family N1
+		S01508	677777607760371		M. tuberculosis LAM1	Family N19
+		S01509	777777477760731		M. tuberculosis H37Rv	Family N24
+		S01510	777777607600371		M. tuberculosis LAM9	Family N19
+		S01511	777777776360711		M. tuberculosis T1	Family N24
+		S01512	776177607760711		M. tuberculosis LAM3	Family N2
+		S01513	677737601760771		M. tuberculosis LAM2	Family N19
+		S01514	343775777560731		M. tuberculosis T1	Family N24
+		S01515	777770374020771		M. tuberculosis Haarlem1	Family N5
+		S01516	770777707777631		M. africanum	Family N18
+		S01517	577777750000000		Family34	Family N22
+		S01518	777000010060731		M. tuberculosis T4	Family N16
+587		S01519	700740007774671		M. orygis (edited)	Family N42
+		S01520	674017607760771		M. tuberculosis LAM3	Family N2
+		S01521	777760343740771		M. tuberculosis LAM10	Family N21
+		S01522	777777743560771		M. tuberculosis LAM10	Family N21
+		S01523	677777477413770		M. tuberculosis EAI2	Family N10
+		S01524	777777740360771		M. tuberculosis LAM10	Family N21
+		S01525	774067777777071		M. africanum	Family N17
+		S01526	777777777760531		M. tuberculosis T1	Family N24
+		S01527	777777777760171		M. tuberculosis T1	Family N24
+		S01528	600777477413771		M. tuberculosis EAI2	Family N10
+		S01529	600377477413771		M. tuberculosis EAI2	Family N10
+		S01530	617777477413771		M. tuberculosis EAI2	Family N10
+		S01531	777730777760771		M. tuberculosis X1	Family N44
+		S01532	700077377760671		M. tuberculosis X3	Family N39
+		S01533	777777737760471		M. tuberculosis T1	Family N24
+		S01534	777777760000611		M. tuberculosis Haarlem1	Family N5
+		S01535	677777743460771		M. tuberculosis LAM10	Family N21
+		S01536	437777007720731		M. tuberculosis LAM1	Family N19
+		S01537	757777777760751		M. tuberculosis T1	Family N24
+		S01538	767737777720771		M. tuberculosis Haarlem3	Family N24
+		S01539	767700777760731		M. tuberculosis X1	Family N44
+		S01540	677777400060571		M. tuberculosis LAM8	Family N27
+		S01541	777777767413771		M. tuberculosis EAI5	Family N14
+		S01542	770003400003071		M. tuberculosis LAM7	Family N29
+		S01543	577777777413771		M. tuberculosis EAI5	Family N14
+		S01544	777777637413771		M. tuberculosis EAI5	Family N14
+		S01545	776176207760740		M. tuberculosis LAM3	Family N2
+		S01546	777600000000000		Family35	Family N29
+		S01547	777737777413700		M. tuberculosis EAI5	Family N14
+		S01548	777777377000371		M. tuberculosis Haarlem3	Family N34
+		S01549	777774000000771		M. tuberculosis LAM8	Family N29
+		S01550	777737757760771		M. tuberculosis T1	Family N24
+		S01551	376177607760731		M. tuberculosis LAM3	Family N2
+		S01552	777676776360601		M. tuberculosis X2	Family N6
+		S01553	760000077760771		M. tuberculosis T3	Family N28
+		S01554	264063777777600		M. bovis-BCG	Family N12
+		S01555	777777747411371		M. tuberculosis EAI5	Family N14
+		S01556	603777600003771		M. tuberculosis CAS	Family N8
+		S01557	700076777760711		M. tuberculosis X3	Family N20
+		S01558	117756777760771		M. tuberculosis X1	Family N44
+		S01559	757377777720771		M. tuberculosis Haarlem3	Family N24
+		S01560	677777423560771		M. tuberculosis H37Rv	Family N24
+		S01561	737777606160771		M. tuberculosis LAM9	Family N19
+		S01562	777737607703771		Family33	Family N13
+		S01563	477776777413031		M. tuberculosis EAI3	Family N1
+		S01564	177777770000000		Family34	Family N22
+		S01565	000000000003760		M. tuberculosis Beijing	Family N3
+		S01566	777763777720771		M. tuberculosis Haarlem3	Family N24
+		S01567	777737674020771		M. tuberculosis Haarlem1	Family N5
+		S01568	776177607700771		M. tuberculosis LAM3	Family N2
+		S01569	770777407560731		M. tuberculosis Haarlem3	Family N24
+		S01570	437777774320731		M. tuberculosis LAM9	Family N19
+		S01571	677577477413771		M. tuberculosis EAI2	Family N10
+		S01572	777777544320771		M. tuberculosis Haarlem3	Family N24
+		S01573	777777640020711		M. tuberculosis Haarlem1	Family N5
+		S01574	767777767760771		M. tuberculosis T1	Family N24
+		S01575	177777677760171		M. tuberculosis T1	Family N24
+		S01576	776377703760771		M. tuberculosis LAM10	Family N21
+		S01577	703776000003771		M. tuberculosis CAS	Family N15
+		S01578	777775757413371		M. tuberculosis EAI5	Family N14
+		S01579	777477776760770		M. tuberculosis T1	Family N24
+		S01580	677737607760711		M. tuberculosis LAM2	Family N19
+		S01581	741777777720771		M. tuberculosis Haarlem3	Family N24
+		S01582	777777774000771		M. tuberculosis Haarlem1	Family N5
+		S01583	740617777760771		M. tuberculosis T1	Family N24
+		S01584	737777775720771		M. tuberculosis Haarlem3	Family N24
+		S01585	170023607760771		M. tuberculosis LAM3	Family N2
+		S01586	757777700003371		M. tuberculosis EAI4	Family N14
+		S01587	701776617760601		M. tuberculosis X2	Family N6
+		S01588	770777077777671		M. africanum	Family N18
+		S01589	703000000000371		Family35	Family N29
+		S01590	000000004000011		M. tuberculosis Haarlem2	Family N25
+		S01591	777767374020771		M. tuberculosis Haarlem1	Family N5
+		S01592	773763777760771		M. tuberculosis T1	Family N24
+		S01593	677760077413771		M. tuberculosis EAI2	Family N10
+		S01594	777777207760711		M. tuberculosis LAM9	Family N19
+		S01595	777777777720700		M. tuberculosis T2	Family N30
+		S01596	777637077760771		M. tuberculosis H37Rv	Family N24
+		S01597	677777470000071		M. tuberculosis EAI1	Family N5
+		S01598	677777477413001		M. tuberculosis EAI2	Family N10
+		S01599	777437737700000		M. tuberculosis T2	Family N23
+		S01600	676023477413771		M. tuberculosis EAI2	Family N10
+		S01601	777775606060771		M. tuberculosis LAM8	Family N27
+		S01602	777776077760711		M. tuberculosis H37Rv	Family N44
+		S01603	775627477760771		M. tuberculosis H37Rv	Family N24
+		S01604(new)	777777770040771
+		S01605	677727607763771		Family33	Family N13
+		S01606	437777777760731		M. tuberculosis T1	Family N24
+		S01607	677777777420731		M. tuberculosis Haarlem3	Family N34
+		S01608	776023777003731		M. tuberculosis EAI5	Family N14
+		S01609	677437607760771		M. tuberculosis LAM2	Family N19
+		S01610	703777747700371		M. tuberculosis Haarlem3	Family N42
+		S01611	756177607760771		M. tuberculosis LAM3	Family N2
+		S01612	770000006000000		M. tuberculosis LAM7	Family N32
+		S01613	777776437760771		M. tuberculosis H37Rv	Family N44
+		S01614	673733607760771		M. tuberculosis LAM2	Family N19
+		S01615	775777607760771		M. tuberculosis LAM9	Family N19
+		S01616	777777377600471		M. tuberculosis Haarlem3	Family N24
+		S01617	700076777620671		M. tuberculosis X3	Family N20
+		S01618	377777774020771		M. tuberculosis Haarlem1	Family N5
+		S01619	703737740003171
+		S01620	377777423560771		M. tuberculosis H37Rv	Family N21
+		S01621	677727607760771		M. tuberculosis LAM2	Family N19
+		S01622	700377740003731		M. tuberculosis CAS	Family N8
+		S01624	777777777600171		M. tuberculosis Haarlem3	Family N24
+		S01625	777737777320371		M. tuberculosis Haarlem3	Family N24
+		S01626	677777777760731		M. tuberculosis T1	Family N24
+		S01627	736177600160771		M. tuberculosis LAM3	Family N2
+		S01628	703777740003751		M. tuberculosis CAS	Family N8
+		S01629	767777777760611		M. tuberculosis T2	Family N24
+		S01630	577767777320771		M. tuberculosis Haarlem3	Family N24
+		S01631	777737557760771		M. tuberculosis T1	Family N24
+		S01632	703777740003131		M. tuberculosis CAS	Family N8
+		S01633	677777477413071		M. tuberculosis EAI2	Family N10
+		S01634	777777700000171		M. tuberculosis LAM8	Family N27
+		S01635	777777400000000		M. tuberculosis EAI1	Family N22
+		S01636	177777774413371		M. tuberculosis EAI4	Family N14
+		S01637	757777777413771		M. tuberculosis EAI5	Family N14
+		S01638	777777350000371		M. tuberculosis Haarlem1	Family N5
+		S01639	777740074020771		M. tuberculosis Haarlem1	Family N16
+		S01640	770777777760760		M. tuberculosis T1	Family N24
+		S01641	677772777760771		M. tuberculosis X1	Family N44
+		S01642	776007606060731		M. tuberculosis LAM3	Family N2
+		S01643	577777774413771		M. tuberculosis EAI4	Family N14
+		S01644	676773777677200		M. bovis-BCG	Family N7
+		S01645	777777177760771		M. tuberculosis T1	Family N24
+		S01646	000000004620731		Family36	Family N32
+		S01647	777777777777711		Family33	Family N13
+		S01648	757740007420771		M. tuberculosis T4	Family N16
+		S01649	760000005720771		M. tuberculosis T3	Family N32
+		S01650	777777776720771		M. tuberculosis Haarlem3	Family N24
+		S01651	077777607760731		M. tuberculosis LAM1	Family N19
+		S01652	777777706360771		M. tuberculosis LAM9	Family N19
+		S01653	617777777413671		M. tuberculosis EAI5	Family N14
+		S01654	777430000000371		M. tuberculosis LAM8	Family N29
+		S01655	777737774413731		M. tuberculosis EAI4	Family N14
+		S01656	777777343760771		M. tuberculosis LAM10	Family N21
+		S01657	703775740000031		M. tuberculosis EAI1	Family N8
+		S01658	677736607660571		M. tuberculosis LAM2	Family N19
+		S01659	777777737777771		Family33	Family N13
+		S01660	677737607600771		M. tuberculosis LAM5	Family N38
+		S01661	777777774410171		M. tuberculosis EAI4	Family N14
+		S01662	777777607760621		M. tuberculosis LAM9	Family N19
+		S01663	777777577720771		M. tuberculosis Haarlem3	Family N24
+		S01664	703777340003771		M. tuberculosis CAS	Family N8
+		S01665	777777667760771		M. tuberculosis T1	Family N24
+		S01666	577777607760751		M. tuberculosis LAM9 	Family N19
+		S01667	637777637760771		M. tuberculosis T1	Family N24
+		S01668	777776737760571		M. tuberculosis X1	Family N44
+		S01669	677777470000771		M. tuberculosis Haarlem1	Family N5
+		S01670	377777400000771		M. tuberculosis LAM8	Family N27
+		S01671	774737777420771		M. tuberculosis Haarlem3	Family N34
+		S01672	677777607660771		M. tuberculosis LAM1	Family N19
+		S01673	703740000003760		Family35	Family N15
+		S01674	777677607760771		M. tuberculosis LAM9	Family N19
+		S01675	677767477413771		M. tuberculosis EAI2	Family N10
+		S01676	757777746000771		M. tuberculosis Haarlem1	Family N5
+		S01677	703777600000771		M. tuberculosis CAS	Family N8
+		S01678	757377777760731		M. tuberculosis T1	Family N24
+		S01679	640033777777600		M. bovis-BCG	Family N12
+		S01680	777777767777771		Family33	Family N13
+		S01681	777767777760711		M. tuberculosis T1	Family N24
+		S01682	567777400000000		Family34	Family N22
+		S01683	177777477413771		M. tuberculosis EAI2	Family N10
+		S01684	676777607760771		M. tuberculosis LAM1	Family N19
+		S01685	774777777413731		M. tuberculosis EAI5	Family N14
+		S01686	777777670020771		M. tuberculosis Haarlem1	Family N5
+		S01687	777777770760771		M. tuberculosis T1	Family N24
+		S01688	757777743460771		M. tuberculosis LAM10	Family N21
+		S01689	776363777760771		M. tuberculosis S	Family N39
+		S01690	703777640003771		M. tuberculosis CAS	Family N8
+		S01691	777777760000000		Family34	Family N22
+		S01692	000000357760771		M. tuberculosis T3	Family N40
+		S01693	477777777413731		M. tuberculosis EAI5	Family N47
+		S01694	776377777760751		M. tuberculosis S	Family N39
+		S01695	740777606000011		M. tuberculosis EAI1	Family N23
+		S01696	577777777760731		M. tuberculosis T1	Family N24
+		S01697	477777777760411		M. tuberculosis T1	Family N24
+		S01698	737377777560771		M. tuberculosis T1	Family N24
+		S01699	700774007413771		M. tuberculosis EAI5	Family N42
+		S01700	774000777760771		M. tuberculosis T3	Family N28
+		S01701	776377774020071		M. tuberculosis Haarlem1	Family N5
+		S01702	776000003660771		M. tuberculosis T3	Family N16
+		S01703	657777777760771		M. tuberculosis T1	Family N24
+		S01704	577777577720771		M. tuberculosis Haarlem3	Family N24
+		S01705	777677707760771		M. tuberculosis LAM9	Family N19
+		S01706	700377740000371		M. tuberculosis CAS	Family N8
+		S01707	777740777460771		M. tuberculosis X1	Family N44
+		S01708	777777377760731		M. tuberculosis T1	Family N24
+		S01709	700036777400731		M. tuberculosis X3	Family N20
+		S01710	770760015777471		M. africanum	Family N18
+		S01711	777777740000371		M. tuberculosis Haarlem1	Family N5
+		S01712	470777777413771		M. tuberculosis EAI5	Family N47
+		S01713	756357777760731		M. tuberculosis S	Family N39
+		S01714	777377777700171		M. tuberculosis Haarlem3	Family N24
+		S01715	577777770000000		Family34	Family N22
+		S01716	777777765720771		M. tuberculosis Haarlem3	Family N24
+		S01717	677737607700371		M. tuberculosis LAM5	Family N38
+		S01718	777437777760711		M. tuberculosis T1	Family N48
+		S01719	700377740000771		M. tuberculosis CAS	Family N8
+		S01720	776367777760771		M. tuberculosis S	Family N39
+		S01721	760037777760700		M. tuberculosis S	Family N35
+		S01723	777703607760731		M. tuberculosis LAM9	Family N19
+		S01724	777776777740371		M. tuberculosis X1	Family N44
+		S01725	777417777700000		M. tuberculosis T2	Family N23
+		S01726	776777777660771		M. tuberculosis T1	Family N24
+		S01727	777777605560731		M. tuberculosis LAM9	Family N19
+		S01728	776117607760771		M. tuberculosis LAM3	Family N2
+		S01729	777777777160031		M. tuberculosis T1	Family N24
+		S01730	777777077760771		M. tuberculosis H37Rv	Family N24
+		S01731	256433777402600		M. bovis-BCG	Family N7
+		S01732	777767777413771		M. tuberculosis EAI5	Family N14
+		S01733	777774077560571		M. tuberculosis H37Rv	Family N44
+		S01734	777777777760431		M. tuberculosis T1	Family N24
+		S01735	777777607660731		M. tuberculosis LAM9	Family N19
+		S01736	677037477413771		M. tuberculosis EAI2	Family N10
+		S01737	675777607760771		M. tuberculosis LAM1	Family N19
+		S01738	777777767760731		M. tuberculosis T1	Family N24
+		S01739	603777777760771		M. tuberculosis T1	Family N24
+		S01740	603777377760771		M. tuberculosis T1	Family N24
+		S01741	777777347760431		M. tuberculosis T1	Family N24
+		S01742	777777403660771		M. tuberculosis LAM9	Family N19
+		S01743	777647770160771		M. tuberculosis T1	Family N24
+		S01744	774077600000071		M. tuberculosis LAM8	Family N27
+		S01745	777737663560771		M. tuberculosis T1	Family N21
+		S01746	177777777420700		M. tuberculosis T2	Family N30
+		S01747	361777607760771		M. tuberculosis LAM9	Family N19
+		S01748	777637777413731		M. tuberculosis EAI5	Family N14
+		S01749	636337607760771		M. tuberculosis LAM2	Family N19
+		S01750	777776775760771		M. tuberculosis X1	Family N24
+		S01751	457777777413771		M. tuberculosis EAI5	Family N14
+		S01752	400777777720771		M. tuberculosis Haarlem3	Family N24
+		S01753	700076360000011		M. tuberculosis EAI1	Family N20
+		S01754	777737777620771		M. tuberculosis Haarlem3	Family N24
+		S01755	777777704020711		M. tuberculosis LAM8	Family N27
+		S01756	677777443413771		M. tuberculosis EAI2	Family N10
+		S01757	006377777760771		M. tuberculosis S	Family N24
+		S01758	703757740000000		Family34	Family N22
+		S01759	777730000000031		M. tuberculosis EAI1	Family N29
+		S01760	477777034020771		M. tuberculosis Haarlem1	Family N5
+		S01761	773737607060011		M. tuberculosis LAM9	Family N19
+		S01762	703777340003731		M. tuberculosis CAS	Family N8
+		S01763	777777400760731		M. tuberculosis LAM9	Family N19
+		S01764	777777606000000		M. tuberculosis EAI1	Family N23
+		S01765	737777747720751		M. tuberculosis Haarlem3	Family N24
+		S01766	776177607660771		M. tuberculosis LAM3	Family N2
+		S01767	577777756013771		M. tuberculosis EAI5	Family N14
+		S01768	700066777760771		M. tuberculosis X3	Family N20
+		S01769	477700777413071		M. tuberculosis EAI3	Family N1
+		S01770	777775607760771		M. tuberculosis LAM9	Family N19
+		S01771	777777600160771		M. tuberculosis LAM9	Family N19
+		S01772	771777777760720		M. tuberculosis T1	Family N24
+		S01773	703771740003771		M. tuberculosis CAS	Family N8
+		S01774	777703437760771		M. tuberculosis H37Rv	Family N24
+		S01775	777777777740671		M. tuberculosis T1	Family N24
+		S01776	700016777760771		M. tuberculosis X3	Family N20
+		S01777	703717600000771		M. tuberculosis CAS	Family N8
+		S01778	477377777413071		M. tuberculosis EAI3	Family N1
+		S01779	577777663560711		M. tuberculosis T1	Family N24
+		S01780	777600007560771		M. tuberculosis T4	Family N16
+		S01781	777001377760771		M. tuberculosis T3	Family N24
+		S01782	700377000000771		M. tuberculosis CAS	Family N15
+		S01783	703777340003031		M. tuberculosis CAS	Family N8
+		S01784	777700007720771		M. tuberculosis T4	Family N16
+		S01785	677767457413771		M. tuberculosis EAI2	Family N10
+		S01786	777077077413700		M. tuberculosis EAI5	Family N10
+		S01787	773777700020771		M. tuberculosis LAM8	Family N27
+		S01788	764000040000371		M. tuberculosis LAM7	Family N29
+		S01789	700036777740000		M. tuberculosis X3	Family N20
+		S01790	703757740003071		M. tuberculosis CAS	Family N8
+		S01791	776177607000771		M. tuberculosis LAM3	Family N2
+		S01792	776377774020731		M. tuberculosis Haarlem1	Family N5
+		S01793	700737777760771		M. tuberculosis T1	Family N24
+		S01794	200001777777600		M. bovis-BCG	Family N12
+		S01795	677727607700771		M. tuberculosis LAM5	Family N38
+		S01796	777774074060771		M. tuberculosis Haarlem1	Family N5
+		S01797	477737777420771		M. tuberculosis Haarlem3	Family N34
+		S01798	740077777777331		Family33	Family N13
+		S01799	777776057760771		M. tuberculosis H37Rv	Family N44
+		S01800	775377777760771		M. tuberculosis T1	Family N24
+		S01801	757777677320771		M. tuberculosis Haarlem3	Family N24
+		S01802	677767607740771		M. tuberculosis LAM1	Family N19
+		S01803	757777760000011		M. tuberculosis EAI1	Family N22
+		S01804	457001777413771		M. tuberculosis EAI5	Family N47
+		S01805	707777347760431		M. tuberculosis T1	Family N24
+		S01806	777377700003531		M. tuberculosis EAI4	Family N14
+		S01807	637777774020771		M. tuberculosis Haarlem1	Family N5
+		S01808	477577777413071		M. tuberculosis EAI3	Family N1
+		S01809	577777757413731		M. tuberculosis EAI5	Family N14
+		S01810	777777777760071		M. tuberculosis T1	Family N24
+		S01811	677777400760771		M. tuberculosis LAM1	Family N19
+		S01812	777777663600771		M. tuberculosis Haarlem3	Family N24
+		S01813	777767777020771		M. tuberculosis Haarlem3	Family N34
+		S01814	240063777777600		M. bovis-BCG	Family N12
+		S01815	770000037760711		M. tuberculosis T3	Family N28
+		S01816	703747740003771		M. tuberculosis CAS	Family N8
+		S01817	777766777760731		M. tuberculosis X1	Family N44
+		S01818	777417606060731		M. tuberculosis LAM8	Family N27
+		S01819	607777700003771		M. tuberculosis CAS	Family N8
+		S01820	777777700000611		M. tuberculosis LAM8	Family N27
+		S01821	400077777760771		M. tuberculosis X3	Family N39
+		S01822	000000077560771		M. tuberculosis T3	Family N40
+		S01823	777777761760771		M. tuberculosis T1	Family N24
+		S01824	777777304020771		M. tuberculosis LAM8	Family N27
+		S01825	500066777760771		M. tuberculosis X3	Family N20
+		S01826	757777607560771		M. tuberculosis LAM9	Family N19
+		S01827	777777605560771		M. tuberculosis LAM9	Family N19
+		S01828	776777743413331		M. tuberculosis EAI5	Family N14
+		S01829	777776343760771		M. tuberculosis LAM10	Family N21
+		S01830	677777477410771		M. tuberculosis EAI2	Family N10
+		S01831	777477777760771		M. tuberculosis T1	Family N24
+		S01832	776174400000171		M. tuberculosis LAM7	Family N29
+		S01833	377777770020731		M. tuberculosis Haarlem1	Family N5
+		S01834	700377740001740		M. tuberculosis CAS	Family N8
+		S01835	777700077720771		M. tuberculosis H37Rv	Family N16
+		S01836	671737607760771		M. tuberculosis LAM2	Family N19
+		S01837	460060000000771		M. tuberculosis LAM7	Family N29
+		S01838	677777750403371		M. tuberculosis EAI4	Family N14
+		S01839	077777757413371		M. tuberculosis EAI5	Family N47
+		S01840	737777764020771		M. tuberculosis Haarlem1	Family N5
+		S01841	770777777777631		M. africanum	Family N18
+		S01842	777776057613371		Family33	Family N13
+		S01843	777777740020771		M. tuberculosis Haarlem1	Family N5
+		S01844	703777747000371		M. tuberculosis Haarlem3	Family N42
+		S01845	400000001760771		Family36	Family N32
+		S01846	777436000000371		M. tuberculosis LAM8	Family N29
+		S01847	777637777720771		M. tuberculosis Haarlem3	Family N24
+		S01848	700036777760761		M. tuberculosis X3	Family N20
+		S01849	770777777567671		M. africanum	Family N18
+		S01850	000000000003601		M. tuberculosis Beijing	Family N3
+		S01851	777777737740071		M. tuberculosis T1	Family N24
+		S01852	177774777413731		M. tuberculosis EAI5	Family N14
+		S01853	703777700000171		M. tuberculosis CAS	Family N8
+		S01854	703776540003731		M. tuberculosis CAS	Family N8
+		S01855	777373777720771		M. tuberculosis Haarlem3	Family N24
+		S01856	700377700001771		M. tuberculosis CAS	Family N8
+		S01857	770003607777071		M. africanum	Family N17
+		S01858	777777700360731		M. tuberculosis LAM10	Family N21
+		S01859	703763740003771		M. tuberculosis CAS	Family N8
+		S01860	777777777720631		M. tuberculosis Haarlem3	Family N24
+		S01861	776177607760700		M. tuberculosis LAM3	Family N2
+		S01862	757400004020771		M. tuberculosis T4	Family N16
+		S01863	743760047700771		M. tuberculosis T4	Family N16
+		S01864	401777777410071		M. tuberculosis EAI3	Family N1
+		S01865	677377477413771		M. tuberculosis EAI2	Family N10
+		S01866	557740777740731		M. tuberculosis X1	Family N44
+		S01867	777777760560771		M. tuberculosis T1	Family N24
+		S01868	777736770000000		Family34	Family N22
+		S01869	774777777460771		M. tuberculosis T1	Family N24
+		S01870	600000360000011		M. tuberculosis EAI1	Family N40
+		S01871	777777477773771		Family33	Family N13
+		S01872	777737737760731		M. tuberculosis T1	Family N48
+		S01873	703761740001371		M. tuberculosis CAS	Family N8
+		S01874	476773777677600		M. bovis-BCG	Family N7
+		S01875	777777777003731		M. tuberculosis EAI5	Family N14
+		S01876	437777777420771		M. tuberculosis Haarlem3	Family N34
+		S01877	637777607760431		M. tuberculosis LAM1	Family N19
+		S01878	777777774000000		M. tuberculosis EAI1	Family N23
+		S01879	777777774413071		M. tuberculosis EAI4	Family N14
+		S01880	777777607740371		M. tuberculosis LAM9	Family N19
+		S01881	777777607520771		M. tuberculosis LAM9	Family N19
+		S01882	717777777413771		M. tuberculosis EAI5	Family N14
+		S01883	437577777720771		M. tuberculosis Haarlem3	Family N24
+		S01884	777777774120771		M. tuberculosis Haarlem3	Family N24
+		S01885	757677777720771		M. tuberculosis Haarlem3	Family N24
+		S01886	777777777740051		M. tuberculosis T1	Family N24
+		S01887	774077730001071		M. africanum	Family N17
+		S01888	777777607777731		Family33	Family N13
+		S01889	777737777413671		M. tuberculosis EAI5	Family N14
+		S01890	777760007413371		M. tuberculosis EAI2	Family N10
+		S01891	777777417413731		M. tuberculosis EAI2	Family N10
+		S01892	776177607760631		M. tuberculosis LAM3	Family N2
+		S01893	700000000020771		M. tuberculosis LAM7	Family N25
+		S01894	000777607760771		M. tuberculosis LAM1	Family N9
+		S01895	775777777700771		M. tuberculosis Haarlem3	Family N24
+		S01896	777400004020771		M. tuberculosis T4	Family N16
+		S01897	740000000020771		M. tuberculosis LAM7	Family N25
+		S01898	777766777413731		M. tuberculosis EAI5	Family N14
+		S01899	416367607740731		M. tuberculosis LAM1	Family N19
+		S01900	703777740003770		M. tuberculosis CAS	Family N8
+		S01901	636377607760731		M. tuberculosis LAM1	Family N19
+		S01902	777737607500771		M. tuberculosis LAM5	Family N38 
+		S01903	003777777760731		M. tuberculosis T1	Family N24
+		S01904	077777017774001		Family33	Family N13
+		S01905	774077777760771		M. tuberculosis S	Family N39
+		S01906	777557737760771		M. tuberculosis T1	Family N24
+		S01907	460003777413071		M. tuberculosis EAI3	Family N1 
+		S01908	777776003760771		M. tuberculosis LAM9	Family N19
+		S01909	377777607760731		M. tuberculosis LAM9 	Family N19
+		S01910	757761607760771		M. tuberculosis LAM9	Family N19
+		S01911	740007606760771		M. tuberculosis LAM3	Family N2
+		S01912	777757760000000		Family34	Family N22 
+		S01913	000007737760771		M. tuberculosis X3	Family N9
+		S01914	757721607760771		M. tuberculosis LAM9	Family N19
+		S01915	770176770000000		Family34	Family N22
+		S01916	677737604060771		M. tuberculosis LAM8	Family N27
+		S01917	777777743760751		M. tuberculosis LAM10	Family N21
+		S01918	636177607760771		M. tuberculosis LAM3	Family N2
+		S01919	000000000003571		M. tuberculosis Beijing	Family N3
+		S01920	703637740003371		M. tuberculosis CAS	Family N8
+		S01921	743774077560731		M. tuberculosis H37Rv	Family N24
+		S01922	703776040003571		M. tuberculosis CAS	Family N8
+		S01923	777600000000771		Family35	Family N29
+		S01924	577737735760771		M. tuberculosis T1	Family N24
+		S01925	774777777020771		M. tuberculosis Haarlem3	Family N24
+		S01926	777777377413511		M. tuberculosis EAI5	Family N14
+		S01927	700076776760771		M. tuberculosis X3 	Family N20
+		S01928	077727777760771		M. tuberculosis T1	Family N24
+		S01929	737776377760731		M. tuberculosis X1	Family N44
+		S01930	677777477413000		M. tuberculosis EAI2	Family N10
+		S01931	700077777777671		M. africanum	Family N18
+		S01932	000000004000731		M. tuberculosis Haarlem2	Family N25
+		S01933	477776377413571		M. tuberculosis EAI5	Family N47
+		S01934	700076770000071		M. tuberculosis X3 	Family N20
+		S01935	477777477013671		M. tuberculosis EAI2	Family N10
+		S01936	503777740003771		M. tuberculosis CAS	Family N8
+		S01937	776000001760771		M. tuberculosis T4	Family N16
+		S01938	636377607660771		M. tuberculosis LAM1	Family N19
+		S01939	703743740003771		M. tuberculosis CAS	Family N8
+		S01940	777777777560031		M. tuberculosis T1	Family N24
+		S01941	777777001013371		M. tuberculosis EAI2	Family N14
+		S01942	777676760000000		Family34	Family N22
+		S01943	777737607763771		Family33	Family N13 
+		S01944	674777600000000		Family34	Family N22
+		S01945	677717607760771		M. tuberculosis LAM2	Family N19 
+		S01946	777777747003771		M. tuberculosis EAI5	Family N14
+		S01947	777776776160601		M. tuberculosis X2	Family N6 
+		S01948	707776004360471		M. tuberculosis LAM9	Family N19
+		S01949	777776177760601		M. tuberculosis X2 	Family N6
+		S01950	675777470003771		M. tuberculosis EAI2	Family N10
+		S01951	777777603413700		M. tuberculosis EAI5	Family N14
+		S01952	777777776760730		M. tuberculosis T1	Family N24
+		S01953	777777607360771		M. tuberculosis LAM9	Family N19
+		S01954	677763777760771		M. tuberculosis T1	Family N24
+		S01955	474000000003031		Family35 	Family N41
+		S01956	600000377740271		M. tuberculosis T3	Family N40
+		S01957	637774777740130		M. tuberculosis X1	Family N44 
+		S01958	177700000001430		Family35	Family N29
+		S01959	600377740003771		M. tuberculosis CAS	Family N8
+		S01960	777777607740771		M. tuberculosis LAM9	Family N19
+		S01961	777777744020171		M. tuberculosis Haarlem1	Family N5
+		S01962	777777610003371		M. tuberculosis EAI4	Family N14
+		S01963	037700777760771		M. tuberculosis X1	Family N44
+		S01964	777777735760771		M. tuberculosis T1	Family N24
+		S01965	737737607760771		M. tuberculosis LAM9	Family N19
+		S01966	700077777760771		M. tuberculosis X3	Family N39
+		S01967	777777776760700		M. tuberculosis T2	Family N30
+		S01968	777777757777771		Family33	Family N13 
+		S01969	437737777413071		M. tuberculosis EAI3	Family N1
+		S01970	776163400000171		M. tuberculosis LAM7	Family N29
+		S01971	637774677760730		M. tuberculosis X1	Family N24 
+		S01972	703775740003571		M. tuberculosis CAS	Family N8
+		S01973	703777540000171		M. tuberculosis CAS	Family N8 
+		S01974	757776777000000		M. tuberculosis EAI1	Family N23
+		S01975	770777707077651		M. africanum	Family N18
+		S01976	176000000000171		M. tuberculosis LAM7	Family N29
+		S01977	777777777560731		M. tuberculosis T1	Family N24
+		S01978	677777777413731		M. tuberculosis EAI5	Family N14
+		S01979	377777700003371		M. tuberculosis EAI4	Family N14
+		S01980	770777707773671		M. africanum	Family N18
+		S01981	767776000760731		M. tuberculosis EAI2	Family N10
+		S01982	677607477413771		M. tuberculosis EAI2	Family N10
+		S01983	703637740001771		M. tuberculosis CAS	Family N8 
+		S01984	403617757413771		M. tuberculosis EAI5	Family N47 
+		S01985	677757607760771		M. tuberculosis LAM1	Family N19
+		S01986	703757740003771		M. tuberculosis CAS 	Family N8
+		S01987	703357740003771		M. tuberculosis CAS	Family N8
+		S01988	777476777760771		M. tuberculosis X1	Family N44
+		S01989	777617607760771		M. tuberculosis LAM9	Family N19
+		S01990	775777777413771		M. tuberculosis EAI5	Family N14 
+		S01991	777777604360731		M. tuberculosis LAM9	Family N19
+		S01992	777777747763771		Family33	Family N13
+		S01993	677777477413311		M. tuberculosis EAI2	Family N10 
+		S01994	777774377760571		M. tuberculosis X1	Family N44 
+		S01995	756177400000171		M. tuberculosis LAM7	Family N29 
+		S01996	777740377760671		M. tuberculosis X1	Family N44 
+		S01997	570003777420771		M. tuberculosis T3	Family N34
+		S01998	700577747413771		M. tuberculosis EAI5	Family N42
+		S01999	703763740003171		M. tuberculosis CAS	Family N8
+		S02000	177737777760771		M. tuberculosis T1	Family N24
+		S02001	776777403760771		M. tuberculosis LAM9	Family N19
+		S02002	000000007760471		Family36 	Family N32
+		S02003	777677777413700		M. tuberculosis EAI5	Family N14 
+		S02004	637577760020171		M. tuberculosis Haarlem1 	Family N5
+		S02005	477777717413071		M. tuberculosis EAI3 	Family N1
+		S02006	777776000000771		M. tuberculosis LAM8	Family N27
+		S02007	777777760023771		Family33	Family N13
+		S02008	777777607760600		M. tuberculosis LAM9	Family N19
+		S02009	747776777760601		M. tuberculosis X2	Family N6
+		S02010	774000007760771		M. tuberculosis T3	Family N28 
+		S02011	576177607760771		M. tuberculosis LAM3	Family N2
+		S02012	676777477613751		Family33 	Family N10
+		S02013	677777477413571		M. tuberculosis EAI2	Family N10
+		S02014	701777600003771		M. tuberculosis CAS	Family N8 
+		S02015	577737777760731		M. tuberculosis T1	Family N48 
+		S02016	777777770000371		M. tuberculosis Haarlem1	Family N5 
+		S02017	477776077411671		M. tuberculosis EAI2 	Family N10 
+		S02019	677777750403771		M. tuberculosis EAI4 	Family N14 
+		S02020	776377730000731		M. tuberculosis Haarlem1	Family N5
+		S02021	676000037413771		M. tuberculosis EAI2	Family N10
+		S02022	756603777760731		M. tuberculosis T1	Family N48 
+		S02023	677776077413771		M. tuberculosis EAI2	Family N10
+		S02024	376177600360771		M. tuberculosis LAM3 	Family N2
+		S02025	777777770003331		M. tuberculosis EAI4 	Family N14
+		S02026	777700074413771		M. tuberculosis EAI4	Family N14 
+		S02027	370160207760771		M. tuberculosis LAM3	Family N2
+		S02028	777700777760771		M. tuberculosis X1	Family N44
+		S02029	737777606360771		M. tuberculosis LAM9	Family N19
+		S02030	777777777000011		M. tuberculosis EAI1	Family N23 
+		S02031	777777776160771		M. tuberculosis T1	Family N24
+		S02032	777777606760700		M. tuberculosis LAM9	Family N19
+		S02033	740001607760771		M. tuberculosis T3 	Family N2
+		S02034	000000007320771		Family36	Family N32
+		S02035	777777757413331		M. tuberculosis EAI5	Family N14
+		S02036	777777700020731		M. tuberculosis LAM8	Family N27
+		S02037	777400777760601		M. tuberculosis X2	Family N6
+		S02038	770037343760771		M. tuberculosis S	Family N39
+		S02039	000000007000071		Family36	Family N32
+		S02040	777777745720771		M. tuberculosis Haarlem3 	Family N24 
+		S02041	464377777413771		M. tuberculosis EAI5	Family N47
+		S02042	677737207760771		M. tuberculosis LAM2	Family N19 
+		S02043	740000077760071		M. tuberculosis T3	Family N28
+		S02044	677737607660600		M. tuberculosis LAM2 	Family N19
+		S02045	776777607760771		M. tuberculosis LAM9	Family N19
+		S02046	677577607760771		M. tuberculosis LAM1	Family N19
+		S02047	703477740003771		M. tuberculosis CAS	Family N8
+		S02048	376100207760771		M. tuberculosis LAM3	Family N2
+		S02049	776177707760771		M. tuberculosis S 	Family N39
+		S02050	777760776720771		M. tuberculosis Haarlem3	Family N24 
+		S02051	703777740003631		M. tuberculosis CAS	Family N8
+		S02052	777777377413731		M. tuberculosis EAI5	Family N14
+		S02053	777777077720771		M. tuberculosis H37Rv	Family N24
+		S02054	467777377413771		M. tuberculosis EAI5	Family N47 
+		S02056	776177400160771		M. tuberculosis LAM3 	Family N2
+		S02057	777777777740300		M. tuberculosis T2 	Family N30
+		S02058	700377077777671		M. africanum	Family N18
+		S02059	703777740003671		M. tuberculosis CAS	Family N8 
+		S02060	700377600000771		M. tuberculosis CAS	Family N8
+		S02061	700140007774631		M. africanum	Family N42 
+		S02062	777767347760471		M. tuberculosis T1	Family N24 
+		S02063	777777777413531		M. tuberculosis EAI5	Family N14
+		S02064	007777777760771		M. tuberculosis T1	Family N24
+		S02065	477717777760771		M. tuberculosis T1 	Family N24
+		S02066	710777777777671		M. africanum	Family N18 
+		S02067	006377774360771		M. tuberculosis S	Family N39
+		S02069	017777774020771		M. tuberculosis Haarlem1	Family N5 
+		S02070	774077607761031		M. africanum 	Family N17
+		S02071	000002777760771		M. tuberculosis X3	Family N20
+		S02072	777776407760631		M. tuberculosis LAM9	Family N19 
+		S02073	703677740000771		M. tuberculosis CAS	Family N8
+		S02074	703760000000331		M. tuberculosis CAS	Family N29
+		S02075	773777757413371		M. tuberculosis EAI5	Family N14 
+		S02076	000000077760751		M. tuberculosis T3 	Family N40
+		S02077	677777607760171		M. tuberculosis LAM1 	Family N19
+		S02078	000000004000771		M. tuberculosis Haarlem2	Family N25 
+		S02079	777576777760571		M. tuberculosis X1	Family N44
+		S02080	667777477413731		M. tuberculosis EAI2	Family N10 
+		S02081	777700607760771		M. tuberculosis LAM9	Family N19
+		S02082	477777377413071		M. tuberculosis EAI3 	Family N1 
+		S02083	776100207740771		M. tuberculosis LAM3	Family N2 
+		S02084	777737600020731		M. tuberculosis LAM8	Family N27 
+		S02085	777777607420771		M. tuberculosis LAM9	Family N19
+		S02086	746177607760731		M. tuberculosis LAM3	Family N2
+		S02087	777617750413371		M. tuberculosis EAI4	Family N14
+		S02088	661777477413771		M. tuberculosis EAI2	Family N10
+		S02089	677777403413771		M. tuberculosis EAI2	Family N10
+		S02090	457777757413071		M. tuberculosis EAI3	Family N1
+		S02091	607777477413771		M. tuberculosis EAI2	Family N10
+		S02092	677777447413771		M. tuberculosis EAI2	Family N10
+		S02093	277777737760731		M. tuberculosis T1	Family N24
+		S02094	777717777413731		M. tuberculosis EAI5	Family N14
+		S02095	700076777400771		M. tuberculosis X3	Family N20
+		S02096	777377707413371		M. tuberculosis EAI5	Family N14
+		S02097	777776007720771		M. tuberculosis LAM9	Family N19
+		S02098	777777577720731		M. tuberculosis Haarlem3	Family N24
+		S02099	300036777760671		M. tuberculosis X3	Family N20 
+		S02100	777776775720771		M. tuberculosis Haarlem3 	Family N24
+		S02101	577777777420731		M. tuberculosis Haarlem3 	Family N34
+		S02102	740000001720731		M. tuberculosis T3	Family N32
+		S02103	376177607760711		M. tuberculosis LAM3 	Family N2
+		S02104	703717740000171		M. tuberculosis CAS 	Family N8
+		S02105	000000007760571		Family36 	Family N32
+		S02106	777777437760371		M. tuberculosis H37Rv	Family N24
+		S02107	703777700000771		M. tuberculosis CAS	Family N8
+		S02108	737776407760601		M. tuberculosis LAM4	Family N4
+		S02109	740777677760771		M. tuberculosis T1	Family N24
+		S02110	677337607760771		M. tuberculosis LAM2 	Family N19
+		S02111	777577606760771		M. tuberculosis LAM9	Family N19 
+		S02112	777776757413031		M. tuberculosis EAI5	Family N14 
+		S02113	477577777720771		M. tuberculosis Haarlem3	Family N24
+		S02114	777777757413301		M. tuberculosis EAI5	Family N14
+		S02115	777777741760771		M. tuberculosis LAM10 	Family N21
+		S02116	777277777700771		M. tuberculosis Haarlem3 	Family N24 
+		S02117	777777607620771		M. tuberculosis LAM9	Family N19 
+		S02118	777777700120771		M. tuberculosis LAM10 	Family N21
+		S02119	377737607560771		M. tuberculosis LAM9	Family N19 
+		S02120	702000007760771		M. tuberculosis T3	Family N28
+		S02121	776177606760771		M. tuberculosis LAM3	Family N2
+		S02122	677737401760771		M. tuberculosis LAM2	Family N19 
+		S02123	177577577760771		M. tuberculosis T1 	Family N24 
+		S02124	777777557777771		Family33	Family N13
+		S02125	763777777420771		M. tuberculosis Haarlem3	Family N34
+		S02126	000003777760771		M. tuberculosis X3	Family N9 
+		S02127	664073770003600		M. bovis-BCG	Family N12
+		S02128	777756777760771		M. tuberculosis X1	Family N44
+		S02129	437700777760731		M. tuberculosis X1	Family N44
+		S02130	777740607760731		M. tuberculosis LAM9	Family N19
+		S02131	777777357413371		M. tuberculosis EAI5	Family N14
+		S02132	776777700003371		M. tuberculosis EAI4	Family N14 
+		S02133	003777740000611		M. tuberculosis CAS	Family N8
+		S02134	770000377760771		M. tuberculosis T3 	Family N28
+		S02135	770777404177671		M. africanum	Family N18 
+		S02136	777777764320771		M. tuberculosis Haarlem3 	Family N24
+		S02137	677617777777771		Family33	Family N13
+		S02138	777777557060771		M. tuberculosis T1 	Family N24 
+		S02139	777603377760771		M. tuberculosis T1 	Family N24
+		S02140	337001777413731		M. tuberculosis EAI5	Family N14
+		S02141	777777743660771		M. tuberculosis LAM10 	Family N21
+		S02142	777740077560771		M. tuberculosis H37Rv	Family N16 
+		S02143	477777777720711		M. tuberculosis Haarlem3 	Family N24 
+		S02144	577767600100771		M. tuberculosis LAM9	Family N19
+		S02145	776177607760671		M. tuberculosis LAM3	Family N2
+		S02146	776377077760771		M. tuberculosis H37Rv	Family N39
+		S02147	776017607760731		M. tuberculosis LAM3	Family N2
+		S02148	477737777413071		M. tuberculosis EAI3 	Family N1
+		S02149	777703757760771		M. tuberculosis T1 	Family N24
+		S02150	674077477413731		M. tuberculosis EAI2	Family N10
+		S02151	777417707700000		M. tuberculosis T2	Family N23
+		S02152	657777477413701		M. tuberculosis EAI2	Family N10
+		S02153	777737743420771		M. tuberculosis LAM10	Family N34
+		S02154	700377740003711		M. tuberculosis CAS	Family N8
+		S02155	707737777760771		M. tuberculosis T1	Family N24
+		S02156	776177000020771		M. tuberculosis LAM8	Family N27
+		S02157	777777763660731		M. tuberculosis T1	Family N24 
+		S02158	777777607000000		M. tuberculosis EAI1	Family N23
+		S02159	677777770000000		Family34 	Family N22
+		S02160	577777750003771		M. tuberculosis EAI4	Family N14
+		S02161	777767777700171		M. tuberculosis Haarlem3 	Family N24 
+		S02162	777777607720751		M. tuberculosis LAM9	Family N19 
+		S02163	407760001760771		M. tuberculosis T4	Family N16 
+		S02164	737776777760711		M. tuberculosis X1	Family N44
+		S02165	471777337760771		M. tuberculosis T1	Family N24 
+		S02166	777617777777777		na	na
+		S02167	700036077760771		M. tuberculosis X3	Family N20
+		S02168	417777607660771		M. tuberculosis LAM1 	Family N19 
+		S02169	000771607760771		M. tuberculosis LAM1	Family N9
+		S02170	776373777760771		M. tuberculosis S	Family N39
+		S02171	476377717760771		M. tuberculosis S 	Family N39
+		S02172	777760777760731		M. tuberculosis X1	Family N44
+		S02173	664073777300600		M. bovis-BCG	Family N12
+		S02174	767777774413771		M. tuberculosis EAI4	Family N14 
+		S02175	477777774013071		M. tuberculosis EAI3	Family N1
+		S02176	740000007760731		M. tuberculosis T3	Family N32
+		S02177	776177777760731		M. tuberculosis S	Family N39
+		S02178	401777606060771		M. tuberculosis LAM8	Family N27
+		S02179	737740007760731		M. tuberculosis T4	Family N16 
+		S02180	743777777700000		M. tuberculosis T2 	Family N23
+		S02181	777777750013371		M. tuberculosis EAI4	Family N14 
+		S02182	777774077760771		M. tuberculosis H37Rv	Family N44
+		S02183	703777600003571		M. tuberculosis CAS	Family N8
+		S02184	777761774020731		M. tuberculosis Haarlem1	Family N5 
+		S02185	777776377760601		M. tuberculosis X2	Family N6
+		S02186	703377600003771		M. tuberculosis CAS	Family N8
+		S02187	677737607700331		M. tuberculosis LAM5	Family N38
+		S02188	577767777760471		M. tuberculosis T1	Family N24
+		S02189	477737777413771		M. tuberculosis EAI5 	Family N47
+		S02190	600000007413771		Family36	Family N40
+		S02191	777777000003371		M. tuberculosis EAI4	Family N14 
+		S02192	437763777720771		M. tuberculosis Haarlem3	Family N24
+		S02193	303740740003771		M. tuberculosis CAS	Family N8
+		S02194	577777777413700		M. tuberculosis EAI5	Family N14 
+		S02195	700017740003771		M. tuberculosis CAS	Family N8
+		S02196	777742777760771		M. tuberculosis X1	Family N44
+		S02197	703776000000771		M. tuberculosis CAS 	Family N15
+		S02198	667737607760700		M. tuberculosis LAM2 	Family N19
+		S02199	760777777760771		M. tuberculosis T1 	Family N24
+		S02200	703777440003771		M. tuberculosis CAS	Family N8
+		S02201	777776777413731		M. tuberculosis EAI5	Family N14 
+		S02202	761777777720771		M. tuberculosis Haarlem3 	Family N24
+		S02203	477777703413071		M. tuberculosis EAI3	Family N1
+		S02204	177777760020771		M. tuberculosis Haarlem1	Family N5 
+		S02205	177777657760771		M. tuberculosis T1	Family N24
+		S02206	777777663560731		M. tuberculosis T1	Family N24
+		S02207	677777477413471		M. tuberculosis EAI2	Family N10
+		S02208	777777570020731		M. tuberculosis Haarlem1	Family N5
+		S02209	770377774020771		M. tuberculosis Haarlem1	Family N5
+		S02210	777577777720771		M. tuberculosis Haarlem3 	Family N24 
+		S02211	677777777700000		M. tuberculosis T2	Family N23
+		S02212	737737707760771		M. tuberculosis LAM9	Family N19
+		S02213	657777607760731		M. tuberculosis LAM1	Family N19
+		S02214	777777777760001		M. tuberculosis T2	Family N24
+		S02215	740777757413371		M. tuberculosis EAI5	Family N14 
+		S02216	703777740002001		M. tuberculosis CAS	Family N8
+		S02217	777743777320771		M. tuberculosis Haarlem3	Family N24
+		S02218	717777643740771		M. tuberculosis LAM10	Family N21
+		S02219	603757740000771		M. tuberculosis CAS	Family N8
+		S02220	700377700001751		M. tuberculosis CAS	Family N8
+		S02221	000000000003400		M. tuberculosis Beijing	Family N3
+		S02222	777700000020771		M. tuberculosis T4 	Family N16 
+		S02223	403777477413771		M. tuberculosis EAI2	Family N10
+		S02224	700000007413371		Family36 	Family N40
+		S02225	777777777740731		M. tuberculosis T1	Family N24 
+		S02226	777776617760601		M. tuberculosis X2	Family N6
+		S02227	777763777760731		M. tuberculosis T1 	Family N24
+		S02228	777777757013371		M. tuberculosis EAI5 	Family N14
+		S02229	777737607700771		M. tuberculosis LAM5	Family N38
+		S02230	677777777773771		Family33	Family N13
+		S02231	776377743760771		M. tuberculosis LAM10 	Family N21
+		S02232	677757477413701		M. tuberculosis EAI2	Family N10
+		S02233	677777437413771
+		S02234	676773777777771		Family33	Family N13
+		S02235	577717777760771		M. tuberculosis T1	Family N24 
+		S02236	736377777760771		M. tuberculosis S	Family N39
+		S02237	777767750403371		M. tuberculosis EAI4 	Family N14 
+		S02238	000000000000740		M. tuberculosis Beijing family	Family N3
+		S02239	637777477413771		M. tuberculosis EAI2	Family N10
+		S02240	677777477410071		M. tuberculosis EAI2 	Family N10
+		S02241	700000140003771		M. tuberculosis CAS 	Family N40
+		S02242	400177777413071		M. tuberculosis EAI3	Family N1
+		S02243	774377777760731		M. tuberculosis S 	Family N39
+		S02244	777640007760731		M. tuberculosis T4	Family N16
+		S02245	700000007177740		Family36 	Family N40
+		S02246	377777737760771		M. tuberculosis T1	Family N24
+		S02247	003777760000071		M. tuberculosis Haarlem1 	Family N5
+		S02248	777737777777731		Family33	Family N13
+		S02249	747737607760771		M. tuberculosis LAM9	Family N19
+		S02250	677777476003771		M. tuberculosis EAI2 	Family N10 
+		S02251	777737774060771		M. tuberculosis Haarlem1	Family N5 
+		S02252	777773677560771		M. tuberculosis T1	Family N24
+		S02253	677707477413771		M. tuberculosis EAI2	Family N10 
+		S02254	761777607760771		M. tuberculosis LAM9	Family N19 
+		S02255	777377747760711		M. tuberculosis T1	Family N24
+		S02256	777777700003331		M. tuberculosis EAI4	Family N14
+		S02257	675377477413771		M. tuberculosis EAI2 	Family N10
+		S02258	771077607777071		M. africanum	Family N17 
+		S02259	503777740003171		M. tuberculosis CAS	Family N8 
+		S02260	777777037320771		M. tuberculosis H37Rv	Family N24 
+		S02261	703737740003011		M. tuberculosis CAS	Family N8
+		S02262	000000000000001		M. tuberculosis Beijing	Family N3
+		S02263	677400607760771		M. tuberculosis LAM2	Family N19 
+		S02264	677777477410051		M. tuberculosis EAI2 	Family N10
+		S02265	633740003760771		M. tuberculosis T4	Family N16
+		S02266	777757770020771		M. tuberculosis Haarlem1	Family N5
+		S02267	777777703760771		M. tuberculosis LAM10	Family N21
+		S02268	000377774020771		M. tuberculosis Haarlem1	Family N9
+		S02269	777677774020731		M. tuberculosis Haarlem1	Family N5 
+		S02270	757603777760731		M. tuberculosis T1	Family N48 
+		S02271	703775700000171		M. tuberculosis CAS	Family N8
+		S02272	777776777740771		M. tuberculosis X1	Family N44
+		S02273	003777740000071		M. tuberculosis CAS	Family N8
+		S02274	777577777720751		M. tuberculosis Haarlem3	Family N24 
+		S02275	777777777400071		M. tuberculosis Haarlem3	Family N34
+		S02276	701777440003771		M. tuberculosis CAS	Family N8
+		S02277	736377763760771		M. tuberculosis S	Family N39 
+		S02278	777777777760601		M. tuberculosis T2	Family N24
+		S02279	377703077760771		M. tuberculosis H37Rv	Family N24
+		S02280	677777477413611		M. tuberculosis EAI2	Family N10
+		S02281	737776777760771		M. tuberculosis X1 	Family N44
+		S02282	777603774360771		M. tuberculosis T1	Family N24
+		S02283	777777606060471		M. tuberculosis LAM8	Family N27
+		S02284	017637777760771		M. tuberculosis T1	Family N24 
+		S02285	777777677413731		M. tuberculosis EAI5	Family N14
+		S02286	674017477413771		M. tuberculosis EAI2	Family N10
+		S02287	775777777760771		M. tuberculosis T1	Family N24
+		S02288	377737607760771		M. tuberculosis LAM9	Family N19
+		S02289	776737777760751		M. tuberculosis T1 	Family N24 
+		S02290	677477477413771		M. tuberculosis EAI2 	Family N10 
+		S02291	037700777720771		M. tuberculosis Haarlem3	Family N24 
+		S02292	777777777360731		M. tuberculosis T1	Family N24 
+		S02293	000000007740371		Family36	Family N32
+		S02294	777400007760771		M. tuberculosis T4	Family N16 
+		S02295	000000207760771		Family36	Family N32
+		S02296	477777777003771		M. tuberculosis EAI5	Family N47
+		S02297	737737777760771		M. tuberculosis T1	Family N24
+		S02298	077767477413771		M. tuberculosis EAI2 	Family N10
+		S02299	777776764020771		M. tuberculosis Haarlem1	Family N5
+		S02300	673777607760711		M. tuberculosis LAM1	Family N19
+		S02301	617777607760771		M. tuberculosis LAM1 	Family N19 
+		S02302	777737700003371		M. tuberculosis EAI4	Family N14 
+		S02303	777737777740371		M. tuberculosis T1	Family N24
+		S02304	717777777760731		M. tuberculosis T1	Family N24
+		S02305	477737777720771		M. tuberculosis Haarlem3	Family N24
+		S02306	777776777760001		M. tuberculosis X2 	Family N6
+		S02307	777777777600031		M. tuberculosis Haarlem3	Family N24
+		S02308	777777603413371		M. tuberculosis EAI5	Family N14
+		S02309	777777747760731		M. tuberculosis T1	Family N24
+		S02310	770777707773271		M. africanum 	Family N18
+		S02311	677740000413771		M. tuberculosis EAI2	Family N10
+		S02312	677760016760601		M. tuberculosis LAM4	Family N36 
+		S02313	664040777777600		M. bovis-BCG 	Family N12 
+		S02314	703777740003700		M. tuberculosis CAS	Family N8 
+		S02315	417136777760731		M. tuberculosis X1	Family N44 
+		S02316	077577747003371		M. tuberculosis EAI5	Family N47
+		S02317	577737777760771		M. tuberculosis T1	Family N24
+		S02318	777774377720771		M. tuberculosis Haarlem3	Family N24
+		S02319	776323777760771		M. tuberculosis S	Family N39
+		S02320	437777777413071		M. tuberculosis EAI3 	Family N1
+		S02321	601777477413771		M. tuberculosis EAI2	Family N10
+		S02322	777607777760771		M. tuberculosis T1	Family N24
+		S02323	637777775760771		M. tuberculosis T1	Family N24
+		S02324	777777763760771		M. tuberculosis T1	Family N24
+		S02325	777377770060771		M. tuberculosis Haarlem1	Family N5 
+		S02326	700037777760671		M. tuberculosis X3	Family N20
+		S02327	676003437413771		M. tuberculosis EAI2	Family N10
+		S02328	677777467413771		M. tuberculosis EAI2	Family N10
+		S02329	777777407760601		M. tuberculosis LAM9 	Family N19
+		S02330	702777740000371		M. tuberculosis CAS	Family N8 
+		S02331	703740140003771		M. tuberculosis CAS	Family N8 
+		S02332	777763743720771		M. tuberculosis LAM10 	Family N21
+		S02333	677776770000000		Family34	Family N22
+		S02334	777776777763771		Family33 	Family N13
+		S02335	777777660000131		M. tuberculosis Haarlem1	Family N5
+		S02336	777777700013771		M. tuberculosis EAI4 	Family N14
+		S02337	777777777720740		M. tuberculosis Haarlem3	Family N24
+		S02338	777737737460771		M. tuberculosis T1	Family N24
+		S02339	777777377413711		M. tuberculosis EAI5 	Family N14 
+		S02340	777777607760701		M. tuberculosis LAM9 	Family N19
+		S02341	677776207760771		M. tuberculosis LAM1	Family N19
+		S02342	640013777757600		M. bovis-BCG	Family N12
+		S02343	777777204220771		M. tuberculosis LAM9 	Family N19
+		S02344	000377577777731		Family33	Family N13
+		S02345	003777347760771		M. tuberculosis T1	Family N42
+		S02346	677777474013771		M. tuberculosis EAI2	Family N10
+		S02347	770037747760471		M. tuberculosis S 	Family N39 
+		S02348	777777740003771		M. tuberculosis EAI4	Family N14
+		S02349	677777477003771		M. tuberculosis EAI2	Family N10
+		S02350	703777740003471		M. tuberculosis CAS	Family N8
+		S02351	777700017560771		M. tuberculosis T4	Family N16
+		S02352	455707427402071		M. tuberculosis EAI3	Family N1 (
+		S02353	777377777620771		M. tuberculosis T1/M. tuberculosis Haarlem3 	Family N24
+		S02354	703701740003171		M. tuberculosis CAS familyFamily N8
+		S02355	737777777413700		M. tuberculosis EAI5	Family N14
+		S02356	773757777413731
+		S02357	740777677000071		M. tuberculosis Haarlem3/EAI1/EAI5	Family N24/N34
+		S02358	777777775020771		M. tuberculosis T1 family/M. tuberculosis Haarlem3 family	Family N24/N34
+		S02359	701777400020771		M. tuberculosis LAM8 family	Family N27
+		S02360	677777477413760		M. tuberculosis EAI2 family	Family N10
+		S02361	677677477413471		M. tuberculosis EAI2 family	Family N10
+		S02362	703701740003770		M. tuberculosis CAS family	Family N8 
+		S02363	776377771000731		M. tuberculosis Haarlem3 family/EAI5 family/M. tuberculosis S	Family N14
+		S02364	777777474020771		M. tuberculosis Haarlem1 family	Family N5
+		S02365	770000004020771		M. tuberculosis LAM7	Family N32
+		S02366	700000000000731		M. tuberculosis Haarlem2	 LAM7
+		S02367	077777606060671		M. tuberculosis LAM8 family 	Family N27
+		S02368	777737051003371		M. tuberculosis EAI2 family
+		S02369	557767437700771		M. tuberculosis Haarlem1	Family N24
+		S02370	774777601560771		M. tuberculosis LAM9	Family N19 
+		S02372	647737607763771		Family33	Family N13
+		S02373	777703737760661		M. tuberculosis T1	Family N24
+		S02376	777700376760711		M. tuberculosis X1	Family N44
+		S02377	703775740000171		M. tuberculosis CAS	Family N8
+		S02378	415203400040061		M. tuberculosis LAM8 family 	Family N27
+		S02379	775777777413731		M. tuberculosis EAI5	Family N14
+		S02380	777777605760471		M. tuberculosis LAM9	Family N19
+		S02381	704003347740471		M. tuberculosis T3	Family N40
+		S02382	757377777720760		M. tuberculosis Haarlem3	Family N24 
+		S02383	777777734020771		M. tuberculosis Haarlem1	Family N5
+		S02384	437777764020771		M. tuberculosis Haarlem1	Family N5
+		S02385	777737776760771		M. tuberculosis T1	Family N24
+		S02386	415207437402261		M. tuberculosis EAI5 	Family N10 
+		S02387	557357606040361		M. tuberculosis LAM8	Family N27
+		S02388	557347617403261		M. tuberculosis EAI5	Family N14 
+		S02389	077757603760771		M. tuberculosis LAM1	Family N19 
+		S02390	703766000000371		M. tuberculosis CAS	Family N15 
+		S02391	703777740003741		M. tuberculosis CAS	Family N8
+		S02392	737617761760731		M. tuberculosis T1	Family N21
+		S02393	477701777413071		M. tuberculosis EAI3	Family N1
+		S02394	647737607760771		M. tuberculosis LAM1 AND 2	Family N19
+		S02395	767777770020771		M. tuberculosis Haarlem1	Family N5 
+		S02396	477777750400371		M. tuberculosis EAI4	Family N14
+		S02397	770003606377071		M. africanum 	Family N17 
+		S02398	777777760000771		M. tuberculosis Haarlem1	Family N5
+		S02399	777777437760771		M. tuberculosis H37Rv	Family N24 
+		S02400	777777577760771		M. tuberculosis T1	Family N24
+		S02401	737700607760771		M. tuberculosis LAM9	Family N19
+		S02402	677777400003771		M. tuberculosis EAI2 	Family N10 
+		S02403	477757777413071
+		S02404	477777775020771
+		S02405	000377740003771
+		S02406	777003777660771
+		S02407	703777400000371
+		S02408	000000000000171
+		S02409	777777755413371
+		S02410	677777457413771
+		S02411	777777047403200
+		S02412	676773777277600
+		S02413	703775740003771
+		S02414	737617400020771
+		S02415	477777207760771
+		S02416	777777740360731
+		S02417	777735777420731
+		S02418	703777747770331
+		S02419	677777607063771
+		S02420	771777607760771
+		S02421	471377777413671
+		S02422	777177377760771
+		S02423	777777757760071
+		S02424	000000000000751
+		S02425	000036777760731
+		S02426	363777607760731
+		S02427	757777777720751
+		S02428	777777777760560
+		S02429	776337377760771
+		S02430	757777663760771
+		S02431	777737777560771
+		S02432	777700000760771
+		S02433	717776770000000
+		S02434	777737606160771
+		S02435	777700001560771
+		S02436	777775774020731
+		S02437	700777740003731
+		S02438	777777771023771
+		S02439	674743777777600
+		S02440	737737774413771
+		S02441	503775740003771
+		S02442	777763770020771
+		S02443	770777777377771
+		S02444	400000000000071
+		S02445	677773777760771
+		S02446	677777777763771
+		S02447	557776777760571
+		S02448	000000177760731
+		S02449	777777770720600
+		S02450	477771777413071
+		S02453	677757477413671
+		S02454	600000007760771
+		S02455	000000004037731
+		S02456	777777607760401
+		S02457	777776774760601
+		S02459	700377740000000
+		S02460	666773677777600
+		S02461	774137777720771
+		S02462	773777777413700
+		S02463	403777700000771
+		S02464	503740000003771
+		S02465	474017777413071
+		S02466	467777777413071
+		S02467	641777206760771
+		S02468	776060047760771
+		S02469	774037600000031
+		S02470	377000377760771
+		S02471	762077607760771
+		S02472	777777777720760
+		S02473	600000037413771
+		S02474	003600003760771
+		S02475	770000000060771
+		S02476	774777767420731
+		S02477	577777377420771
+		S02478	770777004177271
+		S02479	401777740003731
+		S02480	677774760000131
+		S02481	777760000000000
+		S02482	770777777377440
+		S02483	776377777760471
+		S02484	721776777760601
+		S02485	076573777077600
+		S02486	436377777760771
+		S02487	777777470060771
+		S02488	776377777660771
+		S02489	777777770000031
+		S02490	677770077413771		EAI2	Family N10
+		S02491	676777477413771
+		S02492	537777760000371
+		S02493	777777757403371
+		S02494	177770000000731
+		S02495	703771740001771
+		S02496	777777717413731
+		S02497	777377607760771
+		S02498	777760003760731
+		S02499	777777001413371		EAI2	Family N10
+		S02500	737777757413771		EAI5	Family N14
+		S02501	641777207760771		LAM1	Family N19
+		S02502	777777774160771		T1	Family N24
+		S02503	703777000000171		CAS	Family N15
+647 (CAP)		S02504	200003777377600			Family N12
+		S02505	777777777740000		T2	Family N30
+		S02506	037737607760771
+		S02507	637717607760771
+		S02508	600777740003771
+		S02509	777777776013700
+		S02510	703717740003771		CAS	Family N8
+		S02511	777640001760771
+		S02512	000000000001731
+		S02513	703777744023771
+		S02514	777776777413671
+		S02515	476743777777600
+unknown SIT		S02516	777777770020770
+		S02517	757777777360771
+		S02518	777777340000071
+		S02519	477777777413001
+		S02520	537777760000771
+		S02521	767777777760731
+		S02522	700177757777771
+		S02523	777737177760771
+		S02524	000377477413771
+		S02525	776377477553731
+		S02526	477777777413700
+		S02527	747776777740000
+		S02528	777737777360771
+		S02529	777717777620771
+		S02530	777777634020771
+		S02531	703777747770771
+		S02532	670377477413731
+		S02534	777774000060771
+		S02535	341737777760731
+		S02536	777777607700371
+		S02537	000000000003011
+		S02538	777776737020571
+		S02539	774077600003071
+		S02540	777777737413731
+		S02541	700000000000000
+		S02542	771737777420771
+		S02543	777737607760751
+		S02544	663777477413771
+		S02545	237777607760771
+		S02546	777377777413700
+		S02547	000076700000031
+		S02548	000001777760771
+		S02549	474177777413771
+		S02550	577777777760600
+		S02551	777773777760700
+		S02552	675777477413771
+		S02553	477777477413700
+		S02554	000000000003770
+		S02555	777737770000171
+		S02556	674777377420771			Family N34/ N24
+		S02557	000000400003771
+		S02558	777777750000371
+		S02559	700740007770671
+		S02560	774077400603031
+		S02561	576777607760731
+		S02562	777777777413701
+		S02563	700076717760700
+		S02533	003777774020700
+		S02452	777743707413371
+		S02564	777777777400171
+		S02565	703777340003471
+		S02566	677773477413701
+		S02567	777737207560771
+		S02568	767777607560731
+		S02569	677777477411771
+		S02570	437777777760771
+		S02571	077777777413071
+		S02573	176137607760771
+		S02574	777777417760771
+		S02575	777777767760760
+		S02576	777777700000000		S02576
+		S02577	777777740400071
+		S02578	777777603560771
+		S02572	377357774020771
+		S02579	750003606377071
+		S02580	640013377377600
+		S02581	767777777413731
+		S02582	777777753413771
+		S02583	776177207760771
+		S02584	773777754413371
+		S02585	703740000001771
+		S02586	777777377000771
+		S02587	777017777420731
+		S02588	303777700000171
+		S02589	777777771760731
+		S02590	747777777760771
+		S02591	702005740003171
+		S02592	777777770013731
+		S02593	674777470003771
+		S02594	637760000060771
+		S02596	677637477413771
+		S02595	777776777411731
+		S02597	767677777760771
+		S02598	702000340003771
+		S02599	777637774413760
+		S02600	777377700002531
+		S02601	777737607540731
+		S02603	740367777760771
+		S02604	777777774403771
+		S02605	777737767720771
+		S02602	717737777760771
+		S02606	577703777760731
+		S02607	677637607760771
+		S02608	777367777760771			linda
+		S02609	000000000003431
+		S02610	703374340003171
+		S02611	703777340003171
+		S02612	777000000000151
+		S02613	777730207760771
+		S02614	664073757607600
+		S02615	763774077560771
+		S02616	776377757760771
+		S02617	774077600001071
+		S02618	700037740003171
+		S02619	674077717777071
+		S02620	000000000002071
+		S02621	767777377760771
+		S02622	374077770017071
+		S02623	777776776760711
+		S02624	600134207760731
+		S02625	000000007777711
+		S02626	777777777660671
+		S02627	777000007720771
+		S02628	577777777360771
+		S02629	737777676760771
+		S02630	777777741413371
+		S02631	703012740000371
+		S02632	777747677420731
+		S02633	777737007760711
+		S02634	702370000003771
+		S02635	777737477400001
+		S02636	414377777413771
+		S02637	777377737760700
+		S02638	777777740000031
+		S02639	777417607760771
+		S02645	700377340003771
+		S02640	674000003413700
+		S02641	775777777413700
+		S02642	703760140003771
+		S02643	777777376360771
+		S02644	777777347760411
+		S02646	547777777420771
+		S02647	377776777760771
+		S02648	477400000760731
+		S02649	667777477413771
+		S02650	700377707413371
+		S02651	677777777560771
+		S02652	477777777400071
+		S02653	774077404377031
+		S02654	777777700013371
+		S02655	771776000000771
+		S02656	700000077777731
+		S02659	000000000001771			

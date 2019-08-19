@@ -1,0 +1,61 @@
+<tool id="untar_illumina_flowcell" name="Uncompress Illumina Flowcell" version="1.0">
+  <action module="galaxy_ext.globus.tools.actions.globus" class="BatchSubmit"/>
+  <description>to run isaac-align</description>
+  <requirements>
+    <requirement type="package">pymodules</requirement>
+  </requirements>
+  <command interpreter="python">
+   untar_illumina_flowcell.py 
+     --flowcell_name $flowcell_name 
+     --tar_file $tar_file 
+     --output_config $output_config 
+     --output_dir $output_config.extra_files_path
+     --user $__user_id__
+     --username $username
+     --rootdir $__root_dir__
+     --key $userapi
+     --url "$url"
+
+  </command>
+  <inputs>
+    <param name="username" type="hidden" size="100" label="Globus Username"/>
+    <param name="url" type="hidden" label="URL"/>
+    <param name="userapi" type="hidden" size="100" label="Key"/>
+    <param name="flowcell_name" type="text" label="Flowcell Name"/>
+    <param name="tar_file" type="data" format="tar,txt" label="Compressed Illumina Flowcell file"/>
+  </inputs>
+  <outputs>
+    <data format="tabular" name="output_config" label="${tool.name} on ${on_string}: Configurations file" />
+  </outputs>
+  <tests>
+      <test>
+      </test>
+  </tests>
+  <help>
+**What it does**
+
+
+------
+
+**Inputs**
+
+
+
+**Outputs**
+
+
+
+
+-------
+
+**Settings**::
+
+  
+------
+
+**Citation**
+
+
+  </help>
+</tool>
+

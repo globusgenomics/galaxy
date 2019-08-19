@@ -1,0 +1,62 @@
+<tool id="forestSV" name="forestSV">
+    <description>Structural variant detection</description>
+        <requirements>
+            <requirement type="package">pymodules</requirement>
+            <requirement type="package">swift</requirement>
+        </requirements>
+        <command interpreter="python">forestSV_wrapper.py
+                #if $inputFormat.inputFormat_select=="bam"
+                    --inputBam $inputFormat.inputBam
+                    --outcall $BamCallsOutFile
+                    --outrdata $BamRdataOutFile
+                #else
+                    --inputHtml $inputFormat.inputHtml
+                    --outHtml $outputHtmlFile
+                    --files-path $outputHtmlFile.extra_files_path
+                #end if
+                --db_key $db_key
+        </command>
+
+        <inputs>
+            <param type="select" name="db_key" label="Human Genome Version" >
+                <option value="hg18">hg18</option>
+                <option value="hg19" selected="true">hg19</option>
+            </param>
+            <conditional name="inputFormat">
+                <param name="inputFormat_select" type="select" label="Will input be a whole genome BAM file or a dataset of the BAM files split per chromosomes?" help="The whole genome option must be in BAM format, while the dataset of BAM files is expected to be in HTML format which points to the location of the individual BAM files">
+                    <option value="bam">Whole Genome BAM</option>
+                    <option value="html">Chromosome BAMs</option>
+                </param>
+                <when value="bam">
+                    <param name="inputBam" type="data" format="bam" label="Whole Genome BAM file" />
+                </when>
+                <when value="input_ref">
+                    <param name="inputHtml" type="data" format="html" label="HTML file containing dataset of chromosomal BAM files. This method will be submitted using SWIFT for parallelization" />
+                </when>
+            </conditional>  
+        </inputs>
+
+        <outputs>
+            <data format="tabular" name="BamCallsOutFile" label="${tool.name} on ${on_string}: Whole genome calls file">
+                <filter>(inputFormat['inputFormat_select'] == 'bam')</filter>
+            </data>
+            <data format="txt" name="BamRdataOutFile" label="${tool.name} on ${on_string}: Whole genome Rdata file">
+                <filter>(inputFormat['inputFormat_select'] == 'bam')</filter>
+            </data>
+
+            <data format="html" name="outputHtmlFile" label="${tool.name} on ${on_string}: Dataset for all Chromosomal BAMs"/>
+                <filter>(inputFormat['inputFormat_select'] == 'html')</filter>
+            </data>
+        </outputs>
+
+<help>
+
+**What it does**
+
+Runs forestSV to detect structural variants given BAM input files. 
+
+You can submit and individual BAM file by selecting the Whole Genome BAM options as input or submit a set of BAM files by selecting the Chromosome BAMs. This assumes that you have split your BAM files using the Split BAM per Chromosome tool.
+The tool will be run in parallel if a set of BAM files is introduced using SWIFT
+
+</help>
+</tool>

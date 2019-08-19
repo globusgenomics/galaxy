@@ -1,0 +1,53 @@
+<?xml version="1.0" ?>
+<tool id="qiime_feature-table_relative-frequency" name="qiime feature-table relative-frequency" version="022019">
+	<description> - Convert to relative frequencies</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command>
+		<![CDATA[
+	qiime feature-table relative-frequency --i-table=$itable
+
+	#if str($cmdconfig) != 'None':
+	 --cmd-config=$cmdconfig
+	#end if
+	 --o-relative-frequency-table=orelativefrequencytable;
+
+	cp orelativefrequencytable.qza $orelativefrequencytable;
+	]]>
+	</command>
+	<inputs>
+		<param format="qza,no_unzip.zip" label="--i-table: FeatureTable[Frequency] The feature table to be converted into relative frequencies.  [required]" name="itable" optional="False" type="data"/>
+		<param label="--cmd-config: Use config file for command options" name="cmdconfig" optional="True" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="qza" label="${tool.name} on ${on_string}: relative-frequency-table.qza" name="orelativefrequencytable"/>
+	</outputs>
+	<help>
+		<![CDATA[
+Rarefy table
+-------------
+
+Subsample frequencies from all samples without replacement so that the sum
+of frequencies in each sample is equal to sampling-depth.
+
+Parameters
+----------
+table : FeatureTable[Frequency]
+    The feature table to be rarefied.
+sampling_depth : Int % Range(1, None)
+    The total frequency that each sample should be rarefied to. Samples
+    where the sum of frequencies is less than the sampling depth will be
+    not be included in the resulting table.
+
+Returns
+-------
+rarefied_table : FeatureTable[Frequency]
+    The resulting rarefied feature table.
+    ]]>
+	</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

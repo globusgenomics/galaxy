@@ -1,0 +1,31 @@
+<tool id="create_wgsa_submit" name="Create batch submit WGSA Annotation">
+  <description> </description>
+  <command> 
+    python $__tool_directory__/create_wgsa_batch.py
+    --input-minid $input_minid
+    --ultra_mem $output_ultra
+    --high_mem $output_high
+    --med_mem $output_med
+    --low_mem $output_low
+  </command>
+  <inputs>
+    <param name="input_minid" type="text" size="100" label="VCF Input Minid">
+      <sanitizer sanitize="False"/>
+    </param>
+  </inputs>
+  <outputs>
+    <data name="output_ultra" type="data" format="txt" label="Batch Ultra high ultra"/>
+    <data name="output_high" type="data" format="txt" label="Batch Ultra high high"/>
+    <data name="output_med" type="data" format="txt" label="Batch Ultra high med"/>
+    <data name="output_low" type="data" format="txt" label="Batch Ultra high low"/>
+  </outputs>
+  <stdio>
+    <regex match=".*" source="both" level="log" description="tool progress"/>
+  </stdio>
+  <help>
+
+**What it does**
+Creates batch submit file
+
+  </help>
+</tool>

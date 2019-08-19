@@ -1,0 +1,123 @@
+<tool id="breakdancer_tool_swift" name="breakdancer" version="1.4.5">
+	<requirements>
+		<requirement type="package" version="1.4.5">breakdancer</requirement>
+                <requirement type="package">pymodules</requirement>
+                <requirement type="package">perlmodules</requirement>
+                <requirement type="package">swift</requirement>
+                <requirement type="package">samtools</requirement>
+	</requirements>
+
+	<description>detection of structural variants (Swift)</description>
+
+	<!--parallelism method="basic"></parallelism-->
+
+        <command interpreter="python">
+                breakdancer_swift.py
+                --out-dir $output_log.extra_files_path
+                --output $output_log
+                --log $output_swift_log
+                <!-- required -->
+        ##      -i1 $inputBamFile
+        ##      -o1 $outputRawFile
+                <!-- optional -->
+        ##      -o2 $outputVcfFile
+        #if $chromosome:
+         -p  '-o $chromosome'
+        #end if
+        -p   '-s $minLength'
+        -p   '-c $cutoff'
+        -p   '-m $maxSvSize'
+        -p   '-q $minMapQuality'
+        -p   '-r $minReadDepth'
+        -p   '-x $maxHaploidCov'
+        -p   '-b $bufferSize'
+        #if $onlyTrans:
+        -p   '-t'
+        #end if
+        #if $prefix:
+        -p   '-d $prefix'
+        #end if
+        #if $bedFormat:
+        -p   '-g'
+        #end if
+
+    ## input files
+    #if $input_dir_source.input_dir_source_type == "text":
+        --input_dir ${input_dir_source.input_directory_path}
+    #else:
+        --input_dir_file ${input_dir_source.input_directory_path_file}
+    #end if
+                <!-- -l
+                -a
+                -h
+                -y -->
+<!-- parser.add_argument('-l', dest='matePair', required=False, help='analyze Illumina long insert (mate-pair) library')
+# parser.add_argument('-a', dest='sortByLibrary', action='store_true', help='print out copy number and support reads per library rather than per bam', default=False)
+# parser.add_argument('-h', dest='', action='store_true', help='print out Allele Frequency column', default=False)
+parser.add_argument('-y', dest='scoreFilter', type=int, required=False, help='output score filter', default=30) -->
+
+        </command>
+
+    <inputs>
+      <conditional name="input_dir_source">
+        <param help="If you choose the file based method, it must contain only one line with the path for your files" label="How will you enter the directory path for your BAM/BAI files?" name="input_dir_source_type" type="select">
+          <option value="text">Text Field</option>
+          <option selected="True" value="file">File</option>
+        </param>
+        <when value="text">
+          <param area="True" help="Please input the full path of the directory that contains a set of BAM files. All the BAM files will be used as input datasets." label="BAM directory path" name="input_directory_path" size="2x40" type="text"/>
+        </when>
+        <when value="file">
+          <param format="txt" help="Must contain only one line with the path for your files" label="File containing path of the directory containing the BAM files" name="input_directory_path_file" type="data"/>
+        </when>
+      </conditional>
+      <!--<-param name="inputBamFile" format="bam" type="data" label="input bam file" />-->
+                <!-- optional -->
+        <param name="chromosome" type="text" label="operate on a single chromosome" value="" />
+        <param name="minLength" type="integer" label="minimum length of a region" value="7" />
+        <param name="cutoff" type="integer" label="cutoff in unit of standard deviation" value="3" />
+        <param name="maxSvSize" type="integer" label="maximum SV size" value="1000000000" />
+        <param name="minMapQuality" type="integer" label="minimum alternative mapping quality" value="35" />
+        <param name="minReadDepth" type="integer" label="minimum number of read pairs required to establish a connection" value="2" />
+        <param name="maxHaploidCov" type="integer" label="maximum threshold of haploid sequence coverage for regions to be ignored" value="1000" />
+        <param name="bufferSize" type="integer" label="buffer size for building connection" value="100" />
+        <param name="onlyTrans" type="boolean" label="only detect transchromosomal rearrangement" checked="False" />
+        <param name="prefix" type="text" label="prefix of fastq files that SV supporting reads will be saved by library" value="" />
+        <param name="bedFormat" type="boolean" label="dump SVs and supporting reads in BED format for GBrowse" checked="False" />
+     </inputs>
+
+     <outputs>
+        <data format="html" label="${tool.name} on ${on_string} (log)" name="output_log"/>
+    <data format="pdf" label="${tool.name} on ${on_string} (summary)" name="output_swift_log"/>
+        <!--<data name="outputRawFile" format="tabular" label="${tool.name} raw output on ${on_string}" />
+                <data name="outputVcfFile" format="vcf" label="${tool.name} vcf output on ${on_string}" />-->
+     </outputs>
+
+	<!--help>
+	BreakDancer, released under GPLv3, is a Cpp package that provides genome-wide detection of structural variants from next generation paired-end sequencing reads. It includes two complementary programs.
+	BreakDancerMax predicts five types of structural variants: insertions, deletions, inversions, inter- and intra-chromosomal translocations from next-generation short paired-end sequencing reads using read pairs that are mapped with unexpected separation distances or orientation.
+	BreakDancerMini focuses on detecting small indels (usually between 10bp and 100bp) using normally mapped read pairs.
+	Please read our paper for detailed algorithmic description. http://www.nature.com/nmeth/journal/v6/n9/abs/nmeth.1363.html
+
+	The input is a set of map files produced by a front-end aligner such as MAQ, BWA, NovoAlign and Bfast
+
+	The output format
+        =================	
+	BreakDancer's output file consists of the following columns:
+
+	1. Chromosome 1
+	2. Position 1
+	3. Orientation 1
+	4. Chromosome 2
+	5. Position 2
+	6. Orientation 2
+	7. Type of a SV
+	8. Size of a SV
+	9. Confidence Score
+	10. Total number of supporting read pairs
+	11. Total number of supporting read pairs from each map file
+	12. Estimated allele frequency
+	13. Software version
+	14. The run parameters
+	</help-->
+</tool>

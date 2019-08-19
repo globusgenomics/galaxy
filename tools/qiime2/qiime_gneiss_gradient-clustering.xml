@@ -1,0 +1,83 @@
+<?xml version="1.0" ?>
+<tool id="qiime_gneiss_gradient-clustering" name="qiime gneiss gradient-clustering" version="022019">
+	<description> - Hierarchical clustering using gradient information.</description>
+	<requirements>
+		<requirement type="package" version="022019">conda</requirement>
+	</requirements>
+	<command>
+	<![CDATA[
+	qiime gneiss gradient-clustering --i-table=$itable --m-gradient-column="$mgradientcolumn"
+
+	#def list_dict_to_string(list_dict):
+		#set $file_list = list_dict[0]['additional_input'].__getattr__('file_name')
+		#for d in list_dict[1:]:
+			#set $file_list = $file_list + ',' + d['additional_input'].__getattr__('file_name')
+		#end for
+		#return $file_list
+	#end def
+
+	 --m-gradient-file=$list_dict_to_string($input_files_mgradientfile)
+	#if str($cmdconfig) != 'None':
+	 --cmd-config=$cmdconfig
+	#end if
+
+	#if $pweighted:
+	  --p-weighted
+	#else
+	  --p-no-weighted
+	#end if
+
+	 --o-clustering=oclustering;
+	cp oclustering.qza $oclustering;
+	]]>
+	</command>
+	<inputs>
+		<param format="qza,no_unzip.zip" label="--i-table: FeatureTable[Composition | Frequency | RelativeFrequency] The feature table containing the samples in which the columns will be clustered. [required]" name="itable" optional="False" type="data"/>
+		<param label="--m-gradient-column: MetadataColumn[Numeric] Column from metadata file or artifact viewable as metadata. Contains gradient values to sort the features and samples. [required]" name="mgradientcolumn" optional="False" type="text"/>
+
+		<repeat name="input_files_mgradientfile" optional="False" title="--m-gradient-file">
+			<param label="--m-gradient-file: Metadata file or artifact viewable as metadata. This option may be supplied multiple times to merge metadata. [required]" name="additional_input" type="data" format="tabular,qza,no_unzip.zip" />
+		</repeat>
+
+		<param label="--p-weighted: --p-no-weighted  Specifies if abundance or presence/absence information should be used to perform the clustering.  [default: True]" name="pweighted" checked="True" type="boolean"/>
+		<param label="--cmd-config: Use config file for command options" name="cmdconfig" optional="True" type="data"/>
+	</inputs>
+	<outputs>
+		<data format="qza" label="${tool.name} on ${on_string}: clustering.qza" name="oclustering"/>
+	</outputs>
+	<help>
+		<![CDATA[
+Hierarchical clustering using gradient information.
+----------------------------------------------------
+
+Build a bifurcating tree that represents a hierarchical clustering of
+features.  The hiearchical clustering uses Ward hierarchical clustering
+based on the mean difference of gradients that each feature is observed in.
+This method is primarily used to sort the table to reveal the underlying
+block-like structures.
+
+Parameters
+----------
+table : FeatureTable[Composition | Frequency | RelativeFrequency]
+    The feature table containing the samples in which the columns will be
+    clustered.
+gradient : MetadataColumn[Numeric]
+    Contains gradient values to sort the features and samples.
+weighted : Bool, optional
+    Specifies if abundance or presence/absence information should be used
+    to perform the clustering.
+
+Returns
+-------
+clustering : Hierarchy
+    A hierarchy of feature identifiers where each tipcorresponds to the
+    feature identifiers in the table. This tree can contain tip ids that
+    are not present in the table, but all feature ids in the table must be
+    present in this tree.
+	]]>
+	</help>
+<macros>
+	<import>qiime_citation.xml</import>
+</macros>
+<expand macro="qiime_citation" />
+</tool>

@@ -1,0 +1,115 @@
+PROGRAM: vcfPrinter
+
+INTERNAL_VERSION: 0.5
+
+DESCRIPTION: Generates multi-sample Variant Call Format (VCF) file from single sample VCF files.
+
+AUTHOR: Uday Evani, Fuli Yu
+
+CONTACT: evani@bcm.edu
+
+COMPILATION: None needed.
+
+Change Log: 
+v0.5 (6 December, 2012):
+1. New option "--fast". Faster version of vcfPrinter stores all variants for all samples in memory.
+works best for small number of samples (~20) and sites (~50000). The program will run into memory 
+issues if used to merge large number of variants.
+2. Logging implemented. Logs are written to printer.log
+
+v0.4 (27 November, 2012):
+1. Merged branched cluster version with stand-alone trunk on sourceforge.
+2. Currently tested to merge vcf's containing SNP's only.
+3. The cluster version requires that the vcf and pileup files be compressed using bgzip and indexed using tabix.
+
+v0.3 (31 October, 2012): 
+1. Removed -n option, if pileups are provided vcfPrinter will automatically use them.
+2. VcfPrinter now prints the version number in the merged vcf file.
+
+v0.2:
+1. Added the -p and -n options, which correspond to filter nonPASS variants and running vcfPrinter without the pileup option respectively.
+
+v0.1:
+1. Inital commit.
+
+LICENSE: 
+
+This software is free for all uses with the following restrictions:
+    * No part of this software, or modifications thereof, may be redistributed for
+      any purpose to any other company, person, or individual, without prior written
+      permission from the author.
+    * This software is provided AS IS. Baylor College of Medicine assumes no
+      responsibility or liability for damages of any kind that may result, directly
+      or indirectly, from the use of this software.
+    * The above copyright notice must be preserved in the executable About dialog or
+      made visible to users in some other way.
+
+REQUIREMENTS:
+
+   * Unix-like operation systems
+   * Ruby 1.9.2: http://www.ruby-lang.org/en/downloads/
+   * Copy the settings.rb.default to settings.rb and fill in the details
+   * Please read the "CLUSTER VERSION SPECIFIC INSTRUCTIONS" section for more details on how to run vcfPrinter on cluster
+
+  Note: vcfPrinter has been tested on ruby 1.9.2
+
+USAGE: Type "ruby RunPrinter.rb"  from the command line followed by "--usage" or "-h" to show the command line argument options.
+
+ ruby RunPrinter.rb
+
+       -i "*.vcf" REQUIRED "<Location of your VCF files>" 
+       -o outputfile REQUIRED <output file name>
+       -l "*.pileup" OPTIONAL "<Location of pileup files>"
+       -p PASS (Only include PASS sites) OPTIONAL <Will only merge PASS variants, using the PASS tag in filter field>
+       --fast OPTIONAL <Works best for small number of samples (~20) and sites (~50000)>
+       --cluster OPTIONAL <This will run the cluster version>
+       -c chromosome (Option specific to cluster version) OPTIONAL
+       -n number of jobs [1] (Option specific to cluster version) OPTIONAL
+	
+  Example command line:
+	ruby vcfPrinter.rb -i "/home/user/data/*.vcf" -o /home/user/data/output.vcf 
+	
+  Note: 
+	* The VCF and BAM file arguments have to be wrapped in quotes ("). This is because of how glob are executed in Ruby. 
+
+	* The individual sample VCF filenames must follow the convention:
+	  [sample_name].vcf and corresponding PILEUP should be named [sample_name].pileup .
+
+  Note:
+        * The "--fast" version should only be used to merge small number of sites (~50000) in a small number of samples (~20). 
+          Unless running on a large RAM (>10GB) machine the program will run out of memory if used to merge large number of variants.
+        
+        * VcfPrinter is designed / tested to work with Atlas2 generated VCF files. Merging non-Atlas2 vcfs can lead to unexpected results.
+
+        * VcfPrinter has only been tested to merge SNP's.
+
+	* vcfPrinter requires single sample VCF files in v4.0 format. A description of the format can be found at:
+          http://www.1000genomes.org/wiki/doku.php?id=1000_genomes:analysis:vcf4.0
+
+CLUSTER VERSION SPECIFIC INSTRUCTIONS:
+
+  The cluster version has been designed specifically for High Performance Computational cluster managed by Moab, developed by [Adaptive Computing](http://www.adaptivecomputing.com/products/). Job submissions and resource management is done by [TORQUE](http://www.adaptivecomputing.com/products/open-source/torque/) . 
+
+  ___qsub___ is used to submit jobs to the cluster and ___qstat___ is used to monitor jobs.
+
+  * Fill in the cluster specific settings section in settings.rb
+
+  * Cluster version only accepts bgzip compressed and tabix indexed
+    vcf and pileup files as input.
+   
+  * VcfPrinter should be able to invoke tabix by running 
+    the command 'tabix' from the command line. tabix 
+    can be downloaded from here 
+    https://sourceforge.net/projects/samtools/files/tabix/
+           
+  * How to bgzip
+    bgzip [sample_name].vcf
+    This will create [sample_name].vcf.gz
+                    
+  * How to index
+    tabix -p vcf [sample_name].vcf.gz
+    This will create [sample_name].vcf.gz.tbi
+
+  * If RunPrinter.rb was able to successfully submit jobs to cluster but you don't see
+    output file, please look at the .err and .out file created by cluster command for cause 
+    of the error.

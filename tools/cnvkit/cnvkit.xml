@@ -1,0 +1,100 @@
+<tool id="cnvkit" name="cnvkit_run" version="CNVKIT: v0.7.5">
+  <description>Copy number variation toolkit: Infer CNVs from targeted DNA sequencing</description>
+  <requirements>
+    <requirement type="package">pymodules</requirement>
+    <requirement type="package" version="3.2.2">R</requirement>
+  </requirements>
+  <command interpreter="python">
+    cnvkit.py batch
+    
+    #if $source.data_input == "tumor_normal":
+         $source.tumorbams
+    -n      
+         $source.normalbams
+    #else:
+         $source.tumorbams
+        -n 
+    #end if
+    -t "$targetbed" --output-reference "$outputref"
+    --fasta
+    #if $genomeSource.refGenomeSource == "history":
+        ${genomeSource.ownFile}
+    #else:
+        ${genomeSource.indices.fields.path}
+    #end if
+   --access "$accessfile"
+&amp;&amp;
+cnvkit.py segment *.cnr -o "$outputseg"
+<!-- 
+&amp;&amp;
+cnvkit.py export seg *.cns -o "$outputseg"
+-->
+&amp;&amp;
+cnvkit.py call *.cns -y -m threshold -t=-1.1,-0.4,0.3,0.7 -o "$outputcallcns"
+
+&amp;&amp;
+cnvkit.py export vcf *.cns -o "$segmentvcf"
+
+  </command>
+  <inputs>
+    <conditional name="source">
+      <param name="data_input" type="select" label="input source">
+        <option value="tumor_normal">Tumor vs Normal</option>
+        <option value="tumor_only">Tumor only</option>
+      </param>
+      <when value="tumor_normal">
+        <param format="bam" name="tumorbams" type="data" label="Tumor BAM file(s)" />
+        <param format="bam" name="normalbams" type="data" label="Normal BAM file(s)" />
+      </when>
+      <when value="tumor_only">
+        <param format="bam" name="tumorbams" type="data" label="Tumor BAM file(s)" />
+      </when>
+    </conditional>    
+
+    <param format="bed" name="targetbed" type="data" label="Target BED file"/>
+    
+    <conditional name="genomeSource">
+      <param label="Select a reference genome from your history or use a built-in fasta file" name="refGenomeSource" type="select">
+        <option value="indexed">Use a built-in index</option>
+        <option value="history">Use one from the history</option>
+      </param>
+      <when value="indexed">
+        <param label="Select a reference genome" name="indices" type="select">
+          <options from_data_table="all_fasta_short">
+          </options>
+        </param>
+      </when>
+      <when value="history">
+        <param format="fasta" label="Select a reference from history" name="ownFile" type="data"/>
+      </when>
+    </conditional>
+   
+    <param format="bed" name="accessfile" label="Select a access file from history" type="data"/>
+  </inputs>
+  <outputs>
+    <data format="tabular" name="outputref" label="${tool.name} on ${on_string}: output reference" />
+    <data format="tabular" name="outputseg" label="${tool.name} on ${on_string}: output segment" />
+    <data format="tabular" name="outputcallcns" label="${tool.name} on ${on_string}: output call" />
+    <data format="vcf" name="segmentvcf" label="${tool.name} on ${on_string}: outputsegment in vcf" />
+    <data format="pdf" name="scatterplot" label="${tool.name} on ${on_string}: scatter plot" />    
+  </outputs>
+
+  <stdio>
+    <!-- Anything other than zero is an error -->
+    <exit_code range="1:" />
+    <exit_code range=":-1" />
+  </stdio>
+
+  <tests>
+    <test>
+      <param name="samplebams" value="test.bam"/>
+      <param name="targetbed" value="test.bed"/>
+      <output name="out_file1" file="test_cnvkit_output.txt"/>
+    </test>
+  </tests>
+
+  <help>
+This tool runs segmentation on a CNVkit CNR file.
+  </help>
+
+</tool>

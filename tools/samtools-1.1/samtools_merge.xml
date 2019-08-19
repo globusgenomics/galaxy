@@ -1,0 +1,42 @@
+<tool id="samtools1.1_merge" name="SAMtools merge" version="SAMTOOLS: 1.1">
+  <requirements>
+    <requirement type="package" version="1.1">samtools</requirement>
+  </requirements>
+  <description>BAM files</description>
+  <command interpreter="python">
+    sam_merge.py
+      $output
+      $input1
+      $input2
+      #for $i in $inputs
+        ${i.input}
+      #end for
+      $remove_dups
+  </command>
+  <inputs>
+    <param format="bam" label="First file" name="input1" optional="false" type="data"/>
+    <param format="bam" help="Need to add more files? Use controls below." label="with file" name="input2" optional="false" type="data"/>
+    <repeat name="inputs" title="Input Files">
+      <param format="bam" label="Add file" name="input" type="data"/>
+    </repeat>
+    <param falsevalue="" help="This will allow the output of the merged BAM to be piped to the samtools rmdup command" label="Remove duplicates after merging file" name="remove_dups" truevalue="--rmdup" type="boolean"/>
+  </inputs>
+  <outputs>
+    <data format="bam" label="${tool.name} on ${on_string}: merged BAM" name="output"/>
+  </outputs>
+  <help>
+
+**What it does**
+
+This tool uses the SAMTools_ toolkit to merge 2+ alignment files (in bam format).
+
+.. _SAMTools: http://samtools.sourceforge.net/samtools.shtml
+
+------
+
+**Citation**
+
+For the underlying tool, please cite `Li H, Handsaker B, Wysoker A, Fennell T, Ruan J, Homer N, Marth G, Abecasis G, Durbin R; 1000 Genome Project Data Processing Subgroup. The Sequence Alignment/Map format and SAMtools. Bioinformatics. 2009 Aug 15;25(16):2078-9. &lt;http://www.ncbi.nlm.nih.gov/pubmed/19505943&gt;`_
+
+  </help>
+</tool>

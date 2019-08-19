@@ -1,0 +1,35 @@
+<tool id="ermrest" name="ERMRest" tool_type="globus_multi_datasource"
+      force_history_refresh="True">
+   <description>Fetch datasets from ERMRest.</description>
+    <action module="galaxy.tools.actions.globus" class="ERMrestTransfer"/>
+   <command interpreter="python">
+    transfer_from_ermrest.py 
+       --session $sess
+       --token "$token" 
+       --query "$query"
+       --path "$path"
+       $outfile.extra_files_path $outfile  $outfile.id  $__new_file_path__
+   </command>
+   <inputs>
+     <param name="token" type="hidden" value="" >
+     <sanitizer>
+        <valid>
+          <add value="|"/>
+        </valid>
+      </sanitizer>
+     </param>
+     <param name="hostname" type="hidden" value="" />
+     <param name="sess" type="hidden"/>
+     <param name="query" type="text" label="Query" size="25"/>
+     <param name="entity" type="text" label="Type" value="PPMI" size="25"/>
+     <param name="path" type="hidden" value="" label="" />
+     <param name="dataset_id" type="ermrest" /> 
+     <param name="dataset_name" type="hidden" label="" />
+   </inputs>
+   <outputs>
+     <data name="outfile" type="data" format="txt" />
+   </outputs>
+   <help>
+     Fetch datasets from ERMrest.
+   </help>
+</tool>

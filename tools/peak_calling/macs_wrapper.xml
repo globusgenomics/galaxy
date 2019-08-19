@@ -1,0 +1,239 @@
+<tool id="peakcalling_macs" name="MACS" version="MACS: 1.4.2; MACS: 1.4.2">
+  <description>Model-based Analysis of ChIP-Seq</description>
+  <command interpreter="python">macs_wrapper.py $options_file $output_bed_file $output_extra_files $output_extra_files.files_path</command>
+  <requirements>
+    <requirement type="python-module">macs</requirement>
+    <requirement type="package">macs</requirement>
+  </requirements>
+  <inputs>
+    <param label="Experiment Name" name="experiment_name" size="50" type="text" value="MACS in Galaxy"/>
+    <conditional name="input_type">
+      <param label="Paired End Sequencing" name="input_type_selector" type="select">
+        <option value="paired_end">Paired End (requires elandmulti format)</option>
+        <option selected="true" value="single_end">Single End</option>
+      </param>
+      <when value="paired_end">
+        <param format="elandmulti" label="ChIP-Seq Tag File 1" name="input_chipseq_file1" type="data"/>
+        <param format="elandmulti" label="ChIP-Seq Tag File 2" name="input_chipseq_file2" type="data"/>
+        <param format="elandmulti" label="ChIP-Seq Control File 1" name="input_control_file1" optional="True" type="data"/>
+        <param format="elandmulti" label="ChIP-Seq Control File 2" name="input_control_file2" optional="True" type="data"/>
+        <param label="Best distance between Pair-End Tags" name="petdist" type="integer" value="200"/>
+      </when>
+      <when value="single_end">
+        <param format="bed,sam,bam,eland,elandmulti" label="ChIP-Seq Tag File" name="input_chipseq_file1" type="data"/>
+        <param format="bed,sam,bam,eland,elandmulti" label="ChIP-Seq Control File" name="input_control_file1" optional="True" type="data"/>
+      </when>
+    </conditional>
+<!--    <param name="gsize" type="float" label="Effective genome size" value="2.7e+9" help="default: 2.7e+9"/>  modified by liubo, some values are 'hs'-->
+    <param help="It can be 1.0e+9 or 1000000000, or shortcuts:'hs' for human (2.7e9), 'mm' for mouse (1.87e9), 'ce' for C. elegans (9e7) and 'dm' for fruitfly (1.2e8), Default:hs" label="Effective genome size" name="gsize" type="text" value="hs"/>
+
+    <param label="Tag size" name="tsize" type="integer" value="25"/>
+    <param label="Band width" name="bw" type="integer" value="300"/>
+    <param help="default: 1e-5" label="Pvalue cutoff for peak detection" name="pvalue" type="float" value="1e-5"/>
+<!--    <param name="mfold" type="integer" label="Select the regions with MFOLD high-confidence enrichment ratio against background to build model" value="32"/> -->
+    <param label="Select the regions with MFOLD high-confidence enrichment ratio against background to build model" name="mfold" type="text" value="10,30"/>
+
+    <param checked="False" falsevalue="do_not_create" label="Parse xls files into into distinct interval files" name="xls_to_interval" truevalue="create" type="boolean"/>
+    <conditional name="wig_type">
+      <param label="Save shifted raw tag count at every bp into a wiggle file" name="wig_type_selector" type="select">
+        <option value="wig">Save</option>
+        <option selected="true" value="no_wig">Do not create wig file (faster)</option>
+      </param>
+      <when value="wig">
+        <param help="Use value less than 0 for default (modeled d)" label="Extend tag from its middle point to a wigextend size fragment." name="wigextend" type="integer" value="-1"/>
+        <param label="Resolution for saving wiggle files" name="space" type="integer" value="10"/>
+      </when>
+      <when value="no_wig">
+        <!-- do nothing here -->
+      </when>
+    </conditional>
+    <param checked="False" falsevalue="" help="up to 9X more time consuming" label="Use fixed background lambda as local lambda for every peak region" name="nolambda" truevalue="--nolambda" type="boolean"/>
+    <param label="3 levels of regions around the peak region to calculate the maximum lambda as local lambda" name="lambdaset" size="50" type="text" value="1000,5000,10000"/>
+    <conditional name="nomodel_type">
+      <param label="Build Model" name="nomodel_type_selector" type="select">
+        <option value="nomodel">Do not build the shifting model</option>
+        <option selected="true" value="create_model">Build the shifting model</option>
+      </param>
+      <when value="nomodel">
+        <param label="Arbitrary shift size in bp" name="shiftsize" type="integer" value="100"/>
+      </when>
+      <when value="create_model">
+        <!-- do nothing here -->
+      </when>
+    </conditional>
+    <conditional name="diag_type">
+      <param help="up to 9X more time consuming" label="Diagnosis report" name="diag_type_selector" type="select">
+        <option value="diag">Produce a diagnosis report</option>
+        <option selected="true" value="no_diag">Do not produce report (faster)</option>
+      </param>
+      <when value="diag">
+        <param label="Min fold enrichment to consider" name="fe-min" type="integer" value="0"/>
+        <param label="Max fold enrichment to consider" name="fe-max" type="integer" value="32"/>
+        <param label="Fold enrichment step" name="fe-step" type="integer" value="20"/>
+      </when>
+      <when value="no_diag">
+        <!-- do nothing here -->
+      </when>
+    </conditional>
+  </inputs>
+  <outputs>
+    <data format="bed" label="${tool.name} on ${on_string} (peaks: bed)" name="output_bed_file"/>
+    <data format="interval" label="${tool.name} on ${on_string} (peaks: interval)" name="output_xls_to_interval_peaks_file">
+      <filter>xls_to_interval is True</filter>
+    </data>
+    <data format="interval" label="${tool.name} on ${on_string} (negative peaks: interval)" name="output_xls_to_interval_negative_peaks_file">
+      <filter>xls_to_interval is True</filter>
+      <filter>input_type['input_control_file1'] is not None</filter>
+    </data>
+    <data format="wig" label="${tool.name} on ${on_string} (treatment: wig)" name="output_treatment_wig_file">
+      <filter>wig_type['wig_type_selector']=='wig'</filter>
+    </data>
+    <data format="wig" label="${tool.name} on ${on_string} (control: wig)" name="output_control_wig_file">
+      <filter>wig_type['wig_type_selector'] == 'wig'</filter>
+      <filter>input_type['input_control_file1'] is not None</filter>
+    </data>
+    <data format="html" label="${tool.name} on ${on_string} (html report)" name="output_extra_files"/>
+  </outputs>
+  <configfiles>
+    <configfile name="options_file">&lt;%
+import simplejson
+%&gt;
+#set $__options = { 'experiment_name':str( $experiment_name ), 'gsize': str( $gsize ), 'tsize':str( $tsize ), 'bw':str( $bw ), 'pvalue':str( $pvalue ), 'mfold':str( $mfold ), 'nolambda':str( $nolambda ), 'lambdaset': str( $lambdaset ) }
+#if str( $xls_to_interval ) == 'create':
+#set $__options['xls_to_interval'] = { 'peaks_file': str( $output_xls_to_interval_peaks_file ), 'negative_peaks_file': str( $output_xls_to_interval_negative_peaks_file ) }
+#else:
+#set $__options['xls_to_interval'] = False
+#end if
+##treatment/tag input files and format
+#set $__options['input_chipseq'] = [ str( $input_type['input_chipseq_file1'] ) ]
+#if  $input_type['input_type_selector'] == 'paired_end':
+#set $_hole = __options['input_chipseq'].append( str( $input_type['input_chipseq_file2'] ) )
+#set $__options['format'] = 'ELANDMULTIPET'
+#else:
+#set $__options['format'] = $input_type['input_chipseq_file1'].extension.upper()
+#end if
+##control/input files
+#set $__options['input_control'] = []
+#if str( $input_type['input_control_file1'] ) != 'None':
+#set $_hole = __options['input_control'].append( str( $input_type['input_control_file1'] ) )
+#end if
+#if $input_type['input_type_selector'] == 'paired_end' and str( $input_type['input_control_file2'] ) != 'None':
+#set $_hole = __options['input_control'].append( str( $input_type['input_control_file2'] ) )
+#end if
+##wig options
+#if $wig_type['wig_type_selector'] == 'wig':
+#set $__options['wig'] = {}
+#set $__options['wig']['wigextend'] = str( $wig_type['wigextend'] )
+#set $__options['wig']['space'] = str( $wig_type['space'] )
+#set  $__options['wig']['output_treatment_file'] = str( $output_treatment_wig_file )
+#if $input_type['input_control_file1'] is not None:
+#set  $__options['wig']['output_control_file'] = str( $output_control_wig_file )
+#end if
+#end if
+##model options
+#if $nomodel_type['nomodel_type_selector'] == 'nomodel':
+#set $__options['nomodel'] = str( $nomodel_type['shiftsize'] )
+#end if
+##diag options
+#if $diag_type['diag_type_selector'] == 'diag':
+#set $__options['diag'] = { 'fe-min':str( $diag_type['fe-min'] ), 'fe-max':str( $diag_type['fe-max'] ), 'fe-step':str( $diag_type['fe-step'] ) }
+#end if
+${ simplejson.dumps( __options ) }
+    </configfile>
+  </configfiles>
+  <tests>
+    <test>
+      <param name="input_type_selector" value="single_end"/>
+      <param ftype="bed" name="input_chipseq_file1" value="chipseq_enriched.bed.gz"/>
+      <param ftype="bed" name="input_control_file1" value="chipseq_input.bed.gz"/>
+      <param name="experiment_name" value="Galaxy Test Run"/>
+      <param name="tsize" value="36"/>
+      <param name="mfold" value="13"/>
+      <param name="gsize" value="2.7e+9"/>
+      <param name="bw" value="300"/>
+      <param name="pvalue" value="1e-5"/>
+      <param name="xls_to_interval"/>
+      <param name="wig_type_selector" value="no_wig"/>
+      <param name="nolambda"/>
+      <param name="lambdaset" value="1000,5000,10000"/>
+      <param name="nomodel_type_selector" value="create_model"/>
+      <param name="diag_type_selector" value="no_diag"/>
+      <output file="peakcalling_macs/macs_test_1_out.bed" name="output_bed_file"/>
+      <output compare="re_match" file="peakcalling_macs/macs_test_1_out.html" name="output_html_file">
+        <extra_files compare="re_match" name="Galaxy_Test_Run_model.pdf" type="file" value="peakcalling_macs/test2/Galaxy_Test_Run_model.pdf"/>
+        <extra_files compare="re_match" name="Galaxy_Test_Run_model.r" type="file" value="peakcalling_macs/test2/Galaxy_Test_Run_model.r"/>
+        <extra_files name="Galaxy_Test_Run_model.r.log" type="file" value="peakcalling_macs/test2/Galaxy_Test_Run_model.r.log"/>
+        <extra_files compare="re_match" name="Galaxy_Test_Run_negative_peaks.xls" type="file" value="peakcalling_macs/test2/Galaxy_Test_Run_negative_peaks.xls"/>
+        <extra_files compare="re_match" name="Galaxy_Test_Run_peaks.xls" type="file" value="peakcalling_macs/test2/Galaxy_Test_Run_peaks.xls"/>
+      </output>
+    </test>
+    <test>
+      <param name="input_type_selector" value="single_end"/>
+      <param ftype="bed" name="input_chipseq_file1" value="chipseq_enriched.bed.gz"/>
+      <param ftype="bed" name="input_control_file1" value="chipseq_input.bed.gz"/>
+      <param name="experiment_name" value="Galaxy Test Run"/>
+      <param name="tsize" value="36"/>
+      <param name="mfold" value="13"/>
+      <param name="gsize" value="2.7e+9"/>
+      <param name="bw" value="300"/>
+      <param name="pvalue" value="1e-5"/>
+      <param name="xls_to_interval" value="true"/>
+      <param name="wig_type_selector" value="no_wig"/>
+      <param name="nolambda"/>
+      <param name="lambdaset" value="1000,5000,10000"/>
+      <param name="nomodel_type_selector" value="create_model"/>
+      <param name="diag_type_selector" value="no_diag"/>
+      <output file="peakcalling_macs/macs_test_1_out.bed" name="output_bed_file"/>
+      <output file="peakcalling_macs/macs_test_2_peaks_out.interval" lines_diff="4" name="output_xls_to_interval_peaks_file"/>
+      <output file="peakcalling_macs/macs_test_2_neg_peaks_out.interval" name="output_xls_to_interval_negative_peaks_file"/>
+      <output compare="re_match" file="peakcalling_macs/macs_test_1_out.html" name="output_html_file">
+        <extra_files compare="re_match" type="directory" value="peakcalling_macs/test2/"/>
+      </output>
+    </test>
+    <!-- <test>
+      <param name="input_type_selector" value="single_end" />
+      <param name="input_chipseq_file1" value="chipseq_enriched.bed.gz" ftype="bed" />
+      <param name="input_control_file1" value="chipseq_input.bed.gz" ftype="bed" />
+      <param name="experiment_name" value="Galaxy Test Run" />
+      <param name="tsize" value="36" />
+      <param name="mfold" value="13" />
+      <param name="gsize" value="2.7e+9" />
+      <param name="bw" value="300" />
+      <param name="pvalue" value="1e-5" />
+      <param name="xls_to_interval" value="true" />
+      <param name="wig_type_selector" value="wig" />
+      <param name="wigextend" value="-1" />
+      <param name="space" value="10" />
+      <param name="nolambda"/>
+      <param name="lambdaset" value="1000,5000,10000"/>
+      <param name="nomodel_type_selector" value="create_model" />
+      <param name="diag_type_selector" value="no_diag" />
+      <output name="output_bed_file" file="peakcalling_macs/macs_test_1_out.bed" />
+      <output name="output_xls_to_interval_peaks_file" file="peakcalling_macs/macs_test_2_peaks_out.interval" lines_diff="4" />
+      <output name="output_xls_to_interval_negative_peaks_file" file="macs_test_2_neg_peaks_out.interval" />
+      <output name="output_treatment_wig_file" file="peakcalling_macs/macs_test_3_treatment_out.wig" />
+      <output name="output_control_wig_file" file="peakcalling_macs/macs_test_3_control_out.wig" />
+      <output name="output_html_file" file="peakcalling_macs/macs_test_3_out.html" compare="re_match" >
+        <extra_files type="directory" value="peakcalling_macs/test2/" compare="re_match"/>
+      </output>
+    </test> -->
+  </tests>
+  <help>
+**What it does**
+
+This tool allows ChIP-seq peak calling using MACS.
+
+Depending upon selected options, 2 to 6 history items will be created; the first output will be a standard BED file and the last will be an HTML report containing links to download additional files generated by MACS. Up to two each of wig and interval files can be optionally created; the interval files are parsed from the xls output.
+
+View the original MACS documentation: http://liulab.dfci.harvard.edu/MACS/00README.html.
+
+------
+
+**Citation**
+
+For the underlying tool, please cite `Zhang Y, Liu T, Meyer CA, Eeckhoute J, Johnson DS, Bernstein BE, Nusbaum C, Myers RM, Brown M, Li W, Liu XS. Model-based analysis of ChIP-Seq (MACS). Genome Biol. 2008;9(9):R137. &lt;http://www.ncbi.nlm.nih.gov/pubmed/18798982&gt;`_
+
+If you use this tool in Galaxy, please cite Blankenberg D, et al. *In preparation.*
+
+  </help>
+</tool>

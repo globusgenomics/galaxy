@@ -1,0 +1,169 @@
+<tool id="somatic_sniper_tool" name="Somatic Sniper" version="SOMATIC-SNIPER: unstable">
+  <description>: identify single nucleotide positions that are different between tumor and normal</description>
+  <requirements>
+        <requirement type="package" version="unstable">somatic-sniper</requirement>	
+  </requirements>
+  <command interpreter="perl">
+  	somatic_sniper_wrapper.pl
+
+  	&quot;NORMAL::$normal&quot;
+  	&quot;TUMOR::$tumor&quot;
+	&quot;OUTPUT::$snp_output&quot;
+  	&quot;OPTION::-F $output&quot;
+  	
+  	 #if $option.option == &quot;modify_parameters&quot;:
+  	 	&quot;OPTION::-q $option.readFilter&quot;
+  	 	&quot;OPTION::-Q $option.somaticFilter&quot;
+  	 	&quot;OPTION::-s $option.mutationPrior&quot;
+  	 	#if str($option.disablePriors) == &quot;true&quot; 
+  	 		&quot;OPTION::-p&quot;  	 	  	 	
+ 		#end if
+  	 #end if
+  	
+  	&quot;OPTION::-f $reference.fields.path&quot;  	
+	
+
+  </command>
+	<inputs>
+	<param label="Select a reference genome" name="reference" type="select">
+		<options from_data_table="all_fasta">
+			<filter column="2" type="sort_by"/>
+			<validator message="No indexes are available" type="no_options"/>
+		</options>
+	</param>
+
+	<param format="bam" help="" label="Normal sample" name="normal" type="data"/>
+	<param format="bam" help="" label="Tumor Sample" name="tumor" type="data"/>
+	<param help="" label="Output Type" name="output" optional="true" type="select">
+		<option selected="true" value="classic">Classic</option>
+		<option value="vcf">VCF</option>
+		<option value="bed">BED</option>
+	</param>
+
+
+	<conditional name="option">
+		<param help="" label="Optional Parameters" name="option" optional="true" type="select">
+			<option selected="true" value="default_parameters">Default Parameters</option>
+			<option value="modify_parameters">Modify Parameters</option>
+		</param>
+		<when value="modify_parameters">
+	
+			<param label="filtering reads with mapping quality less than" name="readFilter" optional="true" type="integer" value="0"/>
+			<param label="filtering somatic snv output with somatic quality less than" name="somaticFilter" optional="true" type="integer" value="15"/>
+			<param help="" label="disable priors in the somatic calculation. Increases sensitivity for solid tumors" name="disablePriors" optional="true" type="select">
+				<option value="true">true</option>
+				<option selected="true" value="false">false</option>
+			</param>
+			<param label="prior probability of a somatic mutation" name="mutationPrior" optional="true" type="float" value="0.10000"/>
+      
+		</when>
+		
+	</conditional>
+
+	</inputs>
+	<outputs>
+		<data format="text" label="${tool.name} result on ${on_string}" name="snp_output"/>
+	</outputs>
+	<help>
+|
+
+
+**Reference**
+	
+  http://gmt.genome.wustl.edu/somatic-sniper/current/
+  
+-----
+
+**What it does**
+
+The purpose of this program is to identify single nucleotide positions that are different between tumor and normal 
+(or, in theory, any two bam files). It takes a tumor bam and a normal bam and compares the two to determine the 
+differences. It outputs a file in a format very similar to Samtools consensus format. It uses the genotype likelihood 
+model of MAQ (as implemented in Samtools) and then calculates the probability that the tumor and normal genotypes are 
+different. This probability is reported as a somatic score. The somatic score is the Phred-scaled probability (between 0 to 255) 
+that the Tumor and Normal genotypes are not different where 0 means there is no probability that the genotypes are different and 
+255 means there is a probability of 1 – 10(255/-10) that the genotypes are different between tumor and normal. This is consistent 
+with how the SAM format reports such probabilities. 
+
+bam-somaticsniper [options] -f ref.fasta tumor.bam normal.bam snp_output_file
+
+Bam files must contain LB tag in @RG line.
+Picard tools can be used to add lines to BAM headers.
+
+-----
+ 
+**Required Parameters**
+
+::
+
+  -f 	FILE REQUIRED reference sequence in the FASTA format
+
+-----
+
+**Options**
+
+::
+
+ -q 	INT    filtering reads with mapping quality less than INT [0]
+ 
+ -Q	INT    filtering somatic snv output with somatic quality less than  INT [15]
+        
+ -p 	FLAG   disable priors in the somatic calculation. Increases sensitivity for solid tumors
+        
+ -J 	FLAG   Use prior probabilities accounting for the somatic mutation rate
+ 
+ -s 	FLOAT  prior probability of a somatic mutation (implies -J) [0.010000]
+        
+ -T 	FLOAT  theta in maq consensus calling model (for -c/-g) [0.850000]
+        
+ -N 	INT    number of haplotypes in the sample (for -c/-g) [2]
+        
+ -r 	FLOAT  prior of a difference between two haplotypes (for -c/-g) [0.001000]
+        
+ -F 	STRING select output format [classic]
+        Available formats:
+        	classic
+        	vcf
+        	bed
+             
+-----            
+
+**File Formats**      
+             
+::
+
+  Classic:
+
+  Each line contains the following tab-separated values:
+
+    1. Chromosome
+    2. Position
+    3. Reference base
+    4. IUB genotype of tumor
+    5. IUB genotype of normal
+    6. Somatic Score
+    7. Tumor Consensus quality
+    8. Tumor variant allele quality
+    9. Tumor mean mapping quality
+    10. Normal Consensus quality
+    11. Normal variant allele quality
+    12. Normal mean mapping quality
+    13. Depth in tumor (# of reads crossing the position)
+    14. Depth in normal (# of reads crossing the position)
+    15. Mean base quality of reads supporting reference in tumor
+    16. Mean mapping quality of reads supporting reference in tumor
+    17. Depth of reads supporting reference in tumor
+    18. Mean base quality of reads supporting variant(s) in tumor
+    19. Mean mapping quality of reads supporting variant(s) in tumor
+    20. Depth of reads supporting variant(s) in tumor
+    21. Mean base quality of reads supporting reference in normal
+    22. Mean mapping quality of reads supporting reference in normal
+    23. Depth of reads supporting reference in normal
+    24. Mean base quality of reads supporting variant(s) in normal
+    25. Mean mapping quality of reads supporting variant(s) in normal
+    26. Depth of reads supporting variant(s) in normal
+
+
+
+	</help>
+</tool>

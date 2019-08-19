@@ -1,0 +1,132 @@
+<tool id="cru3d_simulation" name="Run Model" version="MPICH: mpich-3.0.4">
+	<description/>
+<requirements>
+  <requirement type="package">mpich</requirement>
+  <requirement type="package">pymodules</requirement>
+</requirements>
+<command interpreter="python">
+    CRU3D_simulation.py --root_dir $__root_dir__ --html_file &quot;$html_file&quot; --files_path &quot;$html_file.extra_files_path&quot; --mesh &quot;$mesh.extra_files_path&quot; --protocol $protocol.selection --ryr_init $protocol.ryr_init --ryr_init_time $protocol.ryr_init_time --t_final $protocol.t_final --grid_interval $protocol.grid_interval --num_proc $protocol.num_proc --num_sims $protocol.num_sims --c_min $protocol.c_min --ryr_open_max $protocol.ryr_open_max --output_ryr_states $protocol.output_ryr_states --t_clamp $protocol.t_clamp --v_clamp $protocol.v_clamp --t_step $t_step --states_interval $states_interval --A_P $A_P --B_TOT_ATP $B_TOT_ATP --B_TOT_CMDN $B_TOT_CMDN --B_TOT_CSQN $B_TOT_CSQN --B_TOT_DYE $B_TOT_DYE --B_TOT_SL $B_TOT_SL --B_TOT_TRPN $B_TOT_TRPN --CA_I $CA_I --CA_O $CA_O --CA_SR $CA_SR --D_ATP $D_ATP --D_CA $D_CA --D_CAJSR $D_CAJSR --D_CMDN $D_CMDN --D_DYE $D_DYE --K_D_I $K_D_I --K_D_SL $K_D_SL --K_D_SR $K_D_SR --K_OFF_ATP $K_OFF_ATP --K_OFF_CMDN $K_OFF_CMDN --K_OFF_CSQN $K_OFF_CSQN --K_OFF_DYE $K_OFF_DYE --K_OFF_TRPN $K_OFF_TRPN --K_ON_ATP $K_ON_ATP --K_ON_CMDN $K_ON_CMDN --K_ON_CSQN $K_ON_CSQN --K_ON_DYE $K_ON_DYE --K_ON_TRPN $K_ON_TRPN --RYR_ETA $RYR_ETA --RYR_K_MINUS $RYR_K_MINUS --RYR_K_PLUS $RYR_K_PLUS --RYR_PHI_KD $RYR_PHI_KD --RYR_PHI_N $RYR_PHI_N --V_M $V_M --V_REFILL $V_REFILL --V_RYR $V_RYR
+</command>
+    <inputs>
+    <param format="html" label="Mesh" name="mesh" type="data"/>
+<conditional name="protocol">
+    <param label="Protocol" name="selection" type="select">
+        <option value="spark">Single Spark</option>
+	<option value="fidelity">Fidelity/Leak</option>
+        <option value="gain">ECC Gain</option>
+    </param>
+    <when value="spark">
+      <param help="RyR with this index will be opened at t=0. Set to -1 to open a random RyR. Indices start at 0 at the top-left and increment left to right, then top to bottom. For example, in a 7x7 RyR cluster, 0 is the top-left RyR, 6 is the top right, and 48 is the bottom right RyR." label="Initially open RyR index" min="0" name="ryr_init" type="integer" value="-1"/>
+      <param help="RyR will be forced open for this amount of time." label="Time to open initial RyR [ms]" name="ryr_init_time" type="float" value="0"/>
+      <param label="Final time [ms]" min="0" name="t_final" type="float" value="500"/>
+      <param label="Mesh state output interval [ms]" min="0" name="grid_interval" type="float" value="1"/>
+      <param name="num_proc" type="hidden" value="1"/>
+      <param name="num_sims" type="hidden" value="1"/>
+      <param name="c_min" type="hidden" value="0.1"/>
+      <param name="ryr_open_max" type="hidden" value="4"/>
+      <param name="output_ryr_states" type="hidden" value="false"/>
+      <param name="t_clamp" type="hidden" value="200"/>
+      <param name="v_clamp" type="hidden" value="0"/>
+    </when>
+    <when value="fidelity">
+      <param label="Number of processors" min="1" name="num_proc" type="integer" value="4"/>
+      <param help="Total number of simulations = (Number of processors) * (Number of simulations per processor)" label="Number of simulations per processor" min="1" name="num_sims" type="integer" value="256"/>
+      <param help="Simulation terminates if all RyRs are closed, and Ca2+ falls below this threshold." label="Minimum Ca2+ concentration [uM]" min="0" name="c_min" type="float" value="1.0"/>
+      <param help="Simulation terminates if number of RyRs reaches this number." label="Maximum open RyRs" min="2" name="ryr_open_max" type="integer" value="4"/>
+      <param label="Final time [ms]" min="0" name="t_final" type="float" value="50"/>
+      <param checked="false" help="Flag to output individual RyR states in the global states output file. Required for fidelity heatmap generation." label="Output RyR states" name="output_ryr_states" type="boolean"/>
+      <param name="ryr_init" type="hidden" value="-1"/>
+      <param name="ryr_init_time" type="hidden" value="0"/>
+      <param name="grid_interval" type="hidden" value="1"/>
+      <param name="t_clamp" type="hidden" value="200"/>
+      <param name="v_clamp" type="hidden" value="0"/>
+    </when>
+    <when value="gain">
+      <param label="Number of processors" min="1" name="num_proc" type="integer" value="4"/>
+      <param help="Total number of simulations = (Number of processors) * (Number of simulations per processor)" label="Number of simulations per processor" min="1" name="num_sims" type="integer" value="512"/>
+      <param label="Voltage clamp potential [mV]" name="v_clamp" type="float" value="0"/>
+      <param label="Voltage clamp duration [ms]" min="0" name="t_clamp" type="float" value="200"/>
+      <param label="Final time [ms]" min="0" name="t_final" type="float" value="50"/>
+      <param name="ryr_init" type="hidden" value="-1"/>
+      <param name="ryr_init_time" type="hidden" value="0"/>
+      <param name="grid_interval" type="hidden" value="1"/>
+      <param name="c_min" type="hidden" value="0.1"/>
+      <param name="ryr_open_max" type="hidden" value="4"/>
+      <param name="output_ryr_states" type="hidden" value="false"/>
+    </when>
+</conditional>
+    <param label="Time step [ns]" min="0" name="t_step" type="float" value="12"/>
+    <param label="Global state output interval [ms]" min="0" name="states_interval" type="float" value="0.01"/>
+    
+    <param help="SERCA A_P constant [uM]" label="A_P" min="0" name="A_P" type="float" value="150"/>
+    <param help="ATP total concentration [uM]" label="B_TOT_ATP" min="0" name="B_TOT_ATP" type="float" value="455"/>
+    <param help="Calmodulin total concentration [uM]" label="B_TOT_CMDN" min="0" name="B_TOT_CMDN" type="float" value="24"/>
+    <param help="Calsequestrin total concentration (JSR) [uM]" label="B_TOT_CSQN" min="0" name="B_TOT_CSQN" type="float" value="30000"/>
+    <param help="Fluo-4N total concentration [uM]" label="B_TOT_DYE" min="0" name="B_TOT_DYE" type="float" value="50"/>
+    <param help="Sarcolemmal binding site density [umol/um^2]" label="B_TOT_SL" min="0" name="B_TOT_SL" type="float" value="1.6e-13"/>
+    <param help="Troponin total concentration [uM]" label="B_TOT_TRPN" min="0" name="B_TOT_TRPN" type="float" value="70"/>
+    <param help="Ca2+ concentration (cytosol) [uM]" label="CA_I" min="0" name="CA_I" type="float" value="0.1"/>
+    <param help="Ca2+ concentration (extracellular) [uM]" label="CA_O" min="0" name="CA_O" type="float" value="2000"/>
+    <param help="Ca2+ concentration (SR) [uM]" label="CA_SR" min="0" name="CA_SR" type="float" value="1000"/>
+    <param help="ATP diffusion coefficient [um^2/ms]" label="D_ATP" min="0" name="D_ATP" type="float" value="0.140"/>
+    <param help="Ca2+ diffusion coefficient (cytosol) [um^2/ms]" label="D_CA" min="0" name="D_CA" type="float" value="0.250"/>
+    <param help="Ca2+ diffusion coefficient (JSR) [um^2/ms]" label="D_CA_JSR" min="0" name="D_CAJSR" type="float" value="0.250"/>
+    <param help="Calmodulin diffusion coefficient [um^2/ms]" label="D_CMDN" min="0" name="D_CMDN" type="float" value="0.025"/>
+    <param help="Fluo-4N diffusion coefficient [um^2/ms]" label="D_DYE" min="0" name="D_DYE" type="float" value="0.042"/>
+    <param help="SERCA K_D_i constant [uM]" label="K_D_I" min="0" name="K_D_I" type="float" value="910"/>
+    <param help="Sarcolemmal binding site affinity [uM]" label="K_D_SL" min="0" name="K_D_SL" type="float" value="13"/>
+    <param help="SERCA K_D_SR constant [uM]" label="K_D_SR" min="0" name="K_D_SR" type="float" value="2240"/>
+    <param help="ATP off rate [1/ms]" label="K_OFF_ATP" min="0" name="K_OFF_ATP" type="float" value="45"/>
+    <param help="Calmodulin off rate [1/ms]" label="K_OFF_CMDN" min="0" name="K_OFF_CMDN" type="float" value="0.238"/>
+    <param help="Calsequestrin off rate [1/ms]" label="K_OFF_CSQN" min="0" name="K_OFF_CSQN" type="float" value="63.8"/>
+    <param help="Fluo-4N off rate [1/ms]" label="K_OFF_DYE" min="0" name="K_OFF_DYE" type="float" value="0.110"/>
+    <param help="Troponin off rate [1/ms]" label="K_OFF_TRPN" min="0" name="K_OFF_TRPN" type="float" value="0.020"/>
+    <param help="ATP on rate [1/uM-ms]" label="K_ON_ATP" min="0" name="K_ON_ATP" type="float" value="0.225"/>
+    <param help="Calmodulin on rate [1/uM-ms]" label="K_ON_CMDN" min="0" name="K_ON_CMDN" type="float" value="0.034"/>
+    <param help="Calsequestrin on rate [1/uM-ms]" label="K_ON_CSQN" min="0" name="K_ON_CSQN" type="float" value="0.100"/>
+    <param help="Fluo-4N on rate [1/uM-ms]" label="K_ON_DYE" min="0" name="K_ON_DYE" type="float" value="0.100"/>
+    <param help="Troponin on rate [1/uM-ms]" label="K_ON_TRPN" min="0" name="K_ON_TRPN" type="float" value="0.039"/>
+    <param help="RyR Hill coefficient" label="RYR_ETA" min="0" name="RYR_ETA" type="float" value="2.1"/>
+    <param help="RyR close rate constant [1/ms]" label="RYR_K_MINUS" min="0" name="RYR_K_MINUS" type="float" value="0.500"/>
+    <param help="RyR open rate constant [1/ms]" label="RYR_K_PLUS" min="0" name="RYR_K_PLUS" type="float" value="0.1107e-3"/>
+    <param help="RyR luminal dependence constant [uM]" label="RYR_PHI_KD" min="0" name="RYR_PHI_KD" type="float" value="1500"/>
+    <param help="RyR luminal dependence power" label="RYR_PHI_N" min="0" name="RYR_PHI_N" type="float" value="4"/>
+    <param help="Membrane potential (rest) [mV]" label="V_M" name="V_M" type="float" value="-80"/>
+    <param help="JSR refill rate [1/ms]" label="V_REFILL" min="0" name="V_REFILL" type="float" value="0.095"/>
+    <param help="RyR release rate [1/ms]" label="V_RYR" min="0" name="V_RYR" type="float" value="3.0e-8"/>
+    
+    </inputs>
+	<outputs>
+		<data format="html" label="CRU3DSimulationOutput.html" name="html_file"/>
+	</outputs>
+	<help>
+
+
+.. class:: warningmark
+
+The input dataset must be a mesh output.
+
+-----
+
+This tool will run the CRU3D model.
+
+**Protocols**
+
+*Single Spark*
+
+This protocol simulates a spontaneous spark that can be visualized with the Linescan and plotting tools. The user may specify a specific RyR, specified by its index, to open at the start of the simulation. The RyR can also be forced to remain open for a specific amount of time, in order to increase the chance of a spark occurring. This is the least computationally-demanding protocol.
+
+*Fidelity/Leak*
+
+This protocol will invoke an ensemble of simulations distributed over multiple cores to measure spark fidelity and leak. A minimum of 1,000 total simulations is recommended for an accurate fidelity estimate. If any cytosolic element in the mesh falls below the &quot;Minimum Ca2+ concentration,&quot; the simulation will terminate (making the assumption that no RyRs are likely to open after that point). If one does not wish to measure leak, they can set the &quot;Maximum open RyRs&quot; to cause the simulation to terminate if the number of open RyRs meets this number, which can significantly accelerate the simulations. 
+
+.. class:: warningmark
+
+If the &quot;Output RyR states&quot; option is checked, subsequent tools in the fidelity/leak workflow will not work! Only set this option if you can perform the analysis without Galaxy tools.
+
+*ECC Gain*
+
+This protocol will invoke an ensemble of simulations distributed over multiple cores to measure excitation-contraction coupling (ECC) gain. A minimum of 2,000 total simulations is recommended for an accurate gain estimate. The &quot;Final time&quot; should be set so that the peak of RyR and LCC fluxes occur before the end of the simulation. This condition can be verified afterward by plotting the total fluxes with the ECC gain and plotting tools.
+
+	</help>
+</tool>

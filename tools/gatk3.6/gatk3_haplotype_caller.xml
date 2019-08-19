@@ -1,0 +1,399 @@
+<tool id="gatk3.6_haplotype_caller" name="Haplotype Caller" version="GATK3.6: GenomeAnalysisTK-3.6; SAMTOOLS: 1.1">
+  <description>Call SNPs and indels simultaneously via local de-novo assembly of haplotypes in an active region</description>
+  <requirements>
+      <requirement type="package" version="3.6">gatk3</requirement>
+      <requirement type="package" version="1.1">samtools</requirement>
+      <requirement type="package" version="1.8.0">java</requirement>
+  </requirements>
+  <macros>
+    <import>gatk_macros.xml</import>
+  </macros>
+  <command interpreter="python">gatk3_wrapper.py
+   --max_jvm_heap_fraction &quot;1&quot;
+   -d &quot;-I&quot; &quot;${reference_source.input_bam}&quot; &quot;${reference_source.input_bam.ext}&quot; &quot;gatk_input&quot;
+   #if str( $reference_source.input_bam.metadata.bam_index ) != &quot;None&quot;:
+       -d &quot;&quot; &quot;${reference_source.input_bam.metadata.bam_index}&quot; &quot;bam_index&quot; &quot;gatk_input&quot; ##hardcode galaxy ext type as bam_index
+   #end if
+   -p 'java 
+    -jar &quot;\$GATK3_PATH/GenomeAnalysisTK.jar&quot;
+    -T &quot;HaplotypeCaller&quot;
+    -o &quot;${output_vcf}&quot;
+    ## \$GATK3_SITE_OPTIONS
+    ## \$GATK3_NUM_THREADS
+    ##-et &quot;NO_ET&quot; -K &quot;/data/galaxy/appList/GenomeAnalysisTK-2.0-36-gf5c1c1a/gatk3_key_file&quot; ##ET no phone home
+    ##-nct 32 ##not supported yet
+    #if $reference_source.reference_source_selector != &quot;history&quot;:
+        -R &quot;${reference_source.ref_file.fields.path}&quot;
+    #end if
+    #if str($input_recal) != 'None':
+        --BQSR &quot;${input_recal}&quot;
+    #end if
+   '
+    ##start standard gatk option
+    #if $gatk_param_type.gatk_param_type_selector == "advanced":
+        #include source=$standard_gatk_options#
+    #end if
+    
+    #if str( $reference_source.reference_source_selector ) == &quot;history&quot;:
+        -d &quot;-R&quot; &quot;${reference_source.ref_file}&quot; &quot;${reference_source.ref_file.ext}&quot; &quot;gatk_input&quot;
+    #end if
+    ##end standard gatk options
+    
+    ##start analysis specific options
+    #if $analysis_param_type.analysis_param_type_selector == &quot;advanced&quot;:
+        -p '
+        #if $analysis_param_type.emitRefConfidence.__str__ != &quot;NULL&quot;:
+            --emitRefConfidence $analysis_param_type.emitRefConfidence
+            #if $analysis_param_type.emitRefConfidence.__str__ == &quot;GVCF&quot;:
+              -variant_index_type LINEAR -variant_index_parameter 128000
+            #end if
+        #end if
+        #if $analysis_param_type.p_nonref_model.__str__ != &quot;None&quot; and len($analysis_param_type.p_nonref_model.__str__) &gt; 0:
+          --p_nonref_model $analysis_param_type.p_nonref_model
+        #end if
+        #if $analysis_param_type.heterozygosity.__str__.strip() != '':
+            --heterozygosity $analysis_param_type.heterozygosity
+        #end if
+        #if str($analysis_param_type.genotyping_mode_type.genotyping_mode) != "NULL":
+          --genotyping_mode &quot;${analysis_param_type.genotyping_mode_type.genotyping_mode}&quot;
+          #if str( $analysis_param_type.genotyping_mode_type.genotyping_mode ) == 'GENOTYPE_GIVEN_ALLELES':
+            --alleles &quot;${analysis_param_type.genotyping_mode_type.input_alleles_rod}&quot;
+          #end if
+        #end if
+        #if $analysis_param_type.output_mode.__str__ != &quot;None&quot; and len($analysis_param_type.output_mode.__str__) &gt; 0:
+          --output_mode $analysis_param_type.output_mode
+        #end if
+
+        ## files
+        #if str($analysis_param_type.activeRegionIn) != 'None':
+            --activeRegionIn &quot;$analysis_param_type.activeRegionIn&quot;
+        #end if
+        #if str($analysis_param_type.activeRegionMaxSize) != '0':
+            --activeRegionMaxSize &quot;$analysis_param_type.activeRegionMaxSize&quot;
+        #end if
+
+        #if str($analysis_param_type.comp) != 'None':
+            --comp &quot;$analysis_param_type.comp&quot;
+        #end if
+        #if str($analysis_param_type.dbsnp) != 'None':
+            --dbsnp &quot;$analysis_param_type.dbsnp&quot;
+        #end if
+        ##  
+        #if str( $analysis_param_type.annotation ) != &quot;None&quot;:
+            #for $annotation in str( $analysis_param_type.annotation.fields.gatk_value ).split( ','):
+                --annotation &quot;${annotation}&quot;
+            #end for
+        #end if
+        #for $additional_annotation in $analysis_param_type.additional_annotations:
+            --annotation &quot;${additional_annotation.additional_annotation_name}&quot;
+        #end for
+        #if str( $analysis_param_type.group ) != &quot;None&quot;:
+            #for $group in str( $analysis_param_type.group ).split( ','):
+                --group &quot;${group}&quot;
+            #end for
+        #end if
+        #if str( $analysis_param_type.exclude_annotations ) != &quot;None&quot;:
+            #for $annotation in str( $analysis_param_type.exclude_annotations.fields.gatk_value ).split( ','):
+                --excludeAnnotation &quot;${annotation}&quot;
+            #end for
+        #end if
+
+        ## value setings
+        #if $analysis_param_type.contamination_fraction_to_filter.__str__.strip() != '':
+            --contamination_fraction_to_filter $analysis_param_type.contamination_fraction_to_filter
+        #end if
+        ###if $analysis_param_type.downsampleRegion.__str__.strip() != '':
+        ##    --downsampleRegion $analysis_param_type.downsampleRegion
+        ###end if
+        #if $analysis_param_type.minPruning.__str__.strip() != '':
+            --minPruning $analysis_param_type.minPruning
+        #end if
+        #if $analysis_param_type.standard_min_confidence_threshold_for_calling.__str__.strip() != '':
+            --standard_min_confidence_threshold_for_calling $analysis_param_type.standard_min_confidence_threshold_for_calling
+        #end if
+        #if $analysis_param_type.standard_min_confidence_threshold_for_emitting.__str__.strip() != '':
+            --standard_min_confidence_threshold_for_emitting $analysis_param_type.standard_min_confidence_threshold_for_emitting
+        #end if
+        #if $analysis_param_type.gcpHMM.__str__.strip() != '':
+            --gcpHMM $analysis_param_type.gcpHMM
+        #end if
+        #if $analysis_param_type.max_alternate_alleles.__str__.strip() != '':
+            --max_alternate_alleles $analysis_param_type.max_alternate_alleles
+        #end if
+        ## mode selections
+        ###if $analysis_param_type.genotyping_mode_type.genotyping_mode.__str__ != &quot;None&quot; and len($analysis_param_type.genotyping_mode_type.genotyping_mode.__str__) &gt; 0:
+        ##  --genotyping_mode $analysis_param_type.genotyping_mode_type.genotyping_mode
+        ###end if
+        #if $analysis_param_type.pair_hmm_implementation.__str__ != &quot;None&quot; and len($analysis_param_type.pair_hmm_implementation.__str__) &gt; 0:
+          --pair_hmm_implementation $analysis_param_type.pair_hmm_implementation
+        #end if
+        ## optional outputs
+        #if $analysis_param_type.activeRegionOut:
+            --activeRegionOut $active_region_out
+        #end if
+        #if $analysis_param_type.graphOutput:
+            --graphOutput $graph_out
+        #end if
+        ## flags
+        $analysis_param_type.useAllelesTrigger
+        $analysis_param_type.fullHaplotype
+        $analysis_param_type.genotypeFullActiveRegion
+        $analysis_param_type.debug
+        '
+    #end if
+    ##-p '-bamout $output_bam'
+  </command>
+  <inputs>
+    <param format="gatk_report" help="-BQSR,--BQSR &amp;lt;recal_file&amp;gt;" label="Covariates table recalibration file" name="input_recal" optional="true" type="data">
+      <help>The input covariates table file which enables on-the-fly base quality score recalibration. 
+            Enables on-the-fly recalibrate of base qualities. The covariates tables are produced by the BaseQualityScoreRecalibrator tool. 
+            Please be aware that one should only run recalibration with the covariates file created on the same input bam(s).
+      </help>
+    </param>
+    <conditional name="reference_source">
+      <param label="Choose the source for the reference list" name="reference_source_selector" type="select">
+        <option value="cached">Locally cached</option>
+        <option value="history">History</option>
+      </param>
+      <when value="cached">
+        <param format="bam" help="-I,--input_file &amp;lt;input_file&amp;gt;" label="BAM file" name="input_bam" type="data">
+        </param>
+        <param help="-R,--reference_sequence &amp;lt;reference_sequence&amp;gt;" label="Using reference genome" name="ref_file" type="select">
+          <options from_data_table="gatk3_picard_indexes">
+                <filter column="3" type="sort_by"/>
+
+          </options>
+        </param>
+      </when>
+      <when value="history">
+        <param format="bam" help="-I,--input_file &amp;lt;input_file&amp;gt;" label="BAM file" name="input_bam" type="data"/>
+        <param format="fasta" help="-R,--reference_sequence &amp;lt;reference_sequence&amp;gt;" label="Using reference file" name="ref_file" type="data">
+        </param>
+      </when>
+    </conditional>
+    
+    <conditional name="gatk_param_type">
+      <param label="Basic or Advanced GATK options" name="gatk_param_type_selector" type="select">
+        <option selected="True" value="basic">Basic</option>
+        <option value="advanced">Advanced</option>
+      </param>
+      <when value="basic">
+        <!-- Do nothing here -->
+      </when>
+      <when value="advanced">
+        <expand macro="advanced_options" />
+      </when>
+    </conditional>
+
+    <conditional name="analysis_param_type">
+      <param label="Basic or Advanced Analysis options" name="analysis_param_type_selector" type="select">
+        <option selected="True" value="basic">Basic</option>
+        <option value="advanced">Advanced</option>
+      </param>
+      <when value="basic">
+        <!-- Do nothing here -->
+      </when>
+      <when value="advanced">
+        <param help="--emitRefConfidence. Records whether the trimming intervals are going to be used to emit reference confidence, or regular HC output." label="Mode for emitting experimental reference confidence scores" name="emitRefConfidence" type="select">
+           <option value="NULL" selected="True">NULL</option>
+           <option value="NONE">NONE</option>
+           <option value="BP_RESOLUTION">BP_RESOLUTION</option>
+           <option value="GVCF">GVCF</option>
+        </param>
+
+        <param format="bed,gatk_interval,picard_interval_list,vcf" help="--activeRegionIn / -AR  Use this interval list file as the active regions to process" label="activeRegionIn" name="activeRegionIn" optional="true" type="data"/>
+        <param help="--activeRegionMaxSize &amp;lt;The active region maximum size; if not provided defaults to Walker annotated default&amp;gt;" label="Active Region Max Size" name="activeRegionMaxSize" type="integer" value="0"/> 
+        <param checked="False" falsevalue="" help="--activeRegionOut / -ARO  Output the active region to an interval list file" label="activeRegionOut" name="activeRegionOut" truevalue="" type="boolean"/>
+
+        <param display="checkboxes" help="-A,--annotation &amp;lt;annotation&amp;gt;" label="Annotation Types" multiple="True" name="annotation" type="select">
+          <!-- load the available annotations from an external configuration file, since additional ones can be added to local installs -->
+          <options from_data_table="gatk3_annotations">
+            <filter column="tools_valid_for" separator="," type="multiple_splitter"/>
+            <filter column="tools_valid_for" type="static_value" value="UnifiedGenotyper"/>
+          </options>
+        </param>
+        <repeat help="-A,--annotation &amp;lt;annotation&amp;gt;" name="additional_annotations" title="Additional annotation">
+          <param label="Annotation name" name="additional_annotation_name" type="text" value=""/>
+        </repeat>
+<!--
+        <conditional name="snpEff_rod_bind_type">
+          <param name="snpEff_rod_bind_type_selector" type="select" label="Provide a snpEff reference-ordered data file">
+            <option value="set_snpEff">Set snpEff</option>
+            <option value="exclude_snpEff" selected="True">Don't set snpEff</option>
+          </param>
+          <when value="exclude_snpEff">
+          </when>
+          <when value="set_snpEff">
+            <param name="snpEff_input_rod" type="data" format="vcf" label="ROD file" />
+            <param name="snpEff_rod_name" type="hidden" value="snpEff" label="ROD Name"/>
+          </when>
+        </conditional>
+-->
+        <param display="checkboxes" help="-G,--group &amp;lt;group&amp;gt;" label="Annotation Interfaces/Groups" multiple="True" name="group" type="select">
+            <option value="RodRequiringAnnotation">RodRequiringAnnotation</option>
+            <option value="Standard">Standard</option>
+            <option value="Experimental">Experimental</option>
+            <option value="WorkInProgress">WorkInProgress</option>
+            <option value="RankSumTest">RankSumTest</option>
+            <!-- <option value="none">none</option> -->
+        </param>
+    <!--     <param name="family_string" type="text" value="" label="Family String"/> -->
+        <param display="checkboxes" help="-XA,--excludeAnnotation &amp;lt;excludeAnnotation&amp;gt;" label="Annotations to exclude" multiple="True" name="exclude_annotations" type="select">
+          <!-- load the available annotations from an external configuration file, since additional ones can be added to local installs -->
+          <options from_data_table="gatk3_annotations">
+            <filter column="tools_valid_for" separator="," type="multiple_splitter"/>
+            <filter column="tools_valid_for" type="static_value" value="UnifiedGenotyper"/>
+          </options>
+        </param>
+
+        <param format="vcf" help="--comp / -comp  comparison VCF file" label="comp" name="comp" optional="true" type="data"/>
+        <param help="--contamination_fraction_to_filter / -contamination  Fraction of contamination in sequencing data (for all samples) to aggressively remove" label="contamination_fraction_to_filter" name="contamination_fraction_to_filter" optional="true" type="float" value="0">
+            <validator max="1" message="value between 0.00 and 1.00" min="0" type="in_range"/>
+        </param>
+        <param format="vcf" help="--dbsnp / -D  dbSNP file" label="dbsnp" name="dbsnp" optional="true" type="data"/>
+        <param checked="False" falsevalue="" help="--debug / -debug  If specified, print out very verbose debug information about each triggering active region" label="debug" name="debug" truevalue="-debug" type="boolean"/>
+        <!--<param name="downsampleRegion" type="integer" value="1000" optional="true" label="downsampleRegion" help="-downsampleRegion / -dr  coverage, per-sample, to downsample each active region to"/>-->
+
+        <conditional name="genotyping_mode_type">
+          <param help="-gt_mode,--genotyping_mode &amp;lt;genotyping_mode&amp;gt;" label="How to determine the alternate allele to use for genotyping" name="genotyping_mode" type="select">
+            <option selected="True" value="NULL">NULL</option>
+            <option value="DISCOVERY">DISCOVERY</option>
+            <option value="GENOTYPE_GIVEN_ALLELES">GENOTYPE_GIVEN_ALLELES</option>
+          </param>
+          <when value="NULL">
+            <!-- Do nothing here -->
+          </when>
+          <when value="DISCOVERY">
+            <!-- Do nothing here -->
+          </when>
+          <when value="GENOTYPE_GIVEN_ALLELES">
+            <param format="vcf" help="-alleles,--alleles &amp;lt;alleles&amp;gt;" label="Alleles ROD file" name="input_alleles_rod" type="data"/>
+          </when>
+        </conditional>
+
+
+        <param checked="False" falsevalue="" help="--graphOutput / -graph  File to which debug assembly graph information should be written" label="graphOutput" name="graphOutput" truevalue="" type="boolean"/>
+        <param help="--heterozygosity / -hets  Heterozygosity value used to compute prior likelihoods for any locus" label="heterozygosity" name="heterozygosity" optional="true" type="float" value="0.0010"/>
+        <param help="--minPruning / -minPruning  The minimum allowed pruning factor in assembly graph. Paths with &gt;= X supporting kmers are pruned from the graph" label="minPruning" name="minPruning" optional="true" type="integer" value="2">
+            <validator max="127" message="value between 0 and 127" min="0" type="in_range"/>
+        </param>
+        <param help="--output_mode / -out_mode  Specifies which type of calls we should output" label="output_mode" name="output_mode" optional="true" type="select">
+              <option selected="True" value="EMIT_VARIANTS_ONLY">EMIT_VARIANTS_ONLY</option>
+              <option value="EMIT_ALL_CONFIDENT_SITES">EMIT_ALL_CONFIDENT_SITES</option>
+              <option value="EMIT_ALL_SITES">EMIT_ALL_SITES</option>
+        </param>
+        <param help="--pair_hmm_implementation / -pairHMM  The PairHMM implementation to use for genotype likelihood calculations" label="pair_hmm_implementation" name="pair_hmm_implementation" optional="true" type="select">
+              <option value="EXACT">EXACT</option>
+              <option value="ORIGINAL">ORIGINAL</option>
+              <option value="VECTOR_LOGLESS_CACHING">VECTOR_LOGLESS_CACHING</option>
+	      <option value="DEBUG_VECTOR_LOGLESS_CACHING">DEBUG_VECTOR_LOGLESS_CACHING</option>
+              <option value="ARRAY_LOGLESS">ARRAY_LOGLESS</option>
+              <option selected="True" value="LOGLESS_CACHING">LOGLESS_CACHING</option>
+        </param>
+        <param help="--standard_min_confidence_threshold_for_calling / -stand_call_conf  The minimum phred-scaled confidence threshold at which variants should be called" label="standard_min_confidence_threshold_for_calling" name="standard_min_confidence_threshold_for_calling" optional="true" type="float" value="30.0"/>
+        <param help="--standard_min_confidence_threshold_for_emitting / -stand_emit_conf  The minimum phred-scaled confidence threshold at which variants should be emitted (and filtered with LowQual if less than the calling threshold)" label="standard_min_confidence_threshold_for_emitting" name="standard_min_confidence_threshold_for_emitting" optional="true" type="float" value="30.0"/>
+        <param checked="False" falsevalue="" help="--useAllelesTrigger / -allelesTrigger  If specified, use additional trigger on variants found in an external alleles file" label="useAllelesTrigger" name="useAllelesTrigger" truevalue="-allelesTrigger" type="boolean"/>
+        <param checked="False" falsevalue="" help="--fullHaplotype / -fullHaplotype  If specified, output the full haplotype sequence instead of converting to individual variants w.r.t. the reference" label="fullHaplotype" name="fullHaplotype" truevalue="-fullHaplotype" type="boolean"/>
+        <param help="--gcpHMM / -gcpHMM  Flat gap continuation penalty for use in the Pair HMM" label="gcpHMM" name="gcpHMM" optional="true" type="integer" value="10"/>
+        <param checked="False" falsevalue="" help="--genotypeFullActiveRegion / -genotypeFullActiveRegion  If specified, alternate alleles are considered to be the full active region for the purposes of genotyping" label="genotypeFullActiveRegion" name="genotypeFullActiveRegion" truevalue="-genotypeFullActiveRegion" type="boolean"/>
+        <param help="--max_alternate_alleles / -maxAltAlleles  Maximum number of alternate alleles to genotype" label="max_alternate_alleles" name="max_alternate_alleles" optional="true" type="integer" value="6"/>
+        <param help="--p_nonref_model / -pnrm  Non-reference probability calculation model to employ" label="p_nonref_model" name="p_nonref_model" optional="true" type="select">
+              <option selected="True" value="EXACT_INDEPENDENT">EXACT_INDEPENDENT experimental implementation - for testing only</option>
+              <option value="EXACT_REFERENCE">EXACT_REFERENCE reference implementation of multi-allelic EXACT model. Extremely slow for many alternate alleles</option>
+              <option value="EXACT_ORIGINAL">EXACT_ORIGINAL original biallelic exact model, for testing only</option>
+              <option value="EXACT_GENERAL_PLOIDY">implementation that supports any sample ploidy</option>
+        </param>
+
+      </when>
+    </conditional>
+  </inputs>
+  <outputs>
+    <data format="vcf" label="${tool.name} on ${on_string} (VCF)" name="output_vcf"/>
+    <data format="vcf" label="${tool.name} on ${on_string} graph" name="graph_out">
+      <filter>analysis_param_type['analysis_param_type_selector'] == &quot;advanced&quot; and analysis_param_type['graphOutput'] == True</filter>
+    </data>
+    <data format="vcf" label="${tool.name} on ${on_string} activeRegion" name="active_region_out">
+      <filter>analysis_param_type['analysis_param_type_selector'] == &quot;advanced&quot; and analysis_param_type['activeRegionOut'] == True</filter>
+    </data>
+    <!--<data format="txt" label="${tool.name} on ${on_string} (bamout)" name="output_bam"/>-->
+  </outputs>
+  <tests>
+      <test>
+          <param ftype="csv" name="input_recal" value="gatk/gatk_count_covariates/gatk_count_covariates_out_1.csv"/> 
+          <param name="reference_source_selector" value="history"/>
+          <param ftype="fasta" name="ref_file" value="phiX.fasta"/>
+          <param ftype="bam" name="input_bam" value="gatk/gatk_indel_realigner/gatk_indel_realigner_out_1.bam"/>
+          <param name="gatk_param_type_selector" value="basic"/>
+          <param name="analysis_param_type_selector" value="basic"/>
+          <output file="gatk/gatk_table_recalibration/gatk_table_recalibration_out_1.bam" ftype="bam" lines_diff="4" name="output_bam"/>
+      </test>
+  </tests>
+  <help>
+**What it does**
+
+**HaplotypeCaller**
+calls SNPs and indels simultaneously via local de-novo assembly of haplotypes in an active region.
+Haplotypes are evaluated using an affine gap penalty Pair HMM.
+
+For more information on using read based compression in the GATK, see this `tool specific page &lt;http://www.broadinstitute.org/gatk/gatkdocs/org_broadinstitute_sting_gatk_walkers_haplotypecaller_HaplotypeCaller.html&gt;`_.
+
+To learn about best practices for variant detection using GATK, see this `overview &lt;http://www.broadinstitute.org/gatk/guide/topic?name=best-practices&gt;`_.
+
+If you encounter errors, please view the `GATK FAQ &lt;http://www.broadinstitute.org/gatk/guide/topic?name=faqs&gt;`_.
+
+------
+
+**Inputs**
+
+GenomeAnalysisTK: PrintReads accepts aligned BAM files.
+
+
+**Outputs**
+
+The output is a VCF file with raw, unrecalibrated SNP and indel calls.
+
+
+Go `here &lt;http://www.broadinstitute.org/gatk/guide/topic?name=intro&gt;`_ for details on GATK file formats.
+
+-------
+
+**Settings**::
+
+ activeRegionIn              Use this interval list file as the active regions to process
+ activeRegionOut             Output the active region to this interval list file
+ alleles                     The set of alleles at which to genotype when --genotyping_mode is GENOTYPE_GIVEN_ALLELES
+ annotation                  One or more specific annotations to apply to variant calls
+ comp                        comparison VCF file
+ contamination               Fraction of contamination in sequencing data (for all samples) to aggressively remove
+ dbsnp                       dbSNP file
+ debug                       If specified, print out very verbose debug information about each triggering active region
+ downsampleRegion            coverage, per-sample, to downsample each active region to
+ excludeAnnotation           One or more specific annotations to exclude
+ genotyping_mode             Specifies how to determine the alternate alleles to use for genotyping
+ graphOutput                 File to which debug assembly graph information should be written
+ group                       One or more classes/groups of annotations to apply to variant calls
+ heterozygosity              Heterozygosity value used to compute prior likelihoods for any locus
+ minPruning                  The minimum allowed pruning factor in assembly graph. Paths with less than or equal supporting kmers are pruned from the graph
+ output_mode                 Specifies which type of calls we should output
+ pair_hmm_implementation     The PairHMM implementation to use for genotype likelihood calculations
+ stand_call_conf             The minimum phred-scaled confidence threshold at which variants should be called
+ stand_emit_conf             The minimum phred-scaled confidence threshold at which variants should be emitted (and filtered with LowQual if less than the calling threshold)
+ useAllelesTrigger           If specified, use additional trigger on variants found in an external alleles file
+ fullHaplotype               If specified, output the full haplotype sequence instead of converting to individual variants w.r.t. the reference
+ gcpHMM                      Flat gap continuation penalty for use in the Pair HMM
+ genotypeFullActiveRegion    If specified, alternate alleles are considered to be the full active region for the purposes of genotyping
+ max_alternate_alleles       Maximum number of alternate alleles to genotype
+ p_nonref_model              Non-reference probability calculation model to employ
+
+------
+
+**Citation**
+
+For the underlying tool, please cite `DePristo MA, Banks E, Poplin R, Garimella KV, Maguire JR, Hartl C, Philippakis AA, del Angel G, Rivas MA, Hanna M, McKenna A, Fennell TJ, Kernytsky AM, Sivachenko AY, Cibulskis K, Gabriel SB, Altshuler D, Daly MJ. A framework for variation discovery and genotyping using next-generation DNA sequencing data. Nat Genet. 2011 May;43(5):491-8. &lt;http://www.ncbi.nlm.nih.gov/pubmed/21478889&gt;`_
+
+Please also site `McKenna A, Hanna M, Banks E, Sivachenko A, Cibulskis K, Kernytsky A, Garimella K, Altshuler D, Gabriel S, Daly M, DePristo MA (2010). The Genome Analysis Toolkit: a MapReduce framework for analyzing next-generation DNA sequencing data. Genome Res. 20:1297-303. Epub 2010 Jul 19. &lt;http://www.ncbi.nlm.nih.gov/pubmed/20644199&gt;`_
+
+If you use this tool in Galaxy, please cite `Blankenberg D, Von Kuster G, Coraor N, Ananda G, Lazarus R, Mangan M, Nekrutenko A, Taylor J. Galaxy: a web-based genome analysis tool for experimentalists. Curr Protoc Mol Biol. 2010 Jan;Chapter 19:Unit 19.10.1-21. &lt;http://www.ncbi.nlm.nih.gov/pubmed/20069535&gt;`_
+
+  </help>
+</tool>
