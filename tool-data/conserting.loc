@@ -1,0 +1,28 @@
+#This is a sample file distributed with Galaxy that enables tools
+#to use a directory of fasta and 2bit genome files for use with CREST. You will
+#need to supply these files and then create a crest.loc file
+#similar to this one (store it in this directory) that points to
+#the directories in which those files are stored. The crest.loc
+#file has this format (white space characters are TAB characters):
+#
+#<unique_build_id>	<window_length>	<display_name>	<gc_Content_path>	<mappability_window_path>
+#
+#So, for example, if your conserting.loc began like this:
+#
+#hg18    100     Human (Homo sapiens): hg18-100bp window /mnt/galaxyIndices/genomes/Hsapiens/hg18/annotation/conserting_gcContent_100    /mnt/galaxyIndices/genomes/Hsapiens/hg18/annotation/conserting_mappability_100
+#
+#then your /mnt/galaxyIndices/genomes/Hsapiens/hg18/annotation/ directory
+#would need to contain the following fasta and 2bit files:
+#
+#
+#drwxrwxr-x 2 galaxy galaxy        4096 Oct 30 05:06 conserting_mappability_100
+#drwxrwxr-x 2 galaxy galaxy        4096 Oct 30 16:55 conserting_gcContent_100
+
+#Note that for backwards compatibility with workflows, the unique ID of
+#an entry must be the path that was in the original loc file, because that
+#is the value stored in the workflow for that parameter. 
+#
+hg18	100	Human (Homo sapiens): hg18-100bp window	/mnt/galaxyIndices/genomes/Hsapiens/hg18/annotation/conserting_gcContent_100	/mnt/galaxyIndices/genomes/Hsapiens/hg18/annotation/conserting_mappability_100
+hg19	100	Human (Homo sapiens): hg19-100bp window	/mnt/galaxyIndices/genomes/Hsapiens/hg19/annotation/conserting_gcContent_100	/mnt/galaxyIndices/genomes/Hsapiens/hg19/annotation/conserting_mappability_100
+human_g1k_v37	100	Human (Homo sapiens): grch37-100bp window	/mnt/galaxyIndices/genomes/Hsapiens/human_g1k_v37/annotation/conserting_gcContent_100	/mnt/galaxyIndices/genomes/Hsapiens/human_g1k_v37/annotation/conserting_mappability_100
+

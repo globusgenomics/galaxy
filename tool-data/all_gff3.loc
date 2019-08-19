@@ -1,0 +1,15 @@
+#This file lists the locations and dbkeys of all the fasta files
+#under the "genome" directory (a directory that contains a directory
+#for each build). The script extract_fasta.py will generate the file
+#all_fasta.loc. This file has the format (white space characters are
+#TAB characters):
+#
+#<unique_build_id>      <dbkey>         <display_name>  <file_path>
+#
+PvivaxSal1	PvivaxSal1	Pvivax Sal1	/mnt/galaxyIndices/genomes/Pvivax/Sal1/annotations/PlasmoDB-28_PvivaxSal1.gff
+hg19	hg19	Human (Homo sapiens): hg19	/mnt/galaxyIndices/genomes/Hsapiens/hg19/annotation/hg19.gtf
+Grch37	hg19	Human (Homo sapiens): GRCh37.75	/mnt/galaxyIndices/genomes/Hsapiens/hg19/annotation/Homo_sapiens.GRCh3
+7.75.gtf
+GRCh38	hg38	Homo_sapiens-GRCh38	/mnt/galaxyIndices/genomes/Hsapiens/hg38/annotation/Homo_sapiens.GRCh38.82.chr.gff3
+hg38_ucsc	hg38_ucsc	hg38_ucsc	/mnt/galaxyIndices/genomes/Hsapiens/hg38_ucsc/annotation/genes.gtf	#downloaded from iGenomes (02/19/2017)
+PlasmoDB-29_Pfalciparum3D7_Genome	PlasmoDB-29_Pfalciparum3D7_Genome	PlasmoDB-29_Pfalciparum3D7_Genome	/mnt/galaxyIndices/genomes/PlasmoDB-29_Pfalciparum3D7_Genome/annotation/PlasmoDB-29_Pfalciparum3D7.gff

@@ -1,0 +1,6 @@
+#loc file for annovar tool
+
+# <columns>value, dbkey, name, ANNOVAR_scripts, ANNOVAR_humandb</columns>
+
+#hg18	hg18	build 36 (hg18)	/mnt/galaxyTools/tools/annovar/2013Aug23	/mnt/galaxyIndices/genomes/Hsapiens/hg18/annovar
+hg19	hg19	build 37 (hg19)	/mnt/galaxyTools/tools/annovar/2013Aug23	/mnt/galaxyIndices/genomes/Hsapiens/hg19/annovar

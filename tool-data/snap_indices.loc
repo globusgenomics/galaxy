@@ -1,0 +1,13 @@
+#This	is	a	sample	file	distributed	with	Galaxy	that	enables	tools
+#to	use	a	directory	of	GMAPDB	indexed	sequences	data	files.		You	will	need
+#to	create	these	data	files	using	gmap_build	and	then	create	a	gmap_indices.loc	file	
+#similar	to	this	one	(store	it	in	this	directory)	that	points	to	
+#the	directories	in	which	those	files	are	stored.	The	gmap_indices.loc	
+#file	has	this	format	(white	space	characters	are	TAB	characters):
+#
+#<unique_build_id>	<dbkey>	<display_name>	<file_base_path>
+#hg18	hg18		hg18	(cmet	atoi)		/depot/data2/galaxy/gmap/hg18
+hg38	hg38	Grch38(hg38)	/mnt/galaxyIndices/genomes/Hsapiens/hg38/snap
+hg38_isb	hg38_isb	Grch38(hg38_isb)	/mnt/galaxyIndices/genomes/Hsapiens/hg38_isb/snap
+hg38_isb_seed16	hg38_isb_seed16	Grch38(hg38_isb_seed16)	/mnt/galaxyIndices/genomes/Hsapiens/hg38_isb/snap_seed16
+hg38_ucsc	hg38_ucsc	hg38_ucsc	/mnt/galaxyIndices/genomes/Hsapiens/hg38_ucsc/snap

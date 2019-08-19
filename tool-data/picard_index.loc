@@ -1,0 +1,45 @@
+apiMel3	apiMel3	apiMel3	/mnt/galaxyIndices/genomes/Amellifera_Honeybee/apiMel3/srma/apiMel3.fa
+araTha_tair9	araTha_tair9	araTha_tair9	/mnt/galaxyIndices/genomes/Athaliana/araTha_tair9/srma/TAIR9.fa
+bosTau4	bosTau4	bosTau4	/mnt/galaxyIndices/genomes/Btaurus/bosTau4/srma/bosTau4.fa
+ce6	ce6	ce6	/mnt/galaxyIndices/genomes/Celegans/ce6/srma/ce6.fa
+WS200	WS200	WS200	/mnt/galaxyIndices/genomes/Celegans/WS200/srma/WS200.fa
+canFam2	canFam2	canFam2	/mnt/galaxyIndices/genomes/Cfamiliaris_Dog/canFam2/srma/canFam2.fa
+danRer6	danRer6	danRer6	/mnt/galaxyIndices/genomes/Drerio_Zebrafish/danRer6/srma/danRer6.fa
+dm3	dm3	dm3	/mnt/galaxyIndices/genomes/Dmelanogaster/dm3/srma/dm3.fa
+eschColi_K12	eschColi_K12	eschColi_K12	/mnt/galaxyIndices/genomes/Ecoli/eschColi_K12/srma/eschColi_K12.fa
+felCat3	felCat3	felCat3	/mnt/galaxyIndices/genomes/Fcatus_Cat/felCat3/srma/felCat3.fa
+galGal3	galGal3	galGal3	/mnt/galaxyIndices/genomes/Ggallus_Chicken/galGal3/srma/galGal3.fa
+hg18	hg18	hg18	/mnt/galaxyIndices/genomes/Hsapiens/hg18/srma/hg18.fa
+rheMac2	rheMac2	rheMac2	/mnt/galaxyIndices/genomes/Mmulatta/rheMac2/srma/rheMac2.fa
+mm8	mm8	mm8	/mnt/galaxyIndices/genomes/Mmusculus/mm8/seq/mm8.fa
+mm9	mm9	mm9	/mnt/galaxyIndices/genomes/Mmusculus/mm9/seq/mm9.fa
+mm10	mm10	mm10	/mnt/galaxyIndices/genomes/Mmusculus/mm10/seq/mm10.fa
+GRCm38	mm10	Mmusculus (GRCm38)	/mnt/galaxyIndices/genomes/Mmusculus/GRCm38/seq/Mus_musculus.GRCm38.dna.primary_assembly.fa
+NCBIM37	NCBIM37	MusMusculus (NCBIM37)	/mnt/galaxyIndices/genomes/Mmusculus/NCBIM37/seq/genome.fa
+92	92	92	/mnt/galaxyIndices/genomes/Msmegmatis/92/srma/92.fa
+mycoTube_H37RV	mycoTube_H37RV	mycoTube_H37RV	/mnt/galaxyIndices/genomes/Mtuberculosis_H37Rv/mycoTube_H37RV/srma/mycoTube_H37RV.fa
+Mnem_1.0	Mnem_1.0	Mnemestrina (Mnem_1.0)	/mnt/galaxyIndices/genomes/Mnemestrina/Mnem_1.0/seq/GCA_000956065.1_Mnem_1.0_genomic.fna
+386	386	386	/mnt/galaxyIndices/genomes/Paeruginosa_UCBPP-PA14/386/srma/386.fa
+phix	phix	phix	/mnt/galaxyIndices/genomes/phiX174/phix/srma/phix.fa
+rn4	rn4	rn4	/mnt/galaxyIndices/genomes/Rnorvegicus/rn4/srma/rn4.fa
+sacCer2	sacCer2	sacCer2	/mnt/galaxyIndices/genomes/Scerevisiae/sacCer2/srma/sacCer2.fa
+strPur2	strPur2	strPur2	/mnt/galaxyIndices/genomes/Spurpuratus/strPur2/srma/strPur2.fa
+susScr2	susScr2	susScr2	/mnt/galaxyIndices/genomes/Sscrofa/susScr2/srma/susScr2.fa
+Scrofa9.58	Scrofa9.58	Scrofa9.58	/mnt/galaxyIndices/genomes/Sscrofa/Scrofa9.58/srma/Sscrofa9.fa
+taeGut1	taeGut1	taeGut1	/mnt/galaxyIndices/genomes/Tguttata/taeGut1/srma/taeGut1.fa
+xenTro2	xenTro2	xenTro2	/mnt/galaxyIndices/genomes/Xtropicalis/xenTro2/srma/xenTro2.fa
+equCab2	equCab2	equCab2	/mnt/galaxyIndices/genomes/Ecaballus_Horse/equCab2/srma/equCab2.fa
+danRer5	danRer5	danRer5	/mnt/galaxyIndices/genomes/Drerio_Zebrafish/danRer5/srma/danRer5.fa
+hg19	hg19	hg19	/mnt/galaxyIndices/genomes/Hsapiens/hg19/ucsc-hg19/ucsc.hg19.fasta
+hg19_cln	hg19	hg19 (chr1-22, chrM-X-Y)	/mnt/galaxyIndices/genomes/Hsapiens/hg19/seq/hg19_cln.fa
+hg19_jxn	hg19	hg19 (junction)	/mnt/galaxyIndices/genomes/Hsapiens/hg19/seq/hg19_jxn.fa
+human_g1k_v37	hg19	human_g1k_v37	/mnt/galaxyIndices/genomes/Hsapiens/human_g1k_v37/seq/human_g1k_v37.fasta
+human_g1k_v37_decoy	hg19	human_g1k_v37_decoy	/mnt/galaxyIndices/genomes/Hsapiens/human_g1k_v37_decoy/seq/human_g1k_v37_decoy.fasta
+GRCh38	hg38	Homo_sapiens-GRCh38	/mnt/galaxyIndices/genomes/Hsapiens/hg38/seq/Homo_sapiens.GRCh38.dna.primary_assembly_sorted.fa
+hg38_ucsc	hg38_ucsc	hg38_ucsc	/mnt/galaxyIndices/genomes/Hsapiens/hg38_ucsc/seq/genome.fa
+Osjaponica	Osjaponica	Rice (Oryza sativa L. ssp. japonica var. Nipponbare): IRGSP4.0	/mnt/galaxyIndices/genomes/Osjaponica/srma_index/oryza_sativa_japonica_nipponbare_IRGSP4.0.fa
+Zmays	Zmays	(Zea mays): Zea_mays_B73_RefGen_v2	/mnt/galaxyIndices/genomes/Zmays/srma_index/Zea_mays_B73_RefGen_v2.fa
+12931	12931	Xanthomonas oryzae str. KACC10331: 12931	/mnt/galaxyIndices/genomes/microbes/12931/srma_index/Xanthomonas_oryzae_KACC10331.fa
+16297	16297	Xanthomonas oryzae str. MAFF_311018: 16297	/mnt/galaxyIndices/genomes/microbes/16297/srma_index/Xanthomonas_oryzae_MAFF_311018.fa
+PXO99A	PXO99A	Xanthomonas oryzae str. PXO99A: Xanthomonas_oryzae_PXO99A	/mnt/galaxyIndices/genomes/microbes/Xanthomonas_oryzae_PXO99A/srma_index/Xanthomonas_oryzae_PXO99A.fa
+

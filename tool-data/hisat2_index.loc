@@ -1,0 +1,4 @@
+hg19	hg19	hg19	/mnt/galaxyIndices/genomes/Hsapiens/hg19/hisat2/hg19
+hg38	hg38	GRCh38	/mnt/galaxyIndices/genomes/Hsapiens/hg38/hisat2/Homo_sapiens.GRCh38.dna.primary_assembly_sorted.fa
+NCBIM37	mm9	Mmusculus (NCBIM37)	/mnt/galaxyIndices/genomes/Mmusculus/NCBIM37/hisat2/ncbim37
+GRCm38	mm10	Mmusculus (GRCm38)	/mnt/galaxyIndices/genomes/Mmusculus/GRCm38/hisat2/GRCm38

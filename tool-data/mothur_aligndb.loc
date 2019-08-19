@@ -1,0 +1,32 @@
+#This is a sample file distributed with Galaxy that enables tools
+#to use a directory of metagenomics files.  
+#file has this format (white space characters are TAB characters):
+#
+# Reference Alignments:  http://www.mothur.org/wiki/Alignment_database
+#
+#<name>	<dbkey>	<value> 
+#
+homd_16S_rRNA_RefSeq_V15.1.aligned.fasta	homd_16S_rRNA_RefSeq_V15.1.aligned.fasta	/mnt/galaxyIndices/genomes/rRNA_databases/homd/ref/HOMD_16S_rRNA_RefSeq_V15.1.aligned.fasta
+HOMD_16S_rRNA_RefSeq_V15.1.p9.fasta	HOMD_16S_rRNA_RefSeq_V15.1.p9.fasta	/mnt/galaxyIndices/genomes/rRNA_databases/homd/ref/HOMD_16S_rRNA_RefSeq_V15.1.p9.fasta
+updated_HOMD_13.2.fasta	aupdated_HOMD_13.2.fasta	/mnt/galaxyIndices/genomes/rRNA_databases/homd/ref/updated_HOMD_13.2.fasta
+#modified_GGG.fasta	modified_GGG.fasta	/mnt/galaxyIndices/genomes/rRNA_databases/greengenes/ref/modified_GGG.fasta
+gg_13_8_99.refalign.fasta	gg_13_8_99.refalign.fasta	/mnt/galaxyIndices/genomes/rRNA_databases/greengenes/ref/gg_13_8_99.refalign.fasta
+gg_13_5_99.refalign.fasta	gg_13_5_99.refalign.fasta	/mnt/galaxyIndices/genomes/rRNA_databases/greengenes/ref/gg_13_5_99.refalign.fasta
+gg.gold.alignment.fasta	gg.gold.alignment.fasta	/mnt/galaxyIndices/genomes/rRNA_databases/greengenes/ref/rRNA16S.gold.NAST_ALIGNED.fasta
+gg_13_8_99.fasta	gg_13_8_99.fasta	/mnt/galaxyIndices/genomes/rRNA_databases/greengenes/ref/gg_13_8_99.fasta
+gg_13_5_99.fasta	gg_13_5_99.fasta	/mnt/galaxyIndices/genomes/rRNA_databases/greengenes/ref/gg_13_5_99.fasta
+#silva.v4.fasta	silva.v4.fasta	/mnt/galaxyIndices/genomes/rRNA_databases/silva/ref/silva.v4.fasta
+#silva.nr_v132.fasta	silva.nr_v132.fasta	/mnt/galaxyIndices/genomes/rRNA_databases/silva/ref/silva.nr_v132.align.fasta
+#trainset16_022016.pds.fasta	trainset16_022016.pds.fasta	/mnt/galaxyIndices/genomes/rRNA_databases/silva/ref/trainset16_022016.pds.fasta
+#trainset16_022016.rdp.fasta	trainset16_022016.rdp.fasta	/mnt/galaxyIndices/genomes/rRNA_databases/silva/ref/trainset16_022016.rdp.fasta
+
+#silva archaea	/project/db/galaxy/mothur/Silva.archaea/silva.archaea.fasta
+#silva bacteria	/project/db/galaxy/mothur/silva.bacteria/silva.bacteria.fasta
+#silva eukarya	/project/db/galaxy/mothur/silva.eukarya.fasta
+#silva archaea nogap	/project/db/galaxy/mothur/Silva.archaea/nogap.archaea.fasta
+#silva bacteria nogap	/project/db/galaxy/mothur/silva.bacteria/nogap.bacteria.fasta
+#silva eukarya nogap	/project/db/galaxy/mothur/nogap.eukarya.fasta
+#FungiLSU_train_1400bp_8506_mod.fasta	/project/db/galaxy/mothur/RDP/FungiLSU_train_1400bp_8506_mod.fasta
+#trainset6_032010.rdp.fasta	/project/db/galaxy/mothur/RDP/trainset6_032010.rdp.fasta
+#trainset7_112011.pds.fasta	/project/db/galaxy/mothur/RDP/trainset7_112011.pds.fasta
+#trainset7_112011.rdp.fasta	/project/db/galaxy/mothur/RDP/trainset7_112011.rdp.fasta

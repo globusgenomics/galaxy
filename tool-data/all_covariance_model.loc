@@ -1,0 +1,63 @@
+#This file lists the locations and dbkeys of all the fasta files
+#under the "genome" directory (a directory that contains a directory
+#for each build). The script extract_fasta.py will generate the file
+#all_fasta.loc. This file has the format (white space characters are
+#TAB characters):
+#
+#<unique_build_id>	<dbkey>		<display_name>	<file_path>
+#
+#So, all_fasta.loc could look something like this:
+#
+#apiMel3	apiMel3	Honeybee (Apis mellifera): apiMel3		/path/to/genome/apiMel3/apiMel3.fa
+#hg19canon	hg19		Human (Homo sapiens): hg19 Canonical		/path/to/genome/hg19/hg19canon.fa
+#hg19full	hg19		Human (Homo sapiens): hg19 Full			/path/to/genome/hg19/hg19full.fa
+#
+#Your all_fasta.loc file should contain an entry for each individual
+#fasta file. So there will be multiple fasta files for each build,
+#such as with hg19 above.
+#
+DGN-WB_0.5	DGN-WB_0.5	DGN-WB_0.5	/mnt/galaxyIndices/genomes/general_dbs/tissue_transriptome_model/DGN-WB.txt.gz
+TW_Adipose_Visceral_Omentum_0.5	TW_Adipose_Visceral_Omentum_0.5	TW_Adipose_Visceral_Omentum_0.5	/mnt/galaxyIndices/genomes/general_dbs/tissue_transriptome_model/TW_Adipose_Visceral_Omentum.txt.gz
+TW_Adipose_Subcutaneous_0.5	TW_Adipose_Subcutaneous_0.5	TW_Adipose_Subcutaneous_0.5	/mnt/galaxyIndices/genomes/general_dbs/tissue_transriptome_model/TW_Adipose_Subcutaneous.txt.gz
+TW_Adrenal_Gland_0.5	TW_Adrenal_Gland_0.5	TW_Adrenal_Gland_0.5	/mnt/galaxyIndices/genomes/general_dbs/tissue_transriptome_model/TW_Adrenal_Gland.txt.gz
+TW_Artery_Aorta_0.5	TW_Artery_Aorta_0.5	TW_Artery_Aorta_0.5	/mnt/galaxyIndices/genomes/general_dbs/tissue_transriptome_model/TW_Artery_Aorta.txt.gz
+TW_Artery_Coronary_0.5	TW_Artery_Coronary_0.5	TW_Artery_Coronary_0.5	/mnt/galaxyIndices/genomes/general_dbs/tissue_transriptome_model/TW_Artery_Coronary.txt.gz
+TW_Artery_Tibial_0.5	TW_Artery_Tibial_0.5	TW_Artery_Tibial_0.5	/mnt/galaxyIndices/genomes/general_dbs/tissue_transriptome_model/TW_Artery_Tibial.txt.gz
+TW_Brain_Anterior_cingulate_cortex_BA24_0.5	TW_Brain_Anterior_cingulate_cortex_BA24_0.5	TW_Brain_Anterior_cingulate_cortex_BA24_0.5	/mnt/galaxyIndices/genomes/general_dbs/tissue_transriptome_model/TW_Brain_Anterior_cingulate_cortex_BA24.txt.gz
+TW_Brain_Caudate_basal_ganglia_0.5	TW_Brain_Caudate_basal_ganglia_0.5	TW_Brain_Caudate_basal_ganglia_0.5	/mnt/galaxyIndices/genomes/general_dbs/tissue_transriptome_model/TW_Brain_Caudate_basal_ganglia.txt.gz
+TW_Brain_Cerebellar_Hemisphere_0.5	TW_Brain_Cerebellar_Hemisphere_0.5	TW_Brain_Cerebellar_Hemisphere_0.5	/mnt/galaxyIndices/genomes/general_dbs/tissue_transriptome_model/TW_Brain_Cerebellar_Hemisphere.txt.gz
+TW_Brain_Cerebellum_0.5	TW_Brain_Cerebellum_0.5	TW_Brain_Cerebellum_0.5	/mnt/galaxyIndices/genomes/general_dbs/tissue_transriptome_model/TW_Brain_Cerebellum.txt.gz
+TW_Brain_Cortex_0.5	TW_Brain_Cortex_0.5	TW_Brain_Cortex_0.5	/mnt/galaxyIndices/genomes/general_dbs/tissue_transriptome_model/TW_Brain_Cortex.txt.gz
+TW_Brain_Frontal_Cortex_BA9_0.5	TW_Brain_Frontal_Cortex_BA9_0.5	TW_Brain_Frontal_Cortex_BA9_0.5	/mnt/galaxyIndices/genomes/general_dbs/tissue_transriptome_model/TW_Brain_Frontal_Cortex_BA9.txt.gz
+TW_Brain_Hippocampus_0.5	TW_Brain_Hippocampus_0.5	TW_Brain_Hippocampus_0.5	/mnt/galaxyIndices/genomes/general_dbs/tissue_transriptome_model/TW_Brain_Hippocampus.txt.gz
+TW_Brain_Hypothalamus_0.5	TW_Brain_Hypothalamus_0.5	TW_Brain_Hypothalamus_0.5	/mnt/galaxyIndices/genomes/general_dbs/tissue_transriptome_model/TW_Brain_Hypothalamus.txt.gz
+TW_Brain_Nucleus_accumbens_basal_ganglia_0.5	TW_Brain_Nucleus_accumbens_basal_ganglia_0.5	TW_Brain_Nucleus_accumbens_basal_ganglia_0.5	/mnt/galaxyIndices/genomes/general_dbs/tissue_transriptome_model/TW_Brain_Nucleus_accumbens_basal_ganglia.txt.gz
+TW_Brain_Putamen_basal_ganglia_0.5	TW_Brain_Putamen_basal_ganglia_0.5	TW_Brain_Putamen_basal_ganglia_0.5	/mnt/galaxyIndices/genomes/general_dbs/tissue_transriptome_model/TW_Brain_Putamen_basal_ganglia.txt.gz
+TW_Breast_Mammary_Tissue_0.5	TW_Breast_Mammary_Tissue_0.5	TW_Breast_Mammary_Tissue_0.5	/mnt/galaxyIndices/genomes/general_dbs/tissue_transriptome_model/TW_Breast_Mammary_Tissue.txt.gz
+TW_Cells_EBV-transformed_lymphocytes_0.5	TW_Cells_EBV-transformed_lymphocytes_0.5	TW_Cells_EBV-transformed_lymphocytes_0.5	/mnt/galaxyIndices/genomes/general_dbs/tissue_transriptome_model/TW_Cells_EBV-transformed_lymphocytes.txt.gz
+TW_Cells_Transformed_fibroblasts_0.5	TW_Cells_Transformed_fibroblasts_0.5	TW_Cells_Transformed_fibroblasts_0.5	/mnt/galaxyIndices/genomes/general_dbs/tissue_transriptome_model/TW_Cells_Transformed_fibroblasts.txt.gz
+TW_Colon_Sigmoid_0.5	TW_Colon_Sigmoid_0.5	TW_Colon_Sigmoid_0.5	/mnt/galaxyIndices/genomes/general_dbs/tissue_transriptome_model/TW_Colon_Sigmoid.txt.gz
+TW_Colon_Transverse_0.5	TW_Colon_Transverse_0.5	TW_Colon_Transverse_0.5	/mnt/galaxyIndices/genomes/general_dbs/tissue_transriptome_model/TW_Colon_Transverse.txt.gz
+TW_Esophagus_Gastroesophageal_Junction_0.5	TW_Esophagus_Gastroesophageal_Junction_0.5	TW_Esophagus_Gastroesophageal_Junction_0.5	/mnt/galaxyIndices/genomes/general_dbs/tissue_transriptome_model/TW_Esophagus_Gastroesophageal_Junction.txt.gz
+TW_Esophagus_Mucosa_0.5	TW_Esophagus_Mucosa_0.5	TW_Esophagus_Mucosa_0.5	/mnt/galaxyIndices/genomes/general_dbs/tissue_transriptome_model/TW_Esophagus_Mucosa.txt.gz
+TW_Esophagus_Muscularis_0.5	TW_Esophagus_Muscularis_0.5	TW_Esophagus_Muscularis_0.5	/mnt/galaxyIndices/genomes/general_dbs/tissue_transriptome_model/TW_Esophagus_Muscularis.txt.gz
+TW_Heart_Atrial_Appendage_0.5	TW_Heart_Atrial_Appendage_0.5	TW_Heart_Atrial_Appendage_0.5	/mnt/galaxyIndices/genomes/general_dbs/tissue_transriptome_model/TW_Heart_Atrial_Appendage.txt.gz
+TW_Heart_Left_Ventricle_0.5	TW_Heart_Left_Ventricle_0.5	TW_Heart_Left_Ventricle_0.5	/mnt/galaxyIndices/genomes/general_dbs/tissue_transriptome_model/TW_Heart_Left_Ventricle.txt.gz
+TW_Liver_0.5	TW_Liver_0.5	TW_Liver_0.5	/mnt/galaxyIndices/genomes/general_dbs/tissue_transriptome_model/TW_Liver.txt.gz
+TW_Lung_0.5	TW_Lung_0.5	TW_Lung_0.5	/mnt/galaxyIndices/genomes/general_dbs/tissue_transriptome_model/TW_Lung.txt.gz
+TW_Muscle_Skeletal_0.5	TW_Muscle_Skeletal_0.5	TW_Muscle_Skeletal_0.5	/mnt/galaxyIndices/genomes/general_dbs/tissue_transriptome_model/TW_Muscle_Skeletal.txt.gz
+TW_Nerve_Tibial_0.5	TW_Nerve_Tibial_0.5	TW_Nerve_Tibial_0.5	/mnt/galaxyIndices/genomes/general_dbs/tissue_transriptome_model/TW_Nerve_Tibial.txt.gz
+TW_Ovary_0.5	TW_Ovary_0.5	TW_Ovary_0.5	/mnt/galaxyIndices/genomes/general_dbs/tissue_transriptome_model/TW_Ovary.txt.gz
+TW_Pancreas_0.5	TW_Pancreas_0.5	TW_Pancreas_0.5	/mnt/galaxyIndices/genomes/general_dbs/tissue_transriptome_model/TW_Pancreas.txt.gz
+TW_Pituitary_0.5	TW_Pituitary_0.5	TW_Pituitary_0.5	/mnt/galaxyIndices/genomes/general_dbs/tissue_transriptome_model/TW_Pituitary.txt.gz
+TW_Prostate_0.5	TW_Prostate_0.5	TW_Prostate_0.5	/mnt/galaxyIndices/genomes/general_dbs/tissue_transriptome_model/TW_Prostate.txt.gz
+TW_Skin_Not_Sun_Exposed_Suprapubic_0.5	TW_Skin_Not_Sun_Exposed_Suprapubic_0.5	TW_Skin_Not_Sun_Exposed_Suprapubic_0.5	/mnt/galaxyIndices/genomes/general_dbs/tissue_transriptome_model/TW_Skin_Not_Sun_Exposed_Suprapubic.txt.gz
+TW_Skin_Sun_Exposed_Lower_leg_0.5	TW_Skin_Sun_Exposed_Lower_leg_0.5	TW_Skin_Sun_Exposed_Lower_leg_0.5	/mnt/galaxyIndices/genomes/general_dbs/tissue_transriptome_model/TW_Skin_Sun_Exposed_Lower_leg.txt.gz
+TW_Small_Intestine_Terminal_Ileum_0.5	TW_Small_Intestine_Terminal_Ileum_0.5	TW_Small_Intestine_Terminal_Ileum_0.5	/mnt/galaxyIndices/genomes/general_dbs/tissue_transriptome_model/TW_Small_Intestine_Terminal_Ileum.txt.gz
+TW_Spleen_0.5	TW_Spleen_0.5	TW_Spleen_0.5	/mnt/galaxyIndices/genomes/general_dbs/tissue_transriptome_model/TW_Spleen.txt.gz
+TW_Stomach_0.5	TW_Stomach_0.5	TW_Stomach_0.5	/mnt/galaxyIndices/genomes/general_dbs/tissue_transriptome_model/TW_Stomach.txt.gz
+TW_Testis_0.5	TW_Testis_0.5	TW_Testis_0.5	/mnt/galaxyIndices/genomes/general_dbs/tissue_transriptome_model/TW_Testis.txt.gz
+TW_Thyroid_0.5	TW_Thyroid_0.5	TW_Thyroid_0.5	/mnt/galaxyIndices/genomes/general_dbs/tissue_transriptome_model/TW_Thyroid.txt.gz
+TW_Uterus_0.5	TW_Uterus_0.5	TW_Uterus_0.5	/mnt/galaxyIndices/genomes/general_dbs/tissue_transriptome_model/TW_Uterus.txt.gz
+TW_Vagina_0.5	TW_Vagina_0.5	TW_Vagina_0.5	/mnt/galaxyIndices/genomes/general_dbs/tissue_transriptome_model/TW_Vagina.txt.gz
+TW_Whole_Blood_0.5	TW_Whole_Blood_0.5	TW_Whole_Blood_0.5	/mnt/galaxyIndices/genomes/general_dbs/tissue_transriptome_model/TW_Whole_Blood.txt.gz

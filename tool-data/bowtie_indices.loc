@@ -1,0 +1,12 @@
+ebv	ebv	EBV (virus)	/mnt/galaxyIndices/genomes/viruses/ebv/20170215/bowtie/ebv.fa
+dm3	dm3	dm3	/mnt/galaxyIndices/genomes/Dmelanogaster/dm3/bowtie/dm3
+hg18	hg18	hg18	/mnt/galaxyIndices/genomes/Hsapiens/hg18/bowtie/hg18
+mm9	mm9	mm9	/mnt/galaxyIndices/genomes/Mmusculus/mm9/bowtie/mm9
+mm10	mm10	mm10	/mnt/galaxyIndices/genomes/Mmusculus/mm9/bowtie/mm10
+NCBIM37	NCBIM37	MusMusculus (NCBIM37)	/mnt/galaxyIndices/genomes/Mmusculus/NCBIM37/bowtie/genome
+hg19	hg19	hg19	/mnt/galaxyIndices/genomes/Hsapiens/hg19/bowtie/hg19
+human_g1k_v37	hg19	human_g1k_v37	/mnt/galaxyIndices/genomes/Hsapiens/human_g1k_v37/bowtie/human_g1k_v37
+human_g1k_v37_decoy	hg19	human_g1k_v37_decoy	/mnt/galaxyIndices/genomes/Hsapiens/human_g1k_v37_decoy/bowtie2/human_g1k_v37_decoy
+GRCh38	hg38	Homo_sapiens-GRCh38	/mnt/galaxyIndices/genomes/Hsapiens/hg38/bowtie/Homo_sapiens.GRCh38.dna.primary_assembly_sorted
+#hg19	hg19	hg19	/scratch/ReferenceFiles/Hsapiens/hg19/bowtie/hg19
+PlasmoDB-29_Pfalciparum3D7_Genome	PlasmoDB-29_Pfalciparum3D7_Genome	PlasmoDB-29_Pfalciparum3D7_Genome	/mnt/galaxyIndices/genomes/PlasmoDB-29_Pfalciparum3D7_Genome/bowtie/PlasmoDB-29_Pfalciparum3D7_Genome

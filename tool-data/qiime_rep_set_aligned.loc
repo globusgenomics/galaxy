@@ -1,0 +1,19 @@
+#<unique_id>  <name>  <database_caption>  <fasta_file_path>
+#
+#For each reference database, you need to download the fasta file in qiime path
+#
+#List of useful db for qiime: http://qiime.org/home_static/dataFiles.html
+#
+homd_16S_rRNA_RefSeq_V15.1.aligned.fasta	homd_16S_rRNA_RefSeq_V15.1.aligned.fasta	homd_16S_rRNA_RefSeq_V15.1.aligned.fasta	/mnt/galaxyIndices/genomes/rRNA_databases/homd/ref/HOMD_16S_rRNA_RefSeq_V15.1.aligned.fasta
+updated_HOMD_13.2.fasta	updated_HOMD_13.2.fasta	updated_HOMD_13.2.fasta	/mnt/galaxyIndices/genomes/rRNA_databases/homd/ref/updated_HOMD_13.2.fasta
+modified_GGG.fasta	modified_GGG.fasta	modified_GGG.fasta	/mnt/galaxyIndices/genomes/rRNA_databases/greengenes/ref/modified_GGG.fasta
+gg_13_8_otus.pynast.fasta	qiime_gg_13_8_otus.pynast.fasta	GreenGenes 13_8 OTUs	/mnt/galaxyIndices/genomes/general_dbs/qiime/gg_13_8_otus/85_otus.pynast.fasta
+gg_13_8_99.refalign.fasta	gg_13_8_99.refalign.fasta	gg_13_8_99.refalign.fasta	/mnt/galaxyIndices/genomes/rRNA_databases/greengenes/ref/gg_13_8_99.refalign.fasta
+gg_13_5_99.refalign.fasta	gg_13_5_99.refalign.fasta	gg_13_5_99.refalign.fasta	/mnt/galaxyIndices/genomes/rRNA_databases/greengenes/ref/gg_13_5_99.refalign.fasta
+rRNA16S.gold.nast_aligned.fasta	rRNA16S.gold.nast_aligned.fasta	rRNA16S.gold.nast_aligned.fasta	/mnt/galaxyIndices/genomes/rRNA_databases/greengenes/ref/rRNA16S.gold.NAST_ALIGNED.fasta
+gg_13_8_99.fasta	gg_13_8_99.fasta	gg_13_8_99.fasta	/mnt/galaxyIndices/genomes/rRNA_databases/greengenes/ref/gg_13_8_99.fasta
+gg_13_5_99.fasta	gg_13_5_99.fasta	gg_13_5_99.fasta	/mnt/galaxyIndices/genomes/rRNA_databases/greengenes/ref/gg_13_5_99.fasta
+silva.v4.fasta	silva.v4.fasta	silva.v4.fasta	/mnt/galaxyIndices/genomes/rRNA_databases/silva/ref/silva.v4.fasta
+silva.nr_v132.align.fasta	silva.nr_v132.align.fasta	silva.nr_v132.align.fasta	/mnt/galaxyIndices/genomes/rRNA_databases/silva/ref/silva.nr_v132.align.fasta
+trainset16_022016.pds.fasta	trainset16_022016.pds.fasta	trainset16_022016.pds.fasta	/mnt/galaxyIndices/genomes/rRNA_databases/silva/ref/trainset16_022016.pds.fasta
+trainset16_022016.rdp.fasta	trainset16_022016.rdp.fasta	trainset16_022016.rdp.fasta	/mnt/galaxyIndices/genomes/rRNA_databases/silva/ref/trainset16_022016.rdp.fasta

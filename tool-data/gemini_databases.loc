@@ -1,0 +1,3 @@
+## GEMINI databases
+#Version dbkey   Description		Data_path
+hg19	hg19	Database(10-23-2014)	/scratch/galaxy/data/genomes/Hsapiens/hg19/gemini/data 

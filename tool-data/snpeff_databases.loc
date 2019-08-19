@@ -1,0 +1,10 @@
+## Available Databases for SnpEff 
+## These are from the list on: http://snpeff.sourceforge.net/download.html
+## the Description field in this sample is "Genome : Version" 
+#Version	Description
+#GRCh37.68	Homo sapiens : GRCh37.68
+#GRCh37.69	Homo sapiens : GRCh37.69
+GRCh37.75	Homo sapiens : GRCh37.75
+hg19	Homo sapiens : hg19
+GRCm38.79	Mus Musculus: GRCm38.75 (mm10 - Ensembl)
+mm10	Mus Musculus: mm10 (UCSC)

@@ -1,0 +1,19 @@
+#This is a sample file distributed with Galaxy that is used by the
+#fastq_screen tool. The fastq_screen.loc file has this format (white space 
+#characters are TAB characters):
+#
+#<Description>	<Format>	<PathToConfFile>
+#
+#For example:
+#
+#Model organisms	fastqsanger	/home/galaxy/genomes/model_organisms.conf
+#rRNA screens	fastqsanger	/home/galaxy/genomes/rRNA_screens.conf
+#Model organisms (color)	fastqcssanger	/home/galaxy/genomes/model_organisms_color.conf
+#...etc...
+#
+#The conf files should contain references to the appropriate bowtie indexes
+#as per a standard fastq_screen setup.
+#
+#This file should be placed in galaxy's tool-data directory when the
+#fastq_screen tool is installed.
+Homo sapiens (hg19)	fastqsanger	/mnt/galaxyTools/tools/fastq_screen/fastq_screen_v0.4.4/fastq_screen.conf

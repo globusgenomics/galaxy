@@ -1,0 +1,29 @@
+#This file lists the names of chemical modifications acceptable for proteomics search engines
+#
+#
+None	none	None	none
+iTRAQ 4plex	itraq4plex	iTRAQ 4plex	itraq4plex
+iTRAQ 8plex	itraq8plex	iTRAQ 8plex	itraq8plex
+TMT 6plex	tmt_6plex	TMT 6plex	tmt_6plex
+TMT 2plex	tmt_2plex	TMT 2plex	tmt_2plex
+18O multiplex	18o_multiplex	18O multiplex	18o_multiplex
+SILAC K+6 R+6 multiplex	silac_k+6_r+6_multiplex	SILAC K+6 R+6 multiplex	silac_k+6_r+6_multiplex
+IPTL (Succinyl and IMID) multiplex	iptl_succynyl_and_imid_multiplex	IPTL (Succinyl and IMID) multiplex	iptl_succynyl_and_imid_multiplex
+ICPL duplex pre-digest [MD]	icpl_duplex_pre-digest__md_	ICPL duplex pre-digest [MD]	icpl_duplex_pre-digest__md_
+ICPL duplex post-digest [MD]	icpl_duplex_post-digest__md_	ICPL duplex post-digest [MD]	icpl_duplex_post-digest__md_
+ICPL triplex pre-digest [MD]	icpl_trilex_pre-digest__md_	ICPL triplex pre-digest [MD]	icpl_triplex_pre-digest__md_
+18O corrected [MD]	18o_corrected__md_	18O corrected [MD]	18o_corrected__md_
+15N Metabolic [MD]	15n_metabolic__md_	15N Metabolic [MD]	15n_metabolic__md_
+15N + 13C Metabolic [MD]	15n_+_13c_metabolic__md_	15N + 13C Metabolic [MD]	15n_+_13c_metabolic__md_
+SILAC K+6 R+10 [MD]	silac_k+6_r+10__md_	SILAC K+6 R+10 [MD]	silac_k+6_r+10__md_
+SILAC K+6 R+10 Arg-Pro [MD]	silac_k+6_r+10_arg-pro__md_	SILAC K+6 R+10 Arg-Pro [MD]	silac_k+6_r+10_arg-pro__md_
+SILAC K+6 R+6 [MD]	silac_k+6_r+6__md_	SILAC K+6 R+6 [MD]	silac_k+6_r+6__md_
+SILAC R+6 R+10 [MD]	silac_r+6_r+10__md_	SILAC R+6 R+10 [MD]	silac_r+6_r+10__md_
+SILAC K+8 R+10 [MD]	silac_k+8_r+10__md_	SILAC K+8 R+10 [MD]	silac_k+8_r+10__md_
+SILAC K+4 K+8 R+6 R+10 [MD]	silac_k+4_k+8_r+6_r+10__md_	SILAC K+4 K+8 R+6 R+10 [MD]	silac_k+4_k+8_r+6_r+10__md_
+ICAT ABI Cleavable [MD]	icat_abi_cleavable__md_	ICAT ABI Cleavable [MD]	icat_abi_cleavable__md_
+ICAT D8 [MD]	icat_d8__md_	ICAT D8 [MD]	icat_d8__md_
+Dimethylation [MD]	dimethylation__md_	Dimethylation [MD]	dimethylation__md_
+NB5 Shimadzu [MD]	nbs_shimadzu__md_	NB5 Shimadzu [MD]	nbs_shimadzu__md_
+Label-free [MD]	label-free__md_	Label-free [MD]	label-free__md_
+Average [MD]	average__md_	Average [MD]	average__md_

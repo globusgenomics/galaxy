@@ -1,0 +1,9 @@
+#<unique_id>  <name>  <database_caption>  <fasta_file_path>
+#
+#For each reference database, you need to download the fasta file in qiime path
+#
+#List of useful db for qiime: http://qiime.org/home_static/dataFiles.html
+#
+gg_13_8_otus.fasta	qiime_gg_13_8_otus.fasta	GreenGenes 13_8 OTUs.fasta	/mnt/galaxyIndices/genomes/general_dbs/qiime/gg_13_8_otus/97_otus.fasta
+qiime_97_otus.fasta	qiime_97_otus.fasta	97 OTUs	/scratch/galaxy/data/qiime_db_data/97_otus.fasta
+updated_HOMD_13.2.fasta	updated_HOMD_13.2.fasta	updated_HOMD_13.2.fasta	/mnt/galaxyIndices/genomes/rRNA_databases/homd/ref/updated_HOMD_13.2.fasta

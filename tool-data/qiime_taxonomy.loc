@@ -1,0 +1,14 @@
+#<unique_id>  <name>  <database_caption>  <fasta_file_path>
+#
+#For each reference database, you need to download the fasta file in qiime path
+#
+#List of useful db for qiime: http://qiime.org/home_static/dataFiles.html
+#
+gg_13_8_99.gg.tax	gg_13_8_99.gg.tax	gg_13_8_99.gg.tax	/mnt/galaxyIndices/genomes/rRNA_databases/greengenes/tax/gg_13_8_99.gg.tax
+gg_13_5_99.gg.tax	gg_13_5_99.gg.tax	gg_13_5_99.gg.tax	/mnt/galaxyIndices/genomes/rRNA_databases/greengenes/tax/gg_13_5_99.gg.tax
+trainset16_022016.pds.tax	trainset16_022016.pds.tax	trainset16_022016.pds.tax	/mnt/galaxyIndices/genomes/rRNA_databases/greengenes/tax/trainset16_022016.pds.tax
+trainset16_022016.rdp.tax	trainset16_022016.rdp.tax	trainset16_022016.rdp.tax	/mnt/galaxyIndices/genomes/rRNA_databases/greengenes/tax/trainset16_022016.rdp.tax
+gg_13_8_otus	qiime_gg_13_8_otus	GreenGenes 13_8 OTUs	/mnt/galaxyIndices/genomes/general_dbs/qiime/gg_13_8_otus/97_otu_taxonomy.txt
+homd_16S_rRNA_RefSeq_V15.1.qiime.taxonomy	homd_16S_rRNA_RefSeq_V15.1.qiime.taxonomy	homd_16S_rRNA_RefSeq_V15.1	/mnt/galaxyIndices/genomes/rRNA_databases/homd/tax/HOMD_16S_rRNA_RefSeq_V15.1.qiime.taxonomy
+updated_HOMD_13.2.taxonomy	updated_HOMD_13.2.taxonomy	updated_HOMD_13.2.taxonomy	/mnt/galaxyIndices/genomes/rRNA_databases/homd/tax/updated_HOMD_13.2.taxonomy
+modified_GGG.taxonomy	modified_GGG.taxonomy   modified_GGG.taxonomy	/mnt/galaxyIndices/genomes/rRNA_databases/greengenes/tax/modified_GGG.taxonomy

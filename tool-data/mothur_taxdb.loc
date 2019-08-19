@@ -1,0 +1,25 @@
+#This is a sample file distributed with Galaxy that enables tools
+#to use a directory of metagenomics files.  
+#file has this format (white space characters are TAB characters):
+#
+# Reference Alignments:  http://www.mothur.org/wiki/Alignment_database
+#
+#<name>	<dbkey>	<value> 
+#
+#modified_GGG.taxonomy	modified_GGG.taxonomy	/mnt/galaxyIndices/genomes/rRNA_databases/greengenes/tax/modified_GGG.taxonomy
+#trainset16_022016.pds.tax	trainset16_022016.pds.tax	/mnt/galaxyIndices/genomes/rRNA_databases/greengenes/tax/trainset16_022016.pds.tax
+#trainset16_022016.rdp.tax	trainset16_022016.rdp.tax	/mnt/galaxyIndices/genomes/rRNA_databases/greengenes/tax/trainset16_022016.rdp.tax
+updated_HOMD_13.2.taxonomy	updated_HOMD_13.2.taxonomy	/mnt/galaxyIndices/genomes/rRNA_databases/homd/tax/updated_HOMD_13.2.taxonomy
+homd_16S_rRNA_RefSeq_V15.1.mothur.taxonomy	homd_16S_rRNA_RefSeq_V15.1.mothur.taxonomy	/mnt/galaxyIndices/genomes/rRNA_databases/homd/tax/HOMD_16S_rRNA_RefSeq_V15.1.mothur.taxonomy
+gg_13_8_99.gg.tax	gg_13_8_99.gg.tax	/mnt/galaxyIndices/genomes/rRNA_databases/greengenes/tax/gg_13_8_99.gg.tax
+gg_13_5_99.gg.tax	gg_13_5_99.gg.tax	/mnt/galaxyIndices/genomes/rRNA_databases/greengenes/tax/gg_13_5_99.gg.tax
+#silva archaea	/project/db/galaxy/mothur/Silva.archaea/silva.archaea.fasta
+#silva bacteria	/project/db/galaxy/mothur/silva.bacteria/silva.bacteria.fasta
+#silva eukarya	/project/db/galaxy/mothur/silva.eukarya.fasta
+#silva archaea nogap	/project/db/galaxy/mothur/Silva.archaea/nogap.archaea.fasta
+#silva bacteria nogap	/project/db/galaxy/mothur/silva.bacteria/nogap.bacteria.fasta
+#silva eukarya nogap	/project/db/galaxy/mothur/nogap.eukarya.fasta
+#FungiLSU_train_1400bp_8506_mod.fasta	/project/db/galaxy/mothur/RDP/FungiLSU_train_1400bp_8506_mod.fasta
+#trainset6_032010.rdp.fasta	/project/db/galaxy/mothur/RDP/trainset6_032010.rdp.fasta
+#trainset7_112011.pds.fasta	/project/db/galaxy/mothur/RDP/trainset7_112011.pds.fasta
+#trainset7_112011.rdp.fasta	/project/db/galaxy/mothur/RDP/trainset7_112011.rdp.fasta

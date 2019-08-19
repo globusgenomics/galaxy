@@ -1,0 +1,12 @@
+## Downloaded Databases for SnpEff 
+## These are from the list on: http://snpeff.sourceforge.net/download.html
+## the Description field in this sample is "Genome : Version" 
+#Version        Description	data_dir path
+#GRCh37.68      Homo sapiens : GRCh37.68	/home/galaxy/snpEff/data
+#GRCh37.69	Homo sapiens : GRCh37.69	/scratch/dev/galaxy/data/genomes/Hsapiens/hg19/snpeff/data
+GRCh37.75	Homo sapiens : GRCh37.75	/mnt/galaxyIndices/genomes/Hsapiens/hg19/snpeff/data
+hg19	Homo sapiens : hg19	/mnt/galaxyIndices/genomes/Hsapiens/hg19/snpeff/data/
+GRCh38.76	Homo sapiens : GRCh38.76	/mnt/galaxyIndices/genomes/Hsapiens/hg38/snpeff/data
+#NCBIM37.66	Mus Musculus: mm9 (NCBIM37.66 - Ensembl)	/scratch/georgetown/galaxy/data/Mmusculus/mm9/snpeff/
+#GRCm38.79	Mus Musculus: mm10 (GRCm38.79 - Ensembl)	/scratch/georgetown/galaxy/data/Mmusculus/mm10/snpeff/
+mm10	Mus Musculus: mm10	/mnt/galaxyIndices/genomes/Mmusculus/mm10/snpeff

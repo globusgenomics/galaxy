@@ -1,0 +1,9 @@
+#This is a sample file distributed with Galaxy that enables tools
+#to use a directory of metagenomics files.  
+#file has this format (white space characters are TAB characters):
+#
+# Reference Alignments:  http://www.mothur.org/wiki/Alignment_database
+#
+#<value>	<dbkey>	<path> 
+#
+hg19	hg19	/mnt/galaxyIndices/genomes/Hsapiens/hg19/homer/hg19	

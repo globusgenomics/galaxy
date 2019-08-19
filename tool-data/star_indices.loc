@@ -1,0 +1,6 @@
+hg19	hg19	hg19	/mnt/galaxyIndices/genomes/Hsapiens/hg19/star	/mnt/galaxyIndices/genomes/Hsapiens/hg19/seq/hg19.fa
+human_g1k_v37	hg19	human_g1k_v37	/mnt/galaxyIndices/genomes/Hsapiens/human_g1k_v37/star	/mnt/galaxyIndices/genomes/Hsapiens/human_g1k_v37/seq/human_g1k_v37.fasta
+hg38	hg38	GRch38	/mnt/galaxyIndices/genomes/Hsapiens/hg38/star	/mnt/galaxyIndices/genomes/Hsapiens/hg38/seq/Homo_sapiens.GRCh38.dna.primary_assembly_sorted.fa
+mm10	mm10	Mmusculus (mm10)	/mnt/galaxyIndices/genomes/Mmusculus/mm10/star	/mnt/galaxyIndices/genomes/Mmusculus/mm10/seq/mm10.fa
+GRCm38	mm10	Mmusculus (GRCm38)	/mnt/galaxyIndices/genomes/Mmusculus/GRCm38/star	/mnt/galaxyIndices/genomes/Mmusculus/GRCm38/seq/Mus_musculus.GRCm38.dna.primary_assembly.fa
+PlasmoDB-29_Pfalciparum3D7_Genome	PlasmoDB-29_Pfalciparum3D7_Genome	PlasmoDB-29_Pfalciparum3D7_Genome	/mnt/galaxyIndices/genomes/PlasmoDB-29_Pfalciparum3D7_Genome/star/PlasmoDB-29_Pfalciparum3D7_Genome
