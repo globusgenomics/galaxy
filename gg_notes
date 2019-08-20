@@ -1,0 +1,20 @@
+gg modifications:
+
+Globus auth:
+lib/galaxy/webapps/galaxy/buildapp.py
+lib/galaxy_ext/globus/__init__.py
+lib/galaxy_ext/globus/auth.py
+lib/galaxy/dependencies/pipfiles/default/pinned-requirements.txt
+
+Globus transfer:
+lib/galaxy_ext/globus/tools.py
+
+tools:
+tools
+tool-data
+
+CSS:
+After Galaxy is built:
+static/scripts/bundled/base.css:
+:%s/#2c3143/#27518f/g 
+:%s/#181a24/#1c3a67/g   
