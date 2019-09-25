@@ -346,12 +346,14 @@ class KubernetesJobRunner(AsynchronousJobRunner):
             for item in tmp_list:
                 if "/mnt/galaxyIndices/" in item:
                     indice_path = item[item.find("/mnt/galaxyIndices/"):]
-                    indice_path = indice_path.strip('"').strip('\'').strip()
+                    indice_path = indice_path.strip('"').strip('\'').strip('"').strip('\'').strip()
                     indices.append(indice_path)
                 elif "/scratch/" in item:
                     dataset_path = item[item.find("/scratch/"):]
-                    dataset_path = dataset_path.strip('"').strip('\'').strip()
-                    datasets.append(dataset_path)
+                    dataset_path = dataset_path.strip('"').strip('\'').strip('"').strip('\'').strip()
+                    if dataset_path.startswith("/scratch/galaxy/files") or dataset_path.startswith("/scratch/shared") or dataset_path.startswith("/scratch/galaxy/data"):
+                        if os.path.exists(dataset_path):
+                            datasets.append(dataset_path)
             return {"indices": indices, "datasets": datasets}
 
         def path_convert_local_to_bucket(path):
