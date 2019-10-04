@@ -67,8 +67,10 @@ def build_command(
     # One could imagine also allowing dependencies inside of the container but
     # that is too sophisticated for a first crack at this - build your
     # containers ready to go!
-    if not container or container.resolve_dependencies:
-        __handle_dependency_resolution(commands_builder, job_wrapper, remote_command_params)
+    #if not container or container.resolve_dependencies:
+    #    __handle_dependency_resolution(commands_builder, job_wrapper, remote_command_params)
+    # Edited by GG, let all containers in K8s resole dependency, tmp solution
+    __handle_dependency_resolution(commands_builder, job_wrapper, remote_command_params)
 
     __handle_task_splitting(commands_builder, job_wrapper)
 
