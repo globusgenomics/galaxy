@@ -480,7 +480,7 @@ class Login(ActionHandler):
                                "DATA_TYPE": "access",
                                "principal_type": "identity",
                                "principal": GLOBUS_USER_ID,
-                               "path": "/shared/{0}/".format(GLOBUS_USER_NAME),
+                               "path": "/scratch/shared/{0}/".format(GLOBUS_USER_NAME),
                                "permissions": "rw",
                              }
                 tc.add_endpoint_acl_rule(endpoint_id, rule_data)
@@ -488,7 +488,23 @@ class Login(ActionHandler):
                                "DATA_TYPE": "access",
                                "principal_type": "identity",
                                "principal": GLOBUS_USER_ID,
-                               "path": "/galaxy/files/",
+                               "path": "/scratch/galaxy/files/",
+                               "permissions": "r",
+                             }
+                tc.add_endpoint_acl_rule(endpoint_id, rule_data)
+                rule_data = {
+                               "DATA_TYPE": "access",
+                               "principal_type": "identity",
+                               "principal": GLOBUS_USER_ID,
+                               "path": "/mounted_scratch/storage/scratch/shared/{0}/".format(GLOBUS_USER_NAME),
+                               "permissions": "r",
+                             }
+                tc.add_endpoint_acl_rule(endpoint_id, rule_data)
+                rule_data = {
+                               "DATA_TYPE": "access",
+                               "principal_type": "identity",
+                               "principal": GLOBUS_USER_ID,
+                               "path": "/mounted_scratch/storage/scratch/galaxy/files/",
                                "permissions": "r",
                              }
                 tc.add_endpoint_acl_rule(endpoint_id, rule_data)

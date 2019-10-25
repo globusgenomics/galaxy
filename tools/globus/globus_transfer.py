@@ -107,9 +107,10 @@ for job in transfer_info['jobs']:
     destination_path = job['to_path']
 
     if transfer_direction == 'in':
-        destination_path = re.sub("/scratch","",destination_path,count=1)
+        #destination_path = re.sub("/scratch","",destination_path,count=1)
+        pass
     elif transfer_direction == 'out':
-        source_path = re.sub("/scratch","",source_path,count=1)
+        #source_path = re.sub("/scratch","",source_path,count=1)
         try:
             transfer_client.operation_ls(d_ep['id'], path=destination_path)
             destination_path = os.path.join(destination_path, os.path.basename(source_path))
@@ -117,7 +118,8 @@ for job in transfer_info['jobs']:
             pass
         # transfer extra bam
         if options.extra_source_path != None:
-            extra_source_path = re.sub("/scratch","",options.extra_source_path,count=1)
+            #extra_source_path = re.sub("/scratch","",options.extra_source_path,count=1)
+            extra_source_path = options.extra_source_path
             extra_destination_path = destination_path + '.bai'
             add_job_to_queue(extra_source_path, extra_destination_path)
     else:
