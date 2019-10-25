@@ -4,8 +4,12 @@
         <!-- "workers" is the number of threads for the runner's work queue.
              The default from <plugins> is used if not defined for a <plugin>.
           -->
-        <plugin id="local" type="runner" load="galaxy.jobs.runners.local:LocalJobRunner"/>
-        <plugin id="condor" type="runner" load="galaxy.jobs.runners.condor:CondorJobRunner" />
+	<plugin id="local" type="runner" load="galaxy.jobs.runners.local:LocalJobRunner"/>
+	<plugin id="condor" type="runner" load="galaxy.jobs.runners.condor:CondorJobRunner" />
+        <plugin id="k8s" type="runner" load="galaxy.jobs.runners.kubernetes:KubernetesJobRunner">
+            <param id="k8s_config_path">/home/galaxy/.kube/config</param>
+            <param id="k8s_persistent_volume_claims">mnt:/mnt,opt:/opt</param>
+        </plugin>
     </plugins>
     <handlers default="handlers">
         <handler id="handler0" tags="handlers"/>
@@ -21,44 +25,65 @@
              configs.
          -->
     </handlers>
-    <destinations default="condor">
+    <destinations default="k8s_remote_1">
         <!-- Destinations define details about remote resources and how jobs
              should be executed on those remote resources.
          -->
         <destination id="local" runner="local">
-            <param id="+Tenant">"ci"</param>
-        </destination>
-        <destination id="condor_local" runner="condor">
-            <param id="+GlobusOnline">True</param>
-            <param id="r_code_pi">True</param>
-        </destination>
-        <destination id="condor" runner="condor">
-            <param id="+Tenant">"ci"</param>
-            <param id="request_cpus">1</param>
-        </destination>
-        <destination id="condor_remote_1" runner="condor">
-            <param id="+Tenant">"ci"</param>
-            <param id="request_cpus">1</param>
-        </destination>
-        <destination id="condor_remote_2" runner="condor">
-            <param id="+Tenant">"ci"</param>
-            <param id="request_cpus">2</param>
-        </destination>
-        <destination id="condor_remote_4" runner="condor">
-            <param id="+Tenant">"ci"</param>
-            <param id="request_cpus">4</param>
+	</destination>
+	<destination id="condor_local" runner="condor">
+	    <param id="+GlobusOnline">True</param>
         </destination>
         <destination id="condor_remote_8" runner="condor">
             <param id="request_cpus">8</param>
-            <param id="+Tenant">"ci"</param>
         </destination>
-        <destination id="condor_remote_16" runner="condor">
-            <param id="request_cpus">16</param>
-            <param id="+Tenant">"ci"</param>
+        <destination id="k8s_remote_1" runner="k8s">
+            <param id="docker_owner_default">globusgenomics</param>
+            <param id="docker_image_default">base2</param>
+            <param id="requests_cpu">500m</param>
+            <param id="requests_memory">2Gi</param>
+            <param id="max_pod_retrials">0</param>
+            <param id="docker_enabled">true</param>
+	</destination>
+        <destination id="k8s_remote_2" runner="k8s">
+            <param id="docker_owner_default">globusgenomics</param>
+            <param id="docker_image_default">base2</param>
+            <param id="requests_cpu">1500m</param>
+            <param id="requests_memory">4Gi</param>
+            <param id="max_pod_retrials">0</param>
+            <param id="docker_enabled">true</param>
         </destination>
-        <destination id="condor_remote_32" runner="condor">
-            <param id="request_cpus">32</param>
-            <param id="+Tenant">"ci"</param>
+        <destination id="k8s_remote_4" runner="k8s">
+            <param id="docker_owner_default">globusgenomics</param>
+            <param id="docker_image_default">base2</param>
+            <param id="requests_cpu">3500m</param>
+            <param id="requests_memory">8Gi</param>
+            <param id="max_pod_retrials">0</param>
+            <param id="docker_enabled">true</param>
+        </destination>
+        <destination id="k8s_remote_8" runner="k8s">
+            <param id="docker_owner_default">globusgenomics</param>
+            <param id="docker_image_default">base2</param>
+            <param id="requests_cpu">6000m</param>
+            <param id="requests_memory">16Gi</param>
+            <param id="max_pod_retrials">0</param>
+	    <param id="docker_enabled">true</param>
+        </destination>
+        <destination id="k8s_remote_16" runner="k8s">
+            <param id="docker_owner_default">globusgenomics</param>
+            <param id="docker_image_default">base2</param>
+            <param id="requests_cpu">14000m</param>
+            <param id="requests_memory">32Gi</param>
+            <param id="max_pod_retrials">0</param>
+            <param id="docker_enabled">true</param>
+        </destination>
+        <destination id="k8s_remote_32" runner="k8s">
+            <param id="docker_owner_default">globusgenomics</param>
+            <param id="docker_image_default">base2</param>
+            <param id="requests_cpu">30000m</param>
+            <param id="requests_memory">64Gi</param>
+            <param id="max_pod_retrials">0</param>
+            <param id="docker_enabled">true</param>
         </destination>
     </destinations>
     <resources default="default">
@@ -84,143 +109,143 @@
              and pass to dynamic destination (as resource_params argument). -->
         <!--<tool id="longbar" destination="dynamic" resources="all" />
         <tool id="baz" handler="special_handlers" destination="bigmem"/>-->
-        <tool id="mtb" destination="condor_remote_32"/>
+        <tool id="mtb" destination="k8s_remote_32"/>
         <tool id="mtb_summary" destination="condor_local"/>
         <tool id="get_databag_from_minid_to_collection" destination="condor_local"/>
         <tool id="globus_get_bioproject_data_from_ebi" destination="condor_local"/>
         <tool id="biom_convert" destination="condor_local"/>
-        <tool id="mothur_wf_1.0_optimized" destination="condor_remote_32"/>
-        <tool id="mothur_unifrac_weighted" destination="condor_remote_32"/>
+        <tool id="mothur_wf_1.0_optimized" destination="k8s_remote_32"/>
+        <tool id="mothur_unifrac_weighted" destination="k8s_remote_32"/>
         <tool id="qiime_core_diversity" destination="condor_local"/>
         <tool id="r_code_otu_table" destination="condor_local"/>
         <tool id="Atlas_Indel2_swift_id" destination="condor_local"/>
-        <tool id="BRI_RNAseq_Nextera_minus_trinity_optimized" destination="condor_remote_8"/>
-        <tool id="BRI_RNAseq_Nextera_optimized" destination="condor_remote_8"/>
-        <tool id="BRI_RNAseq_sr_human_master_plus_tcr_optimized" destination="condor_remote_16"/>
-        <tool id="BRI_RNAseq_sr_human_master_optimized" destination="condor_remote_16"/>
-        <tool id="BRI_RNAseq_sr_other_master_optimized" destination="condor_remote_16"/>
-        <tool id="BRI_RNAseq_truseq_optimized" destination="condor_remote_8"/>
-        <tool id="BRI_RNAseq_truseq_plus_trinity_optimized" destination="condor_remote_8"/>
-        <tool id="BRI_RNAseq_truseq_stranded_optimized" destination="condor_remote_8"/>
-        <tool id="BRI_RNAseq_Nextera_STAR_minus_trinity_optimized" destination="condor_remote_8"/>
-        <tool id="BRI_RNAseq_Nextera_star_optimized" destination="condor_remote_8"/>
-        <tool id="BRI_RNAseq_truseq_stranded_star_optimized" destination="condor_remote_8"/>
-        <tool id="BRI_RNAseq_Nextera_STAR_minus_trinity_snpcheck_optimized" destination="condor_remote_8"/>
-        <tool id="BRI_RNAseq_Nextera_star_snpcheck_optimized" destination="condor_remote_8"/>
-        <tool id="BRI_RNAseq_truseq_stranded_star_snpcheck_optimized" destination="condor_remote_8"/>
-        <tool id="EMORY_globus_dnaComplete_optimized" destination="condor_remote_32"/>
-        <tool id="EMORY_globus_dnaComplete_optimized_bk" destination="condor_remote_32"/>
-        <tool id="HLI_ExomeseqQC_optimized" destination="condor_remote_8"/>
-        <tool id="HLI_RNAseqQC_optimized" destination="condor_remote_8"/>
-        <tool id="NU_JAE_dnaComplete_optimized" destination="condor_remote_32"/>
-        <tool id="PicardASMetrics" destination="condor_remote_1"/>
-        <tool id="PicardASMetrics_small" destination="condor_remote_1"/>
-        <tool id="PicardGCBiasMetrics" destination="condor_remote_1"/>
-        <tool id="PicardGCBiasMetrics_small" destination="condor_remote_1"/>
-        <tool id="PicardInsertSize" destination="condor_remote_1"/>
-        <tool id="PicardInsertSize_small" destination="condor_remote_1"/>
-        <tool id="PicardWGSMetrics" destination="condor_remote_8"/>
-        <tool id="PicardWGSMetrics_small" destination="condor_remote_4"/>
-        <tool id="SNAP_Alignment_id_bag" destination="condor_remote_32"/>
+        <tool id="BRI_RNAseq_Nextera_minus_trinity_optimized" destination="k8s_remote_8"/>
+        <tool id="BRI_RNAseq_Nextera_optimized" destination="k8s_remote_8"/>
+        <tool id="BRI_RNAseq_sr_human_master_plus_tcr_optimized" destination="k8s_remote_16"/>
+        <tool id="BRI_RNAseq_sr_human_master_optimized" destination="k8s_remote_16"/>
+        <tool id="BRI_RNAseq_sr_other_master_optimized" destination="k8s_remote_16"/>
+        <tool id="BRI_RNAseq_truseq_optimized" destination="k8s_remote_8"/>
+        <tool id="BRI_RNAseq_truseq_plus_trinity_optimized" destination="k8s_remote_8"/>
+        <tool id="BRI_RNAseq_truseq_stranded_optimized" destination="k8s_remote_8"/>
+        <tool id="BRI_RNAseq_Nextera_STAR_minus_trinity_optimized" destination="k8s_remote_8"/>
+        <tool id="BRI_RNAseq_Nextera_star_optimized" destination="k8s_remote_8"/>
+        <tool id="BRI_RNAseq_truseq_stranded_star_optimized" destination="k8s_remote_8"/>
+        <tool id="BRI_RNAseq_Nextera_STAR_minus_trinity_snpcheck_optimized" destination="k8s_remote_8"/>
+        <tool id="BRI_RNAseq_Nextera_star_snpcheck_optimized" destination="k8s_remote_8"/>
+        <tool id="BRI_RNAseq_truseq_stranded_star_snpcheck_optimized" destination="k8s_remote_8"/>
+        <tool id="EMORY_globus_dnaComplete_optimized" destination="k8s_remote_32"/>
+        <tool id="EMORY_globus_dnaComplete_optimized_bk" destination="k8s_remote_32"/>
+        <tool id="HLI_ExomeseqQC_optimized" destination="k8s_remote_8"/>
+        <tool id="HLI_RNAseqQC_optimized" destination="k8s_remote_8"/>
+        <tool id="NU_JAE_dnaComplete_optimized" destination="k8s_remote_32"/>
+        <tool id="PicardASMetrics" destination="k8s_remote_1"/>
+        <tool id="PicardASMetrics_small" destination="k8s_remote_1"/>
+        <tool id="PicardGCBiasMetrics" destination="k8s_remote_1"/>
+        <tool id="PicardGCBiasMetrics_small" destination="k8s_remote_1"/>
+        <tool id="PicardInsertSize" destination="k8s_remote_1"/>
+        <tool id="PicardInsertSize_small" destination="k8s_remote_1"/>
+        <tool id="PicardWGSMetrics" destination="k8s_remote_8"/>
+        <tool id="PicardWGSMetrics_small" destination="k8s_remote_4"/>
+        <tool id="SNAP_Alignment_id_bag" destination="k8s_remote_32"/>
         <tool id="TPP_SpectraST_search_swift" destination="condor_local"/>
         <tool id="basespace_download_dataset" destination="condor_local"/>
         <tool id="basespace_download_sample" destination="condor_local"/>
         <tool id="batch_submit" destination="condor_local"/>
         <tool id="batch_submit_trena" destination="condor_local"/>
-        <tool id="bbduk" destination="condor_remote_8"/>
-        <tool id="bbmap" destination="condor_remote_8"/>
-        <tool id="bbmerge" destination="condor_remote_8"/>
-        <tool id="bcl2fastq" destination="condor_remote_8"/>
-        <tool id="bg_platypus" destination="condor_remote_8"/>
-        <tool id="bowtie2" destination="condor_remote_8"/>
-        <tool id="bowtie2_bags" destination="condor_remote_8"/>
-        <tool id="bowtie2_wrapper" destination="condor_remote_8"/>
-        <tool id="breakdancer" destination="condor_remote_8"/>
+        <tool id="bbduk" destination="k8s_remote_8"/>
+        <tool id="bbmap" destination="k8s_remote_8"/>
+        <tool id="bbmerge" destination="k8s_remote_8"/>
+        <tool id="bcl2fastq" destination="k8s_remote_8"/>
+        <tool id="bg_platypus" destination="k8s_remote_8"/>
+        <tool id="bowtie2" destination="k8s_remote_8"/>
+        <tool id="bowtie2_bags" destination="k8s_remote_8"/>
+        <tool id="bowtie2_wrapper" destination="k8s_remote_8"/>
+        <tool id="breakdancer" destination="k8s_remote_8"/>
         <tool id="breakdancer_tool_swift" destination="condor_local"/>
         <tool id="breakseq_tool_swift" destination="condor_local"/>
-        <tool id="bwa_mem" destination="condor_remote_8"/>
-        <tool id="bwa_mem_bags" destination="condor_remote_8"/>
-	<tool id="bwa_wrapper" destination="condor_remote_8"/>
-        <tool id="bwa_wrapper_version_0710" destination="condor_remote_8"/>
+        <tool id="bwa_mem" destination="k8s_remote_8"/>
+        <tool id="bwa_mem_bags" destination="k8s_remote_8"/>
+	<tool id="bwa_wrapper" destination="k8s_remote_8"/>
+        <tool id="bwa_wrapper_version_0710" destination="k8s_remote_8"/>
         <tool id="cnvkit_swift" destination="condor_local"/>
-        <tool id="cnvnator_docker" destination="condor_remote_8"/>
-        <tool id="conserting" destination="condor_remote_32"/>
-        <tool id="conserting_allelicImbalance" destination="condor_remote_32"/>
-        <tool id="conserting_bam2wig" destination="condor_remote_32"/>
-        <tool id="conserting_process_coverage" destination="condor_remote_32"/>
-        <tool id="conserting_snv_detection" destination="condor_remote_32"/>
-        <tool id="conserting_wigToBigWig" destination="condor_remote_32"/>
+        <tool id="cnvnator_docker" destination="k8s_remote_8"/>
+        <tool id="conserting" destination="k8s_remote_32"/>
+        <tool id="conserting_allelicImbalance" destination="k8s_remote_32"/>
+        <tool id="conserting_bam2wig" destination="k8s_remote_32"/>
+        <tool id="conserting_process_coverage" destination="k8s_remote_32"/>
+        <tool id="conserting_snv_detection" destination="k8s_remote_32"/>
+        <tool id="conserting_wigToBigWig" destination="k8s_remote_32"/>
         <tool id="contra_tool_swift" destination="condor_local"/>
         <tool id="create_databag_and_minid_globus" destination="condor_local"/>
         <tool id="create_batch_for_snap_wf" destination="condor_local"/>
         <tool id="create_batch_for_workflow" destination="condor_local"/>
-        <tool id="crest" destination="condor_remote_32"/>
-        <tool id="delly" destination="condor_remote_8"/>
+        <tool id="crest" destination="k8s_remote_32"/>
+        <tool id="delly" destination="k8s_remote_8"/>
         <tool id="delly2_call_swift" destination="condor_local"/>
         <tool id="delly2_merge_swift" destination="condor_local"/>
         <tool id="deseq2" destination="condor_local"/>
         <tool id="directory_dataset_hack" destination="condor_local"/>
-        <tool id="dnaCompleteExome_optimized" destination="condor_remote_8"/>
-        <tool id="dnaComplete_optimized" destination="condor_remote_8"/>
-        <tool id="emirge_wrapper" destination="condor_remote_8"/>
+        <tool id="dnaCompleteExome_optimized" destination="k8s_remote_8"/>
+        <tool id="dnaComplete_optimized" destination="k8s_remote_8"/>
+        <tool id="emirge_wrapper" destination="k8s_remote_8"/>
         <tool id="ermrest" destination="condor_local"/>
-        <tool id="fastq_groomer_parallel" destination="condor_remote_8"/>
-        <tool id="fastqc" destination="condor_remote_1"/>
-        <tool id="freebayes_DirectoryInput" destination="condor_remote_4"/>
+        <tool id="fastq_groomer_parallel" destination="k8s_remote_8"/>
+        <tool id="fastqc" destination="k8s_remote_1"/>
+        <tool id="freebayes_DirectoryInput" destination="k8s_remote_4"/>
         <tool id="freebayes_swift" destination="condor_local"/>
-        <tool id="fseq_wrapper" destination="condor_remote_8"/>
-        <tool id="gatk2_base_recalibrator" destination="condor_remote_8"/>
-        <tool id="gatk2_haplotype_caller" destination="condor_remote_8"/>
-        <tool id="gatk2_print_reads" destination="condor_remote_8"/>
-        <tool id="gatk2_realigner_target_creator" destination="condor_remote_8"/>
-        <tool id="gatk2_unified_genotyper" destination="condor_remote_8"/>
-        <tool id="gatk2_unified_genotyper_DirectoryInput" destination="condor_remote_8"/>
-        <tool id="gatk2_variant_annotator" destination="condor_remote_8"/>
-        <tool id="gatk3_base_recalibrator" destination="condor_remote_8"/>
-        <tool id="gatk3_count_covariates" destination="condor_remote_8"/>
-        <tool id="gatk3_depth_of_coverage" destination="condor_remote_8"/>
-        <tool id="gatk3_haplotype_caller" destination="condor_remote_8"/>
+        <tool id="fseq_wrapper" destination="k8s_remote_8"/>
+        <tool id="gatk2_base_recalibrator" destination="k8s_remote_8"/>
+        <tool id="gatk2_haplotype_caller" destination="k8s_remote_8"/>
+        <tool id="gatk2_print_reads" destination="k8s_remote_8"/>
+        <tool id="gatk2_realigner_target_creator" destination="k8s_remote_8"/>
+        <tool id="gatk2_unified_genotyper" destination="k8s_remote_8"/>
+        <tool id="gatk2_unified_genotyper_DirectoryInput" destination="k8s_remote_8"/>
+        <tool id="gatk2_variant_annotator" destination="k8s_remote_8"/>
+        <tool id="gatk3_base_recalibrator" destination="k8s_remote_8"/>
+        <tool id="gatk3_count_covariates" destination="k8s_remote_8"/>
+        <tool id="gatk3_depth_of_coverage" destination="k8s_remote_8"/>
+        <tool id="gatk3_haplotype_caller" destination="k8s_remote_8"/>
         <tool id="gatk3_haplotype_caller_swift" destination="condor_local"/>
-        <tool id="gatk3_indel_realigner" destination="condor_remote_8"/>
-        <tool id="gatk3_indel_realigner_for_mutect" destination="condor_remote_32"/>
-        <tool id="gatk3_mutect" destination="condor_remote_8"/>
-        <tool id="gatk3_print_reads" destination="condor_remote_8"/>
-        <tool id="gatk3_realigner_target_creator" destination="condor_remote_8"/>
-        <tool id="gatk3_unified_genotyper" destination="condor_remote_8"/>
-        <tool id="gatk3_unified_genotyper_DirectoryInput" destination="condor_remote_8"/>
-        <tool id="gatk3_variant_annotator" destination="condor_remote_8"/>
-        <tool id="gatk3.8_base_recalibrator" destination="condor_remote_8"/>
-        <tool id="gatk3.8_count_covariates" destination="condor_remote_8"/>
-        <tool id="gatk3.8_depth_of_coverage" destination="condor_remote_8"/>
-        <tool id="gatk3.8_haplotype_caller" destination="condor_remote_8"/>
+        <tool id="gatk3_indel_realigner" destination="k8s_remote_8"/>
+        <tool id="gatk3_indel_realigner_for_mutect" destination="k8s_remote_32"/>
+        <tool id="gatk3_mutect" destination="k8s_remote_8"/>
+        <tool id="gatk3_print_reads" destination="k8s_remote_8"/>
+        <tool id="gatk3_realigner_target_creator" destination="k8s_remote_8"/>
+        <tool id="gatk3_unified_genotyper" destination="k8s_remote_8"/>
+        <tool id="gatk3_unified_genotyper_DirectoryInput" destination="k8s_remote_8"/>
+        <tool id="gatk3_variant_annotator" destination="k8s_remote_8"/>
+        <tool id="gatk3.8_base_recalibrator" destination="k8s_remote_8"/>
+        <tool id="gatk3.8_count_covariates" destination="k8s_remote_8"/>
+        <tool id="gatk3.8_depth_of_coverage" destination="k8s_remote_8"/>
+        <tool id="gatk3.8_haplotype_caller" destination="k8s_remote_8"/>
         <tool id="gatk3.8_haplotype_caller_swift" destination="condor_local"/>
-        <tool id="gatk3.8_indel_realigner" destination="condor_remote_8"/>
-        <tool id="gatk3.8_indel_realigner_for_mutect" destination="condor_remote_32"/>
-        <tool id="gatk3.8_mutect" destination="condor_remote_8"/>
-        <tool id="gatk3.8_print_reads" destination="condor_remote_8"/>
-        <tool id="gatk3.8_realigner_target_creator" destination="condor_remote_8"/>
-        <tool id="gatk3.8_unified_genotyper" destination="condor_remote_8"/>
-        <tool id="gatk3.8_unified_genotyper_DirectoryInput" destination="condor_remote_8"/>
-        <tool id="gatk3.8_variant_annotator" destination="condor_remote_8"/>
-        <tool id="gatk4_ApplyBQSR.xml" destination="condor_remote_8"/>
-        <tool id="gatk4_base_recalibrator" destination="condor_remote_8"/>
-        <tool id="gatk4_CollectAlignmentSummaryMetrics" destination="condor_remote_8"/>
-        <tool id="gatk4_GenomicsDBImport" destination="condor_remote_8"/>
-        <tool id="gatk4_GenotypeGVCFs" destination="condor_remote_8"/>
-        <tool id="gatk4_haplotype_caller" destination="condor_remote_8"/>
-        <tool id="gatk4_mutect2" destination="condor_remote_8"/>
-        <tool id="gatk4_print_reads" destination="condor_remote_8"/>
-        <tool id="gatk_count_covariates" destination="condor_remote_8"/>
-        <tool id="gatk_indel_realigner" destination="condor_remote_8"/>
-        <tool id="gatk_realigner_target_creator" destination="condor_remote_8"/>
-        <tool id="gatk_table_recalibration" destination="condor_remote_8"/>
-        <tool id="gatk_unified_genotyper" destination="condor_remote_8"/>
+        <tool id="gatk3.8_indel_realigner" destination="k8s_remote_8"/>
+        <tool id="gatk3.8_indel_realigner_for_mutect" destination="k8s_remote_32"/>
+        <tool id="gatk3.8_mutect" destination="k8s_remote_8"/>
+        <tool id="gatk3.8_print_reads" destination="k8s_remote_8"/>
+        <tool id="gatk3.8_realigner_target_creator" destination="k8s_remote_8"/>
+        <tool id="gatk3.8_unified_genotyper" destination="k8s_remote_8"/>
+        <tool id="gatk3.8_unified_genotyper_DirectoryInput" destination="k8s_remote_8"/>
+        <tool id="gatk3.8_variant_annotator" destination="k8s_remote_8"/>
+        <tool id="gatk4_ApplyBQSR.xml" destination="k8s_remote_8"/>
+        <tool id="gatk4_base_recalibrator" destination="k8s_remote_8"/>
+        <tool id="gatk4_CollectAlignmentSummaryMetrics" destination="k8s_remote_8"/>
+        <tool id="gatk4_GenomicsDBImport" destination="k8s_remote_8"/>
+        <tool id="gatk4_GenotypeGVCFs" destination="k8s_remote_8"/>
+        <tool id="gatk4_haplotype_caller" destination="k8s_remote_8"/>
+        <tool id="gatk4_mutect2" destination="k8s_remote_8"/>
+        <tool id="gatk4_print_reads" destination="k8s_remote_8"/>
+        <tool id="gatk_count_covariates" destination="k8s_remote_8"/>
+        <tool id="gatk_indel_realigner" destination="k8s_remote_8"/>
+        <tool id="gatk_realigner_target_creator" destination="k8s_remote_8"/>
+        <tool id="gatk_table_recalibration" destination="k8s_remote_8"/>
+        <tool id="gatk_unified_genotyper" destination="k8s_remote_8"/>
         <tool id="globus_catalog" destination="condor_local"/>
         <tool id="globus_get_data" destination="condor_local"/>
         <tool id="globus_get_data_flowcell_text" destination="condor_local"/>
         <tool id="globus_get_data_text" destination="condor_local"/>
         <tool id="globus_get_data_from_ebi" destination="condor_local"/>
-        <tool id="globus_get_data_pemapper" destination="condor_remote_32"/>
+        <tool id="globus_get_data_pemapper" destination="k8s_remote_32"/>
         <tool id="globus_publish" destination="condor_local"/>
         <tool id="globus_publish_upload" destination="condor_local"/>
         <tool id="globus_s3_get_data" destination="condor_local"/>
@@ -228,117 +253,117 @@
         <tool id="globus_send_data_multiple" destination="condor_local"/>
         <tool id="globus_transfer" destination="condor_local"/>
         <tool id="gops_merge_1" destination="condor_local"/>
-        <tool id="gsnap" destination="condor_remote_8"/>
+        <tool id="gsnap" destination="k8s_remote_8"/>
         <tool id="gunzip" destination="condor_local"/>
-        <tool id="hisat2" destination="condor_remote_8"/>
-        <tool id="hint" destination="condor_remote_8"/>
-        <tool id="homer_findmotifsgenome" destination="condor_remote_4"/>
-        <tool id="identify_chimeric_seqs" destination="condor_remote_32"/>
-        <tool id="itmi_vcfqc_optimized" destination="condor_remote_16"/>
-        <tool id="itmi_vcfqc_optimized_with_globus_transfer" destination="condor_remote_16"/>
-        <tool id="isaac_align" destination="condor_remote_8"/>
-        <tool id="isaac_align_small" destination="condor_remote_8"/>
-        <tool id="isaac_variant_caller" destination="condor_remote_8"/>
-        <tool id="isaac_variant_caller_exposed" destination="condor_remote_8"/>
-        <tool id="isaac_variant_caller_small" destination="condor_remote_8"/>
-        <tool id="live-rsem-1.1.17" destination="condor_remote_8"/>
+        <tool id="hisat2" destination="k8s_remote_8"/>
+        <tool id="hint" destination="k8s_remote_8"/>
+        <tool id="homer_findmotifsgenome" destination="k8s_remote_4"/>
+        <tool id="identify_chimeric_seqs" destination="k8s_remote_32"/>
+        <tool id="itmi_vcfqc_optimized" destination="k8s_remote_16"/>
+        <tool id="itmi_vcfqc_optimized_with_globus_transfer" destination="k8s_remote_16"/>
+        <tool id="isaac_align" destination="k8s_remote_8"/>
+        <tool id="isaac_align_small" destination="k8s_remote_8"/>
+        <tool id="isaac_variant_caller" destination="k8s_remote_8"/>
+        <tool id="isaac_variant_caller_exposed" destination="k8s_remote_8"/>
+        <tool id="isaac_variant_caller_small" destination="k8s_remote_8"/>
+        <tool id="live-rsem-1.1.17" destination="k8s_remote_8"/>
         <tool id="lumpyexpress_tool_swift" destination="condor_local"/>
         <tool id="manta_tool_swift" destination="condor_local"/>
         <tool id="mark_test" destination="condor_local"/>
         <tool id="metasv_swift" destination="condor_local"/>
-        <tool id="mmbgx" destination="condor_remote_16"/>
-        <tool id="mojo" destination="condor_remote_8"/>
+        <tool id="mmbgx" destination="k8s_remote_16"/>
+        <tool id="mojo" destination="k8s_remote_8"/>
         <tool id="monitor_batch" destination="condor_local"/>
-        <tool id="mothur_align_seqs" destination="condor_remote_32"/>
-        <tool id="mothur_chimera_uchime" destination="condor_remote_32"/>
-        <tool id="mothur_classify_seqs" destination="condor_remote_32"/>
-        <tool id="mothur_cluster_split" destination="condor_remote_32"/>
-        <tool id="mothur_dist_seqs" destination="condor_remote_32"/>
-        <tool id="mothur_filter_seqs" destination="condor_remote_32"/>
-        <tool id="mothur_make_contigs" destination="condor_remote_32"/>
-        <tool id="mothur_pre_cluster" destination="condor_remote_32"/>
-        <tool id="mothur_rarefaction_single" destination="condor_remote_32"/>
-        <tool id="mothur_screen_seqs" destination="condor_remote_32"/>
-        <tool id="mothur_seq_error" destination="condor_remote_32"/>
-        <tool id="mothur_summary_seqs" destination="condor_remote_32"/>
-        <tool id="142_mothur_align_seqs" destination="condor_remote_32"/>
-        <tool id="142_mothur_chimera_uchime" destination="condor_remote_32"/>
-        <tool id="142_mothur_classify_seqs" destination="condor_remote_32"/>
-        <tool id="142_mothur_cluster_split" destination="condor_remote_32"/>
-        <tool id="142_mothur_dist_seqs" destination="condor_remote_32"/>
-        <tool id="142_mothur_filter_seqs" destination="condor_remote_32"/>
-        <tool id="142_mothur_make_contigs" destination="condor_remote_32"/>
-        <tool id="142_mothur_pre_cluster" destination="condor_remote_32"/>
-        <tool id="142_mothur_rarefaction_single" destination="condor_remote_32"/>
-        <tool id="142_mothur_screen_seqs" destination="condor_remote_32"/>
-        <tool id="142_mothur_seq_error" destination="condor_remote_32"/>
-        <tool id="142_mothur_summary_seqs" destination="condor_remote_32"/>
-        <tool id="mtb" destination="condor_remote_32"/>
+        <tool id="mothur_align_seqs" destination="k8s_remote_32"/>
+        <tool id="mothur_chimera_uchime" destination="k8s_remote_32"/>
+        <tool id="mothur_classify_seqs" destination="k8s_remote_32"/>
+        <tool id="mothur_cluster_split" destination="k8s_remote_32"/>
+        <tool id="mothur_dist_seqs" destination="k8s_remote_32"/>
+        <tool id="mothur_filter_seqs" destination="k8s_remote_32"/>
+        <tool id="mothur_make_contigs" destination="k8s_remote_32"/>
+        <tool id="mothur_pre_cluster" destination="k8s_remote_32"/>
+        <tool id="mothur_rarefaction_single" destination="k8s_remote_32"/>
+        <tool id="mothur_screen_seqs" destination="k8s_remote_32"/>
+        <tool id="mothur_seq_error" destination="k8s_remote_32"/>
+        <tool id="mothur_summary_seqs" destination="k8s_remote_32"/>
+        <tool id="142_mothur_align_seqs" destination="k8s_remote_32"/>
+        <tool id="142_mothur_chimera_uchime" destination="k8s_remote_32"/>
+        <tool id="142_mothur_classify_seqs" destination="k8s_remote_32"/>
+        <tool id="142_mothur_cluster_split" destination="k8s_remote_32"/>
+        <tool id="142_mothur_dist_seqs" destination="k8s_remote_32"/>
+        <tool id="142_mothur_filter_seqs" destination="k8s_remote_32"/>
+        <tool id="142_mothur_make_contigs" destination="k8s_remote_32"/>
+        <tool id="142_mothur_pre_cluster" destination="k8s_remote_32"/>
+        <tool id="142_mothur_rarefaction_single" destination="k8s_remote_32"/>
+        <tool id="142_mothur_screen_seqs" destination="k8s_remote_32"/>
+        <tool id="142_mothur_seq_error" destination="k8s_remote_32"/>
+        <tool id="142_mothur_summary_seqs" destination="k8s_remote_32"/>
+        <tool id="mtb" destination="k8s_remote_32"/>
         <tool id="mtb_summary" destination="condor_local"/>
         <tool id="notify_user" destination="condor_local"/>
-        <tool id="novoalign" destination="condor_remote_8"/>
-        <tool id="picard_ARRG" destination="condor_remote_8"/>
-        <tool id="PicardHsMetrics" destination="condor_remote_8"/>
-        <tool id="picard_BamIndexStats" destination="condor_remote_8"/>
-        <tool id="picard_MarkDuplicates" destination="condor_remote_8"/>
-        <tool id="rgPicardMarkDups_2.7.1" destination="condor_remote_8"/>
-        <tool id="picard_ReorderSam" destination="condor_remote_8"/>
-        <tool id="picard_SortSam" destination="condor_remote_8"/>
-        <tool id="picard_merge2" destination="condor_remote_8"/>
+        <tool id="novoalign" destination="k8s_remote_8"/>
+        <tool id="picard_ARRG" destination="k8s_remote_8"/>
+        <tool id="PicardHsMetrics" destination="k8s_remote_8"/>
+        <tool id="picard_BamIndexStats" destination="k8s_remote_8"/>
+        <tool id="picard_MarkDuplicates" destination="k8s_remote_8"/>
+        <tool id="rgPicardMarkDups_2.7.1" destination="k8s_remote_8"/>
+        <tool id="picard_ReorderSam" destination="k8s_remote_8"/>
+        <tool id="picard_SortSam" destination="k8s_remote_8"/>
+        <tool id="picard_merge2" destination="k8s_remote_8"/>
         <tool id="pindel_tool_swift" destination="condor_local"/>
-        <tool id="piq_bam_pwm" destination="condor_remote_32"/>
-        <tool id="piq_pwmmatch" destination="condor_remote_32"/>
-        <tool id="pm_pipeline" destination="condor_remote_8"/>
+        <tool id="piq_bam_pwm" destination="k8s_remote_32"/>
+        <tool id="piq_pwmmatch" destination="k8s_remote_32"/>
+        <tool id="pm_pipeline" destination="k8s_remote_8"/>
         <tool id="post_metasv" destination="condor_local"/>
         <tool id="proteomics_search_tandem_swift_1" destination="condor_local"/>
-        <tool id="piq" destination="condor_remote_32"/>
-        <tool id="piq_bam" destination="condor_remote_1"/>
-        <tool id="qiime_assign_taxonomy" destination="condor_remote_32"/>
-        <tool id="qiime_align_seqs" destination="condor_remote_32"/>
-        <tool id="qiime_filter_otus_from_otu_table" destination="condor_remote_32"/>
-        <tool id="qiime_pick_open_reference_otus" destination="condor_remote_32"/>
-        <tool id="qualimap_bamqc" destination="condor_remote_1"/>
-        <tool id="rapsearch2_wrapper" destination="condor_remote_8"/>
+        <tool id="piq" destination="k8s_remote_32"/>
+        <tool id="piq_bam" destination="k8s_remote_1"/>
+        <tool id="qiime_assign_taxonomy" destination="k8s_remote_32"/>
+        <tool id="qiime_align_seqs" destination="k8s_remote_32"/>
+        <tool id="qiime_filter_otus_from_otu_table" destination="k8s_remote_32"/>
+        <tool id="qiime_pick_open_reference_otus" destination="k8s_remote_32"/>
+        <tool id="qualimap_bamqc" destination="k8s_remote_1"/>
+        <tool id="rapsearch2_wrapper" destination="k8s_remote_8"/>
         <tool id="reduce_directory_object" destination="condor_local"/>
-        <tool id="rgPicFixMate" destination="condor_remote_8"/>
-        <tool id="rgPicardMarkDups" destination="condor_remote_8"/>
-        <tool id="rgPicardMarkDups_small" destination="condor_remote_4"/>
-        <tool id="rsem_calculate_expression" destination="condor_remote_8"/>
+        <tool id="rgPicFixMate" destination="k8s_remote_8"/>
+        <tool id="rgPicardMarkDups" destination="k8s_remote_8"/>
+        <tool id="rgPicardMarkDups_small" destination="k8s_remote_4"/>
+        <tool id="rsem_calculate_expression" destination="k8s_remote_8"/>
         <tool id="s3_get_data" destination="condor_local"/>
         <tool id="s3_send_data" destination="condor_local"/>
         <tool id="s3_send_data_multiple" destination="condor_local"/>
-        <tool id="salmon" destination="condor_remote_8"/>
-        <tool id="salmon_lw" destination="condor_remote_8"/>
-        <tool id="sam_to_bam" destination="condor_remote_8"/>
-        <tool id="sambamba_sort" destination="condor_remote_8"/>
-        <tool id="samtools_filter_bam" destination="condor_remote_8"/>
-        <tool id="samtools_merge" destination="condor_remote_8"/>
-        <tool id="samtools_mpileup" destination="condor_remote_8"/>
-        <tool id="samtools_mpileup_directoryInput" destination="condor_remote_8"/>
+        <tool id="salmon" destination="k8s_remote_8"/>
+        <tool id="salmon_lw" destination="k8s_remote_8"/>
+        <tool id="sam_to_bam" destination="k8s_remote_8"/>
+        <tool id="sambamba_sort" destination="k8s_remote_8"/>
+        <tool id="samtools_filter_bam" destination="k8s_remote_8"/>
+        <tool id="samtools_merge" destination="k8s_remote_8"/>
+        <tool id="samtools_mpileup" destination="k8s_remote_8"/>
+        <tool id="samtools_mpileup_directoryInput" destination="k8s_remote_8"/>
         <tool id="samtools_mpileup_swift" destination="condor_local"/>
-        <tool id="samtools_rmdup" destination="condor_remote_8"/>
-        <tool id="samtools_rocksort" destination="condor_remote_8"/>
-        <tool id="samtools_sort" destination="condor_remote_8"/>
+        <tool id="samtools_rmdup" destination="k8s_remote_8"/>
+        <tool id="samtools_rocksort" destination="k8s_remote_8"/>
+        <tool id="samtools_sort" destination="k8s_remote_8"/>
         <tool id="shRNAseq" destination="condor_local"/>
-        <tool id="shapeit" destination="condor_remote_8"/>
-        <tool id="sleuth" destination="condor_remote_8"/>
-        <tool id="snpir_optimized" destination="condor_remote_8"/>
-        <tool id="star" destination="condor_remote_16"/>
-        <tool id="rna_star" destination="condor_remote_8"/>
-        <tool id="star_bags" destination="condor_remote_16"/>
+        <tool id="shapeit" destination="k8s_remote_8"/>
+        <tool id="sleuth" destination="k8s_remote_8"/>
+        <tool id="snpir_optimized" destination="k8s_remote_8"/>
+        <tool id="star" destination="k8s_remote_16"/>
+        <tool id="rna_star" destination="k8s_remote_8"/>
+        <tool id="star_bags" destination="k8s_remote_16"/>
         <tool id="swift_atlas_wrapper" destination="condor_local"/>
         <tool id="swift_atlas_wrapper_v2" destination="condor_local"/>
         <tool id="swift_filter_vcf" destination="condor_local"/>
         <tool id="swift_filter_sv_vcf" destination="condor_local"/>
         <tool id="swift_sv_sort_vcf" destination="condor_local"/>
-        <tool id="tophat" destination="condor_remote_8"/>
-        <tool id="tophat2" destination="condor_remote_8"/>
-        <tool id="trim_galore" destination="condor_remote_8"/>
-        <tool id="trinityrnaseq" destination="condor_remote_32"/>
-        <tool id="trinityrnaseq_norm" destination="condor_remote_32"/>
+        <tool id="tophat" destination="k8s_remote_8"/>
+        <tool id="tophat2" destination="k8s_remote_8"/>
+        <tool id="trim_galore" destination="k8s_remote_8"/>
+        <tool id="trinityrnaseq" destination="k8s_remote_32"/>
+        <tool id="trinityrnaseq_norm" destination="k8s_remote_32"/>
         <tool id="untar_illumina_flowcell" destination="condor_local"/>
         <tool id="upload1" destination="condor_local"/>
-        <tool id="wellington_footprints" destination="condor_remote_8"/>
+        <tool id="wellington_footprints" destination="k8s_remote_8"/>
 
     </tools>
     <limits>
