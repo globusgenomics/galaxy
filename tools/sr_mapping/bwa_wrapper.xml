@@ -1,10 +1,7 @@
 <tool id="bwa_wrapper" name="Map with BWA for Illumina" version="BWA: 0.7.12">
   <description/>
-  <stdio>
-    <exit_code range="1:" level="fatal" description="error" />
-  </stdio>
   <parallelism method="basic"/>
-  <command>
+  <command interpreter="python">
     bwa_wrapper.py 
       --threads=&quot;32&quot;
 
