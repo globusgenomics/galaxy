@@ -320,6 +320,7 @@ class KubernetesJobRunner(AsynchronousJobRunner):
             k8s_container["imagePullPolicy"] = self._default_pull_policy
 
         ############## GG function ##############
+        import shutil
         import boto3
         from botocore.errorfactory import ClientError
         s3_client = boto3.client('s3')
@@ -329,6 +330,8 @@ class KubernetesJobRunner(AsynchronousJobRunner):
 
         working_directory = ajs.job_wrapper.working_directory
         command_line = ajs.job_wrapper.command_line
+        runner_command_line = ajs.job_wrapper.runner_command_line
+
 
         def check_if_s3_file_exist(path):
             try:
@@ -356,25 +359,81 @@ class KubernetesJobRunner(AsynchronousJobRunner):
                             datasets.append(dataset_path)
             return {"indices": indices, "datasets": datasets}
 
+        #def get_files_list(command_line):
+            # take a command line, return a dict of two lists of path, indices and datasets
+            #indices = []
+            #datasets = []
+
+            #tool_files = []
+            #dependency_paths = []
+            #commands = command_line.split(";")
+            #for c in commands:
+            #    tmp_list = c.split()
+                #print tmp_list
+            #    for item in tmp_list:
+            #        if "/mnt/galaxyIndices/" in item:
+            #            indice_path = item[item.find("/mnt/galaxyIndices/"):]
+            #            indice_path = indice_path.strip('"').strip('\'').strip('"').strip('\'').strip()
+            #            indices.append(indice_path)
+            #        elif "/scratch/" in item:
+            #            dataset_path = item[item.find("/scratch/"):]
+            #            dataset_path = dataset_path.strip('"').strip('\'').strip('"').strip('\'').strip()
+            #            if dataset_path.startswith("/scratch/galaxy/files") or dataset_path.startswith("/scratch/shared") or dataset_path.startswith("/scratch/galaxy/data"):
+            #               if os.path.exists(dataset_path):
+            #                    datasets.append(dataset_path)
+                    #elif "/mnt/galaxyTools/tools/" in item:
+                    #    dependency_path = item[item.find("/mnt/galaxyTools/tools/"):]
+                    #    dependency_path = dependency_path.strip('"').strip('\'').strip('"').strip('\'').strip()
+                    #    dependency_paths.append(dependency_path)
+                    #elif "/opt/galaxy/tools/" in item:
+                    #    tool_file = item[item.find("/opt/galaxy/tools/"):]
+                    #    tool_file = tool_file.strip('"').strip('\'').strip('"').strip('\'').strip()
+                    #    tool_files.append(tool_file)
+
+            #return {"indices": indices, "datasets": datasets, "dependency_paths": dependency_paths, "tool_files": tool_files}
+
         def path_convert_local_to_bucket(path):
             # add prefix "storage" for bucket path
             bucket_path = "storage" + path
             return bucket_path
 
-        # get files info for uploading
-        job_files_info = get_files_list(command_line)
+        def upload_dir(dir_path):
+            # create a empty file for empty dirs in the working dir, so the dir get uploaded to S3
+            for (dirpath, dirnames, filenames) in os.walk(dir_path):
+                if len(dirnames) == 0 and len(filenames) == 0:
+                    open(os.path.join(dirpath,"empty_file"), "a").close()
+            # upload/sync dir
+            for (dirpath, dirnames, filenames) in os.walk(dir_path):
+                for filename in filenames:
+                    file_path = os.path.join(dirpath, filename)
+                    if not check_if_s3_file_exist(path_convert_local_to_bucket(file_path)):
+                        file_path_bucket = path_convert_local_to_bucket(file_path)
+                        s3_client.upload_file(file_path, s3_bucket, file_path_bucket)
 
-        # create a empty file for empty dirs in the working dir, so the dir get uploaded to S3
-        for (dirpath, dirnames, filenames) in os.walk(working_directory):
-            if len(dirnames) == 0 and len(filenames) == 0:
-                open(os.path.join(dirpath,"empty_file"), "a").close()
+
+        def check_and_upload_dataset_affiliated_dir(dataset_path):
+            dir_path = dataset_path[0:-4] + "_files"
+            if os.path.islink(dir_path):
+                dir_realpath = os.path.realpath(dir_path)
+                # ignore symlinks to /mounted_scratch
+                if not dir_realpath.startswith("/mounted_scratch"):
+                    upload_dir(dir_path)
+                    os.unlink(dir_path)
+                    shutil.rmtree(dir_realpath)
+                    os.symlink("/mounted_scratch/" + path_convert_local_to_bucket(dir_path), dir_path)
+            elif os.path.isdir(dir_path):
+                upload_dir(dir_path)
+                shutil.rmtree(dir_path)
+                os.symlink("/mounted_scratch/" + path_convert_local_to_bucket(dir_path), dir_path)
+
+
+        # get files info for uploading
+        tmp_command_line = command_line + " " + runner_command_line
+        log.debug("!!!!!!!!!!!!!CMD: {0}  !!!!!!###".format(tmp_command_line))
+        job_files_info = get_files_list(tmp_command_line)
+
         # upload/sync working_directory
-        for (dirpath, dirnames, filenames) in os.walk(working_directory):
-            for filename in filenames:
-                file_path = os.path.join(dirpath, filename)
-                if not check_if_s3_file_exist(path_convert_local_to_bucket(file_path)):
-                    file_path_bucket = path_convert_local_to_bucket(file_path)
-                    s3_client.upload_file(file_path, s3_bucket, file_path_bucket)
+        upload_dir(working_directory)
 
         # upload datasets
         for dataset in job_files_info["datasets"]:
@@ -385,6 +444,8 @@ class KubernetesJobRunner(AsynchronousJobRunner):
                 os.remove(dataset)
                 # create link to the bucket file
                 os.symlink("/mounted_scratch/" + dataset_bucket, dataset)
+                # check if affiliated dir exist
+                check_and_upload_dataset_affiliated_dir(dataset)
 
         # get the job_file
         job_file = ajs.job_file
@@ -396,8 +457,15 @@ class KubernetesJobRunner(AsynchronousJobRunner):
         tmp_indices_info = ""
         for indice in job_files_info["indices"]:
             tmp_indices_info = tmp_indices_info + "-i {0} ".format(indice)
+        #tmp_dependency_paths_info = ""
+        #for dependency_path in job_files_info["dependency_paths"]:
+        #    tmp_dependency_paths_info = tmp_dependency_paths_info + "-p {0} ".format(dependency_path)
+        #tmp_tool_files_info = ""
+        #for tool_file in job_files_info["tool_files"]:
+        #    tmp_tool_files_info = tmp_tool_files_info + "-t {0} ".format(tool_file)
+        #replacement_command = "if [ ! -f /mnt/galaxy_job_execution_script.py ]; then aws s3 cp s3://{5}/scripts/galaxy_job_execution_script.py /mnt/galaxy_job_execution_script.py; fi; python /mnt/galaxy_job_execution_script.py --bucket {0} --workdir {1} --jobfile {2} {3} {4} {6} {7} --workspacebucket {5};".format(s3_bucket, working_directory, job_file, tmp_datasets_info, tmp_indices_info, workspace_bucket, tmp_dependency_paths_info, tmp_tool_files_info)
         replacement_command = "if [ ! -f /mnt/galaxy_job_execution_script.py ]; then aws s3 cp s3://{5}/scripts/galaxy_job_execution_script.py /mnt/galaxy_job_execution_script.py; fi; python /mnt/galaxy_job_execution_script.py --bucket {0} --workdir {1} --jobfile {2} {3} {4} --workspacebucket {5};".format(s3_bucket, working_directory, job_file, tmp_datasets_info, tmp_indices_info, workspace_bucket)
-        
+
         # overwrite k8s_container
         k8s_container["args"] = ["-c", "--", replacement_command]
         k8s_container["command"] = ["/bin/bash"]
@@ -428,6 +496,7 @@ class KubernetesJobRunner(AsynchronousJobRunner):
         else:
             k8s_container["env"] = env_to_append
 
+        # run as galaxy user
         #k8s_container["securityContext"] = [
         #    {"runAsUser": "4000"},
         #    {"runAsGroup": "4000"},

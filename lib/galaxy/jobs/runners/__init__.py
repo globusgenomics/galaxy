@@ -741,6 +741,8 @@ class AsynchronousJobRunner(BaseJobRunner, Monitors):
         job_state.job_wrapper.reclaim_ownership()
         
         ############## GG function ##############
+        #log.debug("!!!!!!!!!!!!!Finish job: {0}".format(vars(job_state.job_wrapper)))
+        #log.debug("!!!!!!!!!!!!!Finish job: {0}".format(job_state.job_wrapper.command_line))
         # download the working dir from bucket if it exists
         gg_s3_bucket = job_state.job_wrapper.app.config.config_dict["gg_s3_bucket"]
         gg_job_working_directory = job_state.job_wrapper.working_directory
@@ -755,6 +757,36 @@ class AsynchronousJobRunner(BaseJobRunner, Monitors):
                 if not os.path.exists(os.path.dirname(file_path_local)):
                     os.makedirs(os.path.dirname(file_path_local))
                 s3_client.download_file(gg_s3_bucket, file_path_bucket, file_path_local)
+
+        # deal with dataset_affiliated_dir
+        gg_command_line = job_state.job_wrapper.command_line
+        gg_runner_command_line = job_state.job_wrapper.runner_command_line
+        gg_tmp_command_line = gg_command_line + " " + gg_runner_command_line
+        log.debug("!!!!!!!!!!!!!Finish job: {0}".format(gg_tmp_command_line))
+        gg_datasets = []
+        gg_tmp_list = gg_tmp_command_line.split()
+        for item in gg_tmp_list:
+            if "/scratch/" in item:
+                dataset_path = item[item.find("/scratch/"):]
+                dataset_path = dataset_path.strip('"').strip('\'').strip('"').strip('\'').strip()
+                if dataset_path.startswith("/scratch/galaxy/files") or dataset_path.startswith("/scratch/shared") or dataset_path.startswith("/scratch/galaxy/data"):
+                    if os.path.exists(dataset_path):
+                        gg_datasets.append(dataset_path)
+
+        def check_if_s3_path_is_dir(bucket, path):
+            if not path.endswith("/"):
+                path = path + "/"
+            tmp_result = s3_client.list_objects(Bucket=bucket, Prefix=path)
+            if "Contents" in tmp_result and len(tmp_result["Contents"]) > 0:
+                return True
+            else:
+                return False
+                
+        for dataset in gg_datasets:
+            dir_path = dataset[0:-4] + "_files"
+            dir_path_bucket = "storage" + dir_path
+            if not os.path.exists(dir_path) and check_if_s3_path_is_dir(gg_s3_bucket, dir_path_bucket):
+                os.symlink("/mounted_scratch/" + dir_path_bucket, dir_path)
         #########################################
 
         # wait for the files to appear
@@ -781,6 +813,28 @@ class AsynchronousJobRunner(BaseJobRunner, Monitors):
             job_state.runner_state = job_state.runner_states.JOB_OUTPUT_NOT_RETURNED_FROM_CLUSTER
             self.mark_as_failed(job_state)
             return
+        ############## GG function ##############
+        # fail all jobs with none 0 exit code
+        else:
+            code_file = None
+            for i in os.listdir(gg_job_working_directory):
+                file_path = os.path.join(gg_job_working_directory, i)
+                if os.path.isfile(file_path) and i.endswith(".ec"):
+                    code_file = file_path
+            if code_file != None:
+                with open(code_file, "r") as f:
+                    try:
+                        exit_code = int(f.read())
+                    except:
+                        exit_code = None
+                log.debug("!!!!!!!!!!!!!EC {0}".format(exit_code))
+                if exit_code != None and exit_code != 0:
+                    job_state.fail_message = stderr
+                    job_state.runner_state = job_state.runner_states.TOOL_DETECT_ERROR
+                    self.mark_as_failed(job_state)
+                    return
+        
+        #########################################
 
         self._finish_or_resubmit_job(job_state, stdout, stderr, job_id=galaxy_id_tag, external_job_id=external_job_id)
 
