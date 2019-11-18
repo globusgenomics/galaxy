@@ -1,5 +1,5 @@
 <tool id="log_history" name="Get history log">
-   <action module="galaxy_ext.globus.tools.actions.globus" class="HistoryManagement"/>
+   <action module="galaxy_ext.globus.tools" class="HistoryManagement"/>
    <description></description>
    <requirements>
      <requirement type="package">pymodules</requirement>

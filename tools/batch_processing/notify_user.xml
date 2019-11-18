@@ -1,5 +1,5 @@
 <tool id="notify_user" name="Email user">
-   <action module="galaxy_ext.globus.tools.actions.globus" class="HistoryManagement"/>
+   <action module="galaxy_ext.globus.tools" class="HistoryManagement"/>
    <description>error or completion status of workflow in history</description>
    <requirements>
      <requirement type="package">pymodules</requirement>

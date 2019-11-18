@@ -1,5 +1,5 @@
 <tool id="delete_history" name="Delete history">
-   <action module="galaxy_ext.globus.tools.actions.globus" class="HistoryManagement"/>
+   <action module="galaxy_ext.globus.tools" class="HistoryManagement"/>
    <description>permanently where the input dataset lives as part of the workflow</description>
    <requirements>
      <requirement type="package">pymodules</requirement>

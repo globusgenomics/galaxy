@@ -1,5 +1,5 @@
 <tool id="add_to_library" name="Add dataset to library">
-  <action module="galaxy_ext.globus.tools.actions.globus" class="HistoryManagement"/>
+  <action module="galaxy_ext.globus.tools" class="HistoryManagement"/>
   <description>created automatically by the tool</description>
   <requirements>
     <requirement type="package">pymodules</requirement>

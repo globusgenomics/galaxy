@@ -1,8 +1,8 @@
 <tool id="batch_submit" name="Workflow batch submit">
-   <action module="galaxy_ext.globus.tools.actions.globus" class="BatchSubmit"/>
+   <action module="galaxy_ext.globus.tools" class="BatchSubmit"/>
    <description>Submit workflows multiple times</description>
    <requirements>
-     <requirement type="package">pymodules</requirement>
+     <requirement type="package" version="0.13.0">py-bioblend</requirement>
    </requirements>
    <command interpreter="python">
      batch_submit_globus_genomics.py

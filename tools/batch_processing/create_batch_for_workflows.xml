@@ -1,5 +1,5 @@
 <tool id="create_batch_for_workflow" name="Create batch for workflow" version="1.0">
-    <action module="galaxy_ext.globus.tools.actions.globus" class="BatchSubmit"/>
+    <action module="galaxy_ext.globus.tools" class="BatchSubmit"/>
     <description></description>
 
     <requirements>

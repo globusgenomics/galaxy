@@ -924,6 +924,186 @@ class WorkflowsAPIController(BaseAPIController, UsesStoredWorkflowMixin, UsesAnn
         )
         return self.__encode_invocation_step(trans, invocation_step)
 
+    @expose_api
+    def export_parameters( self, trans, id, **kwargs  ):
+        """
+        GET /api/workflows/{workflow_id}/export_parameters
+        Get detailed description of workflow export_parameters in batch submit api mode
+
+        :param  workflow_id:        the workflow id (required)
+        """
+
+        stored = self.get_stored_workflow( trans, id, check_ownership=False )
+        user = trans.get_user()
+        if stored.user != user:
+            if trans.sa_session.query( model.StoredWorkflowUserShareAssociation ) \
+                    .filter_by( user=user, stored_workflow=stored ).count() == 0:
+                error( "Workflow is not owned by or shared with current user" )
+        # Get the latest revision
+        workflow = stored.latest_workflow
+#        print workflow
+
+#        for property, value in vars(workflow).iteritems():
+#            print property, ": ", value
+
+        # It is possible for a workflow to have 0 steps
+        if len( workflow.steps ) == 0:
+            error( "Workflow cannot be run because it does not have any steps" )
+        #workflow = Workflow.from_simple( simplejson.loads( stored.encoded_value ), trans.app )
+        if workflow.has_cycles:
+            error( "Workflow cannot be run because it contains cycles" )
+        if workflow.has_errors:
+            error( "Workflow cannot be run because of validation errors in some steps" )
+        # Build the state for each step
+        errors = {}
+        has_upgrade_messages = False
+        has_errors = False
+        saved_history = None
+        data_export = ""
+        data_export += "#Data Export for Workflow Batch Submission Through the APII\n\n\n"
+        data_export += "### INSTRUCTIONS\n"
+        data_export += "#######################################\n"
+        data_export += "#The following data can be used to input the parameters you have previously determined to be\n"
+        data_export += "#set at runtime. Please specify the library or history where the input data can be found.\n"
+        data_export += "#Once you have filled out the table you can run the API script to submit the jobs through Galaxy\n"
+        data_export += "#via the API.\n\n"
+        data_export += "#NOTE: If you make any changes to the workflow or edit the name of the workflow, you will need\n"
+        data_export += "#to recreate the table before submitting the job via the API since some metadata parameters will\n"
+        data_export += "#be modified.\n\n"
+        data_export += "#NOTE: It is up to the user to make sure the input files are in the correct format for each\n"
+        data_export += "#parameter being filled out.\n\n"
+        data_export += "#NOTE: You will need to specify three items for input files to an application.\n"
+        data_export += "#The format for an input file should be [SourceType::SourceName::file_name]:\n"
+        data_export += "#1. Source Type - which can be library or history\n"
+        data_export += "#2. Source Name - the name of the library or history.\n"
+        data_export += "#3. Filename - specify the name of the file as it exists in the library or history.\n\n\n"
+        data_export += "########################################\n\n\n"
+        data_export += "### METADATA\n"
+        data_export += "#######################################\n"
+        data_export += "Workflow Name\t%s\n" % (stored.name)
+        data_export += "Workflow id\t%s\n" % (trans.security.encode_id(workflow.id))
+        data_export += "Project Name\t%s\n" % ("<Your_project_name>")
+        data_export += "#######################################\n\n\n"
+
+        data_export += "###TABLE DATA\n"
+        data_export += "#######################################\n"
+        data_export += "SampleName\t"
+
+#        for attr in dir(stored):
+#            print "obj.%s = %s" % (attr, getattr(stored, attr))
+
+        #try: # use a try/finally block to restore the user's current history
+            # Prepare each step
+        missing_tools = []
+
+        for step in workflow.steps:
+                step_annotation = self.get_item_annotation_obj( trans.sa_session, trans.user, step )
+                annotation_str = ""
+                if step_annotation:
+                    annotation_str = step_annotation.annotation
+
+                #for property, value in vars(step).iteritems():
+                #    print property, ": ", value
+
+                step_input_connections = []
+                for input_connection in step.input_connections:
+                    step_input_connections.append(input_connection.input_name)
+                    #print "BYE: %s" % input_connection
+                #print "TOOL: %s" % step.tool_id
+                #print "ALLO: %s" % step_input_connections
+
+                step.upgrade_messages = {}
+
+                # Contruct modules
+                if step.type == 'tool' or step.type is None:
+                    # Restore the tool state for the step
+                    step.module = module_factory.from_workflow_step( trans, step )
+
+                    # tool object
+                    param_types = {}
+                    if step.type == 'tool':
+                        tool = trans.app.toolbox.get_tool( step.tool_id )
+                        #print "TOOL INPUTS OBJ: %s" % tool.inputs
+
+                        for param in tool.input_params:
+                            #print param.name
+                            if type(param) == DataToolParameter:
+                                param_types[param.name] = type(param)
+                        #print param_types
+
+                    for key, value in step.module.state.inputs.items():
+                        #print "KEY: %s: %s" % (key, value)
+                        input_type = type(value)
+                        #print input_type
+                        ext = "%s" % (key)
+                        if input_type == RuntimeValue and ext not in step_input_connections and key not in param_types:
+                            #print "EXT: %s - COMP: %s" % (ext, step_input_connections)
+                            data_export += annotation_str + "##Param::" +  str(step.order_index) + "::" + step.tool_id + "::" +  key + "\t"
+                        elif input_type == dict:
+#                            print "MAIN DICT"
+#                            print value
+                            data_export += _check_subdict(key, value, step, None, annotation_str, step_input_connections, param_types)
+                        elif input_type == list:
+                            for item in value:
+                                #print "ITEM: %s" % item
+                                if '__index__' in item:
+                                    key_name = "%s_%s" % (key, item['__index__'])
+                                else:
+                                    key_name = "%s" % (key)
+                                #print "KEY_NAME: %s" % key_name
+                                data_export += _check_subdict(key_name, item, step, None, annotation_str, step_input_connections, param_types)
+                            #print "LIST"
+                            #print value
+                            #for item in value:
+                            #    print item
+
+
+                    if not step.module:
+                        if step.tool_id not in missing_tools:
+                            missing_tools.append(step.tool_id)
+                        continue
+                    step.upgrade_messages = step.module.check_and_update_state()
+                    if step.upgrade_messages:
+                        has_upgrade_messages = True
+                    # Any connected input needs to have value DummyDataset (these
+                    # are not persisted so we need to do it every time)
+                    step.module.add_dummy_datasets( connections=step.input_connections )
+                    # Store state with the step
+                    step.state = step.module.state
+                    # Error dict
+                    if step.tool_errors:
+                        has_errors = True
+                        errors[step.id] = step.tool_errors
+                else:
+                    ## Non-tool specific stuff?                    
+                    step.module = module_factory.from_workflow_step( trans, step )
+                    step.state = step.module.get_runtime_state()
+                    #print step.__dict__['tool_inputs']['name']
+
+                    #for attr in dir(step):
+                    #    print "obj.%s = %s" % (attr, getattr(step, attr))
+
+                    #print "%s: %s" % (step.module.name, step.__dict__['tool_inputs']['name'])
+                    #data_export += annotation_str + "##SourceType::SourceName::%s\t" % (step.__dict__['tool_inputs']['name'])
+                    data_export += annotation_str + "##SourceType::SourceName::%s\t" % (step.__dict__['label'])
+
+        if missing_tools:
+            stored.annotation = self.get_item_annotation_str( trans.sa_session, trans.user, stored )
+            return trans.fill_template("workflow/run.mako",
+                                       steps=[],
+                                       workflow=stored,
+                                       hide_fixed_params=hide_fixed_params,
+                                       missing_tools = missing_tools)
+
+        sname = stored.name
+        valid_chars = '.,^_-()[]0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+        sname = ''.join(c in valid_chars and c or '_' for c in sname)[0:150]
+        trans.response.headers["Content-Disposition"] = 'attachment; filename="Galaxy-API-Workflow-%s.txt"' % ( sname )
+        trans.response.set_content_type( 'text/plain' )
+        #print "DATA: %s" % data_export
+        return data_export
+
+
     def __encode_invocation_step(self, trans, invocation_step):
         return self.encode_all_ids(
             trans,
@@ -939,3 +1119,45 @@ class WorkflowsAPIController(BaseAPIController, UsesStoredWorkflowMixin, UsesAnn
 
     def __encode_invocation(self, invocation, **kwd):
         return self.workflow_manager.serialize_workflow_invocation(invocation, **kwd)
+
+    def _check_subdict(key, value, step, existing_key, annotation_str, step_input_connections, param_types):
+        data = ""
+        if not isinstance(value, basestring) and value.__class__ != LibraryDatasetDatasetAssociation:
+            #print "SUB_DICT: %s :: %s" %  (key, value)
+            for partname, partval in value.items():
+                if type ( partval ) == RuntimeValue:
+                    if existing_key is not None:
+                        ext = "%s|%s" % (existing_key, partname)
+                    else:
+                        ext = "%s|%s" % (key, partname)
+                    #print "EXT: %s - COMP: %s" % (ext, step_input_connections)
+                    #print "PARAM_TYPE: %s" % param_types
+                    if ext not in step_input_connections and partname not in param_types:
+                        ext = ext.replace("|", "::")
+                        #print "HELLO %s : %s" % (step.tool_id, partname)
+                        #print "LINE: " + annotation_str + "##Param::" + str(step.order_index) + "::" + step.tool_id + "::" +  ext + "\t"
+#                       data += annotation_str + "##Param::" + str(step.order_index) + "::" + step.tool_id + "::" +  key + "::" + partname + "\t"
+                        data += annotation_str + "##Param::" + str(step.order_index) + "::" + step.tool_id + "::" +  ext + "\t"
+                elif isinstance(partval, types.NoneType):
+                    if existing_key:
+                        key_name = "%s|%s" % (existing_key, partname)
+                    else:
+                        key_name = "%s|%s" % (key, partname)
+                elif type ( partval ) == dict:
+                    #print "DICT"
+                    #print partval
+                    key_name = "%s|%s" % (key, partname)
+                    #print key_name
+                    data += _check_subdict(partname, partval, step, key_name, annotation_str, step_input_connections, param_types)
+                elif type( partval ) == list:
+                    #print "LIST-SUB"
+                    #print partval
+                    for item in partval:
+                        #print "ITEM: %s" % item
+                        if item.__class__ != LibraryDatasetDatasetAssociation and '__index__' in item:
+                            key_name = "%s|%s_%s" % (key, partname, item['__index__'])
+                        else:
+                            key_name = "%s|%s" % (key, partname)
+#                       print key_name
+                        data += _check_subdict(partname, item, step, key_name, annotation_str, step_input_connections, param_types)
+        return data
