@@ -760,11 +760,17 @@ class AsynchronousJobRunner(BaseJobRunner, Monitors):
 
         # deal with dataset_affiliated_dir
         gg_command_line = job_state.job_wrapper.command_line
-        gg_runner_command_line = job_state.job_wrapper.runner_command_line
-        gg_tmp_command_line = gg_command_line + " " + gg_runner_command_line
-        log.debug("!!!!!!!!!!!!!Finish job: {0}".format(gg_tmp_command_line))
+        try:
+            gg_runner_command_line = job_state.job_wrapper.runner_command_line
+            gg_command_line = gg_command_line + " " + gg_runner_command_line
+        except:
+            pass
+        log.debug("!!!!!!!!!!!!!Finish job: {0}".format(gg_command_line))
         gg_datasets = []
-        gg_tmp_list = gg_tmp_command_line.split()
+        if gg_command_line not in [None, ""]:
+            gg_tmp_list = gg_command_line.split()
+        else:
+            gg_tmp_list = []
         for item in gg_tmp_list:
             if "/scratch/" in item:
                 dataset_path = item[item.find("/scratch/"):]

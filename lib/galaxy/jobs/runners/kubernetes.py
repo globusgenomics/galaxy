@@ -330,7 +330,10 @@ class KubernetesJobRunner(AsynchronousJobRunner):
 
         working_directory = ajs.job_wrapper.working_directory
         command_line = ajs.job_wrapper.command_line
-        runner_command_line = ajs.job_wrapper.runner_command_line
+        try:
+            runner_command_line = ajs.job_wrapper.runner_command_line
+        except:
+            runner_command_line = None
 
 
         def check_if_s3_file_exist(path):
@@ -344,7 +347,10 @@ class KubernetesJobRunner(AsynchronousJobRunner):
             # take a command line, return a dict of two lists of path, indices and datasets
             indices = []
             datasets = []
-            tmp_list = command_line.split()
+            if command_line not in [None, ""]:
+                tmp_list = command_line.split()
+            else:
+                tmp_list = []
             print tmp_list
             for item in tmp_list:
                 if "/mnt/galaxyIndices/" in item:
@@ -428,9 +434,10 @@ class KubernetesJobRunner(AsynchronousJobRunner):
 
 
         # get files info for uploading
-        tmp_command_line = command_line + " " + runner_command_line
-        log.debug("!!!!!!!!!!!!!CMD: {0}  !!!!!!###".format(tmp_command_line))
-        job_files_info = get_files_list(tmp_command_line)
+        if runner_command_line != None:
+            command_line = command_line + " " + runner_command_line
+        log.debug("!!!!!!!!!!!!!CMD: {0}  !!!!!!###".format(command_line))
+        job_files_info = get_files_list(command_line)
 
         # upload/sync working_directory
         upload_dir(working_directory)
