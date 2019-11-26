@@ -1,5 +1,5 @@
 gg modifications:
-
+  
 Globus auth:
 lib/galaxy/webapps/galaxy/buildapp.py
 lib/galaxy_ext/globus/__init__.py
@@ -14,7 +14,39 @@ tools
 tool-data
 
 CSS:
+static/favicon.ico
+static/images/AWS_Logo_PoweredBy_127px-gray.png
+static/images/CI_logo_nobg.png
+static/images/anl-logo_nobg.png
+static/images/galaxyIcon_noText.png
+static/images/galaxyLogoTrimmed.png
+static/images/globusGenomics-2.png
+static/images/globusOnline_logo_nobg.png
+static/images/university-of-chicago-logo.png
+static/welcome.html
+
 After Galaxy is built:
 static/scripts/bundled/base.css:
-:%s/#2c3143/#27518f/g 
-:%s/#181a24/#1c3a67/g   
+:%s/#2c3143/#27518f/g
+:%s/#181a24/#1c3a67/g
+
+git:
+.gitignore
+
+configs:
+config/datatypes_conf.xml
+config/job_conf.xml
+config/tool_conf.xml
+config/tool_data_table_conf.xml
+config/galaxy.yml
+
+batch_processing:
+lib/galaxy/webapps/galaxy/api/workflows.py
+lib/galaxy/webapps/galaxy/controllers/workflow.py
+templates/webapps/galaxy/workflow/export_parameters.mako
+
+k8s:
+lib/galaxy/jobs/runners/__init__.py
+lib/galaxy/jobs/runners/kubernetes.py
+lib/galaxy/jobs/command_factory.py
+lib/galaxy/jobs/__init__.py

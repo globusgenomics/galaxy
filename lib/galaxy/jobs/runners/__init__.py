@@ -765,7 +765,7 @@ class AsynchronousJobRunner(BaseJobRunner, Monitors):
             gg_command_line = gg_command_line + " " + gg_runner_command_line
         except:
             pass
-        log.debug("!!!!!!!!!!!!!Finish job: {0}".format(gg_command_line))
+        #log.debug("!!!!!!!!!!!!!Finish job: {0}".format(gg_command_line))
         gg_datasets = []
         if gg_command_line not in [None, ""]:
             gg_tmp_list = gg_command_line.split()
@@ -819,28 +819,6 @@ class AsynchronousJobRunner(BaseJobRunner, Monitors):
             job_state.runner_state = job_state.runner_states.JOB_OUTPUT_NOT_RETURNED_FROM_CLUSTER
             self.mark_as_failed(job_state)
             return
-        ############## GG function ##############
-        # fail all jobs with none 0 exit code
-        else:
-            code_file = None
-            for i in os.listdir(gg_job_working_directory):
-                file_path = os.path.join(gg_job_working_directory, i)
-                if os.path.isfile(file_path) and i.endswith(".ec"):
-                    code_file = file_path
-            if code_file != None:
-                with open(code_file, "r") as f:
-                    try:
-                        exit_code = int(f.read())
-                    except:
-                        exit_code = None
-                log.debug("!!!!!!!!!!!!!EC {0}".format(exit_code))
-                if exit_code != None and exit_code != 0:
-                    job_state.fail_message = stderr
-                    job_state.runner_state = job_state.runner_states.TOOL_DETECT_ERROR
-                    self.mark_as_failed(job_state)
-                    return
-        
-        #########################################
 
         self._finish_or_resubmit_job(job_state, stdout, stderr, job_id=galaxy_id_tag, external_job_id=external_job_id)
 
