@@ -60,7 +60,7 @@ class KubernetesJobRunner(AsynchronousJobRunner):
             k8s_cleanup_job=dict(map=str, valid=lambda s: s in {"onsuccess", "always", "never"}, default="always"),
             k8s_pod_retries=dict(map=int, valid=lambda x: int >= 0, default=3),
             k8s_pod_retrials=dict(map=int, valid=lambda x: int >= 0, default=3),
-            k8s_walltime_limit=dict(map=int, valid=lambda x: int(x) >= 0, default=172800))
+            k8s_walltime_limit=dict(map=int, valid=lambda x: int(x) >= 0, default=864000))
 
         if 'runner_param_specs' not in kwargs:
             kwargs['runner_param_specs'] = dict()
@@ -230,6 +230,8 @@ class KubernetesJobRunner(AsynchronousJobRunner):
         If the job hangs around unlimited it will be ended after k8s wall time limit, which sets activeDeadlineSeconds"""
         k8s_job_spec = {"template": self.__get_k8s_job_spec_template(ajs),
                         "activeDeadlineSeconds": int(self.runner_params['k8s_walltime_limit'])}
+
+        log.debug("!!!!!!!!!!!!!CMD: {0}  !!!!!!###".format(k8s_job_spec))
         return k8s_job_spec
 
     def __get_k8s_job_spec_template(self, ajs):
@@ -243,7 +245,10 @@ class KubernetesJobRunner(AsynchronousJobRunner):
             "spec": {
                 "volumes": self.runner_params['k8s_mountable_volumes'],
                 "restartPolicy": self.__get_k8s_restart_policy(ajs.job_wrapper),
-                "containers": self.__get_k8s_containers(ajs)
+                "containers": self.__get_k8s_containers(ajs),
+                # Editted by GG:
+                # make sure the job will run on workers
+                "nodeSelector": {"node-type": "worker"}
             }
         }
         # TODO include other relevant elements that people might want to use from
@@ -334,10 +339,10 @@ class KubernetesJobRunner(AsynchronousJobRunner):
                 tmp_list = command_line.split()
             else:
                 tmp_list = []
-            print tmp_list
+            #print tmp_list
             for item in tmp_list:
-                if "/mnt/galaxyIndices/" in item:
-                    indice_path = item[item.find("/mnt/galaxyIndices/"):]
+                if "/mnt/galaxyIndices" in item:
+                    indice_path = item[item.find("/mnt/galaxyIndices"):]
                     indice_path = indice_path.strip('"').strip('\'').strip('"').strip('\'').strip()
                     indices.append(indice_path)
                 elif "/scratch/" in item:
@@ -419,7 +424,7 @@ class KubernetesJobRunner(AsynchronousJobRunner):
         # get files info for uploading
         if runner_command_line != None:
             command_line = command_line + " " + runner_command_line
-        log.debug("!!!!!!!!!!!!!CMD: {0}  !!!!!!###".format(command_line))
+        #log.debug("!!!!!!!!!!!!!CMD: {0}  !!!!!!###".format(command_line))
         job_files_info = get_files_list(command_line)
 
         # upload/sync working_directory
@@ -485,6 +490,7 @@ class KubernetesJobRunner(AsynchronousJobRunner):
             k8s_container["env"] = tmp_env + env_to_append
         else:
             k8s_container["env"] = env_to_append
+
 
         # run as galaxy user
         #k8s_container["securityContext"] = [
@@ -736,10 +742,11 @@ class KubernetesJobRunner(AsynchronousJobRunner):
                 self.__cleanup_k8s_job(job_to_delete)
             # TODO assert whether job parallelism == 0
             # assert not job_to_delete.exists(), "Could not delete job,"+job.job_runner_external_id+" it still exists"
-            log.debug("(%s/%s) Terminated at user's request" % (job.id, job.job_runner_external_id))
+            #log.debug("(%s/%s) Terminated at user's request" % (job.id, job.job_runner_external_id))
         except Exception as e:
-            log.debug("(%s/%s) User killed running job, but error encountered during termination: %s" % (
-                job.id, job.job_runner_external_id, e))
+            pass
+            #log.debug("(%s/%s) User killed running job, but error encountered during termination: %s" % (
+                #job.id, job.job_runner_external_id, e))
 
     def recover(self, job, job_wrapper):
         """Recovers jobs stuck in the queued/running state when Galaxy started"""
