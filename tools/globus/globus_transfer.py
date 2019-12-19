@@ -91,7 +91,7 @@ def add_job_to_queue(source_path, destination_path):
             transfer_type = "file"
         else:
             # path does not exist
-            sys.exit("The source path %s does not exist. Verify you have the correct path" % source_path)
+            sys.exit("The source path {0} does not exist. Verify you have the correct path; {1}".format(source_path, vars(e)))
 
     if transfer_type == "dir":
         tdata.add_item(source_path, destination_path, recursive=True)
@@ -110,6 +110,16 @@ for job in transfer_info['jobs']:
         #destination_path = re.sub("/scratch","",destination_path,count=1)
         pass
     elif transfer_direction == 'out':
+        # check dataset affiliated dir again
+
+        dir_link = source_path[0:-4] + "_files"
+        if os.path.islink(dir_link):
+            dir_realpath = os.path.realpath(dir_link)
+            source_path = dir_realpath
+        elif os.path.isdir(dir_link):
+            source_path = dir_link
+        source_path = source_path.rstrip('/').rstrip('\\')
+        
         #source_path = re.sub("/scratch","",source_path,count=1)
         try:
             transfer_client.operation_ls(d_ep['id'], path=destination_path)
