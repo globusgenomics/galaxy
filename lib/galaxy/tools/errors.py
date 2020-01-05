@@ -240,7 +240,10 @@ class EmailErrorReporter(ErrorReporter):
         to_address = self.app.config.error_email_to
         assert to_address, ValueError("Error reporting has been disabled for this Galaxy instance")
 
-        frm = to_address
+        #frm = to_address
+        # Changed by GG
+        # frm = to_address
+        frm = "server@globusgenomics.org"
         # Check email a bit
         email = email or ''
         email = email.strip()

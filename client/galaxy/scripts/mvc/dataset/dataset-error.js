@@ -180,7 +180,7 @@ var View = Backbone.View.extend({
                 type: "text",
                 name: "email",
                 label: "Your email",
-                value: Galaxy.user.get("email")
+                value: ""//Galaxy.user.get("email") #Editted by GG, remove the email address as value
             },
             {
                 help: _l(

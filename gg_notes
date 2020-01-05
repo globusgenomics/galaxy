@@ -45,6 +45,10 @@ lib/galaxy/webapps/galaxy/api/workflows.py
 lib/galaxy/webapps/galaxy/controllers/workflow.py
 templates/webapps/galaxy/workflow/export_parameters.mako
 
+error_email:
+lib/galaxy/tools/errors.py: change from address
+client/galaxy/scripts/mvc/dataset/dataset-error.js: remove default user email
+
 k8s:
 lib/galaxy/jobs/runners/__init__.py
 lib/galaxy/jobs/runners/kubernetes.py
