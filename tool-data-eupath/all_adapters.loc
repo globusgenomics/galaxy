@@ -1,0 +1,24 @@
+#This file lists the locations and dbkeys of all the fasta files
+#under the "genome" directory (a directory that contains a directory
+#for each build). The script extract_fasta.py will generate the file
+#all_fast.loc. This file has the format (white space characters are
+#TAB characters):
+#
+#<unique_build_id>	<dbkey>		<display_name>	<file_path>
+#
+#So, all_fasta.loc could look something like this:
+#
+#apiMel3	apiMel3	Honeybee (Apis mellifera): apiMel3		/path/to/genome/apiMel3/apiMel3.fa
+#hg19canon	hg19		Human (Homo sapiens): hg19 Canonical		/path/to/genome/hg19/hg19canon.fa
+#hg19full	hg19		Human (Homo sapiens): hg19 Full			/path/to/genome/hg19/hg19full.fa
+#
+#Your all_fasta.loc file should contain an entry for each individual
+#fasta file. So there will be multiple fasta files for each build,
+#such as with hg19 above.
+#
+phix174_ill.ref	phix174_ill.ref	phix174_ill.ref	/mnt/galaxyIndices/genomes/general_dbs/adpaters/phix174_ill.ref.fa
+nextera_LMP_linker	nextera_LMP_linker	nextera_LMP_linker	/mnt/galaxyIndices/genomes/general_dbs/adpaters/nextera_LMP_linker.fa
+nextera_LMP_adapter	nextera_LMP_adapter	nextera_LMP_adapter	/mnt/galaxyIndices/genomes/general_dbs/adpaters/nextera_LMP_adapter.fa
+nextera.fa	nextera.fa	nextera.fa	/mnt/galaxyIndices/genomes/general_dbs/adpaters/nextera.fa
+truseq.fa	truseq.fa	truseq.fa	/mnt/galaxyIndices/genomes/general_dbs/adpaters/truseq.fa
+truseq_rna.fa	truseq_rna.fa	truseq_rna.fa	/mnt/galaxyIndices/genomes/general_dbs/adpaters/truseq_rna.fa

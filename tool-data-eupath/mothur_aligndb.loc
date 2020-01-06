@@ -1,0 +1,24 @@
+#This is a sample file distributed with Galaxy that enables tools
+#to use a directory of metagenomics files.  
+#file has this format (white space characters are TAB characters):
+#
+# Reference Alignments:  http://www.mothur.org/wiki/Alignment_database
+#
+#<name>	<dbkey>	<value> 
+#
+gg_13_8_99.refalign	gg_13_8_99.refalign	/mnt/galaxyIndices/genomes/rRNA_databases/greengenes/ref/gg_13_8_99.refalign.fasta
+gg.gold.alignment	gg.gold.alignment	/mnt/galaxyIndices/genomes/rRNA_databases/greengenes/ref/rRNA16S.gold.NAST_ALIGNED.fasta
+gg_13_8_99	gg_13_8_99	/mnt/galaxyIndices/genomes/rRNA_databases/greengenes/ref/gg_13_8_99.fasta
+silva.v4	silva.v4	/mnt/galaxyIndices/genomes/rRNA_databases/silva/ref/silva.v4.fasta
+trainset16_022016.pds	trainset16_022016.pds	/mnt/galaxyIndices/genomes/rRNA_databases/silva/ref/trainset16_022016.pds.fasta
+trainset16_022016.rdp	trainset16_022016.rdp	/mnt/galaxyIndices/genomes/rRNA_databases/silva/ref/trainset16_022016.rdp.fasta
+#silva archaea	/project/db/galaxy/mothur/Silva.archaea/silva.archaea.fasta
+#silva bacteria	/project/db/galaxy/mothur/silva.bacteria/silva.bacteria.fasta
+#silva eukarya	/project/db/galaxy/mothur/silva.eukarya.fasta
+#silva archaea nogap	/project/db/galaxy/mothur/Silva.archaea/nogap.archaea.fasta
+#silva bacteria nogap	/project/db/galaxy/mothur/silva.bacteria/nogap.bacteria.fasta
+#silva eukarya nogap	/project/db/galaxy/mothur/nogap.eukarya.fasta
+#FungiLSU_train_1400bp_8506_mod.fasta	/project/db/galaxy/mothur/RDP/FungiLSU_train_1400bp_8506_mod.fasta
+#trainset6_032010.rdp.fasta	/project/db/galaxy/mothur/RDP/trainset6_032010.rdp.fasta
+#trainset7_112011.pds.fasta	/project/db/galaxy/mothur/RDP/trainset7_112011.pds.fasta
+#trainset7_112011.rdp.fasta	/project/db/galaxy/mothur/RDP/trainset7_112011.rdp.fasta

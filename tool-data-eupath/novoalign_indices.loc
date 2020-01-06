@@ -1,0 +1,35 @@
+GRCh37	GRCh37	GRCh37	/mnt/galaxyIndices/genomes/Hsapiens/GRCh37/bowtie/GRCh37
+apiMel3	apiMel3	apiMel3	/mnt/galaxyIndices/genomes/Amellifera_Honeybee/apiMel3/bowtie/apiMel3
+araTha_tair9	araTha_tair9	araTha_tair9	/mnt/galaxyIndices/genomes/Athaliana/araTha_tair9/bowtie/TAIR9
+bosTau4	bosTau4	bosTau4	/mnt/galaxyIndices/genomes/Btaurus/bosTau4/bowtie/bosTau4
+ce6	ce6	ce6	/mnt/galaxyIndices/genomes/Celegans/ce6/bowtie/ce6
+WS200	WS200	WS200	/mnt/galaxyIndices/genomes/Celegans/WS200/bowtie/WS200
+canFam2	canFam2	canFam2	/mnt/galaxyIndices/genomes/Cfamiliaris_Dog/canFam2/bowtie/canFam2
+danRer6	danRer6	danRer6	/mnt/galaxyIndices/genomes/Drerio_Zebrafish/danRer6/bowtie/danRer6
+dm3	dm3	dm3	/mnt/galaxyIndices/genomes/Dmelanogaster/dm3/bowtie/dm3
+eschColi_K12	eschColi_K12	eschColi_K12	/mnt/galaxyIndices/genomes/Ecoli/eschColi_K12/bowtie/eschColi_K12
+felCat3	felCat3	felCat3	/mnt/galaxyIndices/genomes/Fcatus_Cat/felCat3/bowtie/felCat3
+galGal3	galGal3	galGal3	/mnt/galaxyIndices/genomes/Ggallus_Chicken/galGal3/bowtie/galGal3
+hg18	hg18	hg18	/mnt/galaxyIndices/genomes/Hsapiens/hg18/bowtie/hg18
+rheMac2	rheMac2	rheMac2	/mnt/galaxyIndices/genomes/Mmulatta/rheMac2/bowtie/rheMac2
+mm8	mm8	mm8	/mnt/galaxyIndices/genomes/Mmusculus/mm8/bowtie/mm8
+mm9	mm9	mm9	/mnt/galaxyIndices/genomes/Mmusculus/mm9/bowtie/mm9
+92	92	92	/mnt/galaxyIndices/genomes/Msmegmatis/92/bowtie/92
+mycoTube_H37RV	mycoTube_H37RV	mycoTube_H37RV	/mnt/galaxyIndices/genomes/Mtuberculosis_H37Rv/mycoTube_H37RV/bowtie/mycoTube_H37RV
+386	386	386	/mnt/galaxyIndices/genomes/Paeruginosa_UCBPP-PA14/386/bowtie/386
+phix	phix	phix	/mnt/galaxyIndices/genomes/phiX174/phix/bowtie/phix
+rn4	rn4	rn4	/mnt/galaxyIndices/genomes/Rnorvegicus/rn4/bowtie/rn4
+sacCer2	sacCer2	sacCer2	/mnt/galaxyIndices/genomes/Scerevisiae/sacCer2/bowtie/sacCer2
+strPur2	strPur2	strPur2	/mnt/galaxyIndices/genomes/Spurpuratus/strPur2/bowtie/strPur2
+susScr2	susScr2	susScr2	/mnt/galaxyIndices/genomes/Sscrofa/susScr2/bowtie/susScr2
+Scrofa9.58	Scrofa9.58	Scrofa9.58	/mnt/galaxyIndices/genomes/Sscrofa/Scrofa9.58/bowtie/Sscrofa9
+taeGut1	taeGut1	taeGut1	/mnt/galaxyIndices/genomes/Tguttata/taeGut1/bowtie/taeGut1
+xenTro2	xenTro2	xenTro2	/mnt/galaxyIndices/genomes/Xtropicalis/xenTro2/bowtie/xenTro2
+equCab2	equCab2	equCab2	/mnt/galaxyIndices/genomes/Ecaballus_Horse/equCab2/bowtie/equCab2
+danRer5	danRer5	danRer5	/mnt/galaxyIndices/genomes/Drerio_Zebrafish/danRer5/bowtie/danRer5
+hg19	hg19	hg19	/mnt/galaxyIndices/genomes/Hsapiens/hg19/hg19.novoindex
+Osjaponica	Osjaponica	Rice (Oryza sativa L. ssp. japonica var. Nipponbare): IRGSP4.0	/mnt/galaxyIndices/genomes/Osjaponica/bowtie_index/oryza_sativa_japonica_nipponbare_IRGSP4.0
+Zmays	Zmays	(Zea mays): Zea_mays_B73_RefGen_v2	/mnt/galaxyIndices/genomes/Zmays/bowtie_index/Zea_mays_B73_RefGen_v2
+12931	12931	Xanthomonas oryzae str. KACC10331: 12931	/mnt/galaxyIndices/genomes/microbes/12931/bowtie_index/Xanthomonas_oryzae_KACC10331
+16297	16297	Xanthomonas oryzae str. MAFF_311018: 16297	/mnt/galaxyIndices/genomes/microbes/16297/bowtie_index/Xanthomonas_oryzae_MAFF_311018
+PXO99A	PXO99A	Xanthomonas oryzae str. PXO99A: Xanthomonas_oryzae_PXO99A	/mnt/galaxyIndices/genomes/microbes/Xanthomonas_oryzae_PXO99A/bowtie_index/Xanthomonas_oryzae_PXO99A

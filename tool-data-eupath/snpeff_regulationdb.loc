@@ -1,0 +1,18 @@
+## Regulation Databases for SnpEff 
+## These are from the list on: http://snpeff.sourceforge.net/download.html
+#genome	regulation_name description
+#GRCh37.70	CD4	CD4
+GRCh37.75	H1ESC	H1ESC
+GRCh37.75	HMEC	HMEC
+GRCh37.75	NHEK	NHEK
+GRCh37.75	K562	K562
+GRCh37.75	K562b	K562b
+GRCh37.75	HSMM	HSMM
+GRCh37.75	NH-A	NH-A
+GRCh37.75	IMR90	IMR90
+GRCh37.75	HeLa-S3	HeLa-S3
+GRCh37.75	CD4	CD4
+GRCh37.75	HepG2	HepG2
+GRCh37.75	HUVEC	HUVEC
+GRCh37.75	GM06990	GM06990
+GRCh37.75	GM12878	GM12878

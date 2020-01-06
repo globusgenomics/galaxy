@@ -1,0 +1,388 @@
+<!-- Use the file tool_data_table_conf.xml.oldlocstyle if you don't want to update your loc files as changed in revision 4550:535d276c92bc-->
+<tables>
+    <!-- Locations of gemini databases -->
+    <table name="gemini_databases" comment_char="#">
+        <columns>value, dbkey, name, path</columns>
+        <file path="tool-data-eupath/gemini_databases.loc" />
+    </table>
+    <!-- Locations of all fasta files under genome directory -->
+    <table name="gene_annotation" comment_char="#">
+        <columns>value, dbkey, name, path</columns>
+        <file path="tool-data-eupath/gene_annotation.loc" />
+    </table>
+    <!-- Locations of all ucsc refFlat annotation files under genome directory -->
+    <table name="all_fasta" comment_char="#">
+        <columns>value, dbkey, name, path</columns>
+        <file path="tool-data-eupath/all_fasta.loc" />
+    </table>
+    <table name="all_transcriptome_model" comment_char="#">
+        <columns>value, dbkey, name, path</columns>
+        <file path="tool-data-eupath/all_transcriptome_model.loc" />
+    </table>
+    <table name="all_covariance_model" comment_char="#">
+        <columns>value, dbkey, name, path</columns>
+        <file path="tool-data-eupath/all_covariance_model.loc" />
+    </table>
+    <!-- Locations of all ucsc refFlat annotation files under genome directory -->
+    <table name="all_fasta_short" comment_char="#">
+        <columns>value, dbkey, name, path</columns>
+        <file path="tool-data-eupath/all_fasta_short.loc" />
+    </table>
+    <!-- Locations of all ucsc refFlat annotation files under genome directory -->
+    <table name="all_fasta_metasv" comment_char="#">
+        <columns>value, dbkey, name, path</columns>
+        <file path="tool-data-eupath/all_fasta_metasv.loc" />
+    </table>
+    <!-- Locations of all fasta files under genome directory -->
+    <table name="all_adapters" comment_char="#">
+        <columns>value, dbkey, name, path</columns>
+        <file path="tool-data-eupath/all_adapters.loc" />
+    </table>
+    <!-- Locations of all fasta files under genome directory -->
+    <table name="all_gff" comment_char="#">
+        <columns>value, dbkey, name, path</columns>
+        <file path="tool-data-eupath/all_gff3.loc" />
+    </table>
+    <!-- Locations of ortho mcl files under genome directory -->
+    <table name="ortho_mcl" comment_char="#">
+        <columns>value, dbkey, name, path</columns>
+        <file path="tool-data-eupath/ortho_mcl.loc" />
+    </table>
+    <!-- Locations of indexes in the BFAST mapper format -->
+    <table name="bfast_indexes" comment_char="#">
+        <columns>value, dbkey, formats, name, path</columns>
+        <file path="tool-data-eupath/bfast_indexes.loc" />
+    </table>
+    <!-- Locations of nucleotide (mega)blast databases -->
+    <table name="blastdb" comment_char="#">
+        <columns>value, name, path</columns>
+        <file path="tool-data-eupath/blastdb.loc" />
+    </table>
+    <!-- Locations of protein (mega)blast databases -->
+    <table name="blastdb_p" comment_char="#">
+        <columns>value, name, path</columns>
+        <file path="tool-data-eupath/blastdb_p.loc" />
+    </table>
+    <!-- Locations of indexes in the Bowtie mapper format -->
+    <table name="bowtie_indexes" comment_char="#">
+        <columns>value, dbkey, name, path</columns>
+        <file path="tool-data-eupath/bowtie_indices.loc" />
+    </table>
+
+    <!-- Locations of indexes in the Bowtie2 mapper format -->
+    <table name="bowtie2_indexes" comment_char="#">
+        <columns>value, dbkey, name, path</columns>
+        <file path="tool-data-eupath/bowtie2_indices.loc" />
+    </table>
+
+    <!-- Locations of indexes in the Bowtie color-space mapper format -->
+    <table name="bowtie_indexes_color" comment_char="#">
+        <columns>value, dbkey, name, path</columns>
+        <file path="tool-data-eupath/bowtie_indices_color.loc" />
+    </table>
+    <!-- Locations of indexes in the STAR mapper format -->
+    <table name="star_indexes" comment_char="#">
+        <columns>value, dbkey, name, path</columns>
+        <file path="tool-data-eupath/star_indices.loc" />
+    </table>
+    <!-- Locations of indexes in the STAR mapper format -->
+    <table name="cellranger_indexes" comment_char="#">
+        <columns>value, dbkey, name, path</columns>
+        <file path="tool-data-eupath/cellranger_indices.loc" />
+    </table>
+    <!-- Locations of indexes in the rsem mapper format for rsem to use -->
+    <table name="rsem_indexes" comment_char="#">
+        <columns>value, dbkey, name, path</columns>
+        <file path="tool-data-eupath/rsem_indices.loc" />
+    </table>
+    <!-- Locations of indexes in the sailfish mapper format -->
+    <table name="sailfish_indexes" comment_char="#">
+        <columns>value, dbkey, name, path</columns>
+        <file path="tool-data-eupath/sailfish_indices.loc" />
+    </table>
+    <!-- Locations of indexes in the salmon mapper format -->    
+    <table name="salmon_indexes" comment_char="#">
+        <columns>value, dbkey, name, path</columns>
+        <file path="tool-data-eupath/salmon_indices.loc" />
+    </table>
+    <!-- Locations of indexes in the salmon mapper format -->
+    <table name="pemapper_indexes" comment_char="#">
+        <columns>value, dbkey, name, path</columns>
+        <file path="tool-data-eupath/pemapper_indices.loc" />
+    </table>
+    <!-- Locations of indexes in the hisat2 format -->
+    <table name="hisat2_indexes" comment_char="#">
+        <columns>value, dbkey, name, path</columns>
+        <file path="tool-data-eupath/hisat2_index.loc" />
+    </table>
+    <!-- Locations of indexes in the BWA mapper format -->
+    <table name="bwa_indexes" comment_char="#">
+        <columns>value, dbkey, name, path</columns>
+        <file path="tool-data-eupath/bwa_index.loc" />
+    </table>
+    <!-- Locations of indexes in the BWA-mem mapper format -->
+    <table name="bwa_0710_indexes" comment_char="#">
+        <columns>value, dbkey, name, path</columns>
+        <file path="tool-data-eupath/bwa_index_0.7.10.loc" />
+    </table>
+    <!-- Locations of indexes in the BWA color-space mapper format -->
+    <table name="bwa_indexes_color" comment_char="#">
+        <columns>value, dbkey, name, path</columns>
+        <file path="tool-data-eupath/bowtie_indices_color.loc" />
+    </table>
+    <!-- homer reference files -->
+    <table name="homer_fasta"  comment_char="#">
+        <columns>value, dbkey, path</columns>
+        <file path="tool-data-eupath/homer_fasta.loc" />
+    </table>
+    <!-- mothur aligndb files -->
+    <table name="mothur_aligndb"  comment_char="#">
+        <columns>name, dbkey, value</columns>
+        <file path="tool-data-eupath/mothur_aligndb.loc" />
+    </table>
+    <!-- mothur taxonomy files -->
+    <table name="mothur_taxonomy"  comment_char="#">
+        <columns>name, dbkey, value</columns>
+        <file path="tool-data-eupath/mothur_taxdb.loc" />
+    </table>
+    <!-- mothur map files -->
+    <table name="mothur_map"  comment_char="#">
+        <columns>name, dbkey, value</columns>
+        <file path="tool-data-eupath/mothur_map.loc" />
+    </table>
+    <!-- Locations of MAF files that have been indexed with bx-python -->
+    <table name="indexed_maf_files"  comment_char="#">
+        <columns>name, value, dbkey, species</columns>
+        <file path="tool-data-eupath/maf_index.loc" />
+    </table>
+    <!-- Locations of fasta files appropriate for NGS simulation -->
+    <table name="ngs_sim_fasta" comment_char="#">
+        <columns>value, dbkey, name, path</columns>
+        <file path="tool-data-eupath/ngs_sim_fasta.loc" />
+    </table>
+    <!-- Locations of 2bit sequence files for use in Lastz -->
+    <table name="lastz_seqs" comment_char="#">
+        <columns>value, name, path</columns>
+        <file path="tool-data-eupath/lastz_seqs.loc" />
+    </table>
+    <!-- Locations of PerM base index files -->
+    <table name="perm_base_indexes" comment_char="#">
+        <columns>value, name, path</columns>
+        <file path="tool-data-eupath/perm_base_index.loc" />
+    </table>
+    <!-- Locations of PerM color-space index files -->
+    <table name="perm_color_indexes" comment_char="#">
+        <columns>value, name, path</columns>
+        <file path="tool-data-eupath/perm_color_index.loc" />
+    </table>
+    <!-- Location of SAMTools indexes and other files -->
+    <table name="sam_fa_indexes" comment_char="#">
+        <columns>line_type, value, path</columns>
+        <file path="tool-data-eupath/sam_fa_indices.loc" />
+    </table>
+    <!-- Location of Picard dict file and other files -->
+    <table name="picard_indexes" comment_char="#">
+        <columns>value, dbkey, name, path</columns>
+        <file path="tool-data-eupath/picard_index.loc" />
+    </table>
+    <!-- Location of Picard dict files valid for GATK -->
+    <table name="gatk_picard_indexes" comment_char="#">
+        <columns>value, dbkey, name, path</columns>
+        <file path="tool-data-eupath/picard_index.loc" />
+    </table>
+    <!-- Location of Picard dict files valid for GATK -->
+    <table name="gatk2_picard_indexes" comment_char="#">
+        <columns>value, dbkey, name, path</columns>
+        <file path="tool-data-eupath/picard_index.loc" />
+    </table>
+    <!-- Location of Picard dict files valid for GATK -->
+    <table name="gatk3_picard_indexes" comment_char="#">
+        <columns>value, dbkey, name, path</columns>
+        <file path="tool-data-eupath/picard_index.loc" />
+    </table>
+    <!-- Available of GATK VCF reference sets -->
+    <table name="gatk3_reference_vcf_set" comment_char="#">
+        <columns>value, dbkey, name, path</columns>
+        <file path="tool-data-eupath/gatk3_reference_vcf_set.loc" />
+    </table>
+    <!-- Available of GATK references -->
+    <table name="gatk_annotations" comment_char="#">
+        <columns>value, name, gatk_value, tools_valid_for</columns>
+        <file path="tool-data-eupath/gatk_annotations.txt" />
+    </table>
+    <!-- Available of GATK references -->
+    <table name="gatk2_annotations" comment_char="#">
+        <columns>value, name, gatk_value, tools_valid_for</columns>
+        <file path="tool-data-eupath/gatk2_annotations.txt" />
+    </table>
+    <!-- Available of GATK references -->
+    <table name="gatk3_annotations" comment_char="#">
+        <columns>value, name, gatk_value, tools_valid_for</columns>
+        <file path="tool-data-eupath/gatk3_annotations.txt" />
+    </table>
+    <!-- Location of SRMA dict file and other files -->
+    <table name="srma_indexes" comment_char="#">
+        <columns>value, dbkey, name, path</columns>
+        <file path="tool-data-eupath/srma_index.loc" />
+    </table>
+    <!-- Locations of indexes in the Bowtie mapper format for TopHat to use -->
+    <table name="tophat_indexes" comment_char="#">
+        <columns>value, dbkey, name, path</columns>
+        <file path="tool-data-eupath/bowtie_indices.loc" />
+    </table>
+    <!-- Locations of indexes in the Bowtie color-space mapper format for TopHat to use -->
+    <table name="tophat_indexes_color" comment_char="#">
+        <columns>value, dbkey, name, path</columns>
+        <file path="tool-data-eupath/bowtie_indices_color.loc" />
+    </table>
+
+    <!-- Locations of indexes in the Bowtie2 mapper format for TopHat2 to use -->
+    <table name="tophat2_indexes" comment_char="#">
+        <columns>value, dbkey, name, path</columns>
+        <file path="tool-data-eupath/bowtie2_indices.loc" />
+    </table>
+
+    <!-- Locations of configurations in the CCAT peak/region caller format -->
+    <table name="ccat_configurations" comment_char="#">
+        <columns>value, name, path</columns>
+        <file path="tool-data-eupath/ccat_configurations.loc" />
+    </table>
+    <!-- Location of Mosaik files -->
+    <table name="mosaik_indexes" comment_char="#">
+        <columns>value, dbkey, name, path</columns>
+        <file path="tool-data-eupath/mosaik_index.loc" />
+    </table>
+
+	<!-- INDEXES NOT INCLUDED IN THE .main FILE IN GALAXY REPOSITORY -->
+    <!-- samtools indexed reference files -->
+    <table name="sam_indexes">
+        <columns>index, dbkey, value</columns>
+        <file path="tool-data-eupath/sam_fa_indices.loc" />
+    </table>
+    <!-- snap indexed files -->
+    <table name="snap_indexes" comment_char="#">
+        <columns>value, dbkey, name, path</columns>
+        <file path="tool-data-eupath/snap_indices.loc" />
+    </table>
+
+    <!-- UCSC twoBit indexed files -->
+    <table name="twobit">
+        <columns>dbkey, value</columns>
+        <file path="tool-data-eupath/twobit.loc" />
+    </table>
+    <!-- liftOver files -->
+    <table name="lift_over">
+        <columns> dbkey1, dbkey2, value</columns>
+        <file path="tool-data-eupath/liftOver.loc" />
+    </table>
+    <!-- Available IGV builds, loaded from URL -->
+    <table name="igv_broad_genomes" comment_char="#">
+        <columns>name, url, value</columns>
+        <file url="http://igv.broadinstitute.org/genomes/genomes.txt" />
+    </table>
+    <!-- Locations of novoalign indexes -->
+    <table name="novoalign_indices" comment_char="#">
+        <columns>value, dbkey, name, path</columns>
+        <file path="tool-data-eupath/novoalign_indices.loc" />
+    </table>
+    <!-- ANNOVAR files -->
+    <table name="annovar_loc" comment_char="#">
+        <columns>value, dbkey, name, ANNOVAR_scripts, ANNOVAR_humandb</columns>
+        <file path="tool-data-eupath/annovar.loc" /> 
+    </table>
+    <!-- Location of Isaac index files valid for Isaac -->
+    <table name="isaac_indexes" comment_char="#">
+        <columns>value, dbkey, name, path</columns>
+        <file path="tool-data-eupath/isaac_index.loc" />
+    </table>
+    <!-- Location of sv tool lists for metasv -->
+    <table name="sv_tool" comment_char="#">
+        <columns>value, dbkey, name, path</columns>
+        <file path="tool-data-eupath/sv_tool.loc" />
+    </table>
+    <!-- Fusioncatcher files -->
+    <table name="fusioncatcher_indexes" comment_char="#">
+        <columns>value, dbkey, name, path</columns>
+        <file path="tool-data-eupath/fusioncatcher_index.loc" />
+    </table>
+    <table name="snpeff_databases" comment_char="#">
+        <columns>value, name</columns>
+        <file path="tool-data-eupath/snpeff_databases.loc" />
+    </table>
+    <table name="snpeff_genomedb" comment_char="#">
+        <columns>value, name, path</columns>
+        <file path="tool-data-eupath/snpeff_genomedb.loc" />
+    </table>
+    <table name="snpeff_regulationdb" comment_char="#">
+        <columns>genome, value, name</columns>
+        <file path="tool-data-eupath/snpeff_regulationdb.loc" />
+    </table>
+    <table name="snpeff_annotations" comment_char="#">
+        <columns>genome, value, name</columns>
+        <file path="tool-data-eupath/snpeff_annotations.loc" />
+    </table>
+    <!-- Locations of indexes in the BWA mapper format -->
+    <table name="sortmerna_indexes" comment_char="#">
+        <columns>value, dbkey, name, fasta_path, index_path</columns>
+        <file path="tool-data-eupath/sortmerna_index.loc" />
+    </table>
+    <!-- Location of all GFF/GTF files -->
+    <table name="gene_sets" comment_char="#">
+        <columns>name, dbkey, value, provider, reference</columns>
+        <file path="tool-data-eupath/gene_sets.loc" />
+    </table>
+    <!-- Location of Picard dict file and other files -->
+    <table name="mojo_indexes" comment_char="#">
+        <columns>value, dbkey, name, path</columns>
+        <file path="tool-data-eupath/mojo_index.loc" />
+    </table>
+    <table name="tophat_fusion_blastdb_indexes" comment_char="#">
+        <columns>value, dbkey, name, path</columns>
+	 	<file path="tool-data-eupath/tophat_fusion_blastdb.loc" />
+    </table>
+    <!-- Location of CGI normal samples -->
+    <table name="normal_data_reference" comment_char="#">
+        <columns>value, dbkey, name, path</columns>
+        <file path="tool-data-eupath/cgi_normals_refs.loc" />
+    </table>    
+    <table name="cnvkit_normals" comment_char="#">
+        <columns>value, dbkey, name, path</columns>
+        <file path="tool-data-eupath/cnvkit_normals_refs.loc" />
+    </table>
+    <table name="gmap_indexes" comment_char="#">
+        <columns>value, dbkey, name, kmers, maps, snps, path</columns>
+                <file path="tool-data-eupath/gmap_indices.loc" />
+    </table>
+    <!-- simple biom servers -->
+    <table name="biom_simple_display" comment_char="#" allow_duplicate_entries="False">
+        <columns>value, name, url</columns>
+        <file path="tool-data-eupath/biom_simple_display.loc" />
+    </table>
+    <!-- qiime tables -->
+    <table name="qiime_rep_set" comment_char="#">
+        <columns>value, name, dbkey, path</columns>
+        <file path="tool-data-eupath/qiime_rep_set.loc" />
+    </table>
+    <table name="qiime_rep_set_aligned" comment_char="#">
+        <columns>value, name, dbkey, path</columns>
+        <file path="tool-data-eupath/qiime_rep_set_aligned.loc" />
+    </table>
+    <table name="qiime_taxonomy" comment_char="#">
+        <columns>value, name, dbkey, path</columns>
+        <file path="tool-data-eupath/qiime_taxonomy.loc" />
+    </table>
+    <table name="qiime_trees" comment_char="#">
+        <columns>value, name, dbkey, path</columns>
+        <file path="tool-data-eupath/qiime_trees.loc" />
+    </table>
+    <!-- snap indexed files -->
+    <table name="snap_indexes" comment_char="#">
+        <columns>value, dbkey, name, path</columns>
+        <file path="tool-data-eupath/snap_indices.loc" />
+    </table>
+    <!-- Locations of rapsearch databases -->
+    <table name="rapsearch" comment_char="#">
+        <columns>value, name, path</columns>
+        <file path="tool-data-eupath/rapsearch.loc" />
+    </table>
+</tables>

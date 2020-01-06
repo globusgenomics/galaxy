@@ -54,3 +54,10 @@ lib/galaxy/jobs/runners/__init__.py
 lib/galaxy/jobs/runners/kubernetes.py
 lib/galaxy/jobs/command_factory.py
 lib/galaxy/jobs/__init__.py
+
+Others:
+config/tool_data_table_conf_eupath.xml
+tool-data-eupath
+static/welcome_eupathdb.html
+static/eupath-galaxy.css
+static/eupath-galaxy.js

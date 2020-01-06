@@ -1,0 +1,14 @@
+hg19	hg19	hg19	/mnt/galaxyIndices/genomes/Hsapiens/hg19/bwa_0.7.10/hg19.fa
+hg19_gatk	hg19	hg19 (ucsc-GATK accepted)	/mnt/galaxyIndices/genomes/Hsapiens/hg19/ucsc-hg19/ucsc.hg19.fasta
+hg19_jxn45bp	hg19	hg19 (with junction 45bp)	/mnt/galaxyIndices/genomes/Hsapiens/hg19/bwa_0.7.10_junctions/45bp/hg19_genome_junctions_45.fa
+hg19_jxn75bp	hg19	hg19 (with junction 75bp)	/mnt/galaxyIndices/genomes/Hsapiens/hg19/bwa_0.7.10_junctions/75bp/hg19_genome_junctins_75.fa
+hg19_jxn95bp	hg19	hg19 (with junction 95bp)	/mnt/galaxyIndices/genomes/Hsapiens/hg19/bwa_0.7.10_junctions/95bp/hg19_genome_junctins_95.fa
+hg19_jxn140bp	hg19	hg19 (with junction 140bp)	/mnt/galaxyIndices/genomes/Hsapiens/hg19/bwa_0.7.10_junctions/140bp/hg19_genome_junctions_140.fa
+human_g1k_v37	hg19	human_g1k_v37	/mnt/galaxyIndices/genomes/Hsapiens/human_g1k_v37/bwa/human_g1k_v37.fasta
+human_g1k_v37_decoy	hg19	human_g1k_v37_decoy	/mnt/galaxyIndices/genomes/Hsapiens/human_g1k_v37_decoy/bwa/human_g1k_v37_decoy.fasta
+GRCh38	hg38	Homo_sapiens-GRCh38	/mnt/galaxyIndices/genomes/Hsapiens/hg38/bwa/Homo_sapiens.GRCh38.dna.primary_assembly_sorted.fa
+hg38_ucsc	hg38_ucsc	hg38_ucsc	/mnt/galaxyIndices/genomes/Hsapiens/hg38_ucsc/bwa/genome.fa 
+mm9	mm9	mm9	/mnt/galaxyIndices/genomes/Mmusculus/mm9/bwa/mm9.fa
+mm10	mm10	mm10	/mnt/galaxyIndices/genomes/Mmusculus/mm10/bwa/mm10.fa
+virus	virus	virus	/mnt/galaxyIndices/genomes/viruses/september_2015/bwa/viruses.fa
+

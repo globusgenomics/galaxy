@@ -1,0 +1,41 @@
+.eupath-header {
+  background-color:#eee;
+  margin-bottom: 1em;
+}
+.eupath-header img {
+  width: 180px;
+}
+.eupath-header .status-image {
+  text-align:right;
+}
+#eupath-title {
+  text-align:center;
+}
+#eupath-subtitle {
+  text-align:center;
+  font-size: 135%;
+  margin-bottom: 2em;
+}
+.eupath-section {
+  margin-left: 4em;
+}
+#eupath-intro {
+  font-size: 120%;
+}
+#eupath-intro i {
+  margin-left: 23px; 
+}
+#eupath-workflows {
+  margin-left: 29px;
+}
+#eupath-workflows {
+/*  font-size: 120%; */
+}
+.eupath-footer {
+  background-color:#eee;
+  padding-top: 1em;
+  text-align: center; 
+  position: relative;
+  height: 9em;
+}
+

@@ -1,0 +1,732 @@
+abyss_tool by msjeon 
+
+abyss_toolsuite by edward-kirton 
+
+add_value by devteam 
+
+agile_wrapper by simonl 
+
+allele_counts by nick 
+
+annotatebed by xiaoyi-cao 
+
+antismash by bjoern-gruening 
+
+appendfdr by galaxyp 
+
+assemblystats by konradpaszkiewicz 
+
+assessing_target_enrichment by getiria-onsongo 
+
+augustus by bjoern-gruening 
+
+augustus by bgruening 
+
+bamedit by modencode-dcc 
+
+bamedit by ziru-zhou 
+
+bam_to_bigwig by lparsons 
+
+bam_to_bigwig by brad-chapman 
+
+bam_to_fastq by brad-chapman 
+
+bcbb_gff_0_1 by galaxyp 
+
+bcftools by nilesh 
+
+bcftools_view by gregory-minevich 
+
+beast by malex 
+
+bed_clean by xuebing 
+
+bed_closest by xuebing 
+
+bed_collapse by xuebing 
+
+bed_intersect by xuebing 
+
+bed_overlap_significance by xuebing 
+
+bed_resize by xuebing 
+
+bed_shuffle by xuebing 
+
+bed_shuffle_chrom by xuebing 
+
+bed_size_stat by xuebing 
+
+bed_sort_with_header by xuebing 
+
+bed_to_bigwig by xuebing 
+
+bedtools by aaronquinlan 
+
+bedtools_annotate by xiaoyi-cao 
+
+bed_window by xuebing 
+
+bismark by bgruening 
+
+bismark by bjoern-gruening 
+
+blast by edward-kirton 
+
+blast2go by peterjc 
+
+blast_datatypes by devteam 
+
+blastxml_to_top_descr by peterjc 
+
+bowtie_color_wrappers by devteam 
+
+bowtie_to_bed by xuebing 
+
+bowtie_wrappers by devteam 
+
+bsmap by eiriche 
+
+bumbershoot by galaxyp 
+
+bwa_wrappers by devteam 
+
+caddsuite_linux_x86_64 by marcel 
+
+caddsuite_mac10_6 by marcel 
+
+caddsuite_workflows by marcel 
+
+carpet_toolsuite by matces 
+
+cdf_plot by xuebing 
+
+cdhit by jjohnson 
+
+cg_cgatools_linux by completegenomics 
+
+cg_cgatools_mac_osx by completegenomics 
+
+change_case by devteam 
+
+check_snpeff_candidates by gregory-minevich 
+
+chromatra by cmmt 
+
+clinod by peterjc 
+
+cloudmap_in_silico_complementation by gregory-minevich 
+
+cloudmap_variant_discovery_mapping by gregory-minevich 
+
+clustalomega by clustalomega 
+
+clustalw by fubar 
+
+cluster3 by kellrott 
+
+cmpfastq by amol 
+
+cmpfastq by nilesh 
+
+codonlogo by davidmurphy 
+
+condense_characters by devteam 
+
+contra by fcaramia 
+
+convert_characters by devteam 
+
+convert_format by venice-juanillas 
+
+copyrighter by fangly 
+
+crest by jjohnson 
+
+csem by dongjun 
+
+ctcf_analysis by mkhan1980 
+
+cummerbund by jjohnson 
+
+custom_amplicon_alignment by fcaramia 
+
+cutadapt by lparsons 
+
+cut_columns by devteam 
+
+data_nfs by edward-kirton 
+
+dbbuilder by galaxyp 
+
+decoyfasta by galaxyp 
+
+defuse by jjohnson 
+
+deseq_and_sam2counts by nikhil-joshi 
+
+deseq_hts by vipints 
+
+detrprok_scripts by clairetn 
+
+detrprok_wf by clairetn 
+
+differential_expression_analysis_pipeline_for_rnaseq_data by yufei-luo 
+
+digestdb by galaxyp 
+
+digital_dge by fubar 
+
+directag_app by galaxyp 
+
+dnaclust by john-mccallum 
+
+dreme by xuebing 
+
+dwgsim by nilshomer 
+
+dwgsim_eval by nilshomer 
+
+ea_utils by lparsons 
+
+ebseq by ning 
+
+edger by fcaramia 
+
+effectivet3 by peterjc 
+
+ember by mmaiensc 
+
+emboss_5 by devteam 
+
+emboss_datatypes by devteam 
+
+ems_variant_density_mapping by gregory-minevich 
+
+ensembl_to_ucsc by xuebing 
+
+ensembl_vep by alonie 
+
+eqtl_tools by saket-choudhary 
+
+export_to_fastq by louise 
+
+extract_tumor_vs_normal_tcga_ids by ynewton 
+
+fasta_extract by simon-gladman 
+
+fasta_filter_by_id by peterjc 
+
+fasta_stats by simon-gladman 
+
+fastqc by jjohnson 
+
+fastqdump by janislaw 
+
+fastq_dump by matt-shirley 
+
+fastq_filter_by_id by peterjc 
+
+fastq_groomer_parallel by kevyin 
+
+fastq_mcf by jjohnson 
+
+fastq_paired_unpaired by peterjc 
+
+fastq_sync by jjohnson 
+
+fastqvalidator by nilesh 
+
+fastq_validator by nilesh 
+
+files_to_ftp by geert-vandeweyer 
+
+filter_on_md by boris 
+
+fimo by xuebing 
+
+fimo_to_bed by xuebing 
+
+flexbar by jtilman 
+
+fml_gff3togtf by vipints 
+
+fml_mergeloci by vipints 
+
+fml_wig2bed by vipints 
+
+freebayes by devteam 
+
+galaxy_protk by iracooke 
+
+garli by malex 
+
+gaussian by malex 
+
+genome_diversity by miller-lab 
+
+get_orfs_or_cdss by peterjc 
+
+gfap by rdaveau 
+
+glimmer3 by bjoern-gruening 
+
+glimmer3 by bgruening 
+
+glimmer_gene_calling_workflow by bgruening 
+
+glimmer_hmm by bjoern-gruening 
+
+gmap by jjohnson 
+
+grinder by fangly 
+
+head_and_tail by xuebing 
+
+hmmer by edward-kirton 
+
+homer by kevyin 
+
+htseq_count by lparsons 
+
+iassembler by rogerngo 
+
+id_mapping by jxtx 
+
+idpqonvert_app by galaxyp 
+
+idr_package by modencode-dcc 
+
+igvtools by jjohnson 
+
+interproscan by bgruening 
+
+interproscan by konradpaszkiewicz 
+
+interproscan_to_excel by basfplant 
+
+iprscan by bjoern-gruening 
+
+iquant by galaxyp 
+
+iupac_to_meme by xuebing 
+
+java_genomics_toolkit by timpalpant 
+
+jointsnvmix by fcaramia 
+
+kmernator by edward-kirton 
+
+kmersvm by cafletezbrant 
+
+krona by ondovb 
+
+lastz by devteam 
+
+lastz_paired_reads by devteam 
+
+lucy by edward-kirton 
+
+macs by modencode-dcc 
+
+macs14 by ryo-tas 
+
+macs2 by ziru-zhou 
+
+macs2 by modencode-dcc 
+
+mascot by iracooke 
+
+match by xuebing 
+
+matrix_normalization by ynewton 
+
+matrix_visualization by xuebing 
+
+maxquant by galaxyp 
+
+meme by xuebing 
+
+meme_chip by kevyin 
+
+memelogo by xuebing 
+
+merge_cols by devteam 
+
+metaphlan by dannon 
+
+methylation_analysis_bismark by fcaramia 
+
+mgf_formatter by galaxyp 
+
+minimus2 by edward-kirton 
+
+mira_assembler by peterjc 
+
+miraligner by lpantano 
+
+mirdeep2_and_targetspy by nikhil-joshi 
+
+mmseq by mmseq 
+
+mmuff by jjohnson 
+
+mmuflr by jjohnson 
+
+mosaics by dongjun 
+
+mothur_toolsuite by jjohnson 
+
+ms2preproc by galaxyp 
+
+msconvert by galaxyp 
+
+msgfplus by iracooke 
+
+mtls_analysis by kmace 
+
+mummer_toolsuite by abossers 
+
+muscle by edward-kirton 
+
+myrimatch_app by galaxyp 
+
+mzmatch by galaxyp 
+
+mzxml2search by galaxyp 
+
+nbic_fasta by galaxyp 
+
+ncbi_blast_plus by devteam 
+
+ncbo_services by mikel-egana-aranguren 
+
+nebula by alermine 
+
+nextgen_variant_identification by ryanmorin 
+
+nlstradamus by peterjc 
+
+nosql_interface by kellrott 
+
+nupop_0.1 by vipints 
+
+oasesoptimiser by konradpaszkiewicz 
+
+omssa by iracooke 
+
+onto-toolkit by erick-antezana 
+
+openms by galaxyp 
+
+openms_app by galaxyp 
+
+oppl by mikel-egana-aranguren 
+
+package_biopython_1_61 by biopython 
+
+package_bwa_0_5_9 by devteam 
+
+package_bwa_0_6_2 by devteam 
+
+package_samtools_0_1_16 by devteam 
+
+package_samtools_0_1_18 by devteam 
+
+pcr_markers by john-mccallum 
+
+peakranger by ziru-zhou 
+
+peakranger by modencode-dcc 
+
+pepitome_app by galaxyp 
+
+peptideshaker by galaxyp 
+
+peptideshaker_0201 by galaxyp 
+
+peptide_to_gff by galaxyp 
+
+phrap by edward-kirton 
+
+picard by devteam 
+
+pileup_to_vcf by jjohnson 
+
+plot_distribution by ynewton 
+
+predictnls by peterjc 
+
+preppereadsforveletfasta by konradpaszkiewicz 
+
+pricat_test by josemuino 
+
+pride_biomart by galaxyp 
+
+prodigal by edward-kirton 
+
+prop_venn by idot 
+
+proteinpilot by galaxyp 
+
+proteomics_datatypes by iracooke 
+
+protk by iracooke 
+
+protk_blast by iracooke 
+
+protk_msgfplus by iracooke 
+
+protk_omssa by iracooke 
+
+protk_proteowizard by iracooke 
+
+protk_trans_proteomic_pipeline by iracooke 
+
+psm_eval by galaxyp 
+
+pycrac by swebb 
+
+pyrocleaner by jmariette 
+
+qcma by andreu 
+
+qiime by jjohnson 
+
+qiime1_3_0 by azuzolo 
+
+qiime_1_6_0 by davide-albanese 
+
+qseq2fastq by vipints 
+
+qualimap_suite by joachim-jacob 
+
+raxml by malex 
+
+rdiff by vipints 
+
+regex_replace by kellrott 
+
+remove_beginning by devteam 
+
+repeat_masker by bjoern-gruening 
+
+repeat_masker by bgruening 
+
+reverse_complement by xuebing 
+
+ribopicker by malex 
+
+rnbeads by pavlo-lutsik 
+
+roche454_toolsuite by edward-kirton 
+
+rseqc by nilesh 
+
+rtg_investigator by diego 
+
+rxlr_venn_workflow by peterjc 
+
+sambamba_filter by lomereiter 
+
+sam_dump by matt-shirley 
+
+samifier by przemyslaw 
+
+sampline by xuebing 
+
+samtools_filter by jjohnson 
+
+scaffold by galaxyp 
+
+scythe by nikhil-joshi 
+
+searchgui by galaxyp 
+
+secreted_protein_workflow by peterjc 
+
+sed_wrapper by bjoern-gruening 
+
+semweb_tools by saml 
+
+sendmail by geert-vandeweyer 
+
+seq2hla by sebastian-boegel 
+
+seq_filter_by_id by peterjc 
+
+seq_markov by xuebing 
+
+seq_match by xuebing 
+
+seq_primer_clip by peterjc 
+
+seq_rename by peterjc 
+
+seq_select_by_id by peterjc 
+
+seq_shuffle by xuebing 
+
+seq_shuffle_dinucleotide by xuebing 
+
+seq_to_meme by xuebing 
+
+sff_filter_by_id by peterjc 
+
+sharplab_interval_analysis by xuebing 
+
+sharplab_seq_motif by xuebing 
+
+sharplabtool by xuebing 
+
+show_beginning by devteam 
+
+show_tail by devteam 
+
+sickle by nilesh 
+
+sickle by amol 
+
+sickle by nikhil-joshi 
+
+smalt by cjav 
+
+s_mart by yufei-luo 
+
+sniploid by dereeper 
+
+snp_analysis_conversion by miller-lab 
+
+snpeff by pcingola 
+
+snpeff by jjohnson 
+
+snpeff_3_2 by jjohnson 
+
+snpeff_3_2 by galaxyp 
+
+snpeff_3_3 by jjohnson 
+
+snpeff_cds_report by jjohnson 
+
+snp_mapping_using_wgs by gregory-minevich 
+
+snptools by rreumerman 
+
+somaticsniper by nilesh 
+
+somatic_sniper by fcaramia 
+
+somatic_sniper by nilesh 
+
+sortmerna by bonsai 
+
+spades by lionelguy 
+
+sparql by atsuko 
+
+sparql_galaxy by mikel-egana-aranguren 
+
+spatial_proximity by xuebing 
+
+splicesite_max_entropy by xuebing 
+
+spp_package by modencode-dcc 
+
+spp_phantompeak by ziru-zhou 
+
+sra_fetch by matt-shirley 
+
+sra_tools by matt-shirley 
+
+srf2fastq by dawe 
+
+ssr_marker_design by john-mccallum 
+
+svdetect by bzeitouni 
+
+synapse_interface by kellrott 
+
+tab_collapse by xuebing 
+
+tabix by nilesh 
+
+tabular2html by ondovb 
+
+tabular_edit by kellrott 
+
+tabular_label_convert by kellrott 
+
+tagrecon_app by galaxyp 
+
+tapdance by jesse-erdmann 
+
+tcga_import by kellrott 
+
+test0001 by test0004 
+
+testconversion by sara 
+
+tint by galaxyp 
+
+tmap_wrapper by nilshomer 
+
+tmhmm_and_signalp by peterjc 
+
+toolfactory by fubar 
+
+tophat_stats_pe by jjohnson 
+
+tophit_namefilter by abossers 
+
+tpp_prophets by iracooke 
+
+trim_galore by bjoern-gruening 
+
+trim_galore by bgruening 
+
+trimmer by devteam 
+
+trinityrnaseq by bhaas 
+
+trna_prediction by bjoern-gruening 
+
+trna_prediction by bgruening 
+
+ucsb_phylogenetics by ucsb-phylogenetics 
+
+unique_line by xuebing 
+
+upload_local_file by alermine 
+
+usearch by edward-kirton 
+
+utilities by galaxyp 
+
+varscan by fcaramia 
+
+vcftools by nilesh 
+
+vcf_to_variantdb by geert-vandeweyer 
+
+velvetoptimiser by konradpaszkiewicz 
+
+velvet_optimiser by simon-gladman 
+
+velvet_toolsuite by edward-kirton 
+
+venn by xuebing 
+
+venn_list by peterjc 
+
+viralcloud by ntino-krampis 
+
+weblogo3 by fubar 
+
+webservice_toolsuite by ganjoo 
+
+webservice_toolsuite_v1_1 by uga-galaxy-group 
+
+xtandem by iracooke 
+

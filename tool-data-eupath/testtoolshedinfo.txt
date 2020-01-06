@@ -1,0 +1,732 @@
+abyss_toolsuite by edward-kirton 
+
+agile_wrapper by simonl 
+
+all_but_bad by rico 
+
+allele_counts_1 by nick 
+
+all_tests_pass by dave 
+
+annovar by david-hoover 
+
+ap11_test by da-intersect 
+
+api_tools by remy-d1 
+
+assemblystats by konradpaszkiewicz 
+
+assessing_target_enrichment by getiria-onsongo 
+
+atlas2 by paulgordon 
+
+augustus by bgruening 
+
+augustus_dep by jjohnson 
+
+bad_tool_config by greg 
+
+bamedit by zzhou 
+
+bamedit by modencode-dcc 
+
+bam_to_bigwig by brad-chapman 
+
+bam_to_fastq by brad-chapman 
+
+batch_plot by dsobral 
+
+bedtools by aaronquinlan 
+
+bedtools_test_bag by bgruening 
+
+bismark by bgruening 
+
+blast by edward-kirton 
+
+blast2go by peterjc 
+
+blast_datatypes by devteam 
+
+blastxml_to_top_descr by peterjc 
+
+blat by joachim-jacob 
+
+bs_seq_test_1 by eugen 
+
+bs_seq_test_2 by eugen 
+
+bwa_059 by greg 
+
+bwa_base by greg 
+
+bwa_color by greg 
+
+bwa_mappers by devteam 
+
+caddsuite_linux_x86_64 by marcel 
+
+cancer_browser by brian-craft 
+
+carpet_toolsuite by matces 
+
+cdhit by jjohnson 
+
+cgatools by greg 
+
+cga_tools by greg 
+
+chemfp by bgruening 
+
+chemical_data_sources by bgruening 
+
+chemical_datatypes by bgruening 
+
+chemicaltooblox by bgruening 
+
+chemicaltoolbox by bgruening 
+
+cisortho2 by lag2175 
+
+clinod by peterjc 
+
+clustalomega by clustalomega 
+
+clustalw by fubar 
+
+cluster3 by kellrott 
+
+complex_repository_dependency_on_bwa_059 by greg 
+
+confab by bgruening 
+
+contra by fcaramia 
+
+convert_chars by greg 
+
+count_lines_in_file by yves 
+
+ctb_machine_learning by bgruening 
+
+cummerbund by jjohnson 
+
+cummerbund by molson 
+
+cummerbund by cjav 
+
+data_manager_bwa_index_builder by blankenberg 
+
+data_manager_fetch_genome_all_fasta by blankenberg 
+
+data_manager_sam_fa_index_builder by blankenberg 
+
+data_manager_ucsc_twobit_index_builder by jjohnson 
+
+defuse by jjohnson 
+
+deseq2 by bgruening 
+
+detrprok_scripts by clairetn 
+
+detr_prok_v2 by cwallon 
+
+detrprok_wf by clairetn 
+
+dichotomize by kellrott 
+
+differential_count_models by fubar 
+
+dummy_tool by hackdna 
+
+dummy_workflows by hackdna 
+
+eautils by nilesh 
+
+effectivet3 by peterjc 
+
+ember by mmaiensc 
+
+emboss_5 by devteam 
+
+emboss_datatypes by devteam 
+
+ensembl by mahtabm 
+
+ensembl_vep by willmclaren 
+
+ensemb_rep_gvl by mahtabm 
+
+eqtl_tools by saketkc 
+
+eval_quote_comment_tests_test by rico 
+
+export_to_fastq by louise 
+
+fake by rico 
+
+fasta_extract by simon-gladman 
+
+fasta_filter_by_id by peterjc 
+
+fasta_stats by simon-gladman 
+
+fasta_to_phylip by mish 
+
+fastqc by fubar 
+
+fastqc by hackdna 
+
+fastqc by jjohnson 
+
+fastq_filter_by_id by peterjc 
+
+fastq_groomer_parallel by kevyin 
+
+fastq_paired_unpaired by peterjc 
+
+filter_on_md by boris 
+
+filter_test by rico 
+
+find_error by rico 
+
+flip_columns_on_condition by dsobral 
+
+fml_gff3togtf by vipints 
+
+fml_mergeloci by vipints 
+
+fml_wig2bed by vipints 
+
+gaf2gtf by kellrott 
+
+galaxy_protk by iracooke 
+
+garbage1 by david-hoover 
+
+gatk2 by jjohnson 
+
+gatk_lite_2_3_9 by jjohnson 
+
+genetorrent by kellrott 
+
+getalleleseq by boris 
+
+get_orfs_or_cdss by peterjc 
+
+glimmer by bgruening 
+
+glimmer_gene_calling_workflow by bgruening 
+
+gmap by greg 
+
+gmap by jjohnson 
+
+gregs_copy_of_b2g by devteam 
+
+gregs_filter by greg 
+
+greg_sparql by greg 
+
+gregs_test_repo by greg 
+
+grinder by greg 
+
+gu_pipeline2 by carlos-reyes 
+
+gu_pipeline_no by carlos-reyes 
+
+hamstring by matt-shirley 
+
+heatmap by guru-ananda 
+
+hetbox by boris 
+
+heteroplasmy_workflow by greg 
+
+hexagram by adam-novak 
+
+homer by kevyin 
+
+htseq_bams_to_count_matrix by fubar 
+
+htseq_count by lparsons 
+
+idr_package by modencode-dcc 
+
+interproscan by konradpaszkiewicz 
+
+iprscan by bgruening 
+
+iquant by jmchilton 
+
+johnstestrepo by jmchilton 
+
+jointsnvmix by fcaramia 
+
+karyotype_plot by guru-ananda 
+
+kent_283 by jjohnson 
+
+kmersvm_test by test-svm 
+
+knitrtest by joachim-jacob 
+
+krona_tools by jjohnson 
+
+local_export_tools by david-hoover 
+
+local_file_tools by david-hoover 
+
+lucy by edward-kirton 
+
+macs by modencode-dcc 
+
+macs2 by zzhou 
+
+macs2 by modencode-dcc 
+
+mafft by dereeper 
+
+mascot by iracooke 
+
+matrix_manipulate by kellrott 
+
+matrix_normalization by ynewton 
+
+meme_chip by kevyin 
+
+metaphlan by jjohnson 
+
+minimus2 by edward-kirton 
+
+minor_variant_boxplot by nick 
+
+mira_assembler by peterjc 
+
+miraligner by lpantano 
+
+molecule_datatypes by bgruening 
+
+mothur_toolsuite by jjohnson 
+
+mrbayes by anngomez 
+
+mummer_toolsuite by abossers 
+
+mutect by nilesh 
+
+my_400th_test by rico 
+
+naive_variant_detector by blankenberg 
+
+natural_product_likeness by bgruening 
+
+ncbi_blast_plus by peterjc 
+
+next_test_test by rico 
+
+ngs_roi by holtgrewe 
+
+nlstradamus by peterjc 
+
+no_tests_test by rico 
+
+nupop_0.1 by vipints 
+
+oasesoptimiser by konradpaszkiewicz 
+
+obo_datatypes by jorrit 
+
+obotest by jorrit 
+
+obo_test_workflows by jorrit 
+
+obotools by jorrit 
+
+obotools_02 by kltm 
+
+oldap11 by da-intersect 
+
+omssa by iracooke 
+
+ontologizer by kellrott 
+
+onto-toolkit by erick-antezana 
+
+openbabel by bgruening 
+
+opsin by bgruening 
+
+osra by bgruening 
+
+package_amos_3_1_0 by jjohnson 
+
+package_ape_3_0 by boris 
+
+package_atlas_3_10 by bgruening 
+
+package_atlas_3_10 by iuc 
+
+package_biopython_1_61 by bgruening 
+
+package_biopython_1_61 by biopython 
+
+package_boost_1_53 by bgruening 
+
+package_boost_1_53 by iuc 
+
+package_bowtie_1_0_0 by jjohnson 
+
+package_bwa_0_5_9 by devteam 
+
+package_bwa_0_6_2 by devteam 
+
+package_bzlib_1_0 by iuc 
+
+package_bzlib_1_0 by bgruening 
+
+package_chemfp_1_1 by bgruening 
+
+package_crest_1_0_1 by jjohnson 
+
+package_dendropy_3_12 by boris 
+
+package_deseq2_1_0_17 by bgruening 
+
+package_eigen_2_0 by iuc 
+
+package_eigen_2_0 by bgruening 
+
+package_eigen_3_1 by iuc 
+
+package_eigen_3_1 by bgruening 
+
+package_emboss_5_0_0 by devteam 
+
+package_freetype_2_4 by bgruening 
+
+package_freetype_2_4 by iuc 
+
+package_ghostscript_9_07 by fubar 
+
+package_gmap_2013_05_09 by jjohnson 
+
+package_graphicsmagick_1_3 by bgruening 
+
+package_graphicsmagick_1_3 by iuc 
+
+package_kent by jjohnson 
+
+package_kent_283 by jjohnson 
+
+package_lapack_3_4 by bgruening 
+
+package_lapack_3_4 by iuc 
+
+package_matplotlib_1_2 by bgruening 
+
+package_matplotlib_1_2 by iuc 
+
+package_matplotlib_lite by fubar 
+
+package_mummer_3_23 by jjohnson 
+
+package_numpy_1_7 by iuc 
+
+package_numpy_1_7 by blankenberg 
+
+package_numpy_1_7 by bgruening 
+
+package_openbabel_2_3 by bgruening 
+
+package_pybamparser by blankenberg 
+
+package_pybamtools by blankenberg 
+
+package_r_2_15 by boris 
+
+package_r3 by fubar 
+
+package_r_3_0_1 by bgruening 
+
+package_r3_withx by joachim-jacob 
+
+package_rdkit_2012_12 by bgruening 
+
+package_rdkit_2013_03 by bgruening 
+
+package_readline_6_2 by bgruening 
+
+package_readline_6_2 by boris 
+
+package_rpy2_2_2 by boris 
+
+package_rpy2_2_3_6 by bgruening 
+
+package_samtools_0_1_16 by devteam 
+
+package_samtools_0_1_18 by devteam 
+
+package_scikit_learn_0_13 by bgruening 
+
+package_scikit_learn_0_13 by iuc 
+
+package_scipy_0_12 by iuc 
+
+package_scipy_0_12 by bgruening 
+
+package_shear_0_1_2 by jjohnson 
+
+package_velvet_1_2 by simon-gladman 
+
+package_velvet_1_2_10 by jjohnson 
+
+package_x11_client_1_5_proto_7_0 by devteam 
+
+pathprint by hackdna 
+
+peakranger by zzhou 
+
+peakranger by modencode-dcc 
+
+phrap by edward-kirton 
+
+phylorelatives by boris 
+
+phyml by dereeper 
+
+picard by devteam 
+
+plot_distribution by ynewton 
+
+precommit_test by bgruening 
+
+preppereadsforveletfasta by konradpaszkiewicz 
+
+priam_search by radisson 
+
+pricat_test by josemuino 
+
+prodigal by edward-kirton 
+
+proteomics_datatypes by iracooke 
+
+protk_blast by iracooke 
+
+protk_msgfplus by iracooke 
+
+protk_omssa by iracooke 
+
+protk_proteowizard by iracooke 
+
+protk_trans_proteomic_pipeline by iracooke 
+
+psm_eval by jmchilton 
+
+pycrac by swebb 
+
+qcma by andreu 
+
+qiime1_3_0 by azuzolo 
+
+qseq2fastq by vipints 
+
+qtrinh_gc_content by qtrinh 
+
+quote_test by rico 
+
+rdkit by bgruening 
+
+refinery_test by hackdna 
+
+repo_testing by jampradinuk 
+
+rg_gsea by fubar 
+
+rhmm by guru-ananda 
+
+ribopicker by jjohnson 
+
+rnaseqc by nilesh 
+
+roche454_toolsuite by edward-kirton 
+
+rseqc by nilesh 
+
+rseqc_dev2 by nilesh 
+
+rxlr_venn_workflow by peterjc 
+
+sambamba_filter by lparsons 
+
+samtools_0_1_18 by jjohnson 
+
+secreted_protein_workflow by peterjc 
+
+segment_map by kellrott 
+
+seq_filter_by_id by peterjc 
+
+seq_primer_clip by peterjc 
+
+seq_rename by peterjc 
+
+seq_select_by_id by peterjc 
+
+sff_filter_by_id by peterjc 
+
+shear by jjohnson 
+
+sickle by nilesh 
+
+sickle_dev by nilesh 
+
+sickle_dev2 by nilesh 
+
+siggenes by kellrott 
+
+silicos_it by bgruening 
+
+simsearch by bgruening 
+
+smalt by cjav 
+
+s_mart by mzytnicki 
+
+sniploid by dereeper 
+
+snpeff by jjohnson 
+
+snpeff by pcingola 
+
+snpeff_3_2 by jjohnson 
+
+snpeff_3_3 by jjohnson 
+
+snpeff_v2_from_pablo by greg 
+
+snpeff_with_dep by jjohnson 
+
+snpeff_with_dep by devteam 
+
+snp_table_merger by rijst 
+
+snptools by rijst 
+
+somatic_sniper by fcaramia 
+
+sometool by kevyin 
+
+sortmerna by jeanfred 
+
+spades by lionelguy 
+
+split_transcript by cwallon 
+
+spp_phantompeak by zzhou 
+
+spp_workflows by hackdna 
+
+sra_tools by matt-shirley 
+
+srf2fastq by dawe 
+
+subseq_protein by dereeper 
+
+synapse_interface by kellrott 
+
+test1 by dddd 
+
+test_500 by rico 
+
+test_600 by rico 
+
+test_ap11 by da-intersect 
+
+testdavid by da-intersect 
+
+test_eval_quote by rico 
+
+testing by julius 
+
+testing1 by bcrain-completegenomics 
+
+testing2 by bcrain-completegenomics 
+
+testing3 by bcrain-completegenomics 
+
+testing4 by bcrain-completegenomics 
+
+testing_again by rico 
+
+testing_cgatools by bcrain-completegenomics 
+
+testing_cgatools by devteam 
+
+testing_scripts by bcrain-completegenomics 
+
+test_perl by yves 
+
+test_repository by rico 
+
+test_repository by dave 
+
+testset by anshu 
+
+test_single_file by rico 
+
+tint by jmchilton 
+
+tmap_wrapper by nilshomer 
+
+tmhmm_and_signalp by peterjc 
+
+tool_dependency_definition_test by bgruening 
+
+toolfactory by fubar 
+
+tophit_namefilter by abossers 
+
+tpp_prophets by iracooke 
+
+trial_gu by xzk- 
+
+trim_galore by bgruening 
+
+trimmomatic_0_22 by simon-gladman 
+
+trinityrnaseq by jjohnson 
+
+trna_prediction by bgruening 
+
+ucsc_cluster_tools by peter-waltman 
+
+ucsc_cluster_tools2 by peter-waltman 
+
+unix_tools by gordon 
+
+upload_testing by bgruening 
+
+varscan by fcaramia 
+
+velvet by jjohnson 
+
+velvetoptimiser by konradpaszkiewicz 
+
+velvet_optimiser_2_2_5 by simon-gladman 
+
+velvet_toolsuite by edward-kirton 
+
+venn_list by peterjc 
+
+vstranformation by joachim-jacob 
+
+weblogo3 by fubar 
+
+webservice_toolsuite by ganjoo 
+
+xtandem by iracooke 
+
+zlib by nilesh 
+
