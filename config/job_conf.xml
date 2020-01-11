@@ -245,6 +245,7 @@
         <tool id="globus_get_data_flowcell_text" destination="condor_local"/>
         <tool id="globus_get_data_text" destination="condor_local"/>
         <tool id="globus_get_data_from_ebi" destination="condor_local"/>
+        <tool id="globus_get_data_from_ebi_to_collections" destination="condor_local"/>
         <tool id="globus_get_data_pemapper" destination="k8s_remote_32"/>
         <tool id="globus_publish" destination="condor_local"/>
         <tool id="globus_publish_upload" destination="condor_local"/>
