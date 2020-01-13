@@ -15,7 +15,7 @@
     <param name="globuscert" type="hidden" value="**" label="Detailded Transfer Info">
       <sanitizer sanitize="False"/>
     </param>
-    <param name="from_endpoint" type="hidden" value="ebi#public" label="Source Endpoint">
+    <param name="from_endpoint" type="hidden" value="Shared EMBL-EBI public endpoint" label="Source Endpoint">
       <sanitizer sanitize="False"/>
     </param>
     <param name="symlink" type="hidden" value="**" label="symlink to output">

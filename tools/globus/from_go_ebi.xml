@@ -8,7 +8,7 @@
     -c $usercert
     -o transfer.log
     --goauth-token "$goauth"
-    --source-ep="ebi#public"
+    --source-ep="Shared EMBL-EBI public endpoint"
     --destination-ep=$to_endpoint
     --dataset "$from_path" "$to_path" "$out_file1"
     #if str($datatype_cond['single_paired']) == 'paired':

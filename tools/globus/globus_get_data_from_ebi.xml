@@ -25,7 +25,7 @@
         <when value="bam"></when>
         <when value="other"></when>
     </conditional>
-    <param name="from_endpoint" type="hidden" value="ebi#public" label="Source Endpoint">
+    <param name="from_endpoint" type="hidden" value="Shared EMBL-EBI public endpoint" label="Source Endpoint">
       <sanitizer sanitize="False"/>
     </param>
   </inputs>
