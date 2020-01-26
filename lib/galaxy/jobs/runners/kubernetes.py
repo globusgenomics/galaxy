@@ -343,11 +343,15 @@ class KubernetesJobRunner(AsynchronousJobRunner):
             for item in tmp_list:
                 if "/mnt/galaxyIndices" in item:
                     indice_path = item[item.find("/mnt/galaxyIndices"):]
-                    indice_path = indice_path.strip('"').strip('\'').strip('"').strip('\'').strip()
+                    indice_path = indice_path.strip()
+                    while not (indice_path[-1].isdigit() or indice_path[-1].isalpha()):
+                        indice_path = indice_path[:-1]
                     indices.append(indice_path)
                 elif "/scratch/" in item:
                     dataset_path = item[item.find("/scratch/"):]
-                    dataset_path = dataset_path.strip('"').strip('\'').strip('"').strip('\'').strip()
+                    dataset_path = dataset_path.strip()
+                    while not (dataset_path[-1].isdigit() or dataset_path[-1].isalpha()):
+                        dataset_path = dataset_path[:-1]
                     if dataset_path.startswith("/scratch/galaxy/files") or dataset_path.startswith("/scratch/shared") or dataset_path.startswith("/scratch/galaxy/data"):
                         if os.path.exists(dataset_path):
                             datasets.append(dataset_path)

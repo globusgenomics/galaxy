@@ -754,9 +754,13 @@ class AsynchronousJobRunner(BaseJobRunner, Monitors):
             for i in tmp_result["Contents"]:
                 file_path_bucket = i["Key"]
                 file_path_local = file_path_bucket.replace("storage","",1)
-                if not os.path.exists(os.path.dirname(file_path_local)):
-                    os.makedirs(os.path.dirname(file_path_local))
-                s3_client.download_file(gg_s3_bucket, file_path_bucket, file_path_local)
+                # skip all the dirs in the working dir
+                tmp_check = file_path_bucket.replace(gg_job_working_directory_bucket,"",1)
+                tmp_check =  tmp_check.strip("/")
+                if not "/" in tmp_check:
+                    if not os.path.exists(os.path.dirname(file_path_local)):
+                        os.makedirs(os.path.dirname(file_path_local))
+                    s3_client.download_file(gg_s3_bucket, file_path_bucket, file_path_local)
 
         # deal with dataset_affiliated_dir
         gg_command_line = job_state.job_wrapper.command_line
@@ -774,7 +778,9 @@ class AsynchronousJobRunner(BaseJobRunner, Monitors):
         for item in gg_tmp_list:
             if "/scratch/" in item:
                 dataset_path = item[item.find("/scratch/"):]
-                dataset_path = dataset_path.strip('"').strip('\'').strip('"').strip('\'').strip()
+                dataset_path = dataset_path.strip()
+                while not (dataset_path[-1].isdigit() or dataset_path[-1].isalpha()):
+                    dataset_path = dataset_path[:-1]
                 if dataset_path.startswith("/scratch/galaxy/files") or dataset_path.startswith("/scratch/shared") or dataset_path.startswith("/scratch/galaxy/data"):
                     if os.path.exists(dataset_path):
                         gg_datasets.append(dataset_path)
