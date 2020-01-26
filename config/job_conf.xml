@@ -4,8 +4,8 @@
         <!-- "workers" is the number of threads for the runner's work queue.
              The default from <plugins> is used if not defined for a <plugin>.
           -->
-	<plugin id="local" type="runner" load="galaxy.jobs.runners.local:LocalJobRunner"/>
-	<plugin id="condor" type="runner" load="galaxy.jobs.runners.condor:CondorJobRunner" />
+        <plugin id="local" type="runner" load="galaxy.jobs.runners.local:LocalJobRunner"/>
+        <plugin id="condor" type="runner" load="galaxy.jobs.runners.condor:CondorJobRunner" />
         <plugin id="k8s" type="runner" load="galaxy.jobs.runners.kubernetes:KubernetesJobRunner">
             <param id="k8s_config_path">/home/galaxy/.kube/config</param>
             <param id="k8s_persistent_volume_claims">mnt:/mnt,opt:/opt</param>
@@ -30,9 +30,9 @@
              should be executed on those remote resources.
          -->
         <destination id="local" runner="local">
-	</destination>
-	<destination id="condor_local" runner="condor">
-	    <param id="+GlobusOnline">True</param>
+        </destination>
+        <destination id="condor_local" runner="condor">
+            <param id="+GlobusOnline">True</param>
         </destination>
         <destination id="condor_remote_8" runner="condor">
             <param id="request_cpus">8</param>
@@ -44,7 +44,15 @@
             <param id="requests_memory">2Gi</param>
             <param id="max_pod_retrials">0</param>
             <param id="docker_enabled">true</param>
-	</destination>
+        </destination>
+        <destination id="k8s_remote_1_ubuntu14" runner="k8s">
+            <param id="docker_owner_default">globusgenomics</param>
+            <param id="docker_image_default">base2-14</param>
+            <param id="requests_cpu">500m</param>
+            <param id="requests_memory">2Gi</param>
+            <param id="max_pod_retrials">0</param>
+            <param id="docker_enabled">true</param>
+        </destination>
         <destination id="k8s_remote_2" runner="k8s">
             <param id="docker_owner_default">globusgenomics</param>
             <param id="docker_image_default">base2</param>
@@ -67,7 +75,7 @@
             <param id="requests_cpu">6000m</param>
             <param id="requests_memory">16Gi</param>
             <param id="max_pod_retrials">0</param>
-	    <param id="docker_enabled">true</param>
+        <param id="docker_enabled">true</param>
         </destination>
         <destination id="k8s_remote_16" runner="k8s">
             <param id="docker_owner_default">globusgenomics</param>
@@ -165,7 +173,7 @@
         <tool id="breakseq_tool_swift" destination="condor_local"/>
         <tool id="bwa_mem" destination="k8s_remote_8"/>
         <tool id="bwa_mem_bags" destination="k8s_remote_8"/>
-	<tool id="bwa_wrapper" destination="k8s_remote_8"/>
+        <tool id="bwa_wrapper" destination="k8s_remote_8"/>
         <tool id="bwa_wrapper_version_0710" destination="k8s_remote_8"/>
         <tool id="cnvkit_swift" destination="condor_local"/>
         <tool id="cnvnator_docker" destination="k8s_remote_8"/>
@@ -184,6 +192,7 @@
         <tool id="delly2_call_swift" destination="condor_local"/>
         <tool id="delly2_merge_swift" destination="condor_local"/>
         <tool id="deseq2" destination="condor_local"/>
+        <tool id="iuc_deseq2" destination="k8s_remote_1_ubuntu14"/>
         <tool id="directory_dataset_hack" destination="condor_local"/>
         <tool id="dnaCompleteExome_optimized" destination="k8s_remote_8"/>
         <tool id="dnaComplete_optimized" destination="k8s_remote_8"/>

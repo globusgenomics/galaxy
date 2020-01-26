@@ -1,6 +1,6 @@
 <tool id="freebayes" name="FreeBayes" version="FREEBAYES: v0.9.21-19-gc003c1e; SAMTOOLS: 0.1.18">
   <requirements>
-    <requirement type="package">freebayes</requirement>
+    <requirement type="package" version="v0.9.21-19-gc003c1e">freebayes</requirement>
     <requirement type="package" version="0.1.18">samtools</requirement>
   </requirements>
   <description> - Bayesian genetic variant detector</description>
@@ -79,7 +79,7 @@
         ##reference allele
         #if str( $options_type.use_reference_allele_type.use_reference_allele_type_selector ) == &quot;include_reference_allele&quot;:
             --use-reference-allele
-            ${options_type.use_reference_allele_type.diploid_reference}
+            ##${options_type.use_reference_allele_type.diploid_reference}
             --reference-quality &quot;${options_type.use_reference_allele_type.reference_quality_mq},${options_type.use_reference_allele_type.reference_quality_bq}&quot;
         #end if
         
@@ -280,7 +280,7 @@
                 <!-- Do nothing here -->
               </when>
               <when value="include_reference_allele">
-                <param checked="False" falsevalue="" label="Treat reference as diploid" name="diploid_reference" truevalue="--diploid-reference" type="boolean"/>
+		      <!--<param checked="False" falsevalue="" label="Treat reference as diploid" name="diploid_reference" truevalue="-diploid-reference" type="boolean"/>-->
                 <param label="Assign mapping quality" name="reference_quality_mq" type="integer" value="100"/>
                 <param label="Assign base quality" name="reference_quality_bq" type="integer" value="60"/>
               </when>
