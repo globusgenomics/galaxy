@@ -9,6 +9,7 @@ import requests.packages.urllib3
 requests.packages.urllib3.disable_warnings()
 
 import ast
+import ConfigParser
 
 from optparse import OptionParser
 args=None
@@ -32,10 +33,46 @@ with open(transfer_info_file_loc, 'r') as f:
 os.remove(transfer_info_file_loc)
 
 transfer_info = ast.literal_eval(transfer_info_read)
-print transfer_info
+
+"""
+transfer_info = {'username': username, 
+                 'globus_cred_file': galaxy_config['globus_cred_file'].strip(),
+                 'goauth_token': goauth_token, 
+                 'from_endpoint': galaxy_config['globus_endpoint'].strip(),
+                 'to_endpoint': incoming['to_endpoint'].strip(),
+                 'jobs': transfer_job_info}
+"""
+
+if 'username' in transfer_info:
+    print 'username: {0}'.format(transfer_info['username'])
+if 'from_endpoint' in transfer_info:
+    print 'from_endpoint: {0}'.format(transfer_info['from_endpoint'])
+if 'to_endpoint' in transfer_info:
+    print 'to_endpoint: {0}'.format(transfer_info['to_endpoint'])
+if 'jobs' in transfer_info:
+    print 'jobs: {0}'.format(transfer_info['jobs'])
+
+
+# verify the token and refresh it if expired
+access_token = transfer_info['goauth_token']
+
+Config = ConfigParser.ConfigParser()
+Config.read(transfer_info['globus_cred_file'])
+client_id = Config.get('globus', 'client_id')
+client_secret = Config.get('globus', 'client_secret')
+auth_client = globus_sdk.ConfidentialAppAuthClient(client_id, client_secret)
+if not auth_client.oauth2_validate_token(access_token)['active']:
+    refresh_token_file_name = transfer_info['username'].strip() + "_refresh"
+    refresh_token_file = os.path.join(os.path.join(os.path.dirname(transfer_info['globus_cred_file']), "tokens"), refresh_token_file_name)
+    with open(refresh_token_file, 'r') as f:
+        refresh_token = f.readlines()[0].strip()
+    r = auth_client.oauth2_refresh_token(refresh_token)
+    access_token = r.by_resource_server['transfer.api.globus.org']['access_token']
+
+
 transfer_direction = options.transfer_direction
 
-transfer_client = globus_sdk.TransferClient(authorizer=globus_sdk.AccessTokenAuthorizer(transfer_info['goauth_token']))
+transfer_client = globus_sdk.TransferClient(authorizer=globus_sdk.AccessTokenAuthorizer(access_token))
 
 destination_ep = transfer_info['to_endpoint']
 source_ep = transfer_info['from_endpoint']

@@ -125,7 +125,9 @@ class GlobusTransferInAction( DefaultToolAction ):
             incoming['path_hidden'] = os.path.dirname(job_to_path)
 
 
-        transfer_info = {'goauth_token': goauth_token, 
+        transfer_info = {'username': username,
+                         'globus_cred_file': galaxy_config['globus_cred_file'].strip(),
+                         'goauth_token': goauth_token, 
                          'from_endpoint': incoming['from_endpoint'].strip(),
                          'to_endpoint': galaxy_config['globus_endpoint'].strip(),
                          'jobs': transfer_job_info}
@@ -294,7 +296,9 @@ class GlobusTransferOutAction( DefaultToolAction ):
 
         transfer_job_info = self.generate_transfer_info(tool.id, incoming)
 
-        transfer_info = {'goauth_token': goauth_token, 
+        transfer_info = {'username': username, 
+                         'globus_cred_file': galaxy_config['globus_cred_file'].strip(),
+                         'goauth_token': goauth_token, 
                          'from_endpoint': galaxy_config['globus_endpoint'].strip(),
                          'to_endpoint': incoming['to_endpoint'].strip(),
                          'jobs': transfer_job_info}

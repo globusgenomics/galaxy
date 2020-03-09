@@ -327,25 +327,9 @@ class Authenticate(ActionHandler):
         environ[ self.app.remote_user_header ] = user
         environ['X-GLOBUS-USER'] = user
         environ['X-GLOBUS-TOKEN'] = atoken
-        self.record_token(user, atoken)
 
         environ['globus.storage'] = SessionStorage(environ['paste.session.factory']())
         return self.app(environ, start_response)
-
-    def record_token(self, user, atoken):
-        if '@' in user:
-            file_name = user[0:user.find('@')]
-        else:
-            file_name = user
-        
-        dir_name =  os.path.join(self.galaxy_config['globus_dir'], 'tokens')
-        if not os.path.isdir(dir_name):
-            os.mkdir(dir_name, 0700)
-
-        record_file = os.path.join(dir_name, file_name)
-
-        with open(record_file, 'w') as write_file:
-            write_file.write(atoken)
 
 
 class Login(ActionHandler):
@@ -358,6 +342,8 @@ class Login(ActionHandler):
         
         username = transfer_token_info['username']
         userid = transfer_token_info['sub']
+
+        self.record_token(username, transfer_token)
 
         if self.galaxy_config['globus_use_group'] and not self._is_user_in_group(username):
             return self._user_not_in_group(username, start_response)
@@ -386,6 +372,31 @@ class Login(ActionHandler):
             #print "RETURNING HERE"
             return start_response('303 See Other', headers, exc_info)
         return self.app(environ, custom_start_response)
+
+    def record_token(self, user, transfer_token):
+        if 'access_token' in transfer_token:
+            access_token = transfer_token['access_token']
+        if 'refresh_token' in transfer_token:
+            refresh_token = transfer_token['refresh_token']
+
+        if '@' in user:
+            file_name = user[0:user.find('@')]
+        else:
+            file_name = user
+        file_name = file_name.strip()
+        
+        dir_name =  os.path.join(self.galaxy_config['globus_dir'], 'tokens')
+        if not os.path.isdir(dir_name):
+            os.mkdir(dir_name, 0700)
+
+        record_file = os.path.join(dir_name, file_name)
+        with open(record_file, 'w') as write_file:
+            write_file.write(access_token)
+
+        record_file_refresh = record_file + "_refresh"
+        with open(record_file_refresh, 'w') as write_file:
+            write_file.write(refresh_token)
+
 
     def _create_user(self, _session, _environ, _user, _userid, _tokens):
         # share endpoint
