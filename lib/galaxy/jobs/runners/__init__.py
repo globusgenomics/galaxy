@@ -746,6 +746,7 @@ class AsynchronousJobRunner(BaseJobRunner, Monitors):
         # download the working dir from bucket if it exists
         gg_s3_bucket = job_state.job_wrapper.app.config.config_dict["gg_s3_bucket"]
         gg_job_working_directory = job_state.job_wrapper.working_directory
+        import fnmatch
         import boto3
         s3_client = boto3.client('s3')
         gg_job_working_directory_bucket = "storage" + gg_job_working_directory
@@ -782,6 +783,11 @@ class AsynchronousJobRunner(BaseJobRunner, Monitors):
                 while not (dataset_path[-1].isdigit() or dataset_path[-1].isalpha()):
                     dataset_path = dataset_path[:-1]
                 if dataset_path.startswith("/scratch/galaxy/files") or dataset_path.startswith("/scratch/shared") or dataset_path.startswith("/scratch/galaxy/data"):
+                    # check files named dataset_*_files and handle it 
+                    file_name = dataset_path.split("/")[-1]
+                    if fnmatch.fnmatch(file_name, "dataset_*_files"):
+                        new_dataset_path = dataset_path[0:-6] + ".dat"
+                        dataset_path = new_dataset_path
                     if os.path.exists(dataset_path):
                         gg_datasets.append(dataset_path)
 
@@ -797,7 +803,7 @@ class AsynchronousJobRunner(BaseJobRunner, Monitors):
         for dataset in gg_datasets:
             dir_path = dataset[0:-4] + "_files"
             dir_path_bucket = "storage" + dir_path
-            if not os.path.exists(dir_path) and check_if_s3_path_is_dir(gg_s3_bucket, dir_path_bucket):
+            if (not os.path.exists(dir_path)) and check_if_s3_path_is_dir(gg_s3_bucket, dir_path_bucket):
                 os.symlink("/mounted_scratch/" + dir_path_bucket, dir_path)
         #########################################
 

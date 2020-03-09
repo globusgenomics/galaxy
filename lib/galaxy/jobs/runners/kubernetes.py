@@ -87,7 +87,7 @@ class KubernetesJobRunner(AsynchronousJobRunner):
         # Editted by GG
         # use hostPath instead of NFS
         #mountable_volumes = [{'name': claim_name, 'persistentVolumeClaim': {'claimName': claim_name}} for claim_name in volume_claims]
-        mountable_volumes = [{'name': claim_name, 'hostPath': {'path': '/{0}'.format(claim_name), 'type': 'Directory'}} for claim_name in volume_claims]
+        mountable_volumes = [{'name': claim_name, 'hostPath': {'path': mount_path, 'type': 'Directory'}} for claim_name, mount_path in volume_claims.items()]
 
         self.runner_params['k8s_mountable_volumes'] = mountable_volumes
         volume_mounts = [{'name': claim_name, 'mountPath': mount_path} for claim_name, mount_path in volume_claims.items()]
@@ -308,6 +308,7 @@ class KubernetesJobRunner(AsynchronousJobRunner):
             k8s_container["imagePullPolicy"] = self._default_pull_policy
 
         ############## GG function ##############
+        import fnmatch
         import shutil
         import boto3
         from botocore.errorfactory import ClientError
@@ -353,6 +354,11 @@ class KubernetesJobRunner(AsynchronousJobRunner):
                     while not (dataset_path[-1].isdigit() or dataset_path[-1].isalpha()):
                         dataset_path = dataset_path[:-1]
                     if dataset_path.startswith("/scratch/galaxy/files") or dataset_path.startswith("/scratch/shared") or dataset_path.startswith("/scratch/galaxy/data"):
+                        # check files named dataset_*_files and handle it 
+                        file_name = dataset_path.split("/")[-1]
+                        if fnmatch.fnmatch(file_name, "dataset_*_files"):
+                            new_dataset_path = dataset_path[0:-6] + ".dat"
+                            dataset_path = new_dataset_path
                         if os.path.exists(dataset_path):
                             datasets.append(dataset_path)
             return {"indices": indices, "datasets": datasets}
