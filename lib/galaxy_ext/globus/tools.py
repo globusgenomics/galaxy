@@ -193,6 +193,8 @@ class GlobusTransferInAction( DefaultToolAction ):
                         if not os.path.exists(i["to_path"]):
                             os.makedirs(i["to_path"])
                             symlink_dir = str(dataset.get_file_name())[0:-4] + "_files"
+                            msg = "!!!!!!!!!!!!!!!!!os.symlink(i[\"to_path\"], symlink_dir): {0}, {1}".format(i["to_path"],symlink_dir)
+                            log.info(msg)
                             os.symlink(i["to_path"], symlink_dir)
                         ext = "txt"
                     else:
@@ -224,7 +226,10 @@ class GlobusTransferInAction( DefaultToolAction ):
 class GlobusTransferOutAction( DefaultToolAction ):
 
     def get_file_path_from_dataset(self, dataset):
+        time.sleep(30)
         dataset_path = dataset.get_file_name()
+        msg = "!!!!!!!!!!!!!!!!X!!dataset_path: {0}".format(dataset_path)
+        log.info(msg)
 
         # Check whether it is a Directory object thansferred through Globus Genomics
         dir_link = dataset_path[0:-4] + "_files"
@@ -255,6 +260,22 @@ class GlobusTransferOutAction( DefaultToolAction ):
                 job = {}
                 job['from_path'] = self.get_file_path_from_dataset(i['from_path'].dataset)
                 job['to_path'] = i['to_path'].strip().rstrip('/').rstrip('\\').replace(' ', '_').replace(':\\', '/').replace('\\', '/')
+                msg = "!!!!!!!!!!!!!!!!X!!globus_send_data_multiple: {0}, {1}".format(job['from_path'], job['to_path'])
+                log.info(msg)
+                transfer_job_info.append(job)
+                handle_send_bam(i['from_path'], job['to_path'])
+
+        elif tool_id == 'globus_send_data_multiple2':
+            stamp = time.strftime('_%Y_%m_%d', time.localtime(time.time()))
+            for i in incoming['src_dataset']:
+                job = {}
+                job['from_path'] = self.get_file_path_from_dataset(i['from_path'].dataset)
+                if i["include_datestamp"] == "none":
+                    stamp = ""
+                to_path = "%s/%s%s.%s" % (incoming['to_directory'], i['to_name'], stamp, i['to_extension'])
+                job['to_path'] = to_path.strip().rstrip('/').rstrip('\\').replace(' ', '_').replace(':\\', '/').replace('\\', '/')
+                msg = "!!!!!!!!!!!!!!!!X!!globus_send_data_multiple2: {0}, {1}".format(job['from_path'], job['to_path'])
+                log.info(msg)
                 transfer_job_info.append(job)
                 handle_send_bam(i['from_path'], job['to_path'])
 
@@ -262,8 +283,25 @@ class GlobusTransferOutAction( DefaultToolAction ):
             job = {}
             job['from_path'] = self.get_file_path_from_dataset(incoming['from_dataset'].dataset)
             job['to_path'] = incoming['to_path'].strip().rstrip('/').rstrip('\\').replace(' ', '_').replace(':\\', '/').replace('\\', '/')
+            msg = "!!!!!!!!!!!!!!!!!globus_send_data: {0}, {1}".format(job['from_path'], job['to_path'])
+            log.info(msg)
             transfer_job_info.append(job)
             #handle_send_bam(incoming['from_dataset'], job['to_path'])
+
+        elif tool_id == 'globus_send_data2':
+            job = {}
+            job['from_path'] = self.get_file_path_from_dataset(incoming['from_dataset'].dataset)
+            stamp = ""
+            if incoming["include_datestamp"] == "include":
+                stamp = time.strftime('_%Y_%m_%d', time.localtime(time.time()))
+
+            to_path = "%s/%s%s.%s" % (incoming['to_directory'], incoming['to_name'], stamp, incoming['to_extension'])
+            job['to_path'] = to_path.strip().rstrip('/').rstrip('\\').replace(' ', '_').replace(':\\', '/').replace('\\', '/')
+            msg = "!!!!!!!!!!!!!!!!!globus_send_data2: {0}, {1}".format(job['from_path'], job['to_path'])
+            log.info(msg)
+            transfer_job_info.append(job)
+            #handle_send_bam(incoming['from_dataset'], job['to_path'])  
+
         else:
             raise Exception('Missing tool id')
 

@@ -76,20 +76,9 @@ for history_item in gi.histories.show_history(history_id, contents=True):
 print "FLAG: %s" % flag
 
 ## send email
-smtpObj = smtplib.SMTP("127.0.0.1", 25)
-#sender = 'galaxy@globusgenomics.org'
-sender = 'arodri7@uchicago.edu'
 receivers = [globus_email]
-reply_to = "support@globus.org"
-#msg['Reply-to'] = "email2@domain2.com"
-body_message = """From: GalaxyAdmin <info@globusgenomics.org>
-To: %s
-Reply-To: %s
-Subject: Workflow Status: %s
-
-""" % (globus_email, reply_to, history['name'])
-
-
+subject = "Workflow Status: {0}".format(history['name'])
+body_message = ""
 if flag == 0:
     body_message += "Your jobs have completed without errors.\nHISTORY NAME: %s\nHISTORY ID: %s\n\n" % (history['name'], history_id)
     print "View your history at:  %s/history/view/%s" % (url, history_id)
@@ -100,9 +89,34 @@ elif flag == 2:
 
 body_message += "\nVisit you GlobusGenomics instance at %s/history/view/%s to review your work.\n\nSincerely,\n\nAdmin user" % (url, history_id)
 
-try:
-   smtpObj.sendmail(sender, receivers, body_message)         
-   print "Successfully sent email"
-except:
-#except SMTPException:
-   print "Error: unable to send email"
+
+def send_email(to_addresses, subject, email_content):
+    import boto3
+    import ConfigParser
+    Config = ConfigParser.ConfigParser()
+    Config.read("/home/galaxy/.globusgenomics/aws_creds")
+    ses_aws_access_key_id = Config.get('ses_iam', 'aws_access_key_id')
+    ses_aws_secret_access_key = Config.get('ses_iam', 'aws_secret_access_key')
+
+    ses_client = boto3.client("ses", 
+                        region_name="us-east-1", 
+                        aws_access_key_id=ses_aws_access_key_id,
+                        aws_secret_access_key=ses_aws_secret_access_key)
+    response = ses_client.send_email(
+            Source="server@globusgenomics.org",
+            Destination={"ToAddresses": to_addresses},
+            Message={
+                "Subject": {
+                    "Data": subject,
+                    "Charset": "UTF-8"
+                },
+                "Body": {
+                    "Text": {
+                        "Data": email_content,
+                        "Charset": "UTF-8"
+                    }
+                }
+            }
+        )
+
+send_email(receivers, subject, body_message)
