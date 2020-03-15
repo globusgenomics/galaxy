@@ -6,6 +6,7 @@ from galaxy.tools.actions import DefaultToolAction
 import globus_sdk
 import boto3
 import botocore
+import uuid
 
 log = logging.getLogger( __name__ )
 
@@ -97,7 +98,7 @@ class GlobusTransferInAction( DefaultToolAction ):
 
         tmp_file_dir = '/home/galaxy/.globusgenomics/tmp'
 
-        identifier = str(int(time.time()*10000))
+        identifier = str(uuid.uuid4()).replace("-", "")
 
         galaxy_config = trans.app.config.config_dict
 
@@ -192,7 +193,16 @@ class GlobusTransferInAction( DefaultToolAction ):
                     if transfer_type == 'dir':
                         if not os.path.exists(i["to_path"]):
                             os.makedirs(i["to_path"])
-                            symlink_dir = str(dataset.get_file_name())[0:-4] + "_files"
+                            for check_times in range(10):
+                                if check_times == 9:
+                                    msg = "failed to execute dataset.get_file_name() in GlobusTransferInAction"
+                                    log.error(msg)
+                                file_path_tmp = str(dataset.get_file_name())
+                                if file_path_tmp in ["", None, "None"]:
+                                    time.sleep(5)
+                                else:
+                                    break
+                            symlink_dir = file_path_tmp[0:-4] + "_files"
                             msg = "!!!!!!!!!!!!!!!!!os.symlink(i[\"to_path\"], symlink_dir): {0}, {1}".format(i["to_path"],symlink_dir)
                             log.info(msg)
                             os.symlink(i["to_path"], symlink_dir)
@@ -226,9 +236,21 @@ class GlobusTransferInAction( DefaultToolAction ):
 class GlobusTransferOutAction( DefaultToolAction ):
 
     def get_file_path_from_dataset(self, dataset):
-        time.sleep(30)
-        dataset_path = dataset.get_file_name()
-        msg = "!!!!!!!!!!!!!!!!X!!dataset_path: {0}".format(dataset_path)
+        for check_times in range(10):
+            if check_times == 9:
+                msg = "failed to execute dataset.get_file_name() in GlobusTransferOutAction"
+                log.error(msg)
+            file_path_tmp = dataset.get_file_name()
+            msg = "!!!!!!!!!!!!!!!!X!!dataset.get_file_name(): {0}, {1} !!!".format(file_path_tmp, check_times)
+            log.info(msg)
+            if file_path_tmp in ["", None, "None"]:
+                time.sleep(5)
+                msg = "!!!!!!!!!!!!!!!!X!!time.sleep(5): {0}!!!".format(check_times)
+                log.info(msg)
+            else:
+                break
+        dataset_path = file_path_tmp
+        msg = "!!!!!!!!!!!!!!!!X!!dataset_path: {0} !!!".format(dataset_path)
         log.info(msg)
 
         # Check whether it is a Directory object thansferred through Globus Genomics
@@ -281,9 +303,13 @@ class GlobusTransferOutAction( DefaultToolAction ):
 
         elif tool_id == 'globus_send_data':
             job = {}
+            msg = "!!!!!!!!!!!!!!!!X!!incoming[from_dataset]: {0} !!!".format(str(vars(incoming['from_dataset'])))
+            log.info(msg)
+            msg = "!!!!!!!!!!!!!!!!X!!incoming[from_dataset].dataset: {0} !!!".format(str(vars(incoming['from_dataset'].dataset)))
+            log.info(msg)
             job['from_path'] = self.get_file_path_from_dataset(incoming['from_dataset'].dataset)
             job['to_path'] = incoming['to_path'].strip().rstrip('/').rstrip('\\').replace(' ', '_').replace(':\\', '/').replace('\\', '/')
-            msg = "!!!!!!!!!!!!!!!!!globus_send_data: {0}, {1}".format(job['from_path'], job['to_path'])
+            msg = "!!!!!!!!!!!!!!!!!globus_send_data: {0}".format(str(job))
             log.info(msg)
             transfer_job_info.append(job)
             #handle_send_bam(incoming['from_dataset'], job['to_path'])
@@ -311,7 +337,7 @@ class GlobusTransferOutAction( DefaultToolAction ):
     def execute(self, tool, trans, incoming=None, return_job=False, set_output_hid=True, history=None, job_params=None, rerun_remap_job_id=None, execution_cache=None, dataset_collection_elements=None, completed_job=None, collection_info=None):
         tmp_file_dir = '/home/galaxy/.globusgenomics/tmp'
 
-        identifier = str(int(time.time()*10000))
+        identifier = str(uuid.uuid4()).replace("-", "")
 
         galaxy_config = trans.app.config.config_dict
 
@@ -379,7 +405,7 @@ class S3Transfer(DefaultToolAction):
         else:
             username = trans.user.username
 
-        identifier = str(int(time.time()*10000))
+        identifier = str(uuid.uuid4()).replace("-", "")
 
         incoming['bucket'] = incoming['bucket'].strip().strip('/').strip('\\')
         incoming['from_path'] = incoming['from_path'].strip().strip('/').rstrip('\\')
@@ -506,7 +532,7 @@ class S3TransferOut(DefaultToolAction):
         else:
             username = trans.user.username
 
-        identifier = str(int(time.time()*10000))
+        identifier = str(uuid.uuid4()).replace("-", "")
 
         # record creds
         if not os.path.isdir(cred_file_dir):
@@ -590,7 +616,7 @@ class S3TransferOutMultiple(DefaultToolAction):
         else:
             username = trans.user.username
 
-        identifier = str(int(time.time()*10000))
+        identifier = str(uuid.uuid4()).replace("-", "")
 
         # record creds
         if not os.path.isdir(cred_file_dir):
@@ -657,7 +683,7 @@ class S3TransferOptimized(DefaultToolAction):
         else:
             username = trans.user.username
 
-        identifier = str(int(time.time()*10000))
+        identifier = str(uuid.uuid4()).replace("-", "")
 
         incoming['bucket'] = incoming['bucket'].strip().strip('/').strip('\\')
         incoming['from_path'] = incoming['from_path'].strip().strip('/').rstrip('\\')
