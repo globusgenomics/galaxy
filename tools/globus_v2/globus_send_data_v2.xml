@@ -1,0 +1,47 @@
+<tool id="globus_send_data_v2" name="Send Data via Globus V2">
+  <description>Transfers data via Globus</description>
+  <command interpreter="python"> 
+    globus_send_data_v2.py
+    --user $__user_email__
+    --globus-cred-file $__app__.config.config_dict["globus_cred_file"]
+    --from-endpoint $__app__.config.config_dict["globus_endpoint"]
+    --to-endpoint $to_endpoint
+    --from-dataset $from_dataset
+    --to-path $to_path
+    #if str($from_dataset.ext) == "bam":
+      #if str($from_dataset.metadata.bam_index) not in ['None', '']:
+        --extra-source-path $from_dataset.metadata.bam_index
+      #end if
+    #end if
+  </command>
+  <inputs>
+    <param name="from_dataset" type="data" label="Send this dataset"/>
+    <param name="to_endpoint" type="text" size="100" label="Destination Endpoint">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="to_path" type="text" size="100" label="Destination Path">
+      <sanitizer sanitize="False"/>
+    </param>
+  </inputs>
+  <outputs>
+    <data name="out_file1" type="data" format="txt"/>
+  </outputs>
+  <help>
+.. class:: warningmark
+    
+  **WARNING:** Be careful not to exceed disk quotas!
+    
+-----
+    
+**What it does**
+    
+  Transfers a dataset from your Galaxy installation to a Globus
+  Online endpoint.
+    
+-----
+    
+**Example**
+    
+  Specify your endpoint, and some path within the endpoint.
+  </help>
+</tool>

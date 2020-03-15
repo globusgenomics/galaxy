@@ -1,0 +1,66 @@
+<tool id="globus_send_data_detailed_v2" name="Send Data via Globus (detailed) V2">
+  <description>Transfers data via Globus specify sample name, path, extension separately</description>
+  <command> 
+    #import os
+    #set $size = os.stat(str($from_dataset)).st_size
+    #if int($size) > 0:
+        python $__tool_directory__/globus_send_data_detailed_v2.py
+        --user $__user_email__
+        --globus-cred-file $__app__.config.config_dict["globus_cred_file"]
+        --from-endpoint $__app__.config.config_dict["globus_endpoint"]
+        --to-endpoint $to_endpoint
+        --from-dataset $from_dataset
+        --to-directory $to_directory
+        --to-name $to_name
+        --include-datestamp $include_datestamp
+        --to-extension $to_extension
+        #if str($from_dataset.ext) == "bam":
+          #if str($from_dataset.metadata.bam_index) not in ['None', '']:
+            --extra-source-path $from_dataset.metadata.bam_index
+          #end if
+        #end if
+    #else:
+        echo "Your file is empty. It will not be transferred"
+    #end if
+  </command>
+  <inputs>
+    <param name="from_dataset" type="data" label="Send this dataset"/>
+    <param name="to_endpoint" type="text" size="100" label="Destination Endpoint">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="to_directory" type="text" size="100" label="Destination file directory">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="to_name" type="text" size="100" label="Destination file name">
+      <sanitizer sanitize="False"/>
+    </param>
+    <param name="include_datestamp" type="select" display="radio" label="Include Date stamp in name" help="i.e. samplename_2010_10_20.txt">
+      <option value="include">Include Datestamp</option>
+      <option value="none">No Datestamp</option>
+    </param>
+    <param name="to_extension" type="text" size="100" label="Destination file extension">
+      <sanitizer sanitize="False"/>
+    </param>
+  </inputs>
+  <outputs>
+    <data name="out_file1" type="data" format="txt"/>
+  </outputs>
+  <help>
+.. class:: warningmark
+    
+  **WARNING:** Be careful not to exceed disk quotas!
+    
+-----
+    
+**What it does**
+    
+  Transfers a dataset from your Galaxy installation to a Globus
+  Online endpoint.
+    
+-----
+    
+**Example**
+    
+  Specify your endpoint, and some path within the endpoint.
+  </help>
+</tool>
