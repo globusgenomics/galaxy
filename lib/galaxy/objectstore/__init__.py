@@ -435,9 +435,57 @@ class DiskObjectStore(ObjectStore):
         path = self.get_filename(obj, **kwargs)
         extra_dir = kwargs.get('extra_dir', None)
         obj_dir = kwargs.get('obj_dir', False)
+
+        # #######
+        # Edited by GG, remove _files created by GG transfer .etc
+        # remove linked items in /mounted_scratch
+
+        def gg_delete_extra_files(path):
+            def check_and_delete_file_in_mounted_scratch(file_path):
+                if file_path.strip().startswith("/mounted_scratch"):
+                    if os.path.isfile(file_path):
+                        os.remove(file_path)
+
+            def check_and_deal_with_links_in_dir(dir_path):
+                for (dirpath, dirnames, filenames) in os.walk(dir_path):
+                    for filename in filenames:
+                        file_path = os.path.join(dirpath, filename)
+                        if os.path.islink(file_path):
+                            real_file_path = os.path.realpath(file_path)
+                            check_and_delete_file_in_mounted_scratch(real_file_path)
+
+            if os.path.islink(path):
+                real_path = os.path.realpath(path)
+                check_and_delete_file_in_mounted_scratch(real_path)
+            if path.endswith(".dat"):
+                path_dir = path[0:-4] + "_files"
+                if os.path.islink(path_dir):
+                    real_path_dir = os.path.realpath(path_dir)
+                    if os.path.isdir(real_path_dir):
+                        check_and_deal_with_links_in_dir(real_path_dir)
+                        shutil.rmtree(real_path_dir)
+                    os.unlink(path_dir)
+                elif os.path.isdir(path_dir):
+                    check_and_deal_with_links_in_dir(path_dir)
+                    shutil.rmtree(path_dir)
+
+        gg_delete_extra_files(path)
+        try:
+            # remove external file
+            if obj.external_filename:
+                gg_delete_extra_files(obj.external_filename)
+                os.remove(obj.external_filename)
+        except:
+            pass
+        # #######
+
         try:
             if entire_dir and (extra_dir or obj_dir):
-                shutil.rmtree(path)
+                if os.path.isdir(path):
+                    shutil.rmtree(path)
+                return True
+            if os.path.islink(path):
+                os.unlink(path)
                 return True
             if self.exists(obj, **kwargs):
                 os.remove(path)
