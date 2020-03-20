@@ -54,6 +54,7 @@ lib/galaxy/jobs/runners/__init__.py
 lib/galaxy/jobs/runners/kubernetes.py
 lib/galaxy/jobs/command_factory.py
 lib/galaxy/jobs/__init__.py
+lib/galaxy/objectstore/__init__.py   #delete files
 
 Others:
 config/tool_data_table_conf_eupath.xml
