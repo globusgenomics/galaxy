@@ -102,9 +102,11 @@ uwsgi:
 galaxy:
 
   # Globus Genomics
-  gg_s3_bucket: not-set
+  gg_setup_env: not-set
+  gg_gcp_creds: not-set
+  gg_storage_bucket: not-set
   gg_workspace_bucket: not-set
-  gg_s3_bucket_key_name: not-set
+  gg_bucket_key_name: not-set
   globus_endpoint: not-set
   globus_use_oauth: not-set
   # use globus group to restrict access

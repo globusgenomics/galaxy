@@ -744,16 +744,39 @@ class AsynchronousJobRunner(BaseJobRunner, Monitors):
         #log.debug("!!!!!!!!!!!!!Finish job: {0}".format(vars(job_state.job_wrapper)))
         #log.debug("!!!!!!!!!!!!!Finish job: {0}".format(job_state.job_wrapper.command_line))
         # download the working dir from bucket if it exists
-        gg_s3_bucket = job_state.job_wrapper.app.config.config_dict["gg_s3_bucket"]
+        gg_setup_env = job_state.job_wrapper.app.config.config_dict["gg_setup_env"]
+        gg_gcp_creds = job_state.job_wrapper.app.config.config_dict["gg_gcp_creds"]
+        gg_storage_bucket = job_state.job_wrapper.app.config.config_dict["gg_storage_bucket"]
         gg_job_working_directory = job_state.job_wrapper.working_directory
         import fnmatch
         import boto3
-        s3_client = boto3.client('s3')
+        from google.cloud import storage
+        if gg_setup_env == "aws":
+            s3_client = boto3.client('s3')
+        elif gg_setup_env == "gcp":
+            os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = gg_gcp_creds
+            gs_client = storage.Client()
+
         gg_job_working_directory_bucket = "storage" + gg_job_working_directory
-        tmp_result = s3_client.list_objects(Bucket=gg_s3_bucket, Prefix=gg_job_working_directory_bucket)
-        if "Contents" in tmp_result and len(tmp_result["Contents"]) > 0:
-            for i in tmp_result["Contents"]:
-                file_path_bucket = i["Key"]
+
+        if  gg_setup_env == "aws":
+            tmp_result = s3_client.list_objects(Bucket=gg_storage_bucket, Prefix=gg_job_working_directory_bucket)
+            if "Contents" in tmp_result and len(tmp_result["Contents"]) > 0:
+                for i in tmp_result["Contents"]:
+                    file_path_bucket = i["Key"]
+                    file_path_local = file_path_bucket.replace("storage","",1)
+                    # skip all the dirs in the working dir
+                    tmp_check = file_path_bucket.replace(gg_job_working_directory_bucket,"",1)
+                    tmp_check =  tmp_check.strip("/")
+                    if not "/" in tmp_check:
+                        if not os.path.exists(os.path.dirname(file_path_local)):
+                            os.makedirs(os.path.dirname(file_path_local))
+                        s3_client.download_file(gg_storage_bucket, file_path_bucket, file_path_local)
+        elif gg_setup_env == "gcp":
+            gs_bucket = gs_client.bucket(gg_storage_bucket)
+            tmp_result = gs_client.list_blobs(gg_storage_bucket, prefix=gg_job_working_directory_bucket, delimiter=None)
+            for i in tmp_result:
+                file_path_bucket = i.name
                 file_path_local = file_path_bucket.replace("storage","",1)
                 # skip all the dirs in the working dir
                 tmp_check = file_path_bucket.replace(gg_job_working_directory_bucket,"",1)
@@ -761,7 +784,8 @@ class AsynchronousJobRunner(BaseJobRunner, Monitors):
                 if not "/" in tmp_check:
                     if not os.path.exists(os.path.dirname(file_path_local)):
                         os.makedirs(os.path.dirname(file_path_local))
-                    s3_client.download_file(gg_s3_bucket, file_path_bucket, file_path_local)
+                    tmp_obj = gs_bucket.blob(file_path_bucket)
+                    tmp_obj.download_to_filename(file_path_local)
 
         # deal with dataset_affiliated_dir
         gg_command_line = job_state.job_wrapper.command_line
@@ -791,19 +815,27 @@ class AsynchronousJobRunner(BaseJobRunner, Monitors):
                     if os.path.exists(dataset_path):
                         gg_datasets.append(dataset_path)
 
-        def check_if_s3_path_is_dir(bucket, path):
+        def check_if_bucket_path_is_dir(bucket, path, setup_env="aws"):
             if not path.endswith("/"):
                 path = path + "/"
-            tmp_result = s3_client.list_objects(Bucket=bucket, Prefix=path)
-            if "Contents" in tmp_result and len(tmp_result["Contents"]) > 0:
-                return True
-            else:
-                return False
+            if setup_env == "aws":
+                tmp_result = s3_client.list_objects(Bucket=bucket, Prefix=path)
+                if "Contents" in tmp_result and len(tmp_result["Contents"]) > 0:
+                    return True
+                else:
+                    return False
+            elif setup_env == "gcp":
+                is_dir = False
+                tmp_result = gs_client.list_blobs(bucket, prefix=path, delimiter=None)
+                for i in tmp_result:
+                    is_dir = True
+                    break
+                return is_dir
                 
         for dataset in gg_datasets:
             dir_path = dataset[0:-4] + "_files"
             dir_path_bucket = "storage" + dir_path
-            if (not os.path.exists(dir_path)) and check_if_s3_path_is_dir(gg_s3_bucket, dir_path_bucket):
+            if (not os.path.exists(dir_path)) and check_if_bucket_path_is_dir(gg_storage_bucket, dir_path_bucket, setup_env=gg_setup_env):
                 os.symlink("/mounted_scratch/" + dir_path_bucket, dir_path)
         #########################################
 

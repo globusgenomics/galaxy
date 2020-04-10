@@ -160,3 +160,7 @@ packages/*/*.egg-info
 .DS_Store
 *.rej
 *~
+
+# Globus Genomics
+globusgenomics
+tools/eupath/Tools/config/config.json

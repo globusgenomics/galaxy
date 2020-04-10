@@ -88,9 +88,18 @@ class KubernetesJobRunner(AsynchronousJobRunner):
         # use hostPath instead of NFS
         #mountable_volumes = [{'name': claim_name, 'persistentVolumeClaim': {'claimName': claim_name}} for claim_name in volume_claims]
         mountable_volumes = [{'name': claim_name, 'hostPath': {'path': mount_path, 'type': 'Directory'}} for claim_name, mount_path in volume_claims.items()]
+        # Editted by GG
+        # GCP solution, use this for GCP
+        #mountable_volumes = [{'name': 'galaxytools', 'persistentVolumeClaim': {'claimName': 'gg-dev1-tools-worker-pvc', 'readOnly': 'true'}},
+        #                     {'name': 'galaxy', 'persistentVolumeClaim': {'claimName': 'gg-dev1-galaxy-worker-pvc', 'readOnly': 'true'}}]
 
         self.runner_params['k8s_mountable_volumes'] = mountable_volumes
         volume_mounts = [{'name': claim_name, 'mountPath': mount_path} for claim_name, mount_path in volume_claims.items()]
+        # Editted by GG
+        # GCP solution, use this for GCP
+        #volume_mounts = [{'name': 'galaxytools', 'mountPath': '/mnt/galaxyTools', 'readOnly': 'true'},
+        #                 {'name': 'galaxy', 'mountPath': '/opt/galaxy', 'readOnly': 'true'}]
+
         self.runner_params['k8s_volume_mounts'] = volume_mounts
 
     def queue_job(self, job_wrapper):
@@ -230,8 +239,6 @@ class KubernetesJobRunner(AsynchronousJobRunner):
         If the job hangs around unlimited it will be ended after k8s wall time limit, which sets activeDeadlineSeconds"""
         k8s_job_spec = {"template": self.__get_k8s_job_spec_template(ajs),
                         "activeDeadlineSeconds": int(self.runner_params['k8s_walltime_limit'])}
-
-        log.debug("!!!!!!!!!!!!!CMD: {0}  !!!!!!###".format(k8s_job_spec))
         return k8s_job_spec
 
     def __get_k8s_job_spec_template(self, ajs):
@@ -254,6 +261,8 @@ class KubernetesJobRunner(AsynchronousJobRunner):
         # TODO include other relevant elements that people might want to use from
         # TODO http://kubernetes.io/docs/api-reference/v1/definitions/#_v1_podspec
         k8s_spec_template["spec"]["securityContext"] = self.__get_k8s_security_context()
+        # Added by GG
+        log.debug("!!!!!!!!!!!!!k8s_spec_template: {0}  !!!!!!###".format(k8s_spec_template))
         return k8s_spec_template
 
     def __get_k8s_security_context(self):
@@ -312,10 +321,19 @@ class KubernetesJobRunner(AsynchronousJobRunner):
         import shutil
         import boto3
         from botocore.errorfactory import ClientError
-        s3_client = boto3.client('s3')
-        s3_bucket = ajs.job_wrapper.app.config.config_dict["gg_s3_bucket"]
-        workspace_bucket = ajs.job_wrapper.app.config.config_dict["gg_workspace_bucket"]
-        s3_bucket_key_name = ajs.job_wrapper.app.config.config_dict["gg_s3_bucket_key_name"]
+        from google.cloud import storage
+
+        gg_setup_env = ajs.job_wrapper.app.config.config_dict["gg_setup_env"]
+        gg_gcp_creds = ajs.job_wrapper.app.config.config_dict["gg_gcp_creds"]
+        gg_storage_bucket = ajs.job_wrapper.app.config.config_dict["gg_storage_bucket"]
+        gg_workspace_bucket = ajs.job_wrapper.app.config.config_dict["gg_workspace_bucket"]
+
+        if gg_setup_env == "aws":
+            s3_client = boto3.client('s3')
+        elif gg_setup_env == "gcp":
+            os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = gg_gcp_creds
+            gs_client = storage.Client()
+            gs_storage_bucket_obj = gs_client.bucket(gg_storage_bucket)
 
         working_directory = ajs.job_wrapper.working_directory
         command_line = ajs.job_wrapper.command_line
@@ -325,12 +343,16 @@ class KubernetesJobRunner(AsynchronousJobRunner):
             runner_command_line = None
 
 
-        def check_if_s3_file_exist(path):
-            try:
-                s3_client.head_object(Bucket=s3_bucket, Key=path)
-                return True
-            except ClientError:
-                return False
+        def check_if_file_exists_in_bucket(path):
+            if gg_setup_env == "aws":
+                try:
+                    s3_client.head_object(Bucket=gg_storage_bucket, Key=path)
+                    return True
+                except ClientError:
+                    return False
+            elif gg_setup_env == "gcp":
+                blob = gs_storage_bucket_obj.blob(path)
+                return blob.exists()
 
         def get_files_list(command_line):
             # take a command line, return a dict of two lists of path, indices and datasets
@@ -363,43 +385,18 @@ class KubernetesJobRunner(AsynchronousJobRunner):
                             datasets.append(dataset_path)
             return {"indices": indices, "datasets": datasets}
 
-        #def get_files_list(command_line):
-            # take a command line, return a dict of two lists of path, indices and datasets
-            #indices = []
-            #datasets = []
-
-            #tool_files = []
-            #dependency_paths = []
-            #commands = command_line.split(";")
-            #for c in commands:
-            #    tmp_list = c.split()
-                #print tmp_list
-            #    for item in tmp_list:
-            #        if "/mnt/galaxyIndices/" in item:
-            #            indice_path = item[item.find("/mnt/galaxyIndices/"):]
-            #            indice_path = indice_path.strip('"').strip('\'').strip('"').strip('\'').strip()
-            #            indices.append(indice_path)
-            #        elif "/scratch/" in item:
-            #            dataset_path = item[item.find("/scratch/"):]
-            #            dataset_path = dataset_path.strip('"').strip('\'').strip('"').strip('\'').strip()
-            #            if dataset_path.startswith("/scratch/galaxy/files") or dataset_path.startswith("/scratch/shared") or dataset_path.startswith("/scratch/galaxy/data"):
-            #               if os.path.exists(dataset_path):
-            #                    datasets.append(dataset_path)
-                    #elif "/mnt/galaxyTools/tools/" in item:
-                    #    dependency_path = item[item.find("/mnt/galaxyTools/tools/"):]
-                    #    dependency_path = dependency_path.strip('"').strip('\'').strip('"').strip('\'').strip()
-                    #    dependency_paths.append(dependency_path)
-                    #elif "/opt/galaxy/tools/" in item:
-                    #    tool_file = item[item.find("/opt/galaxy/tools/"):]
-                    #    tool_file = tool_file.strip('"').strip('\'').strip('"').strip('\'').strip()
-                    #    tool_files.append(tool_file)
-
-            #return {"indices": indices, "datasets": datasets, "dependency_paths": dependency_paths, "tool_files": tool_files}
 
         def path_convert_local_to_bucket(path):
             # add prefix "storage" for bucket path
             bucket_path = "storage" + path
             return bucket_path
+
+        def upload_file_to_bucket(file_path, file_path_bucket):
+            if gg_setup_env == "aws":
+                s3_client.upload_file(file_path, gg_storage_bucket, file_path_bucket)
+            elif gg_setup_env == "gcp":
+                blob = gs_storage_bucket_obj.blob(file_path_bucket)
+                blob.upload_from_filename(file_path)
 
         def upload_dir(dir_path):
             # create a empty file for empty dirs in the working dir, so the dir get uploaded to S3
@@ -410,10 +407,9 @@ class KubernetesJobRunner(AsynchronousJobRunner):
             for (dirpath, dirnames, filenames) in os.walk(dir_path):
                 for filename in filenames:
                     file_path = os.path.join(dirpath, filename)
-                    if not check_if_s3_file_exist(path_convert_local_to_bucket(file_path)):
+                    if not check_if_file_exists_in_bucket(path_convert_local_to_bucket(file_path)):
                         file_path_bucket = path_convert_local_to_bucket(file_path)
-                        s3_client.upload_file(file_path, s3_bucket, file_path_bucket)
-
+                        upload_file_to_bucket(file_path, file_path_bucket)
 
         def check_and_upload_dataset_affiliated_dir(dataset_path):
             dir_path = dataset_path[0:-4] + "_files"
@@ -434,7 +430,7 @@ class KubernetesJobRunner(AsynchronousJobRunner):
         # get files info for uploading
         if runner_command_line != None:
             command_line = command_line + " " + runner_command_line
-        #log.debug("!!!!!!!!!!!!!CMD: {0}  !!!!!!###".format(command_line))
+        log.debug("!!!!!!!!!!!!!CMD: {0}  !!!!!!###".format(command_line))
         job_files_info = get_files_list(command_line)
 
         # upload/sync working_directory
@@ -442,9 +438,9 @@ class KubernetesJobRunner(AsynchronousJobRunner):
 
         # upload datasets
         for dataset in job_files_info["datasets"]:
-            if not check_if_s3_file_exist(path_convert_local_to_bucket(dataset)):
+            if not check_if_file_exists_in_bucket(path_convert_local_to_bucket(dataset)):
                 dataset_bucket = path_convert_local_to_bucket(dataset)
-                s3_client.upload_file(dataset, s3_bucket, dataset_bucket)
+                upload_file_to_bucket(dataset, dataset_bucket)
                 # delete the local file
                 os.remove(dataset)
                 # create link to the bucket file
@@ -462,44 +458,40 @@ class KubernetesJobRunner(AsynchronousJobRunner):
         tmp_indices_info = ""
         for indice in job_files_info["indices"]:
             tmp_indices_info = tmp_indices_info + "-i {0} ".format(indice)
-        #tmp_dependency_paths_info = ""
-        #for dependency_path in job_files_info["dependency_paths"]:
-        #    tmp_dependency_paths_info = tmp_dependency_paths_info + "-p {0} ".format(dependency_path)
-        #tmp_tool_files_info = ""
-        #for tool_file in job_files_info["tool_files"]:
-        #    tmp_tool_files_info = tmp_tool_files_info + "-t {0} ".format(tool_file)
-        #replacement_command = "if [ ! -f /mnt/galaxy_job_execution_script.py ]; then aws s3 cp s3://{5}/scripts/galaxy_job_execution_script.py /mnt/galaxy_job_execution_script.py; fi; python /mnt/galaxy_job_execution_script.py --bucket {0} --workdir {1} --jobfile {2} {3} {4} {6} {7} --workspacebucket {5};".format(s3_bucket, working_directory, job_file, tmp_datasets_info, tmp_indices_info, workspace_bucket, tmp_dependency_paths_info, tmp_tool_files_info)
-        replacement_command = "if [ ! -f /mnt/galaxy_job_execution_script.py ]; then aws s3 cp s3://{5}/scripts/galaxy_job_execution_script.py /mnt/galaxy_job_execution_script.py; fi; python /mnt/galaxy_job_execution_script.py --bucket {0} --workdir {1} --jobfile {2} {3} {4} --workspacebucket {5};".format(s3_bucket, working_directory, job_file, tmp_datasets_info, tmp_indices_info, workspace_bucket)
+
+        replacement_command = "cp /opt/galaxy/globusgenomics/galaxy_job_execution_script.py /mnt/galaxy_job_execution_script.py; python /mnt/galaxy_job_execution_script.py --bucket {0} --workdir {1} --jobfile {2} {3} {4} --workspacebucket {5};".format(gg_storage_bucket, working_directory, job_file, tmp_datasets_info, tmp_indices_info, gg_workspace_bucket)
 
         # overwrite k8s_container
         k8s_container["args"] = ["-c", "--", replacement_command]
         k8s_container["command"] = ["/bin/bash"]
 
-        # append env
-        env_to_append = [{        
-          "name": "AWS_ACCESS_KEY_ID",
-          "valueFrom": {
-            "secretKeyRef": {
-              "name": s3_bucket_key_name,
-              "key": "AWS_ACCESS_KEY_ID"
-            }
-          }
-        },
-        {
-          "name": "AWS_SECRET_ACCESS_KEY",
-          "valueFrom": {
-            "secretKeyRef": {
-              "name": s3_bucket_key_name,
-              "key": "AWS_SECRET_ACCESS_KEY"
-            }
-          }
-        }]
+        # append env for aws s3 key
+        if gg_setup_env == "aws":
+            s3_bucket_key_name = ajs.job_wrapper.app.config.config_dict["gg_s3_bucket_key_name"]
+            env_to_append = [{        
+              "name": "AWS_ACCESS_KEY_ID",
+              "valueFrom": {
+                "secretKeyRef": {
+                  "name": s3_bucket_key_name,
+                  "key": "AWS_ACCESS_KEY_ID"
+                }
+              }
+            },
+            {
+              "name": "AWS_SECRET_ACCESS_KEY",
+              "valueFrom": {
+                "secretKeyRef": {
+                  "name": s3_bucket_key_name,
+                  "key": "AWS_SECRET_ACCESS_KEY"
+                }
+              }
+            }]
 
-        if "env" in k8s_container and k8s_container["env"] != None and k8s_container["env"] != []:
-            tmp_env = k8s_container["env"]
-            k8s_container["env"] = tmp_env + env_to_append
-        else:
-            k8s_container["env"] = env_to_append
+            if "env" in k8s_container and k8s_container["env"] != None and k8s_container["env"] != []:
+                tmp_env = k8s_container["env"]
+                k8s_container["env"] = tmp_env + env_to_append
+            else:
+                k8s_container["env"] = env_to_append
 
 
         # run as galaxy user
@@ -508,7 +500,6 @@ class KubernetesJobRunner(AsynchronousJobRunner):
         #    {"runAsGroup": "4000"},
         #    {"allowPrivilegeEscalation": "false"}
         #]
-
         #########################################
 
         return [k8s_container]
