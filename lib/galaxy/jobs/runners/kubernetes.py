@@ -459,7 +459,7 @@ class KubernetesJobRunner(AsynchronousJobRunner):
         for indice in job_files_info["indices"]:
             tmp_indices_info = tmp_indices_info + "-i {0} ".format(indice)
 
-        replacement_command = "cp /opt/galaxy/globusgenomics/galaxy_job_execution_script.py /mnt/galaxy_job_execution_script.py; python /mnt/galaxy_job_execution_script.py --bucket {0} --workdir {1} --jobfile {2} {3} {4} --workspacebucket {5};".format(gg_storage_bucket, working_directory, job_file, tmp_datasets_info, tmp_indices_info, gg_workspace_bucket)
+        replacement_command = "cp /opt/galaxy/globusgenomics/galaxy_job_execution_script.py /mnt/galaxy_job_execution_script.py; python /mnt/galaxy_job_execution_script.py --bucket {0} --workdir {1} --jobfile {2} {3} {4} --workspacebucket {5} --setup-env {6};".format(gg_storage_bucket, working_directory, job_file, tmp_datasets_info, tmp_indices_info, gg_workspace_bucket, gg_setup_env)
 
         # overwrite k8s_container
         k8s_container["args"] = ["-c", "--", replacement_command]
