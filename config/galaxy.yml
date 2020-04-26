@@ -102,6 +102,7 @@ uwsgi:
 galaxy:
 
   # Globus Genomics
+  gg_instance_name: not-set
   gg_setup_env: not-set
   gg_gcp_creds: not-set
   gg_storage_bucket: not-set

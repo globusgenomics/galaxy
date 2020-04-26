@@ -129,11 +129,19 @@ class KubernetesJobRunner(AsynchronousJobRunner):
 
         # Construction of the Kubernetes Job object follows: http://kubernetes.io/docs/user-guide/persistent-volumes/
         k8s_job_name = self.__produce_unique_k8s_job_name(job_wrapper.get_id_tag())
+
+        # Added by GG
+        # append gg_instance_name to the job name
+        gg_instance_name = job_wrapper.app.config.config_dict["gg_instance_name"]
+        k8s_job_name = "{0}-{1}".format(gg_instance_name.strip(), k8s_job_name)
+
         k8s_job_obj = job_object_dict(
             self.runner_params,
             k8s_job_name,
             self.__get_k8s_job_spec(ajs)
         )
+        # Added by GG
+        log.debug("!!!!!!!!!!!!!k8s_job_obj: {0}  !!!!!!###".format(k8s_job_obj))
 
         # Checks if job exists and is trusted, or if it needs re-creation.
         job = Job(self._pykube_api, k8s_job_obj)
@@ -261,8 +269,6 @@ class KubernetesJobRunner(AsynchronousJobRunner):
         # TODO include other relevant elements that people might want to use from
         # TODO http://kubernetes.io/docs/api-reference/v1/definitions/#_v1_podspec
         k8s_spec_template["spec"]["securityContext"] = self.__get_k8s_security_context()
-        # Added by GG
-        log.debug("!!!!!!!!!!!!!k8s_spec_template: {0}  !!!!!!###".format(k8s_spec_template))
         return k8s_spec_template
 
     def __get_k8s_security_context(self):
