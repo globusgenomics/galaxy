@@ -8,7 +8,10 @@
         <plugin id="condor" type="runner" load="galaxy.jobs.runners.condor:CondorJobRunner" />
         <plugin id="k8s" type="runner" load="galaxy.jobs.runners.kubernetes:KubernetesJobRunner">
             <param id="k8s_config_path">/home/galaxy/.kube/config</param>
-            <param id="k8s_persistent_volume_claims">mnt:/mnt,opt:/opt</param>
+            <!-- specify the type of volume_claims using the first item: hostpath or pvc
+             option hostpath format:  type:hostpath,mnt:/mnt/galaxyTools,opt:/opt/galaxy
+             option pvc format:  type:pvc,gg-dev1-tools-worker-pvc:/mnt/galaxyTools,gg-dev1-galaxy-worker-pvc:/opt/galaxy  -->
+            <param id="k8s_persistent_volume_claims">type:hostpath,mnt:/mnt/galaxyTools,opt:/opt/galaxy</param>
         </plugin>
     </plugins>
     <handlers default="handlers">
@@ -261,6 +264,8 @@
         <tool id="globus_s3_get_data" destination="condor_local"/>
         <tool id="globus_send_data" destination="condor_local"/>
         <tool id="globus_send_data_multiple" destination="condor_local"/>
+        <tool id="globus_send_data_v2" destination="condor_local"/>
+        <tool id="globus_send_data_detailed_v2" destination="condor_local"/>
         <tool id="globus_transfer" destination="condor_local"/>
         <tool id="gops_merge_1" destination="condor_local"/>
         <tool id="gsnap" destination="k8s_remote_8"/>

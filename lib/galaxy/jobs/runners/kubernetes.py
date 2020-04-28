@@ -85,21 +85,21 @@ class KubernetesJobRunner(AsynchronousJobRunner):
     def setup_volumes(self):
         volume_claims = dict(volume.split(":") for volume in self.runner_params['k8s_persistent_volume_claims'].split(','))
         # Editted by GG
-        # use hostPath instead of NFS
+        # use hostPath or PVC
+        mount_type = volume_claims['type']
+        assert mount_type in ['hostpath', 'pvc']
+        del volume_claims['type']
+
+        if mount_type == 'hostpath':
+            mountable_volumes = [{'name': claim_name, 'hostPath': {'path': mount_path, 'type': 'Directory'}} for claim_name, mount_path in volume_claims.items()]
+            volume_mounts = [{'name': claim_name, 'mountPath': mount_path} for claim_name, mount_path in volume_claims.items()]
+        elif mount_type == 'pvc':
+            mountable_volumes = [{'name': claim_name, 'persistentVolumeClaim': {'claimName': claim_name, 'readOnly': True}} for claim_name in volume_claims]
+            volume_mounts = [{'name': claim_name, 'mountPath': mount_path, 'readOnly': True} for claim_name, mount_path in volume_claims.items()]
+
         #mountable_volumes = [{'name': claim_name, 'persistentVolumeClaim': {'claimName': claim_name}} for claim_name in volume_claims]
-        mountable_volumes = [{'name': claim_name, 'hostPath': {'path': mount_path, 'type': 'Directory'}} for claim_name, mount_path in volume_claims.items()]
-        # Editted by GG
-        # GCP solution, use this for GCP
-        #mountable_volumes = [{'name': 'galaxytools', 'persistentVolumeClaim': {'claimName': 'gg-dev1-tools-worker-pvc', 'readOnly': 'true'}},
-        #                     {'name': 'galaxy', 'persistentVolumeClaim': {'claimName': 'gg-dev1-galaxy-worker-pvc', 'readOnly': 'true'}}]
-
         self.runner_params['k8s_mountable_volumes'] = mountable_volumes
-        volume_mounts = [{'name': claim_name, 'mountPath': mount_path} for claim_name, mount_path in volume_claims.items()]
-        # Editted by GG
-        # GCP solution, use this for GCP
-        #volume_mounts = [{'name': 'galaxytools', 'mountPath': '/mnt/galaxyTools', 'readOnly': 'true'},
-        #                 {'name': 'galaxy', 'mountPath': '/opt/galaxy', 'readOnly': 'true'}]
-
+        #volume_mounts = [{'name': claim_name, 'mountPath': mount_path} for claim_name, mount_path in volume_claims.items()]
         self.runner_params['k8s_volume_mounts'] = volume_mounts
 
     def queue_job(self, job_wrapper):

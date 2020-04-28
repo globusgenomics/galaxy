@@ -45,6 +45,8 @@
     <tool file="globus/globus_get_data_from_ebi_to_collections.xml" />
     <tool file="globus/get_databag_from_minid_to_collection.xml" />
     <tool file="globus/globus_send_data.xml" />
+    <tool file="globus_v2/globus_send_data_v2.xml" />
+    <tool file="globus_v2/globus_send_data_detailed_v2.xml" />
     <!--<tool file="globus/to_go_collection.xml" /> -->
     <tool file="globus/globus_send_data_multiple.xml" />
     <tool file="globus/s3_get_data.xml" />
