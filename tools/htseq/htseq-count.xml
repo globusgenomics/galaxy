@@ -77,7 +77,6 @@
         <when value="indexed">
           <param label="Select a genome annotation" name="annotation" type="select">
             <options from_data_table="all_gff"></options>
-            <filter type="sort_by" column="3" />
           </param>
         </when>
         <when value="history">

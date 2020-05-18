@@ -57,6 +57,6 @@ class BigwigFilesExport(EupathExporter.Export):
 
     def identify_dataset_files(self):
         """
-        :return: A list containing the dataset files accompanied by their EuPathDB designation.
+        :return: A list containing the dataset files accompanied by their VEuPathDB designation.
         """
         return self._datasetInfos

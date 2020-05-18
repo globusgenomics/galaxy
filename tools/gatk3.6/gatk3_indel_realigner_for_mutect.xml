@@ -88,8 +88,6 @@
         <param format="bam" help="-I,--input_file &amp;lt;input_file&amp;gt;" label="BAM Tumor file" name="input_tumor_bam" type="data"/>
         <param help="-R,--reference_sequence &amp;lt;reference_sequence&amp;gt;" label="Using reference genome" name="ref_file" type="select">
           <options from_data_table="gatk3_picard_indexes">
-                <filter column="3" type="sort_by"/>
-
           </options>
         </param>
       </when>

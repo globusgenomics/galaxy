@@ -49,9 +49,6 @@
             #end if
             relabund=$relabund,
             processors='\${GALAXY_SLOTS:-16}'
-            #if $seed:
-                ,seed=$seed
-            #end if
         )'
         | sed 's/ //g'  ## mothur trips over whitespace
         | ./mothur
@@ -125,7 +122,6 @@
         <param name="count" type="data" format="count_table" label="count file" optional="true"/>
         <param name="name" type="data" format="names" label="names file" optional="true"/>
         <param name="relabund" type="boolean" falsevalue="false" truevalue="true" checked="false" label="relabund - allows you to indicate that you want the summary files to be relative abundances rather than raw abundances. default=f"/>
-        <param name="seed" type="integer" value="" min="0" optional="true" label="seed" help="Will be randomly chosen if left blank"/>
     </inputs>
     <outputs>
         <expand macro="logfile-output"/>

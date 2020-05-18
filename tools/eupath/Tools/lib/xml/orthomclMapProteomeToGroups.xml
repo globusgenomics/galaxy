@@ -1,8 +1,7 @@
 <tool id="orthomclMapProteomeToGroups" name="OrthoMCL Map Proteome to Groups" version="1.0.0">
   <description>Use BLAST results to map a proteome to OrthoMCL groups.</description>
   <command interpreter="perl" detect_errors="aggressive">
-    ../../bin/orthomclMapProteomeToGroupsGalaxy "$self_similarity_file" "$orthomcl_similarity_file" "${orthomcl_groups_file.fields.path}" TAXON "$outputGroupsFile" "$outputParalogsFile"
-
+    ../../bin/orthomclMapProteomeToGroupsGalaxy "$self_similarity_file" "$orthomcl_similarity_file" "${orthomcl_groups_file.fields.path}" TAXON "$outputGroupsFile" "$outputParalogsFile"                  
   </command>
   <inputs>
     <param name="self_similarity_file" type="data" format="tabular"
@@ -19,11 +18,6 @@
       <options from_data_table="ortho_mcl"></options>
     </param>
 
-    <!--<param name="orthomcl_groups_file" type="data" format="text"
-           label="OrthoMCL Groups file:"
-           help="">
-    </param>-->
-
   </inputs>
   <outputs>
       <data format="text" name="outputGroupsFile" label="proteinsMappedToGroups.txt" />
@@ -34,7 +28,17 @@
 
 **What it does**
 
-Using self-similarity and similarity to OrthoMCL protiens, maps the input proteome to OrthoMCL groups.  Input proteins are mapped to the group containing the protein with highest similarity.  Proteins that have no significant similarity to OrthoMCL proteins are grouped as paralogs, using the OrthoMCL algorithm.
+Using self-similarity and similarity to OrthoMCL protiens, maps the input proteome to OrthoMCL groups.
+
+Each input protein is mapped to the OrthoMCL group containing its most similar protein in OrthoMCL. These mappings are output to the proteinsMappedToGroups file.
+
+Proteins that have no significant similarity to OrthoMCL proteins are output to the paralogPairs file.  This file shows scores between pairs of unmapped proteins.  The file is used as input for MCL, to cluster the paralogs
+
+OUTPUT
+
+proteinsMappedToGroups.txt - tab delimited, with these columns: your_protein_id, orthomcl_group_id, most_similar_orthomcl_protein_id, evalue_mantissa, evalue_exponent, percent_identity, percent_match
+
+paralogPairs.txt - tab delimited, with these columns: protein_1_id, protein_2_id, score
 
   </help>
 </tool>

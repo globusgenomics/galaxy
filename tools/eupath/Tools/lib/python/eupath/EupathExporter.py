@@ -16,7 +16,7 @@ from subprocess import Popen, PIPE
 
 class Export:
     """
-    This is a generic EuPathDB export tool for Galaxy.  It is abstract and so must be subclassed by more
+    This is a generic VEuPathDB export tool for Galaxy.  It is abstract and so must be subclassed by more
     specialized export tools that implement those abstract classes.
     """
 
@@ -28,9 +28,9 @@ class Export:
     def __init__(self, dataset_type, version, validation_script, args):
         """
         Initializes the export class with the parameters needed to accomplish the export of user
-        datasets on Galaxy to EuPathDB projects.
-        :param dataset_type: The EuPathDB type of this dataset
-        :param version: The version of the EuPathDB type of this dataset
+        datasets on Galaxy to VEuPathDB projects.
+        :param dataset_type: The VEuPathDB type of this dataset
+        :param version: The version of the VEuPathDB type of this dataset
         :param validation_script: A script that handles the validation of this dataset
         :param args: An array of the input parameters
         """
@@ -69,7 +69,7 @@ class Export:
 
         # WDK user id is derived from the user email
         user_email = args[3].strip()
-        if not re.match(r'.+\.\d+@eupathdb.org$', user_email, flags=0):
+        if not re.match(r'.+\.\d+@veupathdb.org$', user_email, flags=0):
             raise ValidationException(
                 "The user email " + str(user_email) + " is not valid for the use of this tool.")
         galaxy_user = user_email.split("@")[0]
@@ -135,10 +135,10 @@ class Export:
 
     def identify_projects(self):
         """
-        An abstract method to be addressed by a specialized export tool that furnishes a EuPathDB project list.
+        An abstract method to be addressed by a specialized export tool that furnishes a VEuPathDB project list.
         :return: The project list to be returned should look as follows:
         [project1, project2, ... ]
-        At least one valid EuPathDB project must be listed
+        At least one valid VEuPathDB project must be listed
         """
         raise NotImplementedError(
             "The method 'identify_project(self)' needs to be implemented in the specialized export module.")
@@ -155,14 +155,14 @@ class Export:
     def identify_dataset_files(self):
         """
         An abstract method to be addressed by a specialized export tool that furnishes a json list
-        containing the dataset data files and the EuPath file names they must have in the tarball.
+        containing the dataset data files and the VEuPathDB file names they must have in the tarball.
         :return: The dataset file list to be returned should look as follows:
         [dataset file1, dataset file2, ... ]
         where each dataset file is written as a json object as follows:
         {
-          "name":<filename that EuPathDB expects>,
+          "name":<filename that VEuPathDB expects>,
           "path":<Galaxy path to the dataset file>
-        At least one valid EuPathDB dataset file must be listed
+        At least one valid VEuPathDB dataset file must be listed
         """
         raise NotImplementedError(
             "The method 'identify_dataset_file(self)' needs to be implemented in the specialized export module.")
@@ -207,21 +207,26 @@ class Export:
         dataset_files_metadata = []
         for dataset_file in self.identify_dataset_files():
             dataset_file_metadata = {}
-            dataset_file_metadata["name"] = re.sub(r"\s+", "_", dataset_file['name'])
+            dataset_file_metadata["name"] = self.clean_file_name(dataset_file['name'])
             dataset_file_metadata["file"] = os.path.basename(dataset_file['path'])
             dataset_file_metadata["size"] = os.stat(dataset_file['path']).st_size
             dataset_files_metadata.append(dataset_file_metadata)
         return dataset_files_metadata
 
-
+    
+    # replace undesired characters with underscore
+    def clean_file_name(self, file_name):
+        s = str(file_name).strip().replace(' ', '_')
+        return re.sub(r'(?u)[^-\w.]', '_', s)
+        
     def package_data_files(self, temp_path):
         """
         Copies the user's dataset files to the datafiles folder of the temporary dir and changes each
-        dataset filename conferred by Galaxy to a filename expected by EuPathDB
+        dataset filename conferred by Galaxy to a filename expected by VEuPathDB
         """
         os.mkdir(temp_path + "/" + self.DATAFILES)
         for dataset_file in self.identify_dataset_files():
-            shutil.copy(dataset_file['path'], temp_path + "/" + self.DATAFILES + "/" + re.sub(r"\s+", "_", dataset_file['name']))
+            shutil.copy(dataset_file['path'], temp_path + "/" + self.DATAFILES + "/" + self.clean_file_name(dataset_file['name']))
 
     def create_tarball(self):
         """
@@ -263,7 +268,7 @@ class Export:
             response = requests.post(request, auth=auth, headers=headers, files=upload_file)
             response.raise_for_status()
         except Exception as e:
-            print >> sys.stderr, "Error: The dataset export could not be completed at this time.  The EuPathDB" \
+            print >> sys.stderr, "Error: The dataset export could not be completed at this time.  The VEuPathDB" \
                                  " workspace may be unavailable presently. " + str(e)
             sys.exit(2)
         return response
@@ -293,8 +298,8 @@ class Export:
                     failure.raise_for_status()
             else:
                 self.output_success()
-                print >> sys.stdout, "Your dataset has been successfully exported to EuPathDB."
-                print >> sys.stdout, "Please visit an appropriate EuPathDB site to view your dataset."
+                print >> sys.stdout, "Your dataset has been successfully exported to VEuPathDB."
+                print >> sys.stdout, "Please visit an appropriate VEuPathDB site to view your dataset."
         except (requests.exceptions.ConnectionError, TransferException) as e:
             print >> sys.stderr, "Error: " + str(e)
             sys.exit(1)
@@ -316,7 +321,7 @@ class Export:
 
     def export(self):
         """
-        Does the work of exporting to EuPathDB, a tarball consisting of the user's dataset files along
+        Does the work of exporting to VEuPathDB, a tarball consisting of the user's dataset files along
         with dataset and metadata json files.
         """
 
@@ -377,11 +382,11 @@ class Export:
     def output_success(self):
         header = "<html><body><h1>Good news!</h1><br />"
         msg = """
-        <h2>Results of the EuPathDB Export Tool<br />Bigwig Files to EuPathDB</h2>
-        <h3>Your set of bigwig files was exported from Galaxy to your account in EuPathDB.
-         For file access and to view in GBrowse, go to My Data Sets in the appropriate EuPathDB site:
+        <h2>Results of the VEuPathDB Export Tool<br />Bigwig Files to VEuPathDB</h2>
+        <h3>Your set of bigwig files was exported from Galaxy to your account in VEuPathDB.
+         For file access and to view in GBrowse, go to My Data Sets in the appropriate VEuPathDB site:
         </h3><br />
-        Go to the appropriate EuPathDB site (links below) to see it (and all your User Datasets):<br \>
+        Go to the appropriate VEuPathDB site (links below) to see it (and all your User Datasets):<br \>
         <a href='http://amoebadb.org/amoeba/app/workspace/datasets'>AmoebaDB</a><br />
         <a href='http://cryptodb.org/cryptodb/app/workspace/datasets'>CryptoDB</a><br />
         <a href='http://fungidb.org/fungidb/app/workspace/datasets'>FungiDB</a><br />

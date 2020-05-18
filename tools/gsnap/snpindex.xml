@@ -21,7 +21,6 @@
             <column index="4" name="maps"/>
             <column index="5" name="snps"/>
             <column index="6" name="value"/>
-            <filter type="sort_by" column="3" />
           </options>
         </param>
       </when>

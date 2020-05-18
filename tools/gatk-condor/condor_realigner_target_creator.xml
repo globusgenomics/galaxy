@@ -115,8 +115,6 @@
         </param>
         <param label="Using reference genome" name="ref_file" type="select">
           <options from_data_table="gatk_picard_indexes">
-                <filter column="3" type="sort_by"/>
-
             <filter column="dbkey" key="dbkey" ref="input_bam" type="data_meta"/>
           </options>
           <validator message="A built-in reference genome is not available for the build associated with the selected input file" type="no_options"/>

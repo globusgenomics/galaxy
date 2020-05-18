@@ -12,7 +12,7 @@ import re
 
 def main():
     """
-      The following program is a Galaxy Tool for exporting bigwig files from Galaxy to EuPathDB via iRODS.
+      The following program is a Galaxy Tool for exporting bigwig files from Galaxy to VEuPathDB via iRODS.
 
       It takes the standard exporter params (see EuPathExporter superclass), pluse the arguments declared in it
     """

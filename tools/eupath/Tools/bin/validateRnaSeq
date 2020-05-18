@@ -14,12 +14,33 @@ def __main__():
     error = None
     dataset_file_json = sys.stdin.read()
     dataset_file = json.loads(dataset_file_json)
-    count = len(open(dataset_file[0]['path'],'r').readlines())
-    my_set = set(open(dataset_file[0]['path'],'r'))
 
-    print >> sys.stderr, "exporting " + str(len(dataset_file)) + " files"
-    for i in range(0, len(dataset_file)):
-      print >> sys.stderr, dataset_file[i]['name'] + "\t" + dataset_file[i]['path']
+    file_count = len(dataset_file)
+    sample_count = (file_count - 1) / 2
+
+    print >> sys.stderr, "exporting " + str(sample_count) + " samples using " + str(file_count) + " files"
+    for i in range(0, file_count):
+     print >> sys.stderr, dataset_file[i]['name'] + "\t" + dataset_file[i]['path']
+
+    for i in range(0, sample_count):
+      bigwig_name = dataset_file[i]['name']
+      fpkm_name = dataset_file[i+sample_count]['name']
+      sample_name = re.sub("\.bw$", "", bigwig_name)
+
+      # check header record of FPKM file
+      CUFFLINKS_HEADER = "tracking_id\tclass_code\tnearest_ref_id\tgene_id\tgene_short_name\ttss_id\tlocus\tlength\tcoverage\tFPKM\tFPKM_conf_lo\tFPKM_conf_hi\tFPKM_status"
+      FPKMTOOL_HEADER = "gene_id\tFPKM"
+      fpkm_file = open(dataset_file[i+sample_count]['path'])
+      fpkm_header = fpkm_file.readline().strip()
+      if fpkm_header == CUFFLINKS_HEADER:
+        # look at first data record to confirm the "tracking_id" is the "gene_id"
+        # (which means it's the gene-expression file)
+        fpkm_data = fpkm_file.readline().strip().split("\t")
+        if fpkm_data[0] != fpkm_data[3]:
+          error = "Bad gene-expression file: tracking ID \"" + fpkm_data[0] + "\" does not match gene ID \"" + fpkm_data[3] + "\" for sample " + sample_name
+
+      elif fpkm_header != FPKMTOOL_HEADER:
+        error = "Unexpected header record in gene-expression file: \"" + fpkm_header + "\""
 
     if error is not None:
         print >> sys.stderr, "Error: " + error

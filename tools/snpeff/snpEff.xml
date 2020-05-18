@@ -105,7 +105,6 @@
                     <!--GENOME    DESCRIPTION-->
                     <options from_data_table="snpeff_genomedb">
                            <filter column="0" type="unique_value"/>
-                           <filter type="sort_by" column="2" />
                     </options>
                 </param>
 <!--                <param display="checkboxes" label="Additional Annotations" multiple="true" name="extra_annotations" type="select">

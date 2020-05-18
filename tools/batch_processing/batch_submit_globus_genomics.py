@@ -1,37 +1,31 @@
 #!/usr/bin/env python
 
-import os, sys, csv, time, optparse, re, random
-import string, socket, errno
+import os, sys, urllib2, csv, string, time, optparse, re, socket, errno, random
 from bioblend.galaxy import GalaxyInstance
 from itertools import *
 sys.path.insert( 0, os.path.dirname( __file__ ) )
-#import globusonline.transfer.api_client as transfer_api
-import globus_sdk
+import globusonline.transfer.api_client as transfer_api
 import requests
 requests.packages.urllib3.disable_warnings()
 
 #from common import get, submit, display
 
 def random_number(maxi):
-       return random.randint(0,maxi)
+    return random.randint(0,maxi)
 
 def get_user(gi):
     return gi.users.get_current_user()['username']
 
 def _count_globus_queue_transfers(gi, token):
-    #username = get_user(gi)
-    #base_url=transfer_api.DEFAULT_BASE_URL
-    #apikwargs = {'base_url':  base_url, 'goauth' : token}
-    api = globus_sdk.TransferClient(authorizer=globus_sdk.AccessTokenAuthorizer(token))
-    #api = transfer_api.TransferAPIClient(username, **apikwargs)
+    username = get_user(gi)
+    base_url=transfer_api.DEFAULT_BASE_URL
+    apikwargs = {'base_url':  base_url, 'goauth' : token}
+    api = transfer_api.TransferAPIClient(username, **apikwargs)
     q_count = None
     while q_count is None:
         try:
-            tasks = api.task_list(num_results=50)
-            q_count = 0
-            for task in tasks:
-                if task['status'] == "ACTIVE" or task['status'] == "INACTIVE":
-                    q_count += 1
+            code, reason, data = api.task_list(filter="status:ACTIVE,INACTIVE")
+            q_count = len(data['DATA'])
             return q_count
         except:
             time.sleep(random_number(60))

@@ -26,10 +26,7 @@
       </param>
       <when value="built-in">
         <param label="Select a reference genome" name="ref" type="select">
-          <options from_data_table="picard_indexes">
-                <filter column="3" type="sort_by"/>
-                </options>
-
+          <options from_data_table="picard_indexes"/>
         </param>
       </when>
       <when value="history">

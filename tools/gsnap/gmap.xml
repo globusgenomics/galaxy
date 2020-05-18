@@ -158,7 +158,6 @@
             <column index="4" name="maps"/>
             <column index="5" name="snps"/>
             <column index="6" name="value"/>
-            <filter column="3" type="sort_by"/>
           </options>
         </param>
         <param data_ref="gmapindex" help="Defaults to highest available kmer size" label="kmer size" name="kmer" type="select">

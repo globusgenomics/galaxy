@@ -12,7 +12,7 @@ import re
 
 def main():
     """
-      The following program is a Galaxy Tool for exporting bigwig collections from Galaxy to EuPathDB via iRODS.
+      The following program is a Galaxy Tool for exporting RNA-Seq datasets from Galaxy to VEuPathDB via iRODS.
 
       It takes the standard exporter params (see EuPathExporter superclass), plus the arguments declared in it
     """
@@ -20,7 +20,7 @@ def main():
     parser = optparse.OptionParser()
     (options, args) = parser.parse_args()
 
-    # So users are greeted with a bewildering traceback
+    # So users are not greeted with a bewildering traceback
     sys.tracebacklimit = 0
 
     exporter = RnaSeqEupathExporter.RnaSeqExport(args)

@@ -185,7 +185,7 @@ where:
                            paralog processing and output.
   groups_file              standard orthomcl groups file
   taxon_abbrev             taxon abbreviation that has been prepended to protein IDs
-  output_groups_file       input groups file updated to included mapped input proteins
+  output_groups_file       tab delimited file mapping proteins to groups.  Columns are: protein_id, group_id, similar_orthomcl_protein_id, evalue_mantissa, evalue_exponent, percent_identity, percent_match  
   output_paralogs_file     paralog groups formed from proteins that do not map to existing OrthoMCL groups
 
 Note: simseqs format output by blastSimilarity is sorted by query_id, evalue

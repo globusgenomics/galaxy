@@ -16,6 +16,7 @@ while(<F>) {
     my @columns = split;
     my ($queryId, $subjectId, $percentIdentity, $length, $dontcare1, $dontcare2, $queryStart, $queryEnd, $subjectStart, $subjectEnd, $evalue, $dontcare3, $qLength, $sLength) = @columns;
 
+
     my $row = {}; 
     $row->{queryId} = $queryId;
     $row->{subjectId} = $subjectId;
@@ -67,12 +68,13 @@ sub usage {
 
 Parse an NCBI tabular BLAST output file in the Similar Sequences format orthomcl requires.
 
-Usage: orthomclBlastParserTabluar blast_file taxon_abbrev
+Usage: orthomclBlastParserTabluar blast_file taxon_abbrev output_file
 
 where:
   blast_file:         BLAST output in tabular format (as provided in Galaxy) (see below)
-  taxon_abbrev:       A single taxon abbreviation placeholder to use in the two taxon columns in the output (query and subject).  this parser assumes that 
-                      the subject and query are from the same taxon.
+  taxon_abbrev:       A single taxon abbreviation placeholder to use in the two taxon columns 
+                      in the output (query and subject).  this parser assumes that the subject and query are from the same taxon.
+  output_file:         The file to write output to
 
   
 output:
@@ -96,7 +98,6 @@ Blast file columns:
 10 send End of alignment in subject (database hit)
 11 evalue Expectation value (E-value)
 12 bitscore Bit score
-18 ppos Percentage of positive-scoring matches
 23 qlen Query sequence length
 24 slen Subject sequence length
 ";

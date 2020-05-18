@@ -18,7 +18,7 @@
             #if $input.haveshared == 'yes':
                 --command create_krona_plot_multisample
                 --shared_file '$input.shared_file'
-                #if str($input.level) == 'None':
+                #if $input.level == 'None':
                     --level '$input.taxonomy.name'
                 #else:
                     --level '$input.level'

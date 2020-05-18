@@ -16,7 +16,7 @@ class Genome:
         # Insure the the reference genome matches the pattern for Eupath originated reference genomes.
         if not reference_genome and not re.match(r'^.+-\d+_.+_Genome$', reference_genome, flags=0):
             raise EupathExporter.ValidationException(
-                "A syntactically correct reference genome is required for exports to EuPathDB.")
+                "A syntactically correct reference genome is required for exports to VEuPathDB.")
         self._identifier = reference_genome
         self._project = reference_genome[0:reference_genome.index("-")]
         sans_project = reference_genome[reference_genome.index("-") + 1:]

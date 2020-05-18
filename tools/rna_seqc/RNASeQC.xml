@@ -68,7 +68,6 @@
       <when value="cached">
         <param help="" label="File Defining transcipts" name="ref_gtf_file" type="select">
           <options from_data_table="all_gff">
-            <filter type="sort_by" column="3" />
           </options>
         </param>
       </when>

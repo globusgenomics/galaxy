@@ -1,6 +1,6 @@
-<tool id="exportRnaSeqToEuPathDB" name="RNA-Seq to EuPathDB" version="1.0.0">
+<tool id="exportRnaSeqToEuPathDB" name="RNA-Seq to VEuPathDB" version="1.0.0">
   
-<description>Export an RNA-Seq result to EuPathDB</description>
+<description>Export an RNA-Seq result to VEuPathDB</description>
   
   <requirements>
     <requirement type="package">pymodules</requirement>
@@ -8,15 +8,34 @@
   
   <command interpreter="python" detect_errors="aggressive">
     <![CDATA[
-    ../../bin/exportRnaSeqToEuPathDB "$dataset_name" "$summary" "$description" "$__user_email__" "$__tool_directory__" "$output" "$summary"
+    ../../bin/exportRnaSeqToEuPathDB "$dataset_name" "$summary" "$description" "$__user_email__" "$__tool_directory__" "$output" "$summary" "$double"
 
-    #for $key in $bigwig_collection.keys()
-      "$bigwig_collection[$key]" "$key" "$bigwig_collection[$key].metadata.dbkey" bw
-    #end for
+    #if $double == "unstranded":
 
-    #for $key in $fpkm_collection.keys()
-      "$fpkm_collection[$key]" "$key" "$fpkm_collection[$key].metadata.dbkey" txt
-    #end for
+      #for $key in $bigwig_collection.keys()
+        "$bigwig_collection[$key]" "$key" "$bigwig_collection[$key].metadata.dbkey" bw
+      #end for
+
+      #for $key in $fpkm_collection.keys()
+        "$fpkm_collection[$key]" "$key" "$fpkm_collection[$key].metadata.dbkey" txt
+      #end for
+
+    #else:
+
+      #for $key in $bigwig_collection.keys()
+        #for $subkey in $bigwig_collection[$key].keys()
+          "$bigwig_collection[$key][$subkey]" "$key-$subkey" "$bigwig_collection[$key][$subkey].metadata.dbkey" bw
+        #end for
+      #end for
+
+      #for $key in $fpkm_collection.keys()
+        #for $subkey in $fpkm_collection[$key].keys()
+          "$fpkm_collection[$key][$subkey]" "$key-$subkey" "$fpkm_collection[$key][$subkey].metadata.dbkey" txt
+        #end for
+      #end for
+
+    #end if
+
     ]]>
     
   </command>
@@ -31,12 +50,17 @@
       <validator type="length" message="Please restrict the name to 100 characters or less." max="100" />
     </param>
 
+    <param label="Is your dataset strand-specific?" help="Is this a strand-specific dataset?" name="double" type="select">
+      <option selected="true" value="unstranded">No</option>
+      <option value="stranded">Yes</option>
+    </param>
+
     <param name="bigwig_collection" type="data_collection" multiple="true" label="BigWig collection:" format="bigwig"
-           help="Select the BigWig collection to include in the new EuPathDB My Data Set. The bigwig collection you select here must be mapped to the refreence genome that you select below.">
+           help="Select the BigWig collection to include in the new VEuPathDB My Data Set. The bigwig collection you select here must be mapped to the refreence genome that you select below.">
     </param>
 
     <param name="fpkm_collection" type="data_collection" multiple="true" label="FPKM collection:" format="tabular"
-           help="Select the FPKM collection. Its name should include the phrase 'gene expression'.">
+           help="Select the FPKM collection. For an unstranded dataset, its name should include the phrase 'gene expression'.">
     </param>
 
     <param name="summary" type="text" value=""
@@ -85,7 +109,7 @@
 
 **What it does**   (check this Tutorial_!)
 
-This tool exports an RNA-Seq result to a EuPathDB site creating a new My Data Set to contain them.
+This tool exports an RNA-Seq result to a VEuPathDB site creating a new My Data Set to contain them.
 
 .. _PlasmoDB.org: http://plasmodb.org
 .. _Tutorial: http://www.youtube.com/watch?v=igQZHjRBqV0

@@ -48,37 +48,22 @@ def create_len_files(genome_directory, config_directory, existing):
 def snpeff_loc(genome_directory, config_directory, tool, existing):
     genomes = sorted(glob.glob("%s/*_Genome" % args.genome_directory))
     fh = open("%s/%s" % (config_directory, tool), "w")
-    fh.write("?\tunspecified (?)\n")
     for genome in genomes:
         name = os.path.basename(genome)
-        values = name.split("_")
-        gname = "%s_%s_%s" % ("_".join(values[1:-1]), values[0], values[-1])
         if name not in existing:
-            fh.write("%s\t%s\n" % (name, gname))
+            fh.write("%s\t%s\n" % (name, name))
     fh.close()
 
-def snpeffdb_loc(genome_directory, config_directory, tool, existing):
-    genomes = sorted(glob.glob("%s/*_Genome" % args.genome_directory))
-    fh = open("%s/%s" % (config_directory, tool), "w")
-    for genome in genomes:
-        name = os.path.basename(genome)
-        values = name.split("_")
-        gname = "%s_%s_%s" % ("_".join(values[1:-1]), values[0], values[-1])
-        if name not in existing:
-            fh.write("%s\t%s\t%s/%s\n" % (name, gname, "/mnt/galaxyIndices2/genomes/snpeff/data/", name))
-    fh.close()
 
 def gff_loc(genome_directory, config_directory, tool, existing):
     genomes = sorted(glob.glob("%s/*_Genome" % args.genome_directory))
     fh = open("%s/%s.loc" % (config_directory, tool), "w")
     for genome in genomes:
         name = os.path.basename(genome)
-        values = name.split("_")
-        gname = "%s_%s_%s" % ("_".join(values[1:-1]), values[0], values[-1])
         if name not in existing:
             gff_name = "_".join(name.split("_")[0:-1])
             gff = "%s/%s/annotation/%s.gff" % (genome_directory, name, gff_name)
-            fh.write("%s\t%s\t%s\t%s\n" % (name, name, gname, gff))
+            fh.write("%s\t%s\t%s\t%s\n" % (name, name, name, gff))
     fh.close()
 
 def sam_loc(genome_directory, config_directory, tool, existing):
@@ -86,8 +71,6 @@ def sam_loc(genome_directory, config_directory, tool, existing):
     fh = open("%s/%s_indices.loc" % (config_directory, tool), "w")
     for genome in genomes:
         name = os.path.basename(genome)
-        values = name.split("_")
-        gname = "%s_%s_%s" % ("_".join(values[1:-1]), values[0], values[-1])
         if name not in existing:
             fasta = "%s/%s/seq/%s.fasta" % (genome_directory, name, name)
             fh.write("index\t%s\t%s\n" % (name, fasta))
@@ -99,11 +82,9 @@ def gmap_loc(genome_directory, config_directory, tool, existing):
     fh = open("%s/%s_indices.loc" % (config_directory, tool), "w")
     for genome in genomes:
         name = os.path.basename(genome)
-        values = name.split("_")
-        gname = "%s_%s_%s" % ("_".join(values[1:-1]), values[0], values[-1])
         if name not in existing:
             ref_dir = "%s/%s/%s/%s" % (genome_directory, name, "gsnap", name)
-            fh.write("%s\t%s\t%s\t15\tsplicesties,introns,snps\tsnps\t%s\n" % (name, name, gname, ref_dir))
+            fh.write("%s\t%s\t%s\t15\tsplicesties,introns,snps\tsnps\t%s\n" % (name, name, name, ref_dir))
     fh.close()
 
 def star_loc(genome_directory, config_directory, tool, existing):
@@ -111,12 +92,10 @@ def star_loc(genome_directory, config_directory, tool, existing):
     fh = open("%s/%s_indices.loc" % (config_directory, tool), "w")
     for genome in genomes:
         name = os.path.basename(genome)
-        values = name.split("_")
-        gname = "%s_%s_%s" % ("_".join(values[1:-1]), values[0], values[-1])
         if name not in existing:
             ref_dir = "%s/%s/%s" % (genome_directory, name, tool)
             fasta = "%s/%s/seq/%s.fasta" % (genome_directory, name, name)
-            fh.write("%s\t%s\t%s\t%s\t%s\n" % (name, name, gname, ref_dir, fasta))
+            fh.write("%s\t%s\t%s\t%s\t%s\n" % (name, name, name, ref_dir, fasta))
     fh.close()
 
 def tool_ref_loc(genome_directory, config_directory, tool, suffix, existing):
@@ -124,11 +103,9 @@ def tool_ref_loc(genome_directory, config_directory, tool, suffix, existing):
     fh = open("%s/%s_%s.loc" % (config_directory, tool, suffix), "w")
     for genome in genomes:
         name = os.path.basename(genome)
-        values = name.split("_")
-        gname = "%s_%s_%s" % ("_".join(values[1:-1]), values[0], values[-1])
         if name not in existing:
             ref_dir = "%s/%s/%s/%s" % (genome_directory, name, tool, name)
-            fh.write("%s\t%s\t%s\t%s\n" % (name, name, gname, ref_dir))
+            fh.write("%s\t%s\t%s\t%s\n" % (name, name, name, ref_dir))
     fh.close()
 
 def picard_loc(genome_directory, config_directory, tool, existing):
@@ -136,11 +113,9 @@ def picard_loc(genome_directory, config_directory, tool, existing):
     fh = open("%s/%s.loc" % (config_directory, tool), "w")
     for genome in genomes:
         name = os.path.basename(genome)
-        values = name.split("_")
-        gname = "%s_%s_%s" % ("_".join(values[1:-1]), values[0], values[-1])
         if name not in existing:
             fasta = "%s/%s/seq/%s.fasta" % (genome_directory, name, name)
-            fh.write("%s\t%s\t%s\t%s\n" % (name, name, gname, fasta))
+            fh.write("%s\t%s\t%s\t%s\n" % (name, name, name, fasta))
     fh.close()
 
 

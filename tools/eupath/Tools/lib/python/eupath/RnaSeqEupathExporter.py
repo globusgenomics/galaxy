@@ -12,19 +12,26 @@ class RnaSeqExport(EupathExporter.Export):
     VERSION = "1.0"
 
     def __init__(self, args):
+
+        # print >> sys.stderr, "arguments:"
+        # for i in range(0, len(args)):
+        #   print >> sys.stderr, "args[" + str(i) + "] = " + args[i]
+        # print >> sys.stderr, "end of arguments"
+
         EupathExporter.Export.__init__(self,
                                        RnaSeqExport.TYPE,
                                        RnaSeqExport.VERSION,
                                        "validateRnaSeq",
                                        args)
 
-        # beyond the standard 7 params, this exporter requires one or more pairs of args: dataset1 dataset1.refGenome
-        # dataset2...
         if len(args) < 10:
             raise EupathExporter.ValidationException("The tool was passed too few arguments.")
 
         # grab first dataset provided ref genome
-        self._initial_refGenome = args[9]
+        self._initial_refGenome = args[10]
+        # . . . and strandedness -- we're passed strandednessParam and we write strandedness
+        strandednessParam = args[7]
+        strandedness = strandednessParam
 
         self._datasetInfos = []
 
@@ -33,20 +40,29 @@ class RnaSeqExport(EupathExporter.Export):
         manifest = open(manifestPath, "w+")
 
         # process variable number of [dataset refgenome] pairs.
-        for i in range(7, len(args), 4):   # start on 8th arg, increment by 4
+        fileNumber = 0
+        for i in range(8, len(args), 4):   # start on args[8], increment by 4
             # print >> sys.stderr, "args[" + str(i) + "] = " + args[i]
-            filename = re.sub(r"\s+", "_", args[i+1]) + "." + args[i+3]
+            samplename = args[i+1]
+            suffix = args[i+3]
+            filename = self.clean_file_name(re.sub(r"\s+", "_", samplename) + "." + suffix)
+
+            fileNumber += 1
+            if strandednessParam == "stranded":
+                if filename[-4:] == ".txt":
+                    filename = re.sub("forward", "one", re.sub("reverse", "two", filename))
+                    samplename = re.sub("forward", "one", re.sub("reverse", "two", samplename))
+                    strandedness = "sense" if (fileNumber % 2) == 1 else "antisense"
+                else:
+                    strandedness =  "firststrand" if (fileNumber % 2) == 1 else "secondstrand"
+
             self._datasetInfos.append({"name": filename, "path": args[i]})
-            print >> manifest, args[i+1] + "\t" + filename + "\tunstranded"
+            print >> manifest, samplename + "\t" + filename + "\t" + strandedness
 
         manifest.close()
         self._datasetInfos.append({"name": "manifest.txt", "path": manifestPath})
 
-        # now override the dataset provided ref genome with the one obtained from the form assuming it is correctly
-        # selected.  Otherwise throw an error.
-        # if len(args[6].strip()) == 0:
-        #     raise EupathExporter.ValidationException("A reference genome must be selected.")
-        self._refGenome = ReferenceGenome.Genome(args[9])
+        self._refGenome = ReferenceGenome.Genome(args[10])
 
         # print >> sys.stderr, "datasetInfos: " + json.dumps(self._datasetInfos) + "<<- END OF datasetInfos"
 
@@ -65,6 +81,6 @@ class RnaSeqExport(EupathExporter.Export):
 
     def identify_dataset_files(self):
         """
-        :return: A list containing the dataset files accompanied by their EuPathDB designation.
+        :return: A list containing the dataset files accompanied by their VEuPathDB designation.
         """
         return self._datasetInfos

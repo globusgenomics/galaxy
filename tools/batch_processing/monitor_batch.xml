@@ -1,5 +1,5 @@
 <tool id="monitor_batch" name="Monitor batch jobs" hidden="false">
-   <action module="galaxy_ext.globus.tools" class="BatchSubmit"/>
+   <action module="galaxy_ext.globus.tools.actions.globus" class="BatchSubmit"/>
    <description>in multiple histories</description>
    <requirements>
      <requirement type="package">pymodules</requirement>

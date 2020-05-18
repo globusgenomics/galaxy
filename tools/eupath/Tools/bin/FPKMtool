@@ -1,0 +1,194 @@
+#!/usr/bin/env python
+
+# testbed for developing FPKM / TPM tool
+
+import argparse
+import sys
+import os, shutil, subprocess, sys, tempfile
+# from galaxy import eggs
+# from galaxy.datatypes.util.gff_util import parse_gff_attributes, gff_attributes_to_str
+
+def __main__():
+    # print "command line: ", str(sys.argv)
+
+    # Parse Command Line
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--input', dest='input', help=' counts of RNA-Seq read (sense) alignments.' )
+    parser.add_argument('--antisense_input', dest='antisense_input', help=' counts of RNA-Seq read anti-sense alignments.' )
+    parser.add_argument('--genome', dest='genome', help=' file of reference genome in GFF3 format.' )
+    parser.add_argument('--output', help='output file of (sense) FPKM data')
+    parser.add_argument('--antisense_output', help='output file of anti-sense FPKM data')
+    parser.add_argument('--double_stranded', help='is this a double-stranded dataset?')
+    args = parser.parse_args()
+
+    # print 'input file is ', args.input
+    # print 'antisense input file is ', args.antisense_input
+    # print 'genome input file is ', args.genome
+    # print 'output file is ', args.output
+    # print 'antisense output file is ', args.antisense_output
+    # print 'double-strandedness flag is ', args.double_stranded
+
+    double_stranded = args.antisense_input != None
+    # print 'double_stranded variable set to ', double_stranded
+
+    if args.input == None:
+        raise Exception('no input file specified')
+
+    if args.genome == None:
+        raise Exception('no reference-genome GFF3 file specified')
+
+    if args.output == None:
+        raise Exception('no input file specified')
+
+    if double_stranded and args.antisense_input == None:
+        raise Exception('no antisense input file specified')
+
+    if double_stranded and args.antisense_output == None:
+        raise Exception('no antisense output file specified')
+
+    gffFeatureTypeCol = 2
+    gffStartCol = 3
+    gffEndCol = 4
+    gffAttributeCol = 8
+
+    txParent = {}
+    geneLength = {}
+    geneCount = {}
+    geneAntiCount = {}
+
+    # use genome GFF file to find gene lengths
+    for line in open( args.genome ):
+        line = line.rstrip( '\r\n' )
+
+        if line.startswith( '##' ):
+            continue
+
+        fields = line.split( '\t' )
+
+        # if fields[gffFeatureTypeCol] == 'gene':
+            # txParent = {}
+
+        if fields[gffFeatureTypeCol] == 'transcript' or fields[gffFeatureTypeCol].endswith('RNA'):
+            id = None
+            parent = None
+            attributeString = fields[gffAttributeCol]
+
+            for attr in attributeString.split( ';' ):
+                if attr.startswith( 'ID=' ):
+                    id = attr[3:]
+
+                if attr.startswith( 'Parent=' ):
+                    parent = attr[7:]
+
+            if id == None:
+                raise Exception('no ID found in transcript attribute string "' + attributeString + '"')
+
+            if parent == None:
+                raise Exception('no parent found in transcript attribute string "' + attributeString + '"')
+
+            # print 'parent of "' + id + '" is "' + parent + '"'
+            txParent[ id ] = parent;
+
+        if fields[gffFeatureTypeCol] == 'exon':
+            length = int(fields[gffEndCol]) - int(fields[gffStartCol]) + 1
+            attributeString = fields[gffAttributeCol]
+
+            for attr in attributeString.split( ';' ):
+                if attr.startswith( 'Parent=' ):
+                    parent = attr[7:]
+
+                    # if we get a comma-separated list of transcripts as parents, use the first one
+                    if ',' in parent:
+                        parent = parent[:parent.find(',')]
+
+                    if not parent in txParent:
+                        raise Exception('no parent gene found for transcript "' + parent + '"')
+
+                    gene = txParent[ parent ]
+                    if not gene in geneLength:
+                        geneLength[ gene ] = 0
+                        geneCount[ gene ] = 0
+                        geneAntiCount[ gene ] = 0
+
+                    geneLength[ gene ] = geneLength[ gene ] + length
+
+                    # print 'length of gene "' + gene + '" set to',  geneLength[ gene ]
+
+    # for gene in geneLength.keys():
+    #     print 'length of gene "' + gene + '" is',  geneLength[ gene ]
+
+    # special IDs
+    specialCounters = {'__no_feature':1, '__ambiguous':1, '__too_low_aQual':1, '__not_aligned':1, '__alignment_not_unique':1}
+
+    # compute total of all counts
+    counts = 0
+    for line in open( args.input ):
+        # skip header
+        if not line.startswith( '#ID' ):
+            fields = line.split( '\t' )
+            id = fields[0]
+
+            # if we get a comma-separated list of transcripts as parents, use the first one
+            if ',' in id:
+                id = id[:id.find(',')]
+
+            if not id in specialCounters.keys():
+                count = int(fields[1])
+                counts += count
+
+                if id in geneLength:
+                    gene = id
+                elif id in txParent:
+                    gene = txParent[ id ]
+                else:
+                    raise Exception('ID "' + id + '" in counts file not recognized as gene or transcript ID')
+
+                geneCount [ gene ] += count
+            
+    if double_stranded:
+        for line in open( args.antisense_input ):
+            # skip header
+            if not line.startswith( '#ID' ):
+                fields = line.split( '\t' )
+                id = fields[0]
+
+                # if we get a comma-separated list of transcripts as parents, use the first one
+                if ',' in id:
+                    id = id[:id.find(',')]
+
+                if not id in specialCounters.keys():
+                    count = int(fields[1])
+                    counts += count
+
+                    if id in geneLength:
+                        gene = id
+                    elif id in txParent:
+                        gene = txParent[ id ]
+                    else:
+                        raise Exception('ID "' + id + '" in counts file not recognized as gene or transcript ID')
+
+                    geneAntiCount [ gene ] += count
+
+    print "total count is", counts
+
+    billion = 10 ** 9
+    senseOut = open( args.output, 'w' )
+    senseOut.write( 'gene_id\tFPKM\n' )
+    for gene in geneLength.keys():
+        fpkm = ( float( geneCount[ gene ] ) * billion ) / ( counts * geneLength[ gene ] )
+        outline = "%s\t%.12f\n" % (gene, fpkm)
+        senseOut.write( outline )
+    senseOut.close()
+
+    if double_stranded:
+        antisenseOut = open( args.antisense_output, 'w' )
+        antisenseOut.write( 'gene_id\tFPKM\n' )
+        for gene in geneLength.keys():
+            fpkm = ( float( geneAntiCount[ gene ] ) * billion ) / ( counts * geneLength[ gene ] )
+            outline = "%s\t%.12f\n" % (gene, fpkm)
+            antisenseOut.write( outline )
+
+        antisenseOut.close()
+
+
+if __name__=="__main__": __main__()

@@ -42,7 +42,6 @@
       <when value="default">
         <param help="Galaxy thinks that the reads in you dataset were aligned against this reference. If this is not correct, use the 'Select a build-in reference genome' option of the 'Select Reference Genome' dropdown to select approprtiate Reference." label="Check the assigned reference genome" name="index" type="select">
           <options from_data_table="all_fasta">
-                <filter column="3" type="sort_by"/>
           <filter column="dbkey" key="dbkey" multiple="True" ref="inputFile" separator="," type="data_meta"/>
           <validator message="No reference build available for selected input" type="no_options"/>
           </options>
@@ -51,7 +50,6 @@
       <when value="indexed">
         <param help="This list contains genomes cached at this Galaxy instance. If your genome of interest is not present here request it by using 'Help' link at the top of Galaxy interface or use the 'Use a genome (fasta format) from my history' option of the 'Select Reference Genome' dropdown." label="Select a built-in reference genome" name="index" type="select">
           <options from_data_table="all_fasta">
-                <filter column="3" type="sort_by"/>
           </options>
         </param>
       </when>

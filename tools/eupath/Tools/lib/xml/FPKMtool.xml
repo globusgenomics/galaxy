@@ -1,0 +1,64 @@
+<tool id="FPKMtool" name="HTSeqCountToFPKM" version="FPKMtool 1">
+    <!-- FPKMtool -->
+    <description>compute FPKM from per-gene read counts and reference genome</description>
+
+    <command interpreter="python">
+        ../../bin/FPKMtool
+            --input=$input
+            
+            #if $genomeSource.refGenomeSource == "history":
+                --genome ${genomeSource.ownFile}
+            #else:
+                --genome ${genomeSource.annotation.fields.path}
+            #end if
+
+            #if $stranded.double == "Yes":
+                --double_stranded y --antisense_input  ${stranded.antisense_input}
+            #else:
+                --double_stranded n
+            #end if
+
+	    --output $gene_expression
+	    --antisense_output $antisense_gene_expression
+    </command>
+
+    <inputs>
+        <param format="tabular" help="sense counts file" label="gene counts of (sense) aligned RNA-Seq reads" name="input" type="data"/>
+
+        <conditional name="stranded">
+	  <param label="Double-stranded dataset?" help="Is the dataset double-stranded?" name="double" type="select">
+            <option selected="true" value="No">No</option>
+	    <option value="Yes">Yes</option>
+	  </param>
+	  <when value="Yes">
+            <param format="tabular" help="antisense reads file" label="gene counts of antisense aligned RNA-Seq reads" name="antisense_input" type="data"/>
+	  </when>
+          <when value="No"/>
+        </conditional>
+
+        <conditional name="genomeSource">
+          <param label="Will you select an annotation file from your history or use a built-in gff3 file?" name="refGenomeSource" type="select">
+            <option value="indexed">Use a built-in annotation</option>
+            <option value="history">Use one from the history</option>
+          </param>
+          <when value="indexed">
+            <param label="Select a genome annotation" name="annotation" type="select">
+              <options from_data_table="all_gff"></options>
+            </param>
+          </when>
+          <when value="history">
+            <param format="gff" label="Select a annotation file from history" name="ownFile" type="data"/>
+          </when>
+        </conditional>
+    </inputs>
+
+    <outputs>
+        <data format="tabular" label="${tool.name} on ${on_string}: antisense gene expression" name="antisense_gene_expression"/>
+        <data format="tabular" label="${tool.name} on ${on_string}: gene expression" name="gene_expression"/>
+    </outputs>
+
+    <help>
+**FPKMtool Overview**
+This tool computes per-gene FPKM values from a file (or sense-antisense pair of files) of per-gene read counts, together with a reference genome in GFF format
+    </help>
+</tool>

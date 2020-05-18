@@ -1,5 +1,5 @@
 <tool id="print_history_cl" name="Print Command Lines">
-   <action module="galaxy_ext.globus.tools" class="HistoryManagement"/>
+   <action module="galaxy.tools.actions.globus" class="HistoryManagement"/>
    <description>for all items in current history</description>
    <requirements>
      <requirement type="package">pymodules</requirement>

@@ -10,7 +10,7 @@
                 <when value="indexed">
                     <param name="index" type="select" label="Select a reference genome" help="If your genome of interest is not listed, contact your Galaxy admin.">
                         <options from_data_table="bowtie_indexes">
-                        <filter type="sort_by" column="3"/>
+                        <filter type="sort_by" column="2"/>
                             <validator type="no_options" message="No indexes are available for the selected input dataset"/>
                         </options>
                     </param>
