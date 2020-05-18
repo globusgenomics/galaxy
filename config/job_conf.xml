@@ -42,14 +42,6 @@
         </destination>
         <destination id="k8s_remote_1" runner="k8s">
             <param id="docker_owner_default">globusgenomics</param>
-            <param id="docker_image_default">base2</param>
-            <param id="requests_cpu">500m</param>
-            <param id="requests_memory">2Gi</param>
-            <param id="max_pod_retrials">0</param>
-            <param id="docker_enabled">true</param>
-        </destination>
-        <destination id="k8s_remote_1_ubuntu14" runner="k8s">
-            <param id="docker_owner_default">globusgenomics</param>
             <param id="docker_image_default">base2-14</param>
             <param id="requests_cpu">500m</param>
             <param id="requests_memory">2Gi</param>
@@ -58,7 +50,7 @@
         </destination>
         <destination id="k8s_remote_2" runner="k8s">
             <param id="docker_owner_default">globusgenomics</param>
-            <param id="docker_image_default">base2</param>
+            <param id="docker_image_default">base2-14</param>
             <param id="requests_cpu">1500m</param>
             <param id="requests_memory">4Gi</param>
             <param id="max_pod_retrials">0</param>
@@ -66,7 +58,7 @@
         </destination>
         <destination id="k8s_remote_4" runner="k8s">
             <param id="docker_owner_default">globusgenomics</param>
-            <param id="docker_image_default">base2</param>
+            <param id="docker_image_default">base2-14</param>
             <param id="requests_cpu">3500m</param>
             <param id="requests_memory">8Gi</param>
             <param id="max_pod_retrials">0</param>
@@ -74,7 +66,7 @@
         </destination>
         <destination id="k8s_remote_8" runner="k8s">
             <param id="docker_owner_default">globusgenomics</param>
-            <param id="docker_image_default">base2</param>
+            <param id="docker_image_default">base2-14</param>
             <param id="requests_cpu">6000m</param>
             <param id="requests_memory">16Gi</param>
             <param id="max_pod_retrials">0</param>
@@ -82,7 +74,7 @@
         </destination>
         <destination id="k8s_remote_16" runner="k8s">
             <param id="docker_owner_default">globusgenomics</param>
-            <param id="docker_image_default">base2</param>
+            <param id="docker_image_default">base2-14</param>
             <param id="requests_cpu">14000m</param>
             <param id="requests_memory">32Gi</param>
             <param id="max_pod_retrials">0</param>
@@ -90,7 +82,7 @@
         </destination>
         <destination id="k8s_remote_32" runner="k8s">
             <param id="docker_owner_default">globusgenomics</param>
-            <param id="docker_image_default">base2</param>
+            <param id="docker_image_default">base2-14</param>
             <param id="requests_cpu">30000m</param>
             <param id="requests_memory">64Gi</param>
             <param id="max_pod_retrials">0</param>
@@ -195,7 +187,7 @@
         <tool id="delly2_call_swift" destination="condor_local"/>
         <tool id="delly2_merge_swift" destination="condor_local"/>
         <tool id="deseq2" destination="condor_local"/>
-        <tool id="iuc_deseq2" destination="k8s_remote_1_ubuntu14"/>
+        <tool id="iuc_deseq2" destination="k8s_remote_1"/>
         <tool id="directory_dataset_hack" destination="condor_local"/>
         <tool id="dnaCompleteExome_optimized" destination="k8s_remote_8"/>
         <tool id="dnaComplete_optimized" destination="k8s_remote_8"/>
