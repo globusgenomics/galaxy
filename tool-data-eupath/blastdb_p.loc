@@ -25,4 +25,5 @@
 #
 #See also blastdb.loc which is for any nucleotide BLAST database.
 #
-orthomcl_v5_proteins_blast_db	Orthomcl v5 proteins blastDB	/mnt/galaxyIndices2/genomes/miscellaneous/eupathdb_blastdb_20180824/blastdb
+OrthoMCL_6r1_proteins_blast_db	OrthoMCL 6r1 proteins blastDB	/mnt/galaxyIndices2/genomes/miscellaneous/eupathdb_blastdb_20200331/blastdb
+OrthoMCL_5_proteins_blast_db	OrthoMCL 5 proteins blastDB	/mnt/galaxyIndices2/genomes/miscellaneous/eupathdb_blastdb_20180824/blastdb
