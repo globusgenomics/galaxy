@@ -473,7 +473,7 @@ class KubernetesJobRunner(AsynchronousJobRunner):
 
         # append env for aws s3 key
         if gg_setup_env == "aws":
-            s3_bucket_key_name = ajs.job_wrapper.app.config.config_dict["gg_s3_bucket_key_name"]
+            s3_bucket_key_name = ajs.job_wrapper.app.config.config_dict["gg_bucket_key_name"]
             env_to_append = [{        
               "name": "AWS_ACCESS_KEY_ID",
               "valueFrom": {
