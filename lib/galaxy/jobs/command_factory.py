@@ -69,8 +69,9 @@ def build_command(
     # containers ready to go!
     #if not container or container.resolve_dependencies:
     #    __handle_dependency_resolution(commands_builder, job_wrapper, remote_command_params)
-    # Edited by GG, let all containers in K8s resole dependency, tmp solution
-    __handle_dependency_resolution(commands_builder, job_wrapper, remote_command_params)
+    # Edited by GG, let some containers resolve dependency
+    if not container or container.container_id in ["globusgenomics/base2-14", "globusgenomics/base2"]:
+        __handle_dependency_resolution(commands_builder, job_wrapper, remote_command_params)
 
     __handle_task_splitting(commands_builder, job_wrapper)
 
