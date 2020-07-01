@@ -67,11 +67,11 @@ def build_command(
     # One could imagine also allowing dependencies inside of the container but
     # that is too sophisticated for a first crack at this - build your
     # containers ready to go!
-    #if not container or container.resolve_dependencies:
-    #    __handle_dependency_resolution(commands_builder, job_wrapper, remote_command_params)
-    # Edited by GG, let some containers resolve dependency
-    if not container or container.container_id in ["globusgenomics/base2-14", "globusgenomics/base2"]:
+    if not container or container.resolve_dependencies:
         __handle_dependency_resolution(commands_builder, job_wrapper, remote_command_params)
+    # Edited by GG, let some containers resolve dependency
+    #if not container or container.container_id in ["globusgenomics/base2-14", "globusgenomics/base2"]:
+    #    __handle_dependency_resolution(commands_builder, job_wrapper, remote_command_params)
 
     __handle_task_splitting(commands_builder, job_wrapper)
 

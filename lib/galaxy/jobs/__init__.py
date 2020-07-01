@@ -1282,8 +1282,8 @@ class JobWrapper(HasResourceParameters):
 
         # Editted by GG
         # fail all jobs with exit code that is larger than 2
-        if tool_exit_code != None and tool_exit_code > 2:
-            final_job_state = job.states.ERROR
+        #if tool_exit_code != None and tool_exit_code > 2:
+        #    final_job_state = job.states.ERROR
 
         if self.tool.version_string_cmd:
             version_filename = self.get_version_string_path()

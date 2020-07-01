@@ -740,7 +740,7 @@ class AsynchronousJobRunner(BaseJobRunner, Monitors):
         # To ensure that files below are readable, ownership must be reclaimed first
         job_state.job_wrapper.reclaim_ownership()
         
-        ############## GG function ##############
+        """############## GG function ##############
         #log.debug("!!!!!!!!!!!!!Finish job: {0}".format(vars(job_state.job_wrapper)))
         #log.debug("!!!!!!!!!!!!!Finish job: {0}".format(job_state.job_wrapper.command_line))
         # download the working dir from bucket if it exists
@@ -837,7 +837,7 @@ class AsynchronousJobRunner(BaseJobRunner, Monitors):
             dir_path_bucket = "storage" + dir_path
             if (not os.path.exists(dir_path)) and check_if_bucket_path_is_dir(gg_storage_bucket, dir_path_bucket, setup_env=gg_setup_env):
                 os.symlink("/mounted_scratch/" + dir_path_bucket, dir_path)
-        #########################################
+        #########################################"""
 
         # wait for the files to appear
         which_try = 0
