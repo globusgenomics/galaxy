@@ -359,7 +359,7 @@
     <tool file="cellranger/reanalyze.xml" />
     <label text="Additional Alignment Statistics" id="rnastats"/>
     <tool file="ngs_rna/tophat_stats_pe.xml" />
-    <tool file="ngs_rna/tophat_stats_pe_bri.xml" organization_include="benaroyaresearch,bri"/>
+    <tool file="ngs_rna/tophat_stats_pe_bri.xml" organization_include="benaroyaresearch,bri,bri1"/>
     <label text="Quantification" id="quantification"/>
     <tool file="htseq/htseq-count.xml"/>
     <tool file="express/express_wrapper.xml" />
@@ -2142,21 +2142,21 @@
      <tool file="optimized_workflows/HLI_ExomesSeqQC_optimized_workflow.xml" organization_include="hli"/>
      <tool file="optimized_workflows/BDDS_dnaCompleteExome_optimized_workflow.xml" organization_include="bdds,nihcommons" />
      <tool file="optimized_workflows/BDDS_dnase_optimized_workflow.xml" organization_include="bdds,nihcommons"/>
-     <tool file="optimized_workflows/BRI_RNASEQ_TrueSeq_optimized_workflow.xml" organization_include="benaroyaresearch,bri" />
-     <tool file="optimized_workflows/BRI_RNASEQ_TrueSeq_stranded_optimized_workflow.xml" organization_include="benaroyaresearch,bri" />
-     <tool file="optimized_workflows/BRI_RNASEQ_TrueSeq_stranded_plus_trinity_optimized_workflow.xml" organization_include="benaroyaresearch,bri" />
-     <tool file="optimized_workflows/BRI_RNASEQ_Nextera_optimized_workflow.xml" organization_include="benaroyaresearch,bri" />
-     <tool file="optimized_workflows/BRI_RNASEQ_Nextera_minus_trinity_optimized_workflow.xml" organization_include="benaroyaresearch,bri" />
-     <tool file="optimized_workflows/BRI_RNASEQ_sr_human_master_v0.2_plus_tcr_optimized_workflow.xml" organization_include="benaroyaresearch,bri" />
-     <tool file="optimized_workflows/BRI_RNASEQ_sr_human_master_v0.2_optimized_workflow.xml" organization_include="benaroyaresearch,bri" />
-     <tool file="optimized_workflows/BRI_RNASEQ_sr_other_master_v0.2_optimized_workflow.xml" organization_include="benaroyaresearch,bri" />
-     <tool file="optimized_workflows/BRI_RNASEQ_Nextera_sr_GRCm38_v0.2_STAR_complete_minus_trinity_optimized_workflow.xml" organization_include="benaroyaresearch,bri" />
-     <tool file="optimized_workflows/BRI_RNASEQ_Nextera_sr_GRCm38_v0.2_STAR_complete_minus_trinity_snpcheck_optimized_workflow.xml" organization_include="benaroyaresearch,bri" />
-     <tool file="optimized_workflows/BRI_RNASEQ_Nextera_sr_GRCm38_v0.2_STAR_complete_plus_trinity_optimized_workflow.xml" organization_include="benaroyaresearch,bri" />
-     <tool file="optimized_workflows/BRI_RNASEQ_Nextera_sr_GRCm38_v0.2_STAR_complete_plus_trinity_snpcheck_optimized_workflow.xml" organization_include="benaroyaresearch,bri" />
-     <tool file="optimized_workflows/BRI_RNASEQ_Truseq_stranded_sr_GRCm38_v0.2_STAR_complete_optimized_workflow.xml" organization_include="benaroyaresearch,bri" />
-     <tool file="optimized_workflows/BRI_RNASEQ_Truseq_stranded_sr_GRCm38_v0.2_STAR_snpcheck_complete_optimized_workflow.xml" organization_include="benaroyaresearch,bri" />
-     <tool file="optimized_workflows/BRI_RNASEQ_Truseq_stranded_sr_GRCm38_v0.2_STAR_snpcheck_storeUnmapped_fastqs_complete_optimized_workflow.xml" organization_include="benaroyaresearch,bri" />
+     <tool file="optimized_workflows/BRI_RNASEQ_TrueSeq_optimized_workflow.xml" organization_include="benaroyaresearch,bri,bri1" />
+     <tool file="optimized_workflows/BRI_RNASEQ_TrueSeq_stranded_optimized_workflow.xml" organization_include="benaroyaresearch,bri,bri1" />
+     <tool file="optimized_workflows/BRI_RNASEQ_TrueSeq_stranded_plus_trinity_optimized_workflow.xml" organization_include="benaroyaresearch,bri,bri1" />
+     <tool file="optimized_workflows/BRI_RNASEQ_Nextera_optimized_workflow.xml" organization_include="benaroyaresearch,bri,bri1" />
+     <tool file="optimized_workflows/BRI_RNASEQ_Nextera_minus_trinity_optimized_workflow.xml" organization_include="benaroyaresearch,bri,bri1" />
+     <tool file="optimized_workflows/BRI_RNASEQ_sr_human_master_v0.2_plus_tcr_optimized_workflow.xml" organization_include="benaroyaresearch,bri,bri1" />
+     <tool file="optimized_workflows/BRI_RNASEQ_sr_human_master_v0.2_optimized_workflow.xml" organization_include="benaroyaresearch,bri,bri1" />
+     <tool file="optimized_workflows/BRI_RNASEQ_sr_other_master_v0.2_optimized_workflow.xml" organization_include="benaroyaresearch,bri,bri1" />
+     <tool file="optimized_workflows/BRI_RNASEQ_Nextera_sr_GRCm38_v0.2_STAR_complete_minus_trinity_optimized_workflow.xml" organization_include="benaroyaresearch,bri,bri1" />
+     <tool file="optimized_workflows/BRI_RNASEQ_Nextera_sr_GRCm38_v0.2_STAR_complete_minus_trinity_snpcheck_optimized_workflow.xml" organization_include="benaroyaresearch,bri,bri1" />
+     <tool file="optimized_workflows/BRI_RNASEQ_Nextera_sr_GRCm38_v0.2_STAR_complete_plus_trinity_optimized_workflow.xml" organization_include="benaroyaresearch,bri,bri1" />
+     <tool file="optimized_workflows/BRI_RNASEQ_Nextera_sr_GRCm38_v0.2_STAR_complete_plus_trinity_snpcheck_optimized_workflow.xml" organization_include="benaroyaresearch,bri,bri1" />
+     <tool file="optimized_workflows/BRI_RNASEQ_Truseq_stranded_sr_GRCm38_v0.2_STAR_complete_optimized_workflow.xml" organization_include="benaroyaresearch,bri,bri1" />
+     <tool file="optimized_workflows/BRI_RNASEQ_Truseq_stranded_sr_GRCm38_v0.2_STAR_snpcheck_complete_optimized_workflow.xml" organization_include="benaroyaresearch,bri,bri1" />
+     <tool file="optimized_workflows/BRI_RNASEQ_Truseq_stranded_sr_GRCm38_v0.2_STAR_snpcheck_storeUnmapped_fastqs_complete_optimized_workflow.xml" organization_include="benaroyaresearch,bri,bri1" />
      <tool file="optimized_workflows/COLGATE_Mothur_workflow.xml" organization_include="colgate"/>
 <!--      <tool file="optimized_workflows/NU_JAE_dnaComplete_optimized_workflow.xml" organization_include="northwestern"/> -->
 <!--      <tool file="optimized_workflows/ITMI_VCFQC_optimized_workflow.xml" organization_include="itmi"/> -->
